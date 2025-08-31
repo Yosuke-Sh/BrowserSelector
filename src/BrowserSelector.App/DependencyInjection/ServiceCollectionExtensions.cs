@@ -15,6 +15,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IBrowserService, BrowserService>();
         services.AddScoped<ISettingsService, SettingsService>();
         services.AddScoped<ILocalizationService, LocalizationService>();
+        services.AddScoped<IUrlService, UrlService>();
         
         // Infrastructure Services
         services.AddScoped<IRegistryService, WindowsRegistryService>();

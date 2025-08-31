@@ -12,11 +12,13 @@ namespace BrowserSelector.Infrastructure.Services;
 public class BrowserService : IBrowserService
 {
     private readonly IRegistryService _registryService;
+    private readonly IUrlService _urlService;
     private readonly List<Browser> _browsers = new();
 
-    public BrowserService(IRegistryService registryService)
+    public BrowserService(IRegistryService registryService, IUrlService urlService)
     {
         _registryService = registryService;
+        _urlService = urlService;
     }
 
     public async Task<IEnumerable<Browser>> DetectBrowsersAsync()
@@ -49,8 +51,12 @@ public class BrowserService : IBrowserService
                 return false;
 
             // URLを正規化
-            var normalizedUrl = NormalizeUrl(url);
+            var normalizedUrl = await _urlService.NormalizeUrlAsync(url);
             if (string.IsNullOrEmpty(normalizedUrl))
+                return false;
+
+            // URLを検証
+            if (!await _urlService.ValidateUrlAsync(normalizedUrl))
                 return false;
 
             // ブラウザを起動
@@ -230,48 +236,36 @@ public class BrowserService : IBrowserService
         }
     }
 
-    private string NormalizeUrl(string url)
-    {
-        if (string.IsNullOrWhiteSpace(url))
-            return string.Empty;
 
-        // URLの正規化
-        url = url.Trim();
 
-        // プロトコルがない場合はhttp://を追加
-        if (!url.StartsWith("http://") && !url.StartsWith("https://") && !url.StartsWith("ftp://"))
-        {
-            url = "http://" + url;
-        }
-
-        return url;
-    }
-
-    private async Task<List<Browser>> LoadCustomBrowsersAsync()
+    private Task<List<Browser>> LoadCustomBrowsersAsync()
     {
         // TODO: 設定ファイルからカスタムブラウザを読み込み
-        return new List<Browser>();
+        return Task.FromResult(new List<Browser>());
     }
 
-    private async Task SaveCustomBrowsersAsync()
+    private Task SaveCustomBrowsersAsync()
     {
         // TODO: カスタムブラウザを設定ファイルに保存
+        return Task.CompletedTask;
     }
 
-    private async Task SaveBrowserUsageAsync(Browser browser)
+    private Task SaveBrowserUsageAsync(Browser browser)
     {
         // TODO: ブラウザ使用統計を保存
+        return Task.CompletedTask;
     }
 
-    private async Task SaveDefaultBrowserAsync(Browser browser)
+    private Task SaveDefaultBrowserAsync(Browser browser)
     {
         // TODO: デフォルトブラウザ設定を保存
+        return Task.CompletedTask;
     }
 
-    private async Task<Browser?> LoadDefaultBrowserAsync()
+    private Task<Browser?> LoadDefaultBrowserAsync()
     {
         // TODO: 設定ファイルからデフォルトブラウザを読み込み
-        return null;
+        return Task.FromResult<Browser?>(null);
     }
 }
 

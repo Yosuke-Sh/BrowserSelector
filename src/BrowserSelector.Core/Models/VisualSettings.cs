@@ -24,7 +24,13 @@ public partial class VisualSettings : ObservableObject
     private Color _backgroundColor = Colors.Transparent;
 
     [ObservableProperty]
+    private bool _useCustomBackgroundColor = false;
+
+    [ObservableProperty]
     private bool _enableGradient = false;
+
+    [ObservableProperty]
+    private bool _useBackgroundGradient = false;
 
     [ObservableProperty]
     private Color _gradientStartColor = Colors.Transparent;

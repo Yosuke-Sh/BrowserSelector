@@ -10,29 +10,29 @@ namespace BrowserSelector.Infrastructure.SystemIntegration;
 /// </summary>
 public class WindowsRegistryService : IRegistryService
 {
-    public async Task<IEnumerable<Browser>> DetectBrowsersFromRegistryAsync()
+    public Task<IEnumerable<Browser>> DetectBrowsersFromRegistryAsync()
     {
         var browsers = new List<Browser>();
 
         try
         {
             // Chrome検出
-            browsers.AddRange(await DetectChromeAsync());
+            browsers.AddRange(DetectChrome());
             
             // Firefox検出
-            browsers.AddRange(await DetectFirefoxAsync());
+            browsers.AddRange(DetectFirefox());
             
             // Edge検出
-            browsers.AddRange(await DetectEdgeAsync());
+            browsers.AddRange(DetectEdge());
             
             // Opera検出
-            browsers.AddRange(await DetectOperaAsync());
+            browsers.AddRange(DetectOpera());
             
             // Brave検出
-            browsers.AddRange(await DetectBraveAsync());
+            browsers.AddRange(DetectBrave());
             
             // Vivaldi検出
-            browsers.AddRange(await DetectVivaldiAsync());
+            browsers.AddRange(DetectVivaldi());
         }
         catch (Exception ex)
         {
@@ -40,10 +40,10 @@ public class WindowsRegistryService : IRegistryService
             System.Diagnostics.Debug.WriteLine($"ブラウザ検出エラー: {ex.Message}");
         }
 
-        return browsers.Where(b => b.IsValid).OrderBy(b => b.DisplayOrder);
+        return Task.FromResult<IEnumerable<Browser>>(browsers.Where(b => b.IsValid).OrderBy(b => b.DisplayOrder));
     }
 
-    private async Task<IEnumerable<Browser>> DetectChromeAsync()
+    private IEnumerable<Browser> DetectChrome()
     {
         var browsers = new List<Browser>();
         
@@ -83,7 +83,7 @@ public class WindowsRegistryService : IRegistryService
         return browsers;
     }
 
-    private async Task<IEnumerable<Browser>> DetectFirefoxAsync()
+    private IEnumerable<Browser> DetectFirefox()
     {
         var browsers = new List<Browser>();
         
@@ -123,7 +123,7 @@ public class WindowsRegistryService : IRegistryService
         return browsers;
     }
 
-    private async Task<IEnumerable<Browser>> DetectEdgeAsync()
+    private IEnumerable<Browser> DetectEdge()
     {
         var browsers = new List<Browser>();
         
@@ -150,7 +150,7 @@ public class WindowsRegistryService : IRegistryService
         return browsers;
     }
 
-    private async Task<IEnumerable<Browser>> DetectOperaAsync()
+    private IEnumerable<Browser> DetectOpera()
     {
         var browsers = new List<Browser>();
         
@@ -177,7 +177,7 @@ public class WindowsRegistryService : IRegistryService
         return browsers;
     }
 
-    private async Task<IEnumerable<Browser>> DetectBraveAsync()
+    private IEnumerable<Browser> DetectBrave()
     {
         var browsers = new List<Browser>();
         
@@ -204,7 +204,7 @@ public class WindowsRegistryService : IRegistryService
         return browsers;
     }
 
-    private async Task<IEnumerable<Browser>> DetectVivaldiAsync()
+    private IEnumerable<Browser> DetectVivaldi()
     {
         var browsers = new List<Browser>();
         

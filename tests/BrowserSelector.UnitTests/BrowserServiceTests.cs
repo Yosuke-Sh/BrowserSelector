@@ -11,12 +11,14 @@ namespace BrowserSelector.UnitTests;
 public class BrowserServiceTests
 {
     private readonly Mock<IRegistryService> _mockRegistryService;
+    private readonly Mock<IUrlService> _mockUrlService;
     private readonly BrowserService _browserService;
 
     public BrowserServiceTests()
     {
         _mockRegistryService = new Mock<IRegistryService>();
-        _browserService = new BrowserService(_mockRegistryService.Object);
+        _mockUrlService = new Mock<IUrlService>();
+        _browserService = new BrowserService(_mockRegistryService.Object, _mockUrlService.Object);
     }
 
     [Fact]

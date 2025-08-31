@@ -1,3 +1,5 @@
+using Xunit;
+
 namespace BrowserSelector.IntegrationTests;
 
 public class UnitTest1
