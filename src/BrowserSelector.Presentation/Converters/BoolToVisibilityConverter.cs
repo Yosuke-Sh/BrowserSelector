@@ -13,6 +13,12 @@ public class BoolToVisibilityConverter : IValueConverter
     {
         if (value is bool boolValue)
         {
+            // Invertパラメータが指定されている場合は値を反転
+            if (parameter is string param && param.Equals("Invert", StringComparison.OrdinalIgnoreCase))
+            {
+                boolValue = !boolValue;
+            }
+            
             return boolValue ? Visibility.Visible : Visibility.Collapsed;
         }
         return Visibility.Collapsed;
@@ -22,7 +28,15 @@ public class BoolToVisibilityConverter : IValueConverter
     {
         if (value is Visibility visibility)
         {
-            return visibility == Visibility.Visible;
+            var result = visibility == Visibility.Visible;
+            
+            // Invertパラメータが指定されている場合は値を反転
+            if (parameter is string param && param.Equals("Invert", StringComparison.OrdinalIgnoreCase))
+            {
+                result = !result;
+            }
+            
+            return result;
         }
         return false;
     }

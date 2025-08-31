@@ -51,4 +51,9 @@ public interface IBrowserService
     /// ブラウザの使用統計を更新
     /// </summary>
     Task UpdateBrowserUsageAsync(Guid browserId);
+
+    /// <summary>
+    /// ブラウザの使用統計を更新
+    /// </summary>
+    Task UpdateUsageAsync(Browser browser);
 }

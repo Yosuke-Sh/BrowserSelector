@@ -28,17 +28,22 @@ public interface ISettingsService
     Task<bool> SaveVisualSettingsAsync(VisualSettings settings);
 
     /// <summary>
-    /// 設定をリセット
-    /// </summary>
-    Task<bool> ResetSettingsAsync();
-
-    /// <summary>
     /// 設定ファイルのパスを取得
     /// </summary>
     string GetSettingsFilePath();
 
     /// <summary>
-    /// 設定が存在するかどうかを確認
+    /// 設定を初期値にリセット
     /// </summary>
-    Task<bool> SettingsExistAsync();
+    Task<bool> ResetSettingsAsync();
+
+    /// <summary>
+    /// 設定をファイルからインポート
+    /// </summary>
+    Task<bool> ImportSettingsAsync(string filePath);
+
+    /// <summary>
+    /// 設定をファイルにエクスポート
+    /// </summary>
+    Task<bool> ExportSettingsAsync(string filePath);
 }

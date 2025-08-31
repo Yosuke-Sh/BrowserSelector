@@ -48,6 +48,10 @@ public partial class MainViewModel : ObservableObject
         LaunchBrowserCommand = new AsyncRelayCommand<Browser>(LaunchBrowserAsync, CanLaunchBrowser);
         OpenSettingsCommand = new RelayCommand(OpenSettings);
         CloseSettingsCommand = new RelayCommand(CloseSettings);
+        ClearUrlCommand = new RelayCommand(ClearUrl);
+
+        // 初期化時にブラウザ一覧を読み込み
+        _ = LoadBrowsersAsync();
     }
 
     /// <summary>
@@ -69,6 +73,11 @@ public partial class MainViewModel : ObservableObject
     /// 設定を閉じる
     /// </summary>
     public IRelayCommand CloseSettingsCommand { get; }
+
+    /// <summary>
+    /// URLをクリア
+    /// </summary>
+    public IRelayCommand ClearUrlCommand { get; }
 
     /// <summary>
     /// ブラウザ一覧を読み込み
@@ -117,7 +126,7 @@ public partial class MainViewModel : ObservableObject
             
             if (success)
             {
-                await _browserService.UpdateBrowserUsageAsync(browser.Id);
+                await _browserService.UpdateUsageAsync(browser);
                 browser.IncrementUseCount();
                 StatusMessage = _localizationService.GetString("BrowserLaunched", browser.Name);
             }
@@ -158,6 +167,14 @@ public partial class MainViewModel : ObservableObject
     private void CloseSettings()
     {
         IsSettingsVisible = false;
+    }
+
+    /// <summary>
+    /// URLをクリア
+    /// </summary>
+    private void ClearUrl()
+    {
+        Url = string.Empty;
     }
 
     /// <summary>
