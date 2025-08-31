@@ -33,9 +33,8 @@ public partial class App : Application
             await _host.StartAsync();
 
             // メインウィンドウの作成と表示
-            var mainWindow = new MainWindow();
             var mainViewModel = _host.Services.GetRequiredService<MainViewModel>();
-            mainWindow.DataContext = mainViewModel;
+            var mainWindow = new BrowserSelector.Presentation.Views.MainWindow(mainViewModel);
             
             MainWindow = mainWindow;
             MainWindow.Show();

@@ -4,6 +4,7 @@ using BrowserSelector.Core.Models;
 using BrowserSelector.Core.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System.Windows;
 
 namespace BrowserSelector.Presentation.ViewModels;
 
@@ -158,7 +159,23 @@ public partial class MainViewModel : ObservableObject
     /// </summary>
     private void OpenSettings()
     {
-        IsSettingsVisible = true;
+        try
+        {
+            // 設定画面を開く
+            var settingsWindow = new Views.SettingsWindow(
+                new SettingsViewModel(_settingsService, _browserService, _localizationService));
+            
+            settingsWindow.ShowDialog();
+            
+            // 設定画面が閉じられた後、ブラウザリストを再読み込み
+            _ = LoadBrowsersAsync();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"設定画面を開くエラー: {ex.Message}");
+            MessageBox.Show($"設定画面を開けませんでした: {ex.Message}", "エラー", 
+                          MessageBoxButton.OK, MessageBoxImage.Error);
+        }
     }
 
     /// <summary>

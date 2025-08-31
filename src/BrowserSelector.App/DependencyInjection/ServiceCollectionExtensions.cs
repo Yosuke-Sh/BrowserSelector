@@ -22,6 +22,7 @@ public static class ServiceCollectionExtensions
         
         // Presentation Services
         services.AddTransient<MainViewModel>();
+        services.AddTransient<SettingsViewModel>();
         
         return services;
     }
