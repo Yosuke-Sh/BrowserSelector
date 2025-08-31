@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="BrowserChooser.Title" xml:space="preserve">
+    <value>Select Browser</value>
+  </data>
+  <data name="Settings.Display.Transparency" xml:space="preserve">
+    <value>Transparency</value>
+  </data>
+  <data name="Settings.Display.CornerRadius" xml:space="preserve">
+    <value>Corner Radius</value>
+  </data>
+  <data name="Settings.Display.ShowTitleBar" xml:space="preserve">
+    <value>Show Title Bar</value>
+  </data>
+  <data name="Settings.Display.BackgroundColor" xml:space="preserve">
+    <value>Background Color</value>
+  </data>
+  <data name="Settings.Display.FocusColor" xml:space="preserve">
+    <value>Focus Color</value>
+  </data>
+  <data name="Settings.Display.FocusWidth" xml:space="preserve">
+    <value>Focus Width</value>
+  </data>
+  <data name="Settings.App.StartMinimized" xml:space="preserve">
+    <value>Start Minimized</value>
+  </data>
+  <data name="Settings.App.StartInSystemTray" xml:space="preserve">
+    <value>Start in System Tray</value>
+  </data>
+  <data name="Settings.App.StartupDelay" xml:space="preserve">
+    <value>Startup Delay (seconds)</value>
+  </data>
+  <data name="Settings.App.EnableLogging" xml:space="preserve">
+    <value>Enable Logging</value>
+  </data>
+  <data name="Settings.App.Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="Settings.App.PortableMode" xml:space="preserve">
+    <value>Portable Mode</value>
+  </data>
+  <data name="Settings.App.CustomProtocol" xml:space="preserve">
+    <value>Custom Protocol</value>
+  </data>
+  <data name="Common.OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Common.Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Common.Apply" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="Common.Reset" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="Common.Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Common.Load" xml:space="preserve">
+    <value>Load</value>
+  </data>
+</root>

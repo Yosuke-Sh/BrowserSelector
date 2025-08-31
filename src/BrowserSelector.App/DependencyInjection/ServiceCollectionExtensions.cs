@@ -1,0 +1,26 @@
+using BrowserSelector.Core.Services;
+using BrowserSelector.Infrastructure.Localization;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace BrowserSelector.App.DependencyInjection;
+
+public static class ServiceCollectionExtensions
+{
+    public static IServiceCollection AddBrowserSelectorServices(this IServiceCollection services)
+    {
+        // Core Services
+        services.AddScoped<IBrowserService, BrowserService>();
+        services.AddScoped<ISettingsService, SettingsService>();
+        services.AddScoped<ILocalizationService, LocalizationService>();
+        
+        // Infrastructure Services
+        services.AddScoped<IRegistryService, WindowsRegistryService>();
+        services.AddScoped<ISystemTrayService, SystemTrayService>();
+        
+        // Presentation Services
+        services.AddTransient<MainViewModel>();
+        services.AddTransient<SettingsViewModel>();
+        
+        return services;
+    }
+}
