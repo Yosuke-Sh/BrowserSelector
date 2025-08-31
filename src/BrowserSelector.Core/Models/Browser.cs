@@ -1,0 +1,138 @@
+using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using CommunityToolkit.Mvvm.ComponentModel;
+
+namespace BrowserSelector.Core.Models;
+
+/// <summary>
+/// ブラウザ情報を表すモデル
+/// </summary>
+public partial class Browser : ObservableObject
+{
+    [ObservableProperty]
+    private string _name = string.Empty;
+
+    [ObservableProperty]
+    private string _executablePath = string.Empty;
+
+    [ObservableProperty]
+    private string _iconPath = string.Empty;
+
+    [ObservableProperty]
+    private string _arguments = string.Empty;
+
+    [ObservableProperty]
+    private bool _isDefault;
+
+    [ObservableProperty]
+    private bool _isEnabled = true;
+
+    [ObservableProperty]
+    private int _displayOrder;
+
+    [ObservableProperty]
+    private DateTime _lastUsed = DateTime.MinValue;
+
+    [ObservableProperty]
+    private int _useCount;
+
+    /// <summary>
+    /// ブラウザの一意識別子
+    /// </summary>
+    public Guid Id { get; set; } = Guid.NewGuid();
+
+    /// <summary>
+    /// ブラウザの種類
+    /// </summary>
+    public BrowserType Type { get; set; } = BrowserType.Custom;
+
+    /// <summary>
+    /// ブラウザが有効かどうかを判定
+    /// </summary>
+    public bool IsValid => !string.IsNullOrWhiteSpace(Name) && !string.IsNullOrWhiteSpace(ExecutablePath);
+
+    /// <summary>
+    /// ブラウザの表示名を取得
+    /// </summary>
+    public string DisplayName => string.IsNullOrWhiteSpace(Name) ? "Unknown Browser" : Name;
+
+    /// <summary>
+    /// 使用回数を増加
+    /// </summary>
+    public void IncrementUseCount()
+    {
+        UseCount++;
+        LastUsed = DateTime.Now;
+    }
+
+    /// <summary>
+    /// ブラウザの複製を作成
+    /// </summary>
+    public Browser Clone()
+    {
+        return new Browser
+        {
+            Id = Guid.NewGuid(),
+            Name = Name,
+            ExecutablePath = ExecutablePath,
+            IconPath = IconPath,
+            Arguments = Arguments,
+            IsDefault = false, // 複製時はデフォルトをfalseにする
+            IsEnabled = IsEnabled,
+            DisplayOrder = DisplayOrder,
+            Type = Type
+        };
+    }
+}
+
+/// <summary>
+/// ブラウザの種類を表す列挙型
+/// </summary>
+public enum BrowserType
+{
+    /// <summary>
+    /// カスタムブラウザ
+    /// </summary>
+    Custom,
+
+    /// <summary>
+    /// Chrome
+    /// </summary>
+    Chrome,
+
+    /// <summary>
+    /// Firefox
+    /// </summary>
+    Firefox,
+
+    /// <summary>
+    /// Edge
+    /// </summary>
+    Edge,
+
+    /// <summary>
+    /// Safari
+    /// </summary>
+    Safari,
+
+    /// <summary>
+    /// Opera
+    /// </summary>
+    Opera,
+
+    /// <summary>
+    /// Internet Explorer
+    /// </summary>
+    InternetExplorer,
+
+    /// <summary>
+    /// Brave
+    /// </summary>
+    Brave,
+
+    /// <summary>
+    /// Vivaldi
+    /// </summary>
+    Vivaldi
+}
