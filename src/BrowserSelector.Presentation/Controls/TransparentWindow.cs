@@ -162,7 +162,13 @@ public class TransparentWindow : Window
     private void UpdateTransparency()
     {
         // 透明化処理の実装
-        // 実際の透明化はWPFの標準機能を使用
+        if (TransparencyColor != Colors.Transparent)
+        {
+            // 透明化色を適用
+            var brush = new SolidColorBrush(TransparencyColor);
+            brush.Opacity = 0.1; // 低い透明度で透明化効果
+            Background = brush;
+        }
     }
 
     private void UpdateWindowShape()
@@ -170,7 +176,12 @@ public class TransparentWindow : Window
         if (CornerRadius > 0)
         {
             // 角を丸くする処理
-            // 実際の実装では、PathGeometryを使用してウィンドウの形状を変更
+            var geometry = new RectangleGeometry(new Rect(0, 0, ActualWidth, ActualHeight), CornerRadius, CornerRadius);
+            Clip = geometry;
+        }
+        else
+        {
+            Clip = null;
         }
     }
 
@@ -180,11 +191,23 @@ public class TransparentWindow : Window
         {
             Background = BackgroundGradient;
         }
+        else if (Background is SolidColorBrush solidBrush)
+        {
+            // 既存の背景色を保持
+            Background = solidBrush;
+        }
     }
 
     private void UpdateTitleBar()
     {
         // タイトルバーの表示/非表示を制御
-        // 実際の実装では、ウィンドウのスタイルを動的に変更
+        if (ShowTitleBar)
+        {
+            WindowStyle = WindowStyle.SingleBorderWindow;
+        }
+        else
+        {
+            WindowStyle = WindowStyle.None;
+        }
     }
 }
