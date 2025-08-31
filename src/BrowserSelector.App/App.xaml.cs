@@ -32,8 +32,23 @@ public partial class App : Application
             // ホストの開始
             await _host.StartAsync();
 
+            // 起動引数からURLを取得
+            string? initialUrl = null;
+            if (e.Args.Length > 0)
+            {
+                initialUrl = e.Args[0];
+                System.Diagnostics.Debug.WriteLine($"起動引数でURLを受信: {initialUrl}");
+            }
+
             // メインウィンドウの作成と表示
             var mainViewModel = _host.Services.GetRequiredService<MainViewModel>();
+            
+            // 起動引数でURLが指定されている場合は設定
+            if (!string.IsNullOrEmpty(initialUrl))
+            {
+                mainViewModel.SetInitialUrl(initialUrl);
+            }
+            
             var mainWindow = new BrowserSelector.Presentation.Views.MainWindow(mainViewModel);
             
             MainWindow = mainWindow;

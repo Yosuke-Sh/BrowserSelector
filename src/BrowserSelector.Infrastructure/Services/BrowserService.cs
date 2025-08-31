@@ -47,40 +47,85 @@ public class BrowserService : IBrowserService
     {
         try
         {
-            if (!browser.IsValid || !File.Exists(browser.ExecutablePath))
+            Debug.WriteLine($"BrowserService: ブラウザ起動開始 - {browser.Name}, パス: {browser.ExecutablePath}, URL: {url}");
+            
+            if (!browser.IsValid)
+            {
+                Debug.WriteLine($"BrowserService: ブラウザが無効です - {browser.Name}");
                 return false;
+            }
+            
+            if (!File.Exists(browser.ExecutablePath))
+            {
+                Debug.WriteLine($"BrowserService: 実行ファイルが存在しません - {browser.ExecutablePath}");
+                return false;
+            }
 
             // URLを正規化
             var normalizedUrl = await _urlService.NormalizeUrlAsync(url);
+            Debug.WriteLine($"BrowserService: 正規化されたURL - {normalizedUrl}");
+            
             if (string.IsNullOrEmpty(normalizedUrl))
+            {
+                Debug.WriteLine($"BrowserService: URLの正規化に失敗しました");
                 return false;
+            }
 
             // URLを検証
-            if (!await _urlService.ValidateUrlAsync(normalizedUrl))
+            var isValidUrl = await _urlService.ValidateUrlAsync(normalizedUrl);
+            Debug.WriteLine($"BrowserService: URL検証結果 - {isValidUrl}");
+            
+            if (!isValidUrl)
+            {
+                Debug.WriteLine($"BrowserService: URLが無効です - {normalizedUrl}");
                 return false;
+            }
 
+            // ブラウザタイプに応じた起動引数を設定
+            string arguments = GetBrowserArguments(browser.Type, normalizedUrl);
+            
             // ブラウザを起動
             var startInfo = new ProcessStartInfo
             {
                 FileName = browser.ExecutablePath,
-                Arguments = normalizedUrl,
-                UseShellExecute = true
+                Arguments = arguments,
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                CreateNoWindow = false
             };
+
+            Debug.WriteLine($"BrowserService: プロセス起動 - FileName: {startInfo.FileName}, Arguments: {startInfo.Arguments}");
 
             using var process = Process.Start(startInfo);
             if (process != null)
             {
+                Debug.WriteLine($"BrowserService: プロセス起動成功 - PID: {process.Id}");
+                
+                // プロセス情報を取得して確認
+                try
+                {
+                    var processInfo = Process.GetProcessById(process.Id);
+                    Debug.WriteLine($"BrowserService: 実際に起動されたプロセス - 名前: {processInfo.ProcessName}, ファイル名: {processInfo.MainModule?.FileName}");
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"BrowserService: プロセス情報取得エラー - {ex.Message}");
+                }
+                
                 // 使用回数を増加
                 browser.IncrementUseCount();
                 await SaveBrowserUsageAsync(browser);
                 return true;
             }
 
+            Debug.WriteLine($"BrowserService: プロセス起動失敗");
             return false;
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"ブラウザ起動エラー: {ex.Message}");
+            Debug.WriteLine($"BrowserService: ブラウザ起動エラー - {ex.Message}");
+            Debug.WriteLine($"BrowserService: スタックトレース - {ex.StackTrace}");
             return false;
         }
     }
@@ -266,6 +311,24 @@ public class BrowserService : IBrowserService
     {
         // TODO: 設定ファイルからデフォルトブラウザを読み込み
         return Task.FromResult<Browser?>(null);
+    }
+
+    /// <summary>
+    /// ブラウザタイプに応じた起動引数を取得
+    /// </summary>
+    private string GetBrowserArguments(BrowserType browserType, string url)
+    {
+        return browserType switch
+        {
+            BrowserType.Chrome => url,
+            BrowserType.Firefox => url,
+            BrowserType.Edge => url,
+            BrowserType.Opera => url,
+            BrowserType.Brave => url,
+            BrowserType.Vivaldi => url,
+            BrowserType.Custom => url,
+            _ => url
+        };
     }
 }
 

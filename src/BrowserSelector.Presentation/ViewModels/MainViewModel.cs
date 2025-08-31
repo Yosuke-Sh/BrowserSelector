@@ -88,7 +88,7 @@ public partial class MainViewModel : ObservableObject
         try
         {
             IsLoading = true;
-            StatusMessage = _localizationService.GetString("LoadingBrowsers");
+            StatusMessage = "ブラウザを検出中...";
 
             var browsers = await _browserService.GetAllBrowsersAsync();
             
@@ -98,11 +98,19 @@ public partial class MainViewModel : ObservableObject
                 Browsers.Add(browser);
             }
 
-            StatusMessage = _localizationService.GetString("BrowsersLoaded", Browsers.Count);
+            // デバッグ情報を出力
+            System.Diagnostics.Debug.WriteLine($"検出されたブラウザ数: {browsers.Count()}");
+            foreach (var browser in browsers)
+            {
+                System.Diagnostics.Debug.WriteLine($"ブラウザ: {browser.Name}, ID: {browser.Id}, 有効: {browser.IsEnabled}, パス: {browser.ExecutablePath}, タイプ: {browser.Type}");
+            }
+
+            StatusMessage = $"ブラウザ {Browsers.Count} 個を読み込みました";
         }
         catch (Exception ex)
         {
-            StatusMessage = _localizationService.GetString("ErrorLoadingBrowsers", ex.Message);
+            StatusMessage = $"ブラウザ読み込みエラー: {ex.Message}";
+            System.Diagnostics.Debug.WriteLine($"ブラウザ読み込みエラー: {ex}");
         }
         finally
         {
@@ -121,7 +129,11 @@ public partial class MainViewModel : ObservableObject
         try
         {
             IsLoading = true;
-            StatusMessage = _localizationService.GetString("LaunchingBrowser", browser.Name);
+            
+            // デバッグ情報を出力
+            System.Diagnostics.Debug.WriteLine($"ブラウザ起動試行: {browser.Name}, ID: {browser.Id}, パス: {browser.ExecutablePath}, URL: {Url}");
+            
+            StatusMessage = $"ブラウザ {browser.Name} を起動中...";
 
             var success = await _browserService.LaunchBrowserAsync(browser, Url);
             
@@ -129,16 +141,19 @@ public partial class MainViewModel : ObservableObject
             {
                 await _browserService.UpdateUsageAsync(browser);
                 browser.IncrementUseCount();
-                StatusMessage = _localizationService.GetString("BrowserLaunched", browser.Name);
+                StatusMessage = $"ブラウザ {browser.Name} を起動しました";
+                System.Diagnostics.Debug.WriteLine($"ブラウザ起動成功: {browser.Name}");
             }
             else
             {
-                StatusMessage = _localizationService.GetString("ErrorLaunchingBrowser", browser.Name);
+                StatusMessage = $"ブラウザ {browser.Name} の起動に失敗しました";
+                System.Diagnostics.Debug.WriteLine($"ブラウザ起動失敗: {browser.Name}");
             }
         }
         catch (Exception ex)
         {
-            StatusMessage = _localizationService.GetString("ErrorLaunchingBrowser", ex.Message);
+            StatusMessage = $"ブラウザ起動エラー: {ex.Message}";
+            System.Diagnostics.Debug.WriteLine($"ブラウザ起動例外: {browser?.Name}, エラー: {ex}");
         }
         finally
         {
@@ -192,6 +207,19 @@ public partial class MainViewModel : ObservableObject
     private void ClearUrl()
     {
         Url = string.Empty;
+    }
+
+    /// <summary>
+    /// 起動引数で指定されたURLを設定
+    /// </summary>
+    /// <param name="url">設定するURL</param>
+    public void SetInitialUrl(string url)
+    {
+        if (!string.IsNullOrWhiteSpace(url))
+        {
+            Url = url;
+            System.Diagnostics.Debug.WriteLine($"初期URLを設定: {url}");
+        }
     }
 
     /// <summary>

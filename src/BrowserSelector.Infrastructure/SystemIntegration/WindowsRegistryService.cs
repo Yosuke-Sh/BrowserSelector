@@ -40,7 +40,26 @@ public class WindowsRegistryService : IRegistryService
             System.Diagnostics.Debug.WriteLine($"ブラウザ検出エラー: {ex.Message}");
         }
 
-        return Task.FromResult<IEnumerable<Browser>>(browsers.Where(b => b.IsValid).OrderBy(b => b.DisplayOrder));
+        // 重複を除去（同じパスのブラウザは最初に見つかったもののみ保持）
+        System.Diagnostics.Debug.WriteLine($"重複除去前のブラウザ数: {browsers.Count}");
+        foreach (var browser in browsers)
+        {
+            System.Diagnostics.Debug.WriteLine($"重複除去前: {browser.Name}, ID: {browser.Id}, パス: {browser.ExecutablePath}");
+        }
+        
+        var uniqueBrowsers = browsers
+            .Where(b => b.IsValid)
+            .GroupBy(b => b.ExecutablePath?.ToLowerInvariant())
+            .Select(g => g.First())
+            .OrderBy(b => b.DisplayOrder);
+
+        System.Diagnostics.Debug.WriteLine($"重複除去後のブラウザ数: {uniqueBrowsers.Count()}");
+        foreach (var browser in uniqueBrowsers)
+        {
+            System.Diagnostics.Debug.WriteLine($"重複除去後: {browser.Name}, ID: {browser.Id}, パス: {browser.ExecutablePath}");
+        }
+
+        return Task.FromResult<IEnumerable<Browser>>(uniqueBrowsers);
     }
 
     private IEnumerable<Browser> DetectChrome()
@@ -51,28 +70,44 @@ public class WindowsRegistryService : IRegistryService
         {
             // Chrome 64bit
             var chromePath = GetRegistryValue(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe", "");
+            System.Diagnostics.Debug.WriteLine($"Chrome 64bit パス: {chromePath}");
+            
             if (!string.IsNullOrEmpty(chromePath) && File.Exists(chromePath))
             {
-                browsers.Add(new Browser
+                var chrome64 = new Browser
                 {
                     Name = "Google Chrome",
                     ExecutablePath = chromePath,
                     Type = BrowserType.Chrome,
                     DisplayOrder = 1
-                });
+                };
+                browsers.Add(chrome64);
+                System.Diagnostics.Debug.WriteLine($"Chrome 64bit 追加: {chrome64.Name}, ID: {chrome64.Id}, パス: {chrome64.ExecutablePath}");
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine($"Chrome 64bit が見つかりません - パス: {chromePath}, 存在: {File.Exists(chromePath)}");
             }
 
             // Chrome 32bit
             var chromePath32 = GetRegistryValue(@"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe", "");
+            System.Diagnostics.Debug.WriteLine($"Chrome 32bit パス: {chromePath32}");
+            
             if (!string.IsNullOrEmpty(chromePath32) && File.Exists(chromePath32))
             {
-                browsers.Add(new Browser
+                var chrome32 = new Browser
                 {
                     Name = "Google Chrome (32-bit)",
                     ExecutablePath = chromePath32,
                     Type = BrowserType.Chrome,
                     DisplayOrder = 2
-                });
+                };
+                browsers.Add(chrome32);
+                System.Diagnostics.Debug.WriteLine($"Chrome 32bit 追加: {chrome32.Name}, ID: {chrome32.Id}, パス: {chrome32.ExecutablePath}");
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine($"Chrome 32bit が見つかりません - パス: {chromePath32}, 存在: {File.Exists(chromePath32)}");
             }
         }
         catch (Exception ex)
@@ -131,15 +166,23 @@ public class WindowsRegistryService : IRegistryService
         {
             // Edge Chromium
             var edgePath = GetRegistryValue(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\msedge.exe", "");
+            System.Diagnostics.Debug.WriteLine($"Edge パス: {edgePath}");
+            
             if (!string.IsNullOrEmpty(edgePath) && File.Exists(edgePath))
             {
-                browsers.Add(new Browser
+                var edge = new Browser
                 {
                     Name = "Microsoft Edge",
                     ExecutablePath = edgePath,
                     Type = BrowserType.Edge,
                     DisplayOrder = 5
-                });
+                };
+                browsers.Add(edge);
+                System.Diagnostics.Debug.WriteLine($"Edge 追加: {edge.Name}, ID: {edge.Id}, パス: {edge.ExecutablePath}");
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine($"Edge が見つかりません - パス: {edgePath}, 存在: {File.Exists(edgePath)}");
             }
         }
         catch (Exception ex)
