@@ -2,6 +2,7 @@ using BrowserSelector.Core.Services;
 using BrowserSelector.Infrastructure.Localization;
 using BrowserSelector.Infrastructure.Services;
 using BrowserSelector.Infrastructure.SystemIntegration;
+using BrowserSelector.Infrastructure.Updates;
 using BrowserSelector.Presentation.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -19,6 +20,10 @@ public static class ServiceCollectionExtensions
         
         // Infrastructure Services
         services.AddScoped<IRegistryService, WindowsRegistryService>();
+        services.AddScoped<ISystemTrayService, SystemTrayService>();
+        services.AddScoped<IProtocolHandler, ProtocolHandler>();
+        services.AddScoped<IUpdateService>(provider => 
+            new UpdateService("https://api.github.com/repos/your-repo/releases/latest", "1.0.0"));
         
         // Presentation Services
         services.AddTransient<MainViewModel>();

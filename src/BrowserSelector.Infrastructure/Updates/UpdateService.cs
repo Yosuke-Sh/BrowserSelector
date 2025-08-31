@@ -1,0 +1,239 @@
+using System;
+using System.IO;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Text.Json;
+using BrowserSelector.Core.Services;
+using BrowserSelector.Core.Models;
+
+namespace BrowserSelector.Infrastructure.Updates;
+
+/// <summary>
+/// 自動アップデート機能を提供するサービス
+/// </summary>
+public class UpdateService : IUpdateService
+{
+    private readonly HttpClient _httpClient;
+    private readonly string _updateCheckUrl;
+    private readonly string _currentVersion;
+
+    public event EventHandler<UpdateAvailableEventArgs>? UpdateAvailable;
+
+    public UpdateService(string updateCheckUrl, string currentVersion)
+    {
+        _updateCheckUrl = updateCheckUrl;
+        _currentVersion = currentVersion;
+        _httpClient = new HttpClient();
+        _httpClient.DefaultRequestHeaders.Add("User-Agent", "BrowserSelector-UpdateChecker");
+    }
+
+    /// <summary>
+    /// アップデートをチェック
+    /// </summary>
+    public async Task<UpdateInfo?> CheckForUpdatesAsync()
+    {
+        try
+        {
+            var response = await _httpClient.GetStringAsync(_updateCheckUrl);
+            var updateInfo = JsonSerializer.Deserialize<UpdateInfo>(response);
+
+            if (updateInfo != null && IsNewerVersion(updateInfo.Version))
+            {
+                UpdateAvailable?.Invoke(this, new UpdateAvailableEventArgs(updateInfo));
+                return updateInfo;
+            }
+
+            return null;
+        }
+        catch (Exception ex)
+        {
+            throw new UpdateException($"アップデートチェックに失敗しました: {ex.Message}", ex);
+        }
+    }
+
+    /// <summary>
+    /// アップデートをダウンロード
+    /// </summary>
+    public async Task<bool> DownloadUpdateAsync(UpdateInfo updateInfo, IProgress<int>? progress = null)
+    {
+        try
+        {
+            var tempPath = Path.GetTempFileName();
+            var response = await _httpClient.GetAsync(updateInfo.DownloadUrl, HttpCompletionOption.ResponseHeadersRead);
+            response.EnsureSuccessStatusCode();
+
+            var totalBytes = response.Content.Headers.ContentLength ?? 0;
+            var downloadedBytes = 0L;
+
+            using var contentStream = await response.Content.ReadAsStreamAsync();
+            using var fileStream = new FileStream(tempPath, FileMode.Create, FileAccess.Write, FileShare.None);
+
+            var buffer = new byte[8192];
+            int bytesRead;
+
+            while ((bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+            {
+                await fileStream.WriteAsync(buffer, 0, bytesRead);
+                downloadedBytes += bytesRead;
+
+                if (totalBytes > 0 && progress != null)
+                {
+                    var percentage = (int)((downloadedBytes * 100) / totalBytes);
+                    progress.Report(percentage);
+                }
+            }
+
+            updateInfo.LocalFilePath = tempPath;
+            return true;
+        }
+        catch (Exception ex)
+        {
+            throw new UpdateException($"アップデートのダウンロードに失敗しました: {ex.Message}", ex);
+        }
+    }
+
+    /// <summary>
+    /// アップデートをインストール
+    /// </summary>
+    public async Task<bool> InstallUpdateAsync(UpdateInfo updateInfo)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(updateInfo.LocalFilePath) || !File.Exists(updateInfo.LocalFilePath))
+            {
+                throw new UpdateException("ダウンロードされたファイルが見つかりません");
+            }
+
+            // インストーラーを起動
+            var process = new System.Diagnostics.Process
+            {
+                StartInfo = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = updateInfo.LocalFilePath,
+                    UseShellExecute = true,
+                    Verb = "runas" // 管理者権限で実行
+                }
+            };
+
+            var result = process.Start();
+            if (result)
+            {
+                // アプリケーションを終了
+                await Task.Delay(1000); // インストーラーが起動するまで少し待機
+                return true;
+            }
+
+            return false;
+        }
+        catch (Exception ex)
+        {
+            throw new UpdateException($"アップデートのインストールに失敗しました: {ex.Message}", ex);
+        }
+    }
+
+    /// <summary>
+    /// アップデートをロールバック
+    /// </summary>
+    public async Task<bool> RollbackUpdateAsync()
+    {
+        try
+        {
+            // バックアップファイルから復元
+            var backupPath = GetBackupPath();
+            if (File.Exists(backupPath))
+            {
+                var currentExePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+                var tempPath = Path.GetTempFileName();
+
+                // 現在のファイルをバックアップ
+                File.Copy(currentExePath, tempPath, true);
+
+                // バックアップから復元
+                File.Copy(backupPath, currentExePath, true);
+
+                // アプリケーションを再起動
+                var process = new System.Diagnostics.Process
+                {
+                    StartInfo = new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = currentExePath,
+                        UseShellExecute = true
+                    }
+                };
+
+                var result = process.Start();
+                if (result)
+                {
+                    await Task.Delay(1000);
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        catch (Exception ex)
+        {
+            throw new UpdateException($"アップデートのロールバックに失敗しました: {ex.Message}", ex);
+        }
+    }
+
+    /// <summary>
+    /// バックアップを作成
+    /// </summary>
+    public bool CreateBackup()
+    {
+        try
+        {
+            var currentExePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            var backupPath = GetBackupPath();
+
+            if (File.Exists(currentExePath))
+            {
+                File.Copy(currentExePath, backupPath, true);
+                return true;
+            }
+
+            return false;
+        }
+        catch (Exception ex)
+        {
+            throw new UpdateException($"バックアップの作成に失敗しました: {ex.Message}", ex);
+        }
+    }
+
+    private bool IsNewerVersion(string newVersion)
+    {
+        try
+        {
+            var current = new Version(_currentVersion);
+            var newer = new Version(newVersion);
+            return newer > current;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private string GetBackupPath()
+    {
+        var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        var backupDir = Path.Combine(appDataPath, "BrowserSelector", "Backup");
+        Directory.CreateDirectory(backupDir);
+        return Path.Combine(backupDir, "BrowserSelector.exe.backup");
+    }
+
+    public void Dispose()
+    {
+        _httpClient?.Dispose();
+    }
+}
+
+/// <summary>
+/// アップデート例外
+/// </summary>
+public class UpdateException : Exception
+{
+    public UpdateException(string message) : base(message) { }
+    public UpdateException(string message, Exception innerException) : base(message, innerException) { }
+}
