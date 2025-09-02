@@ -281,10 +281,27 @@ public partial class SettingsViewModel : ObservableObject
         {
             await _settingsService.SaveVisualSettingsAsync(VisualSettings);
             ApplyVisualToActiveWindow(VisualSettings);
+            EnforceMutualExclusion();
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"視覚設定更新エラー: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// 背景透明化と背景グラディエーションの相互排他を強制
+    /// </summary>
+    private void EnforceMutualExclusion()
+    {
+        if (VisualSettings.IsBackgroundTransparent && VisualSettings.UseBackgroundGradient)
+        {
+            // 両方チェックは不可 → エラー表示して無効化
+            MessageBox.Show("背景透明化と背景グラディエーションは同時に有効にできません。どちらか一方を選択してください。",
+                            "設定エラー", MessageBoxButton.OK, MessageBoxImage.Warning);
+            // 直近の変更を優先し、もう片方を落とす（簡易運用）
+            // ここではグラディエーションをオフにする
+            VisualSettings.UseBackgroundGradient = false;
         }
     }
 
@@ -316,13 +333,9 @@ public partial class SettingsViewModel : ObservableObject
                     }
                 };
             }
-            else if (settings.UseCustomBackgroundColor)
-            {
-                window.Background = new SolidColorBrush(settings.BackgroundColor);
-            }
             else
             {
-                window.ClearValue(Window.BackgroundProperty);
+                window.Background = new SolidColorBrush(settings.BackgroundColor);
             }
 
             // 角の丸み（Clip）
@@ -591,6 +604,9 @@ public partial class SettingsViewModel : ObservableObject
 
             if (appSettingsResult && visualSettingsResult)
             {
+                // メイン画面へ反映
+                ApplyVisualToActiveWindow(VisualSettings);
+
                 // 成功時はウィンドウを閉じる
                 if (Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.DataContext == this) is Window window)
                 {

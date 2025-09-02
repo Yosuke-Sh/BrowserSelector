@@ -27,7 +27,11 @@ public partial class VisualSettings : ObservableObject
     private Color _backgroundColor = Colors.Transparent;
 
     [ObservableProperty]
-    private bool _useCustomBackgroundColor = false;
+    private bool _useCustomBackgroundColor = false; // 互換維持（UIでは使用しない）
+
+    // 背景透明化（新）: 背景色を透明として扱い、Opacityで透明度指定
+    [ObservableProperty]
+    private bool _isBackgroundTransparent = false;
 
     [ObservableProperty]
     private bool _enableGradient = false;

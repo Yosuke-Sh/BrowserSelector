@@ -142,84 +142,62 @@
                 </TabItem.Header>
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="10">
-                        
-                        <!-- 透明化設定 -->
-                        <GroupBox Header="透明化設定" Style="{StaticResource GroupBoxStyle}">
+
+                        <!-- 背景設定（先頭に移動） -->
+                        <GroupBox Header="背景設定" Style="{StaticResource GroupBoxStyle}">
                             <StackPanel>
+                                <!-- 背景色（透明化色と共通） -->
+                                <Grid Style="{StaticResource SettingRowStyle}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="40"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="背景色" VerticalAlignment="Center"/>
+                                    <Button Grid.Column="1" Content="色を選択" Padding="10,5"
+                                            Command="{Binding SelectBackgroundColorCommand}"/>
+                                    <!-- 現在色を可視化 -->
+                                    <Border Grid.Column="2" Width="24" Height="24" Margin="10,0,0,0"
+                                            BorderBrush="#DDD" BorderThickness="1"
+                                            Background="{Binding VisualSettings.BackgroundColor, Converter={x:Static BrushConverter}}" />
+                                </Grid>
+
+                                <!-- 背景透明化 -->
+                                <Grid Style="{StaticResource SettingRowStyle}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="背景透明化" VerticalAlignment="Center"/>
+                                    <CheckBox Grid.Column="1" IsChecked="{Binding VisualSettings.IsBackgroundTransparent}"/>
+                                </Grid>
+
+                                <!-- 透明度（背景透明化時のみ有効） -->
                                 <Grid Style="{StaticResource SettingRowStyle}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="150"/>
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Text="透明度" VerticalAlignment="Center"/>
-                                    <Slider Grid.Column="1" Value="{Binding VisualSettings.Opacity}" 
-                                            Minimum="0.01" Maximum="1.0" 
-                                            TickFrequency="0.1" IsSnapToTickEnabled="True"
-                                            VerticalAlignment="Center"/>
+                                    <Slider Grid.Column="1" Value="{Binding VisualSettings.Opacity}"
+                                            Minimum="0.01" Maximum="1.0" TickFrequency="0.1" IsSnapToTickEnabled="True"
+                                            VerticalAlignment="Center"
+                                            IsEnabled="{Binding VisualSettings.IsBackgroundTransparent}"/>
                                 </Grid>
-                                
-                                <Grid Style="{StaticResource SettingRowStyle}">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="カスタム透明化色を使用" VerticalAlignment="Center"/>
-                                    <CheckBox Grid.Column="1" IsChecked="{Binding VisualSettings.UseCustomTransparencyColor}"/>
-                                </Grid>
-                                
-                                <Grid Style="{StaticResource SettingRowStyle}">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="透明化色" VerticalAlignment="Center"/>
-                                    <Button Grid.Column="1" Content="色を選択" Padding="10,5"
-                                            Command="{Binding SelectTransparencyColorCommand}"/>
-                                </Grid>
-                            </StackPanel>
-                        </GroupBox>
 
-                        <!-- 角の丸み設定 -->
-                        <GroupBox Header="角の丸み設定" Style="{StaticResource GroupBoxStyle}">
-                            <StackPanel>
-                                <Grid Style="{StaticResource SettingRowStyle}">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="150"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="角の丸み" VerticalAlignment="Center"/>
-                                    <Slider Grid.Column="1" Value="{Binding VisualSettings.CornerRadius}" 
-                                            Minimum="0" Maximum="50" 
-                                            TickFrequency="5" IsSnapToTickEnabled="True"
-                                            VerticalAlignment="Center"/>
-                                </Grid>
-                            </StackPanel>
-                        </GroupBox>
-
-                        <!-- 背景設定 -->
-                        <GroupBox Header="背景設定" Style="{StaticResource GroupBoxStyle}">
-                            <StackPanel>
+                                <!-- 背景グラデーション -->
                                 <Grid Style="{StaticResource SettingRowStyle}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="カスタム背景色を使用" VerticalAlignment="Center"/>
-                                    <CheckBox Grid.Column="1" IsChecked="{Binding VisualSettings.UseCustomBackgroundColor}"/>
-                                </Grid>
-                                
-                                <Grid Style="{StaticResource SettingRowStyle}">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="背景グラデーションを使用" VerticalAlignment="Center"/>
+                                    <TextBlock Text="背景グラディエーション" VerticalAlignment="Center"/>
                                     <CheckBox Grid.Column="1" IsChecked="{Binding VisualSettings.UseBackgroundGradient}"/>
                                 </Grid>
                             </StackPanel>
                         </GroupBox>
 
-                        <!-- タイトルバー設定 -->
+                        <!-- タイトルバー設定（2番目） -->
                         <GroupBox Header="タイトルバー設定" Style="{StaticResource GroupBoxStyle}">
                             <StackPanel>
                                 <Grid Style="{StaticResource SettingRowStyle}">
@@ -229,6 +207,22 @@
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Text="タイトルバーを表示" VerticalAlignment="Center"/>
                                     <CheckBox Grid.Column="1" IsChecked="{Binding VisualSettings.ShowTitleBar}"/>
+                                </Grid>
+                            </StackPanel>
+                        </GroupBox>
+
+                        <!-- 角の丸み設定（最後） -->
+                        <GroupBox Header="角の丸み設定" Style="{StaticResource GroupBoxStyle}">
+                            <StackPanel>
+                                <Grid Style="{StaticResource SettingRowStyle}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="150"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="角の丸み" VerticalAlignment="Center"/>
+                                    <Slider Grid.Column="1" Value="{Binding VisualSettings.CornerRadius}" 
+                                            Minimum="0" Maximum="50" TickFrequency="5" IsSnapToTickEnabled="True"
+                                            VerticalAlignment="Center"/>
                                 </Grid>
                             </StackPanel>
                         </GroupBox>

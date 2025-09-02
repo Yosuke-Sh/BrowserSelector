@@ -102,17 +102,7 @@ public class TransparentWindow : Window
         // 角の丸みを設定
         CornerRadius = Math.Max(0, Math.Min(50, settings.CornerRadius));
 
-        // 背景色を設定
-        if (settings.UseCustomBackgroundColor)
-        {
-            Background = new SolidColorBrush(settings.BackgroundColor);
-        }
-        else
-        {
-            Background = null;
-        }
-
-        // 背景グラデーションを設定
+        // 背景色/透明化/グラデーション
         if (settings.UseBackgroundGradient)
         {
             BackgroundGradient = new LinearGradientBrush
@@ -126,9 +116,21 @@ public class TransparentWindow : Window
                 }
             };
         }
-        else if (!settings.UseCustomBackgroundColor)
+        else if (settings.IsBackgroundTransparent)
         {
-            Background = null;
+            var brush = new SolidColorBrush(settings.BackgroundColor);
+            brush.Opacity = Math.Max(0.01, Math.Min(1.0, settings.Opacity));
+            Background = brush;
+        }
+        else
+        {
+            Background = new SolidColorBrush(settings.BackgroundColor);
+        }
+
+        // 背景グラデーションの更新
+        if (!settings.UseBackgroundGradient)
+        {
+            BackgroundGradient = null;
         }
 
         // タイトルバーの表示/非表示
