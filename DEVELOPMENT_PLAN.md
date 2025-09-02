@@ -805,135 +805,87 @@ jobs:
 ## 🚨 新規開発計画：不具合対応優先（Phase 6）
 
 ### 🎯 概要
-既存機能の不具合を優先的に修正し、ユーザビリティを向上させるフェーズです。新機能の追加は最小限に抑え、安定性と使いやすさを重視します。
+ユーザー報告の不具合を優先的に修正します。新機能追加は行わず、現行仕様に対して「保存・反映・操作の正しさ」を担保します。
 
-### 📋 優先度別対応項目
+### 🐞 報告された不具合一覧（整理）
 
-#### 🔴 最優先：重大な不具合（1-2週間）
+- 設定/一般タブ
+  - ログ設定項目が残存（ログ設定タブへ移動済みのため削除対象）
 
-**1. UI表示・動作の問題**
-- [x] ボタンの青色スタイルをデフォルトに戻す
-- [x] ボタンサイズの実行時変更処理を無効化
-- [ ] ブラウザボタンを押しても何も起きない問題の修正
-- [ ] ブラウザ編集ボタンを押しても何も起きない問題の修正
+- 設定/表示タブ
+  - 透明化チェックボックス: 保存されず、適用されない
+  - 角の丸み: 保存はされるが適用されない
+  - カスタム背景色: 色の選択ダイアログ/バインディングが機能せず設定不可
 
-**2. 設定画面の問題**
-- [ ] プロトコル設定機能の実装
-- [ ] ブラウザ編集機能の実装
-- [ ] ブラウザアイコン選択・パス変更機能の実装
+- 設定/ブラウザタブ
+  - プロトコル設定が残存（別タブ・別機能化済みのため削除対象）
+  - ブラウザを追加/削除/編集が動作しない
 
-#### 🟡 中優先：機能実装（2-3週間）
+- 設定/URLルールタブ
+  - サンプル表示のみで編集・ルール追加が動作しない
+  - 「ルールを更新」ボタンの役割が不明確（UI/用語整理が必要）
 
-**1. メイン画面の機能強化**
-- [ ] 背景色設定機能の実装
-- [ ] グラデーション機能の実装
-- [ ] 透過設定機能の実装
-- [ ] ブラウザアイコン表示機能の実装
+- 設定/アクセシビリティタブ
+  - 現状の要件で利用頻度が低いためタブごと非表示（将来再開可能な設計で保持）
 
-**2. 設定画面の機能強化**
-- [ ] 背景色設定のメイン画面への反映
-- [ ] 設定の即座反映機能
+- ログ設定タブ
+  - 選択フォルダのフルパス/名称が不明確（UI上で表示されない）
 
-#### 🟢 低優先：UI改善（1週間）
+### 🔧 対応方針（アーキテクチャ/実装）
 
-**1. 全体的な改善**
-- [ ] ボタンスタイルの統一
-- [ ] アイコンサイズの最適化
-- [ ] レイアウトの微調整
+1) 設定タブ構成の整理（UIの不要項目削除・移動）
+- 一般タブ: ログ設定UIを完全削除
+- ブラウザタブ: プロトコル設定UIを削除
+- アクセシビリティタブ: 既定では非表示（FeatureFlagで再表示可能）
 
-### 🔧 技術的実装方針
+2) 表示タブの不具合修正
+- 透明化チェックボックス: `VisualSettings.IsTransparent` と `TransparentWindow` 反映ロジックの双方向バインディング修正、保存時の永続化確認
+- 角丸: `VisualSettings.CornerRadius` → `TransparentWindow.CornerRadius` の適用トリガー（PropertyChanged）追加
+- 背景色: `ColorPicker`（または`System.Windows.Forms.ColorDialog`ブリッジ）導入、`VisualSettings.BackgroundColor` にバインド、保存/読込/即時反映
 
-#### **ボタンスタイルの修正**
-```xml
-<!-- 現在の青色スタイルを削除 -->
-<Style x:Key="BrowserButtonStyle" TargetType="Button">
-    <!-- デフォルトスタイルに戻す -->
-    <Setter Property="Background" Value="{x:Null}"/>
-    <Setter Property="BorderBrush" Value="{x:Null}"/>
-    <!-- サイズ固定 -->
-    <Setter Property="Width" Value="120"/>
-    <Setter Property="Height" Value="90"/>
-</Style>
-```
+3) ブラウザタブのCRUD復旧
+- 追加/編集/削除コマンドを `IBrowserService` 経由で実装（検証・保存・UIリフレッシュ）
+- ダイアログでパス/アイコン選択を実装（`OpenFileDialog`）
+- 変更監査ログを INFO で記録（追加/編集/削除の結果）
 
-#### **プロトコル設定機能**
-```csharp
-// 新規実装
-public interface IProtocolService
-{
-    Task<bool> RegisterProtocolAsync(string protocol, string command);
-    Task<bool> UnregisterProtocolAsync(string protocol);
-    Task<IEnumerable<string>> GetRegisteredProtocolsAsync();
-}
-```
+4) URLルールタブの操作実装と用語整理
+- ルール追加/編集ダイアログ実装、`IUrlService` と統合
+- 「ルールを更新」→「並び替えを保存」へ改称（または機能定義: ルールの優先順位一括保存）
+- ルールの保存/読込/適用タイミングを統一、テスト追加
 
-#### **ブラウザ編集機能**
-```csharp
-// 既存のBrowserServiceに追加
-public async Task<bool> EditBrowserAsync(Browser browser, string newName, string newPath, string newIconPath);
-public async Task<bool> DeleteBrowserAsync(Browser browser);
-```
+5) ログ設定タブのパス表示
+- 現在選択中の出力先をフルパスでテキスト表示、選択後に即時反映
+- ログレベル表示は短縮名（INFO/DEBUGなど）を維持
 
-#### **背景色・透過設定**
-```csharp
-// VisualSettingsに追加
-public class VisualSettings
-{
-    public Color BackgroundColor { get; set; }
-    public bool UseGradient { get; set; }
-    public Color GradientStartColor { get; set; }
-    public Color GradientEndColor { get; set; }
-    public double Opacity { get; set; } = 1.0;
-}
-```
+### ✅ 受け入れ条件（Definition of Done）
 
-### 📅 実装スケジュール
+- 設定変更が保存→再起動後も保持→画面に即時反映される
+- ブラウザの追加/編集/削除が UI から完結し、永続化される
+- URLルールの追加/編集/優先順位保存が動作し、用語が明確
+- 不要なタブ・項目が非表示または削除済み
+- ログ出力先のフルパスが UI で確認できる
+- 単体/UIテストが追加され、CIで成功
 
-#### **Week 1: 緊急不具合修正**
-- [x] ボタンスタイルの修正
-- [ ] ブラウザボタンの動作修正
-- [ ] 基本的な動作確認
+### 📅 実施ステップ（順序）
 
-#### **Week 2: 設定機能の実装**
-- [ ] プロトコル設定機能
-- [ ] ブラウザ編集機能
-- [ ] アイコン選択機能
+1. 開発計画の更新（本ドキュメント）
+2. 設定タブ構成の整理（一般/ブラウザ/アクセシビリティの不要項目削除・非表示）
+3. 表示タブの不具合修正（透明化保存・適用、角丸適用、背景色選択）
+4. ブラウザタブのCRUD（追加・削除・編集）の復旧実装
+5. URLルールタブの編集・追加・優先順位保存の実装とUI用語整理
+6. ログ設定タブに選択フォルダのフルパス表示を追加
+7. テスト追加（Unit/UI/E2Eの最小限ケース）
 
-#### **Week 3: UI機能の実装**
-- [ ] 背景色設定
-- [ ] グラデーション機能
-- [ ] 透過設定
+### 🧪 最低限テスト観点
+- 表示設定の保存/再起動適用/即時反映
+- 角丸・透明化・背景色の視覚反映
+- ブラウザCRUDの正当性（件数変化、永続化、編集反映）
+- URLルールの作成/編集/並び替え保存とマッチング確認
+- ログ設定の出力先選択とパス表示
 
-#### **Week 4: テスト・品質保証**
-- [ ] 動作テスト
-- [ ] UIテスト
-- [ ] 最終確認
-
-### 🎯 成功指標
-
-#### **品質指標**
-- [ ] ビルドエラー: 0件
-- [ ] ビルド警告: 5件以下
-- [ ] テスト成功率: 95%以上
-- [ ] 主要機能の動作確認: 100%
-
-#### **ユーザビリティ指標**
-- [ ] ボタンクリックの応答性: 100ms以下
-- [ ] 設定変更の即座反映
-- [ ] エラー発生時の適切なメッセージ表示
-
-### 🚫 制約事項
-
-1. **新機能追加の制限**: 既存機能の修正を優先
-2. **アーキテクチャ変更の制限**: 大幅な設計変更は避ける
-3. **パフォーマンス**: 既存の応答性を維持
-4. **互換性**: 既存の設定ファイルとの互換性を保持
-
-### 📚 参考資料
-
-- [WPF Button Styles](https://docs.microsoft.com/en-us/dotnet/desktop/wpf/controls/button-styles-and-templates)
-- [WPF Background and Brushes](https://docs.microsoft.com/en-us/dotnet/desktop/wpf/graphics-multimedia/painting-with-solid-colors-and-gradients-overview)
-- [WPF Opacity and Transparency](https://docs.microsoft.com/en-us/dotnet/desktop/wpf/graphics-multimedia/opacity-masks-overview)
+### 📝 ログ出力（方針遵守）
+- 既定レベル: DEBUG（短縮名表記）。イベントID/リクエスト対象/ユーザー情報/処理対象/処理内容/処理結果/メッセージを記録
+- 主要操作（設定保存、ブラウザCRUD、ルール保存）は INFO で開始/完了を必ず記録
 
 ## 🎉 警告解消完了報告
 
