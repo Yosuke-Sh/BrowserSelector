@@ -17,9 +17,11 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ISettingsService, SettingsService>();
         services.AddScoped<ILocalizationService, LocalizationService>();
         services.AddScoped<IUrlService, UrlService>();
+        services.AddScoped<IUrlRuleService, UrlRuleService>();
         
         // Infrastructure Services
         services.AddScoped<IRegistryService, WindowsRegistryService>();
+        services.AddSingleton<ILogService, BrowserSelector.Infrastructure.Logging.LogService>();
         services.AddScoped<ISystemTrayService, SystemTrayService>();
         services.AddScoped<IProtocolHandler, ProtocolHandler>();
         services.AddScoped<IUpdateService>(provider => 

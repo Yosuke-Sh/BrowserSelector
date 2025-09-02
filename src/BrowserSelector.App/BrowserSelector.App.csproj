@@ -22,6 +22,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>BrowserSelector_Icon_256.ico</ApplicationIcon>
+    <StartupObject>BrowserSelector.App.App</StartupObject>
     <!-- <ApplicationIcon>..\..\BrowserSelector_Icon.ico</ApplicationIcon> -->
   </PropertyGroup>
 

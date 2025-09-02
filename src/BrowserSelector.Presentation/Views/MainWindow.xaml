@@ -19,6 +19,7 @@
     <Window.Resources>
         <!-- コンバーター -->
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <converters:StringToBoolConverter x:Key="StringToBoolConverter"/>
 
         <!-- スタイル定義 -->
         <Style x:Key="BrowserButtonStyle" TargetType="Button">
@@ -56,7 +57,7 @@
 
             <!-- ロゴ（左上） -->
             <Image Grid.Column="0"
-                   Source="/Views/BrowserSelector_Logo_240.png"
+                   Source="/BrowserSelector.Presentation;component/Resources/Images/BrowserSelector_Logo_240.png"
                    Width="125" 
                    Height="88"
                    HorizontalAlignment="Left"
@@ -66,7 +67,7 @@
 
             <!-- タイトルテキスト（中央） -->
             <TextBlock Grid.Column="1"
-                       Text="ブラウザを選択してください"
+                       Text="{Binding TitleMessage}"
                        FontSize="20" 
                        FontWeight="Bold"
                        HorizontalAlignment="Center"
@@ -170,7 +171,9 @@
                                     Command="{Binding DataContext.LaunchBrowserCommand, 
                                               RelativeSource={RelativeSource AncestorType=Window}}"
                                     CommandParameter="{Binding}"
-                                    Content="{Binding DisplayName}"/>
+                                    Content="{Binding DisplayName}"
+                                    Click="BrowserButton_Click"
+                                    IsEnabled="{Binding DataContext.Url, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource StringToBoolConverter}}"/>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>

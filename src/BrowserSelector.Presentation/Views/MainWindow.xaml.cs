@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Controls;
 using BrowserSelector.Presentation.ViewModels;
 
 namespace BrowserSelector.Presentation.Views;
@@ -51,6 +52,28 @@ public partial class MainWindow : Window
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"視覚設定適用エラー: {ex.Message}");
+        }
+    }
+    
+    /// <summary>
+    /// ブラウザボタンのクリックイベントハンドラー（デバッグ用）
+    /// </summary>
+    private void BrowserButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button button)
+        {
+            System.Diagnostics.Debug.WriteLine($"ブラウザボタンがクリックされました: {button.Content}");
+            
+            // データコンテキストの確認
+            if (DataContext is MainViewModel viewModel)
+            {
+                System.Diagnostics.Debug.WriteLine($"ViewModelの状態 - URL: '{viewModel.Url}', ブラウザ数: {viewModel.Browsers.Count}");
+            }
+            
+            // ボタンのバインディング情報を確認
+            var command = button.Command;
+            var commandParameter = button.CommandParameter;
+            System.Diagnostics.Debug.WriteLine($"ボタンのコマンド: {command}, パラメータ: {commandParameter}");
         }
     }
 }

@@ -14,6 +14,8 @@ public class SettingsViewModelTests
     private readonly Mock<ISettingsService> _mockSettingsService;
     private readonly Mock<IBrowserService> _mockBrowserService;
     private readonly Mock<ILocalizationService> _mockLocalizationService;
+    private readonly Mock<IUrlRuleService> _mockUrlRuleService;
+    private readonly Mock<ILogService> _mockLogService;
     private readonly SettingsViewModel _viewModel;
 
     public SettingsViewModelTests()
@@ -21,6 +23,7 @@ public class SettingsViewModelTests
         _mockSettingsService = new Mock<ISettingsService>();
         _mockBrowserService = new Mock<IBrowserService>();
         _mockLocalizationService = new Mock<ILocalizationService>();
+        _mockUrlRuleService = new Mock<IUrlRuleService>();
 
         // デフォルトの設定を設定
         _mockSettingsService
@@ -45,10 +48,18 @@ public class SettingsViewModelTests
             .Setup(x => x.GetAllBrowsersAsync())
             .ReturnsAsync(new List<Browser>());
 
+        _mockUrlRuleService
+            .Setup(x => x.GetAllRulesAsync())
+            .ReturnsAsync(new List<UrlRule>());
+
+        _mockLogService = new Mock<ILogService>();
+
         _viewModel = new SettingsViewModel(
             _mockSettingsService.Object,
             _mockBrowserService.Object,
-            _mockLocalizationService.Object);
+            _mockLocalizationService.Object,
+            _mockUrlRuleService.Object,
+            _mockLogService.Object);
     }
 
     [Fact]
@@ -59,7 +70,7 @@ public class SettingsViewModelTests
         _viewModel.AppSettings.Should().NotBeNull();
         _viewModel.VisualSettings.Should().NotBeNull();
         _viewModel.AvailableLanguages.Should().HaveCount(2);
-        _viewModel.LogLevels.Should().HaveCount(6);
+        _viewModel.AvailableLogLevels.Should().HaveCount(6);
     }
 
     [Fact]
@@ -71,15 +82,15 @@ public class SettingsViewModelTests
     }
 
     [Fact]
-    public void SettingsViewModel_LogLevels_ShouldContainAllLogLevels()
+    public void SettingsViewModel_AvailableLogLevels_ShouldContainAllLogLevels()
     {
         // Assert
-        _viewModel.LogLevels.Should().Contain("Trace");
-        _viewModel.LogLevels.Should().Contain("Debug");
-        _viewModel.LogLevels.Should().Contain("Information");
-        _viewModel.LogLevels.Should().Contain("Warning");
-        _viewModel.LogLevels.Should().Contain("Error");
-        _viewModel.LogLevels.Should().Contain("Critical");
+        _viewModel.AvailableLogLevels.Should().Contain(l => l.DisplayName == "トレース");
+        _viewModel.AvailableLogLevels.Should().Contain(l => l.DisplayName == "デバッグ");
+        _viewModel.AvailableLogLevels.Should().Contain(l => l.DisplayName == "情報");
+        _viewModel.AvailableLogLevels.Should().Contain(l => l.DisplayName == "警告");
+        _viewModel.AvailableLogLevels.Should().Contain(l => l.DisplayName == "エラー");
+        _viewModel.AvailableLogLevels.Should().Contain(l => l.DisplayName == "致命的エラー");
     }
 
     [Fact]

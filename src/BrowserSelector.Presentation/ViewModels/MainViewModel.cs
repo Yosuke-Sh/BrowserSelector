@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Windows.Input;
 using BrowserSelector.Core.Models;
 using BrowserSelector.Core.Services;
+using BrowserSelector.Core.Enums;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Windows;
@@ -16,6 +17,8 @@ public partial class MainViewModel : ObservableObject
     private readonly IBrowserService _browserService;
     private readonly ISettingsService _settingsService;
     private readonly ILocalizationService _localizationService;
+    private readonly IUrlRuleService _urlRuleService;
+    private readonly ILogService _logService = null!;
 
     [ObservableProperty]
     private ObservableCollection<Browser> _browsers = new();
@@ -35,24 +38,79 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private bool _isSettingsVisible;
 
+    [ObservableProperty]
+    private string _titleMessage = "URLを設定し、ブラウザを選択してください。";
+
     public MainViewModel(
         IBrowserService browserService,
         ISettingsService settingsService,
-        ILocalizationService localizationService)
+        ILocalizationService localizationService,
+        IUrlRuleService urlRuleService,
+        ILogService logService)
     {
+        // まずログサービスを設定
+        _logService = logService;
+        _logService?.LogDetailed(LogLevel.Debug, "MainViewModelコンストラクタ開始", "MainViewModel", 
+                                "MVVM_INIT", "ViewModel", "System", "MainViewModel", "Constructor", "Started");
+
+        // 依存サービスの設定
         _browserService = browserService;
+        _logService?.LogDetailed(LogLevel.Debug, "IBrowserService設定完了", "MainViewModel", 
+                                "MVVM_INIT", "ViewModel", "System", "MainViewModel", "Constructor", "Service_Browser");
+        
         _settingsService = settingsService;
+        _logService?.LogDetailed(LogLevel.Debug, "ISettingsService設定完了", "MainViewModel", 
+                                "MVVM_INIT", "ViewModel", "System", "MainViewModel", "Constructor", "Service_Settings");
+        
         _localizationService = localizationService;
+        _logService?.LogDetailed(LogLevel.Debug, "ILocalizationService設定完了", "MainViewModel", 
+                                "MVVM_INIT", "ViewModel", "System", "MainViewModel", "Constructor", "Service_Localization");
+        
+        _urlRuleService = urlRuleService;
+        _logService?.LogDetailed(LogLevel.Debug, "IUrlRuleService設定完了", "MainViewModel", 
+                                "MVVM_INIT", "ViewModel", "System", "MainViewModel", "Constructor", "Service_UrlRule");
 
-        // コマンドの初期化
-        LoadBrowsersCommand = new AsyncRelayCommand(LoadBrowsersAsync);
-        LaunchBrowserCommand = new AsyncRelayCommand<Browser>(LaunchBrowserAsync, CanLaunchBrowser);
-        OpenSettingsCommand = new RelayCommand(OpenSettings);
-        CloseSettingsCommand = new RelayCommand(CloseSettings);
-        ClearUrlCommand = new RelayCommand(ClearUrl);
+        // 起動ログ
+        try
+        {
+            _logService?.LogDetailed(LogLevel.Information, "MainViewModel初期化開始", "MainViewModel", 
+                                    "MVVM_INIT", "ViewModel", "System", "MainViewModel", "Initialize", "Started");
+            
+            // コマンドの初期化
+            LoadBrowsersCommand = new AsyncRelayCommand(LoadBrowsersAsync);
+            _logService?.LogDetailed(LogLevel.Debug, "LoadBrowsersCommand作成完了", "MainViewModel", 
+                                    "MVVM_INIT", "ViewModel", "System", "MainViewModel", "Initialize", "Command_LoadBrowsers");
+            
+            LaunchBrowserCommand = new AsyncRelayCommand<Browser>(LaunchBrowserAsync, CanLaunchBrowser);
+            _logService?.LogDetailed(LogLevel.Debug, "LaunchBrowserCommand作成完了", "MainViewModel", 
+                                    "MVVM_INIT", "ViewModel", "System", "MainViewModel", "Initialize", "Command_LaunchBrowser");
+            
+            OpenSettingsCommand = new RelayCommand(OpenSettings);
+            CloseSettingsCommand = new RelayCommand(CloseSettings);
+            ClearUrlCommand = new RelayCommand(ClearUrl);
+            
+            _logService?.LogDetailed(LogLevel.Information, "コマンド初期化完了", "MainViewModel", 
+                                    "MVVM_INIT", "ViewModel", "System", "MainViewModel", "Initialize", "Commands");
 
-        // 初期化時にブラウザ一覧を読み込み
-        _ = LoadBrowsersAsync();
+            // 初期化時にブラウザ一覧を読み込み
+            _logService?.LogDetailed(LogLevel.Debug, "ブラウザ一覧読み込み開始", "MainViewModel", 
+                                    "MVVM_INIT", "ViewModel", "System", "MainViewModel", "Initialize", "LoadBrowsers_Start");
+            _ = LoadBrowsersAsync();
+            _logService?.LogDetailed(LogLevel.Debug, "ブラウザ一覧読み込み完了", "MainViewModel", 
+                                    "MVVM_INIT", "ViewModel", "System", "MainViewModel", "Initialize", "LoadBrowsers_Success");
+            
+            // 初期タイトルメッセージを設定
+            UpdateTitleMessage();
+            
+            _logService?.LogDetailed(LogLevel.Information, "MainViewModel初期化完了", "MainViewModel", 
+                                    "MVVM_INIT", "ViewModel", "System", "MainViewModel", "Initialize", "Success");
+        }
+        catch (Exception ex)
+        {
+            _logService?.LogDetailed(LogLevel.Error, $"MainViewModel初期化エラー: {ex.Message}", "MainViewModel", 
+                                    "MVVM_INIT", "ViewModel", "System", "MainViewModel", "Initialize", "Failed", ex);
+            throw;
+        }
     }
 
     /// <summary>
@@ -178,7 +236,7 @@ public partial class MainViewModel : ObservableObject
         {
             // 設定画面を開く
             var settingsWindow = new Views.SettingsWindow(
-                new SettingsViewModel(_settingsService, _browserService, _localizationService));
+                new SettingsViewModel(_settingsService, _browserService, _localizationService, _urlRuleService, _logService));
             
             settingsWindow.ShowDialog();
             
@@ -228,5 +286,23 @@ public partial class MainViewModel : ObservableObject
     partial void OnUrlChanged(string value)
     {
         LaunchBrowserCommand.NotifyCanExecuteChanged();
+        
+        // タイトルメッセージを更新
+        UpdateTitleMessage();
+    }
+    
+    /// <summary>
+    /// タイトルメッセージを更新
+    /// </summary>
+    private void UpdateTitleMessage()
+    {
+        if (string.IsNullOrWhiteSpace(Url))
+        {
+            TitleMessage = "URLを設定し、ブラウザを選択してください。";
+        }
+        else
+        {
+            TitleMessage = "ブラウザを選択してください。";
+        }
     }
 }
