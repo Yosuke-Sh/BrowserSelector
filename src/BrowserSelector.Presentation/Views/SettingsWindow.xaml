@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BrowserSelector.Presentation.Views"
         xmlns:controls="clr-namespace:BrowserSelector.Presentation.Controls"
+        xmlns:converters="clr-namespace:BrowserSelector.Presentation.Converters"
         mc:Ignorable="d"
         Title="設定" Height="600" Width="800"
         WindowStartupLocation="CenterOwner"
@@ -27,6 +28,9 @@
         <Style x:Key="SettingRowStyle" TargetType="Grid">
             <Setter Property="Margin" Value="0,5,0,5"/>
         </Style>
+        
+        <!-- コンバーター -->
+        <converters:ColorToBrushConverter x:Key="ColorToBrushConverter"/>
     </Window.Resources>
 
     <Grid>
