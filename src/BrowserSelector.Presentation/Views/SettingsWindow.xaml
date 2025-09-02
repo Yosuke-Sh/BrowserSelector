@@ -39,7 +39,15 @@
         <TabControl Grid.Row="0" Margin="10">
             
             <!-- 一般設定タブ -->
-            <TabItem Header="一般" Style="{StaticResource TabItemStyle}">
+            <TabItem Style="{StaticResource TabItemStyle}">
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_General.png" 
+                               Width="18" Height="18" 
+                               Margin="0,0,8,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="一般" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </TabItem.Header>
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="10">
                         
@@ -146,7 +154,15 @@
             </TabItem>
 
             <!-- 表示設定タブ -->
-            <TabItem Header="表示" Style="{StaticResource TabItemStyle}">
+            <TabItem Style="{StaticResource TabItemStyle}">
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Display.png" 
+                               Width="18" Height="18" 
+                               Margin="0,0,8,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="表示" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </TabItem.Header>
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="10">
                         
@@ -234,7 +250,15 @@
             </TabItem>
 
             <!-- ブラウザ設定タブ -->
-            <TabItem Header="ブラウザ" Style="{StaticResource TabItemStyle}">
+            <TabItem Style="{StaticResource TabItemStyle}">
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Browser.png" 
+                               Width="18" Height="18" 
+                               Margin="0,0,8,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="ブラウザ" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </TabItem.Header>
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="10">
                         
@@ -287,10 +311,10 @@
                         </GroupBox>
 
                         <!-- ブラウザ管理 -->
-                        <GroupBox Header="ブラウザ管理" Style="{StaticResource GroupBoxStyle}">
+                        <GroupBox Header="ブラウザ管理" Style="{StaticResource GroupBoxStyle}" Height="322">
                             <StackPanel>
                                 <TextBlock Text="検出されたブラウザ:" FontWeight="SemiBold" Margin="0,0,0,10"/>
-                                <ListBox Height="200" ItemsSource="{Binding DetectedBrowsers}">
+                                <ListBox Height="193" ItemsSource="{Binding DetectedBrowsers}">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
                                             <Grid>
@@ -310,10 +334,24 @@
                                 </ListBox>
                                 
                                 <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                    <Button Content="ブラウザを再検出" Command="{Binding RefreshBrowsersCommand}" 
-                                            Margin="0,0,10,0" Padding="10,5"/>
-                                    <Button Content="ブラウザを追加" Command="{Binding AddBrowserCommand}" 
-                                            Margin="0,0,10,0" Padding="10,5"/>
+                                    <Button Command="{Binding RefreshBrowsersCommand}" 
+                                            Margin="0,0,10,0" Padding="10,5">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                            <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Refresh.png" 
+                                                   Width="18" Height="18" 
+                                                   Margin="8,0,8,0" VerticalAlignment="Center"/>
+                                            <TextBlock Text="ブラウザを再検出" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Command="{Binding AddBrowserCommand}" 
+                                            Margin="0,0,10,0" Padding="10,5">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                            <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Add.png" 
+                                                   Width="18" Height="19" 
+                                                   Margin="8,0,8,0" VerticalAlignment="Center"/>
+                                            <TextBlock Text="ブラウザを追加" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
                                 </StackPanel>
                             </StackPanel>
                         </GroupBox>
@@ -322,7 +360,15 @@
             </TabItem>
 
             <!-- アクセシビリティ設定タブ -->
-            <TabItem Header="アクセシビリティ" Style="{StaticResource TabItemStyle}">
+            <TabItem Style="{StaticResource TabItemStyle}">
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Accessibility.png" 
+                               Width="18" Height="18" 
+                               Margin="0,0,8,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="アクセシビリティ" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </TabItem.Header>
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="10">
                         
@@ -404,16 +450,51 @@
 
         <!-- ボタンエリア -->
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
-            <Button Content="設定をリセット" Command="{Binding ResetSettingsCommand}" 
-                    Margin="0,0,10,0" Padding="15,8"/>
-            <Button Content="設定をインポート" Command="{Binding ImportSettingsCommand}" 
-                    Margin="0,0,10,0" Padding="15,8"/>
-            <Button Content="設定をエクスポート" Command="{Binding ExportSettingsCommand}" 
-                    Margin="0,0,10,0" Padding="15,8"/>
-            <Button Content="OK" Command="{Binding SaveSettingsCommand}" 
-                    IsDefault="True" Padding="15,8" Margin="0,0,10,0"/>
-            <Button Content="キャンセル" Command="{Binding CancelCommand}" 
-                    IsCancel="True" Padding="15,8"/>
+            <Button Command="{Binding ResetSettingsCommand}" 
+                    Margin="0,0,10,0" Padding="15,8">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Reset.png" 
+                           Width="18" Height="18" 
+                           Margin="8,0,8,0" VerticalAlignment="Center"/>
+                    <TextBlock Text="設定をリセット" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            <Button Command="{Binding ImportSettingsCommand}" 
+                    Margin="0,0,10,0" Padding="15,8">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Import.png" 
+                           Width="18" Height="18" 
+                           Margin="8,0,8,0" VerticalAlignment="Center"/>
+                    <TextBlock Text="設定をインポート" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            <Button Command="{Binding ExportSettingsCommand}" 
+                    Margin="0,0,10,0" Padding="15,8">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Export.png" 
+                           Width="18" Height="18" 
+                           Margin="8,0,8,0" VerticalAlignment="Center"/>
+                    <TextBlock Text="設定をエクスポート" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            <Button Command="{Binding SaveSettingsCommand}" 
+                    IsDefault="True" Padding="15,8" Margin="0,0,10,0">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Check.png" 
+                           Width="18" Height="18" 
+                           Margin="8,0,8,0" VerticalAlignment="Center"/>
+                    <TextBlock Text="OK" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            <Button Command="{Binding CancelCommand}" 
+                    IsCancel="True" Padding="15,8">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Close.png" 
+                           Width="18" Height="18" 
+                           Margin="8,0,8,0" VerticalAlignment="Center"/>
+                    <TextBlock Text="キャンセル" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
         </StackPanel>
     </Grid>
 </Window>

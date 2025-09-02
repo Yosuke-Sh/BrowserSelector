@@ -1,6 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <Content Include="BrowserSelector_Icon_256.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\BrowserSelector.Core\BrowserSelector.Core.csproj" />
     <ProjectReference Include="..\BrowserSelector.Infrastructure\BrowserSelector.Infrastructure.csproj" />
     <ProjectReference Include="..\BrowserSelector.Presentation\BrowserSelector.Presentation.csproj" />
@@ -17,6 +21,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>BrowserSelector_Icon_256.ico</ApplicationIcon>
     <!-- <ApplicationIcon>..\..\BrowserSelector_Icon.ico</ApplicationIcon> -->
   </PropertyGroup>
 
