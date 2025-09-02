@@ -90,7 +90,14 @@ public class TransparentWindow : Window
         Opacity = Math.Max(0.01, Math.Min(1.0, settings.Opacity));
 
         // 透明化色を設定
-        TransparencyColor = settings.TransparencyColor;
+        if (settings.UseCustomTransparencyColor)
+        {
+            TransparencyColor = settings.TransparencyColor;
+        }
+        else
+        {
+            TransparencyColor = Colors.Transparent;
+        }
 
         // 角の丸みを設定
         CornerRadius = Math.Max(0, Math.Min(50, settings.CornerRadius));
@@ -118,6 +125,10 @@ public class TransparentWindow : Window
                     new GradientStop(settings.GradientEndColor, 1)
                 }
             };
+        }
+        else if (!settings.UseCustomBackgroundColor)
+        {
+            Background = null;
         }
 
         // タイトルバーの表示/非表示

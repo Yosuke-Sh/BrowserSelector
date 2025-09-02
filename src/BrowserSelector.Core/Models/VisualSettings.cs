@@ -15,6 +15,9 @@ public partial class VisualSettings : ObservableObject
     private Color _transparencyColor = Colors.Black;
 
     [ObservableProperty]
+    private bool _useCustomTransparencyColor = false;
+
+    [ObservableProperty]
     private double _cornerRadius = 0;
 
     [ObservableProperty]

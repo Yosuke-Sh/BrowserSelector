@@ -166,6 +166,16 @@
                                     <TextBlock Text="カスタム透明化色を使用" VerticalAlignment="Center"/>
                                     <CheckBox Grid.Column="1" IsChecked="{Binding VisualSettings.UseCustomTransparencyColor}"/>
                                 </Grid>
+                                
+                                <Grid Style="{StaticResource SettingRowStyle}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="透明化色" VerticalAlignment="Center"/>
+                                    <Button Grid.Column="1" Content="色を選択" Padding="10,5"
+                                            Command="{Binding SelectTransparencyColorCommand}"/>
+                                </Grid>
                             </StackPanel>
                         </GroupBox>
 

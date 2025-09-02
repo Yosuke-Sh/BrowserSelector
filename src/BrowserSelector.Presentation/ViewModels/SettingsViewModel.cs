@@ -280,10 +280,76 @@ public partial class SettingsViewModel : ObservableObject
         try
         {
             await _settingsService.SaveVisualSettingsAsync(VisualSettings);
+            ApplyVisualToActiveWindow(VisualSettings);
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"視覚設定更新エラー: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// 現在表示中のウィンドウへ視覚設定を即時適用
+    /// </summary>
+    private void ApplyVisualToActiveWindow(VisualSettings settings)
+    {
+        try
+        {
+            var window = Application.Current?.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive)
+                         ?? Application.Current?.MainWindow;
+            if (window == null) return;
+
+            // 透明度
+            window.Opacity = Math.Max(0.01, Math.Min(1.0, settings.Opacity));
+
+            // 背景色 / グラデーション
+            if (settings.UseBackgroundGradient)
+            {
+                window.Background = new LinearGradientBrush
+                {
+                    StartPoint = new System.Windows.Point(0, 0),
+                    EndPoint = new System.Windows.Point(0, 1),
+                    GradientStops = new GradientStopCollection
+                    {
+                        new GradientStop(settings.GradientStartColor, 0),
+                        new GradientStop(settings.GradientEndColor, 1)
+                    }
+                };
+            }
+            else if (settings.UseCustomBackgroundColor)
+            {
+                window.Background = new SolidColorBrush(settings.BackgroundColor);
+            }
+            else
+            {
+                window.ClearValue(Window.BackgroundProperty);
+            }
+
+            // 角の丸み（Clip）
+            var radius = Math.Max(0, Math.Min(50, settings.CornerRadius));
+            if (radius > 0)
+            {
+                var geometry = new RectangleGeometry(new Rect(0, 0, window.ActualWidth, window.ActualHeight), radius, radius);
+                window.Clip = geometry;
+                // サイズ変更時も維持
+                void handler(object? s, SizeChangedEventArgs e)
+                {
+                    window.Clip = new RectangleGeometry(new Rect(0, 0, e.NewSize.Width, e.NewSize.Height), radius, radius);
+                }
+                window.SizeChanged -= handler; // 二重登録防止
+                window.SizeChanged += handler;
+            }
+            else
+            {
+                window.ClearValue(UIElement.ClipProperty);
+            }
+
+            // タイトルバー表示
+            window.WindowStyle = settings.ShowTitleBar ? WindowStyle.SingleBorderWindow : WindowStyle.None;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"視覚設定即時適用エラー: {ex.Message}");
         }
     }
 
