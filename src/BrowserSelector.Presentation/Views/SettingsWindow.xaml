@@ -101,30 +101,7 @@
                             </StackPanel>
                         </GroupBox>
 
-                        <!-- ログ設定 -->
-                        <GroupBox Header="ログ設定" Style="{StaticResource GroupBoxStyle}">
-                            <StackPanel>
-                                <Grid Style="{StaticResource SettingRowStyle}">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="ログを有効にする" VerticalAlignment="Center"/>
-                                    <CheckBox Grid.Column="1" IsChecked="{Binding AppSettings.EnableLogging}"/>
-                                </Grid>
-                                
-                                <Grid Style="{StaticResource SettingRowStyle}">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="120"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="ログレベル" VerticalAlignment="Center"/>
-                                    <ComboBox Grid.Column="1" SelectedItem="{Binding SelectedLogLevel}"
-                                              ItemsSource="{Binding LogLevels}"
-                                              VerticalAlignment="Center"/>
-                                </Grid>
-                            </StackPanel>
-                        </GroupBox>
+                        
 
                         <!-- アップデート設定 -->
                         <GroupBox Header="アップデート設定" Style="{StaticResource GroupBoxStyle}">
@@ -286,29 +263,7 @@
                             </StackPanel>
                         </GroupBox>
 
-                        <!-- プロトコル設定 -->
-                        <GroupBox Header="プロトコル設定" Style="{StaticResource GroupBoxStyle}">
-                            <StackPanel>
-                                <Grid Style="{StaticResource SettingRowStyle}">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="プロトコルを登録" VerticalAlignment="Center"/>
-                                    <CheckBox Grid.Column="1" IsChecked="{Binding AppSettings.RegisterProtocol}"/>
-                                </Grid>
-                                
-                                <Grid Style="{StaticResource SettingRowStyle}">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="150"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="カスタムプロトコル" VerticalAlignment="Center"/>
-                                    <TextBox Grid.Column="1" Text="{Binding AppSettings.CustomProtocol}" 
-                                             VerticalAlignment="Center"/>
-                                </Grid>
-                            </StackPanel>
-                        </GroupBox>
+                        
 
                         <!-- ブラウザ管理 -->
                         <GroupBox Header="ブラウザ管理" Style="{StaticResource GroupBoxStyle}" Height="339">
@@ -457,8 +412,8 @@
                 </ScrollViewer>
             </TabItem>
 
-            <!-- アクセシビリティ設定タブ -->
-            <TabItem Style="{StaticResource TabItemStyle}">
+            <!-- アクセシビリティ設定タブ（当面非表示） -->
+            <TabItem Style="{StaticResource TabItemStyle}" Visibility="Collapsed">
                 <TabItem.Header>
                     <StackPanel Orientation="Horizontal">
                         <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Accessibility.png" 
