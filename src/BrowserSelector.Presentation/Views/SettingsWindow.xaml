@@ -101,7 +101,7 @@
                             </StackPanel>
                         </GroupBox>
 
-                        
+
 
                         <!-- アップデート設定 -->
                         <GroupBox Header="アップデート設定" Style="{StaticResource GroupBoxStyle}">
@@ -142,7 +142,7 @@
                 </TabItem.Header>
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="10">
-
+                        
                         <!-- 背景設定（先頭に移動） -->
                         <GroupBox Header="背景設定" Style="{StaticResource GroupBoxStyle}">
                             <StackPanel>
@@ -159,7 +159,7 @@
                                     <!-- 現在色を可視化 -->
                                     <Border Grid.Column="2" Width="24" Height="24" Margin="10,0,0,0"
                                             BorderBrush="#DDD" BorderThickness="1"
-                                            Background="{Binding VisualSettings.BackgroundColor, Converter={x:Static BrushConverter}}" />
+                                            Background="{Binding VisualSettings.BackgroundColor, Converter={StaticResource ColorToBrushConverter}}" />
                                 </Grid>
 
                                 <!-- 背景透明化 -->
@@ -267,7 +267,7 @@
                             </StackPanel>
                         </GroupBox>
 
-                        
+
 
                         <!-- ブラウザ管理 -->
                         <GroupBox Header="ブラウザ管理" Style="{StaticResource GroupBoxStyle}" Height="339">

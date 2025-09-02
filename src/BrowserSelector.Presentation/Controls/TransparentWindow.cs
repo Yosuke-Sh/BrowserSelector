@@ -130,7 +130,7 @@ public class TransparentWindow : Window
         // 背景グラデーションの更新
         if (!settings.UseBackgroundGradient)
         {
-            BackgroundGradient = null;
+            BackgroundGradient = null!;
         }
 
         // タイトルバーの表示/非表示
@@ -194,7 +194,7 @@ public class TransparentWindow : Window
         }
         else
         {
-            Clip = null;
+            Clip = null!;
         }
     }
 
