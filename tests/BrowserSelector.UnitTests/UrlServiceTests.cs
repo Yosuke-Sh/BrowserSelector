@@ -25,7 +25,7 @@ public class UrlServiceTests
 
         _mockSettingsService
             .Setup(x => x.LoadAppSettingsAsync())
-            .ReturnsAsync(new BrowserSelector.Core.Models.AppSettings { ExpandShortenedUrls = false });
+            .ReturnsAsync(new BrowserSelector.Core.Models.AppSettings());
 
         // Act
         var result = await _urlService.NormalizeUrlAsync(inputUrl);
@@ -42,7 +42,7 @@ public class UrlServiceTests
 
         _mockSettingsService
             .Setup(x => x.LoadAppSettingsAsync())
-            .ReturnsAsync(new BrowserSelector.Core.Models.AppSettings { ExpandShortenedUrls = false });
+            .ReturnsAsync(new BrowserSelector.Core.Models.AppSettings());
 
         // Act
         var result = await _urlService.NormalizeUrlAsync(inputUrl);
@@ -59,7 +59,7 @@ public class UrlServiceTests
 
         _mockSettingsService
             .Setup(x => x.LoadAppSettingsAsync())
-            .ReturnsAsync(new BrowserSelector.Core.Models.AppSettings { ExpandShortenedUrls = false });
+            .ReturnsAsync(new BrowserSelector.Core.Models.AppSettings());
 
         // Act
         var result = await _urlService.NormalizeUrlAsync(inputUrl);
@@ -76,7 +76,7 @@ public class UrlServiceTests
 
         _mockSettingsService
             .Setup(x => x.LoadAppSettingsAsync())
-            .ReturnsAsync(new BrowserSelector.Core.Models.AppSettings { ExpandShortenedUrls = false });
+            .ReturnsAsync(new BrowserSelector.Core.Models.AppSettings());
 
         // Act
         var result = await _urlService.NormalizeUrlAsync(inputUrl);
@@ -93,7 +93,7 @@ public class UrlServiceTests
 
         _mockSettingsService
             .Setup(x => x.LoadAppSettingsAsync())
-            .ReturnsAsync(new BrowserSelector.Core.Models.AppSettings { ExpandShortenedUrls = false });
+            .ReturnsAsync(new BrowserSelector.Core.Models.AppSettings());
 
         // Act
         var result = await _urlService.NormalizeUrlAsync(inputUrl);

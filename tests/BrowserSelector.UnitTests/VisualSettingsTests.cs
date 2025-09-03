@@ -5,28 +5,21 @@ using Xunit;
 
 namespace BrowserSelector.UnitTests;
 
-// TODO: 削除されたプロパティ（Opacity、TransparencyColor、CornerRadius、ShowTitleBar）のテストを更新する必要があります
 public class VisualSettingsTests
 {
-    [Fact(Skip = "削除されたプロパティのテストを更新する必要があります")]
+    [Fact]
     public void VisualSettings_DefaultValues_ShouldBeSetCorrectly()
     {
         // Arrange & Act
         var settings = new VisualSettings();
 
         // Assert
-        // TODO: 削除されたプロパティのテストを更新
-        // settings.Opacity.Should().Be(1.0);
-        // settings.TransparencyColor.Should().Be(Colors.Black);
-        // settings.CornerRadius.Should().Be(0);
-        // settings.ShowTitleBar.Should().BeTrue();
         settings.BackgroundColor.Should().Be(Colors.White);
         settings.FocusColor.Should().Be(Colors.Blue);
         settings.FocusWidth.Should().Be(100.0);
-        // TODO: 削除されたMessageTextColorプロパティのテストを更新
     }
 
-    [Fact(Skip = "削除されたプロパティのテストを更新する必要があります")]
+    [Fact]
     public void VisualSettings_PropertyChanges_ShouldTriggerNotifications()
     {
         // Arrange
@@ -35,35 +28,44 @@ public class VisualSettingsTests
         settings.PropertyChanged += (sender, e) => propertyChangedCount++;
 
         // Act
-        // TODO: 削除されたプロパティのテストを更新
-        // settings.Opacity = 0.8;
-        // settings.TransparencyColor = Colors.Red;
-        // settings.CornerRadius = 10;
-        // settings.ShowTitleBar = false;
         settings.BackgroundColor = Colors.Gray;
         settings.FocusColor = Colors.Green;
         settings.FocusWidth = 150.0;
-        // TODO: 削除されたMessageTextColorプロパティのテストを更新
 
         // Assert
-        propertyChangedCount.Should().Be(4); // 削除されたプロパティを除いた数
+        propertyChangedCount.Should().Be(3);
     }
 
-    [Theory(Skip = "削除されたOpacityプロパティのテストを更新する必要があります")]
-    [InlineData(0.0)]
-    [InlineData(0.5)]
-    [InlineData(1.0)]
-    public void VisualSettings_Opacity_ShouldAcceptValidValues(double opacity)
+    [Fact]
+    public void VisualSettings_BackgroundColor_ShouldAcceptValidValues()
+    {
+        // Arrange
+        var settings = new VisualSettings();
+
+        // Act & Assert
+        settings.BackgroundColor = Colors.White;
+        settings.BackgroundColor.Should().Be(Colors.White);
+
+        settings.BackgroundColor = Colors.Black;
+        settings.BackgroundColor.Should().Be(Colors.Black);
+
+        settings.BackgroundColor = Colors.Red;
+        settings.BackgroundColor.Should().Be(Colors.Red);
+    }
+
+    [Theory]
+    [InlineData(50.0)]
+    [InlineData(100.0)]
+    [InlineData(200.0)]
+    public void VisualSettings_FocusWidth_ShouldAcceptValidValues(double focusWidth)
     {
         // Arrange
         var settings = new VisualSettings();
 
         // Act
-        // TODO: 削除されたOpacityプロパティのテストを更新
-        // settings.Opacity = opacity;
+        settings.FocusWidth = focusWidth;
 
         // Assert
-        // settings.Opacity.Should().Be(opacity);
-        Assert.True(true); // 一時的なスキップ
+        settings.FocusWidth.Should().Be(focusWidth);
     }
 }

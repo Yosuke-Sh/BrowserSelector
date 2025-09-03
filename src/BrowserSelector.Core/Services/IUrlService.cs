@@ -12,12 +12,7 @@ public interface IUrlService
     /// <returns>正規化されたURL</returns>
     Task<string> NormalizeUrlAsync(string url);
 
-    /// <summary>
-    /// 短縮URLを展開する
-    /// </summary>
-    /// <param name="url">展開するURL</param>
-    /// <returns>展開されたURL</returns>
-    Task<string> ExpandShortenedUrlAsync(string url);
+
 
     /// <summary>
     /// URLが有効かどうかを検証する

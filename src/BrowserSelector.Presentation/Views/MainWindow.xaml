@@ -76,11 +76,11 @@
                        >
                 <TextBlock.Effect>
                     <DropShadowEffect
-                          ShadowDepth="4"
+                          ShadowDepth="3"
                           Direction="330"
                           Color="{DynamicResource {x:Static SystemColors.GrayTextColorKey}}"
                           Opacity="0.5"
-                         BlurRadius="4"/>
+                         BlurRadius="2"/>
                 </TextBlock.Effect>
                 <TextBlock.Background>
                     <SolidColorBrush  Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}" Opacity="0.25"/>

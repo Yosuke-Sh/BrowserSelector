@@ -42,10 +42,4 @@ public partial class AppSettings : ObservableObject
 
     [ObservableProperty]
     private bool _registerProtocol = true;
-
-    [ObservableProperty]
-    private bool _expandShortenedUrls = true;
-
-    [ObservableProperty]
-    private string _userAgent = string.Empty;
 }

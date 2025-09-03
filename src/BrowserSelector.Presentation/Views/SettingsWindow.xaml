@@ -247,33 +247,6 @@
                 </TabItem.Header>
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="10">
-                        
-                        <!-- URL処理設定 -->
-                        <GroupBox Header="URL処理設定" Style="{StaticResource GroupBoxStyle}">
-                            <StackPanel>
-                                <Grid Style="{StaticResource SettingRowStyle}">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="短縮URLを展開" VerticalAlignment="Center"/>
-                                    <CheckBox Grid.Column="1" IsChecked="{Binding AppSettings.ExpandShortenedUrls}"/>
-                                </Grid>
-                                
-                                <Grid Style="{StaticResource SettingRowStyle}">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="200"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="ユーザーエージェント" VerticalAlignment="Center"/>
-                                    <TextBox Grid.Column="1" Text="{Binding AppSettings.UserAgent}" 
-                                             VerticalAlignment="Center"/>
-                                </Grid>
-                            </StackPanel>
-                        </GroupBox>
-
-
-
                         <!-- ブラウザ管理 -->
                         <GroupBox Header="ブラウザ管理" Style="{StaticResource GroupBoxStyle}" Height="339">
                             <StackPanel>

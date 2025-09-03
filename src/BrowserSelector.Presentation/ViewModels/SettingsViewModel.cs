@@ -77,6 +77,13 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     private string _currentLogFilePath = string.Empty;
 
+    // ブラウザ管理用のプロパティ
+    [ObservableProperty]
+    private Browser? _selectedBrowser;
+
+    [ObservableProperty]
+    private bool _isBrowserDialogOpen = false;
+
     public SettingsViewModel(
         ISettingsService settingsService,
         IBrowserService browserService,
@@ -482,11 +489,37 @@ public partial class SettingsViewModel : ObservableObject
     /// ブラウザを追加するコマンド
     /// </summary>
     [RelayCommand]
-    private Task AddBrowser()
+    private async Task AddBrowser()
     {
-        // TODO: ブラウザ追加ダイアログを実装
-        System.Diagnostics.Debug.WriteLine("ブラウザ追加機能は未実装です");
-        return Task.CompletedTask;
+        try
+        {
+            _logService?.LogInformation("ブラウザ追加開始", "SettingsViewModel");
+            
+            var dialog = new Views.BrowserEditDialog();
+            if (dialog.ShowDialog() == true)
+            {
+                var newBrowser = dialog.Browser;
+                newBrowser.DisplayOrder = DetectedBrowsers.Count + 1;
+
+                var result = await _browserService.AddBrowserAsync(newBrowser);
+                if (result)
+                {
+                    await RefreshBrowsersAsync();
+                    _logService?.LogInformation("ブラウザ追加完了", "SettingsViewModel");
+                    MessageBox.Show("ブラウザを追加しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    _logService?.LogWarning("ブラウザ追加失敗", "SettingsViewModel");
+                    MessageBox.Show("ブラウザの追加に失敗しました。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logService?.LogError($"ブラウザ追加エラー: {ex.Message}", "SettingsViewModel", ex);
+            MessageBox.Show($"ブラウザの追加中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
     }
 
     /// <summary>
@@ -873,6 +906,107 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     #endregion
+
+
+
+    /// <summary>
+    /// ブラウザを編集するコマンド
+    /// </summary>
+    [RelayCommand]
+    private async Task EditBrowserAsync()
+    {
+        try
+        {
+            if (SelectedBrowser == null)
+            {
+                MessageBox.Show("編集するブラウザを選択してください。", "警告", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            _logService?.LogInformation($"ブラウザ編集開始: {SelectedBrowser.Name}", "SettingsViewModel");
+            
+            // カスタムブラウザのみ編集可能
+            if (SelectedBrowser.Type != BrowserType.Custom)
+            {
+                MessageBox.Show("システムで検出されたブラウザは編集できません。", "警告", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var dialog = new Views.BrowserEditDialog(SelectedBrowser);
+            if (dialog.ShowDialog() == true)
+            {
+                var updatedBrowser = dialog.Browser;
+                
+                var result = await _browserService.UpdateBrowserAsync(updatedBrowser);
+                if (result)
+                {
+                    await RefreshBrowsersAsync();
+                    _logService?.LogInformation($"ブラウザ編集完了: {updatedBrowser.Name}", "SettingsViewModel");
+                    MessageBox.Show("ブラウザを更新しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    _logService?.LogWarning("ブラウザ更新失敗", "SettingsViewModel");
+                    MessageBox.Show("ブラウザの更新に失敗しました。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logService?.LogError($"ブラウザ編集エラー: {ex.Message}", "SettingsViewModel", ex);
+            MessageBox.Show($"ブラウザの編集中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    /// <summary>
+    /// ブラウザを削除するコマンド
+    /// </summary>
+    [RelayCommand]
+    private async Task RemoveBrowserAsync()
+    {
+        try
+        {
+            if (SelectedBrowser == null)
+            {
+                MessageBox.Show("削除するブラウザを選択してください。", "警告", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            _logService?.LogInformation($"ブラウザ削除開始: {SelectedBrowser.Name}", "SettingsViewModel");
+            
+            // カスタムブラウザのみ削除可能
+            if (SelectedBrowser.Type != BrowserType.Custom)
+            {
+                MessageBox.Show("システムで検出されたブラウザは削除できません。", "警告", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var result = MessageBox.Show($"ブラウザ「{SelectedBrowser.Name}」を削除しますか？", "確認", 
+                                       MessageBoxButton.YesNo, MessageBoxImage.Question);
+            
+            if (result == MessageBoxResult.Yes)
+            {
+                var deleteResult = await _browserService.RemoveBrowserAsync(SelectedBrowser.Id);
+                if (deleteResult)
+                {
+                    await RefreshBrowsersAsync();
+                    SelectedBrowser = null;
+                    _logService?.LogInformation($"ブラウザ削除完了: {SelectedBrowser?.Name}", "SettingsViewModel");
+                    MessageBox.Show("ブラウザを削除しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    _logService?.LogWarning("ブラウザ削除失敗", "SettingsViewModel");
+                    MessageBox.Show("ブラウザの削除に失敗しました。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logService?.LogError($"ブラウザ削除エラー: {ex.Message}", "SettingsViewModel", ex);
+            MessageBox.Show($"ブラウザの削除中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
 
     #endregion
 }

@@ -31,7 +31,6 @@ public class SettingsViewModelTests
             .ReturnsAsync(new AppSettings
             {
                 Language = "ja-JP",
-                ExpandShortenedUrls = true,
                 StartMinimized = false
             });
 

@@ -32,7 +32,6 @@ public class SettingsServiceIntegrationTests
         // Arrange
         var testSettings = new BrowserSelector.Core.Models.AppSettings
         {
-            ExpandShortenedUrls = true,
             Language = "ja-JP",
             CustomProtocol = "testprotocol"
         };
@@ -44,7 +43,7 @@ public class SettingsServiceIntegrationTests
         // Assert
         saveResult.Should().BeTrue();
         loadedSettings.Should().NotBeNull();
-        loadedSettings.ExpandShortenedUrls.Should().Be(testSettings.ExpandShortenedUrls);
+
         loadedSettings.Language.Should().Be(testSettings.Language);
         loadedSettings.CustomProtocol.Should().Be(testSettings.CustomProtocol);
     }
@@ -78,6 +77,6 @@ public class SettingsServiceIntegrationTests
         resetResult.Should().BeTrue();
         resetSettings.Should().NotBeNull();
         // デフォルト値に戻っていることを確認
-        resetSettings.ExpandShortenedUrls.Should().BeTrue(); // AppSettingsのデフォルト値
+        // TODO: 削除されたExpandShortenedUrlsプロパティのテストを更新
     }
 }
