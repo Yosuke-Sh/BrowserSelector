@@ -925,10 +925,47 @@ public partial class SettingsViewModel : ObservableObject
 
             _logService?.LogInformation($"ブラウザ編集開始: {SelectedBrowser.Name}", "SettingsViewModel");
             
-            // カスタムブラウザのみ編集可能
+            // システムで検出されたブラウザは、順序・アイコン・パラメーターのみ編集可能
             if (SelectedBrowser.Type != BrowserType.Custom)
             {
-                MessageBox.Show("システムで検出されたブラウザは編集できません。", "警告", MessageBoxButton.OK, MessageBoxImage.Warning);
+                // システムブラウザの場合は、編集可能な項目を制限
+                var limitedBrowser = new Browser
+                {
+                    Id = SelectedBrowser.Id,
+                    Name = SelectedBrowser.Name,
+                    ExecutablePath = SelectedBrowser.ExecutablePath,
+                    Type = SelectedBrowser.Type,
+                    DisplayOrder = SelectedBrowser.DisplayOrder,
+                    IconPath = SelectedBrowser.IconPath,
+                    Arguments = SelectedBrowser.Arguments,
+                    IsEnabled = SelectedBrowser.IsEnabled,
+                    IsDefault = SelectedBrowser.IsDefault
+                };
+                
+                var systemBrowserDialog = new Views.BrowserEditDialog(limitedBrowser, true); // システムブラウザフラグ
+                if (systemBrowserDialog.ShowDialog() == true)
+                {
+                    var updatedBrowser = systemBrowserDialog.Browser;
+                    
+                    // システムブラウザの場合は、編集可能な項目のみ更新
+                    SelectedBrowser.DisplayOrder = updatedBrowser.DisplayOrder;
+                    SelectedBrowser.IconPath = updatedBrowser.IconPath;
+                    SelectedBrowser.Arguments = updatedBrowser.Arguments;
+                    SelectedBrowser.IsEnabled = updatedBrowser.IsEnabled;
+                    
+                    var result = await _browserService.UpdateBrowserAsync(SelectedBrowser);
+                    if (result)
+                    {
+                        await RefreshBrowsersAsync();
+                        _logService?.LogInformation($"システムブラウザ編集完了: {updatedBrowser.Name}", "SettingsViewModel");
+                        MessageBox.Show("ブラウザ設定を更新しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    else
+                    {
+                        _logService?.LogWarning("システムブラウザ更新失敗", "SettingsViewModel");
+                        MessageBox.Show("ブラウザ設定の更新に失敗しました。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
                 return;
             }
 

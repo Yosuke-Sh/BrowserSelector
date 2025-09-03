@@ -25,12 +25,35 @@
         <!-- スタイル定義 -->
         <Style x:Key="BrowserButtonStyle" TargetType="Button">
             <Setter Property="Margin" Value="8"/>
-            <Setter Property="Padding" Value="15"/>
+            <Setter Property="Padding" Value="10"/>
             <Setter Property="Width" Value="120"/>
             <Setter Property="Height" Value="90"/>
-            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontSize" Value="12"/>
             <Setter Property="FontWeight" Value="Medium"/>
             <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8">
+                            <StackPanel Orientation="Vertical" 
+                                        HorizontalAlignment="Center" 
+                                        VerticalAlignment="Center">
+                                <Image Source="{Binding IconPath}" 
+                                       Width="32" Height="32" 
+                                       Margin="0,0,0,5"
+                                       RenderOptions.BitmapScalingMode="HighQuality"/>
+                                <TextBlock Text="{TemplateBinding Content}" 
+                                           HorizontalAlignment="Center"
+                                           TextWrapping="Wrap"
+                                           MaxWidth="100"/>
+                            </StackPanel>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
 
         <Style x:Key="StatusTextStyle" TargetType="TextBlock">

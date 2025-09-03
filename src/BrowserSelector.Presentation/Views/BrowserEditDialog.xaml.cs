@@ -13,8 +13,9 @@ public partial class BrowserEditDialog : Window
 {
     public Browser Browser { get; private set; }
     private readonly bool _isNewBrowser;
+    private readonly bool _isSystemBrowser;
 
-    public BrowserEditDialog(Browser? browser = null)
+    public BrowserEditDialog(Browser? browser = null, bool isSystemBrowser = false)
     {
         InitializeComponent();
         
@@ -22,6 +23,7 @@ public partial class BrowserEditDialog : Window
         {
             // 新規作成
             _isNewBrowser = true;
+            _isSystemBrowser = false;
             Browser = new Browser
             {
                 Id = Guid.NewGuid(),
@@ -38,11 +40,24 @@ public partial class BrowserEditDialog : Window
         {
             // 編集
             _isNewBrowser = false;
+            _isSystemBrowser = isSystemBrowser;
             Browser = browser.Clone(); // 複製して編集
         }
 
         DataContext = Browser;
-        Title = _isNewBrowser ? "ブラウザ追加" : "ブラウザ編集";
+        Title = _isNewBrowser ? "ブラウザ追加" : (_isSystemBrowser ? "システムブラウザ設定" : "ブラウザ編集");
+        
+        // システムブラウザの場合は、編集不可能な項目を無効化
+        if (_isSystemBrowser)
+        {
+            // 名前と実行ファイルパスは編集不可
+            NameTextBox.IsEnabled = false;
+            ExecutablePathTextBox.IsEnabled = false;
+            BrowseExecutableButton.IsEnabled = false;
+            
+            // 説明を追加
+            SystemBrowserInfoText.Visibility = Visibility.Visible;
+        }
     }
 
     private void BrowseExecutable_Click(object sender, RoutedEventArgs e)

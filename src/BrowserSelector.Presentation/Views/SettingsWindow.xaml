@@ -248,10 +248,10 @@
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="10">
                         <!-- ブラウザ管理 -->
-                        <GroupBox Header="ブラウザ管理" Style="{StaticResource GroupBoxStyle}" Height="339">
+                        <GroupBox Header="ブラウザ管理" Style="{StaticResource GroupBoxStyle}" Height="500">
                             <StackPanel>
                                 <TextBlock Text="検出されたブラウザ:" FontWeight="SemiBold" Margin="0,0,0,10"/>
-                                <ListBox Height="193" ItemsSource="{Binding DetectedBrowsers}">
+                                <ListBox Height="350" ItemsSource="{Binding DetectedBrowsers}">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
                                             <Grid>
