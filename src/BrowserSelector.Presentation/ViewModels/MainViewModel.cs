@@ -41,6 +41,9 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private string _titleMessage = "URLを設定し、ブラウザを選択してください。";
 
+    [ObservableProperty]
+    private VisualSettings _visualSettings = new();
+
     public MainViewModel(
         IBrowserService browserService,
         ISettingsService settingsService,
@@ -95,9 +98,11 @@ public partial class MainViewModel : ObservableObject
             // 初期化時にブラウザ一覧を読み込み
             _logService?.LogDetailed(LogLevel.Debug, "ブラウザ一覧読み込み開始", "MainViewModel", 
                                     "MVVM_INIT", "ViewModel", "System", "MainViewModel", "Initialize", "LoadBrowsers_Start");
+            _logService?.LogDebug("BrowserLoad.Init Triggered", "MainViewModel");
             _ = LoadBrowsersAsync();
             _logService?.LogDetailed(LogLevel.Debug, "ブラウザ一覧読み込み完了", "MainViewModel", 
                                     "MVVM_INIT", "ViewModel", "System", "MainViewModel", "Initialize", "LoadBrowsers_Success");
+            _logService?.LogDebug("BrowserLoad.Init Enqueued", "MainViewModel");
             
             // 初期タイトルメッセージを設定
             UpdateTitleMessage();
@@ -238,16 +243,96 @@ public partial class MainViewModel : ObservableObject
             var settingsWindow = new Views.SettingsWindow(
                 new SettingsViewModel(_settingsService, _browserService, _localizationService, _urlRuleService, _logService));
             
-            settingsWindow.ShowDialog();
+            var result = settingsWindow.ShowDialog();
             
-            // 設定画面が閉じられた後、ブラウザリストを再読み込み
-            _ = LoadBrowsersAsync();
+            // 設定画面が閉じられた後、設定が保存された場合は再読み込み
+            if (result == true)
+            {
+                _logService?.LogDebug("設定画面で設定が保存されました。メイン画面の設定を再読み込みします。", "MainViewModel");
+                _ = LoadBrowsersAsync();
+                
+                // 視覚設定を再読み込みしてメイン画面に反映
+                _ = RefreshVisualSettingsAsync();
+            }
+            else
+            {
+                _logService?.LogDebug("設定画面がキャンセルされました。", "MainViewModel");
+            }
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"設定画面を開くエラー: {ex.Message}");
+            _logService?.LogError($"設定画面を開くエラー: {ex.Message}", "MainViewModel", ex);
             MessageBox.Show($"設定画面を開けませんでした: {ex.Message}", "エラー", 
                           MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    /// <summary>
+    /// 視覚設定を再読み込みしてメイン画面に反映
+    /// </summary>
+    private async Task RefreshVisualSettingsAsync()
+    {
+        try
+        {
+            _logService?.LogDebug("視覚設定の再読み込み開始", "MainViewModel");
+            
+            var visualSettings = await _settingsService.LoadVisualSettingsAsync();
+            _logService?.LogDebug($"視覚設定読み込み完了: BackgroundColor={visualSettings.BackgroundColor}", "MainViewModel");
+            
+            // メイン画面に視覚設定を適用
+            if (Application.Current?.MainWindow is Window mainWindow)
+            {
+                _logService?.LogDebug("メイン画面に視覚設定を適用開始", "MainViewModel");
+                
+                // 背景色またはグラデーションを適用
+                if (visualSettings.UseBackgroundGradient)
+                {
+                    // グラデーション方向に応じてStartPointとEndPointを設定
+                    System.Windows.Point startPoint, endPoint;
+                    switch (visualSettings.GradientDirection)
+                    {
+                        case BrowserSelector.Core.Enums.GradientDirection.Horizontal:
+                            startPoint = new System.Windows.Point(0, 0);
+                            endPoint = new System.Windows.Point(1, 0);
+                            break;
+                        case BrowserSelector.Core.Enums.GradientDirection.Diagonal:
+                            startPoint = new System.Windows.Point(0, 0);
+                            endPoint = new System.Windows.Point(1, 1);
+                            break;
+                        default: // Vertical
+                            startPoint = new System.Windows.Point(0, 0);
+                            endPoint = new System.Windows.Point(0, 1);
+                            break;
+                    }
+                    
+                    mainWindow.Background = new System.Windows.Media.LinearGradientBrush
+                    {
+                        StartPoint = startPoint,
+                        EndPoint = endPoint,
+                        GradientStops = new System.Windows.Media.GradientStopCollection
+                        {
+                            new System.Windows.Media.GradientStop(visualSettings.GradientStartColor, 0),
+                            new System.Windows.Media.GradientStop(visualSettings.GradientEndColor, 1)
+                        }
+                    };
+                }
+                else
+                {
+                    mainWindow.Background = new System.Windows.Media.SolidColorBrush(visualSettings.BackgroundColor);
+                }
+                
+                // VisualSettingsを反映
+                VisualSettings = visualSettings;
+                _logService?.LogDebug("メイン画面への視覚設定適用完了", "MainViewModel");
+            }
+            else
+            {
+                _logService?.LogWarning("メイン画面が見つかりません", "MainViewModel");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logService?.LogError($"視覚設定の再読み込みエラー: {ex.Message}", "MainViewModel", ex);
         }
     }
 

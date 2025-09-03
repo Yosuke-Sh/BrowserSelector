@@ -1,6 +1,8 @@
 using System.Windows;
 using System.Windows.Controls;
 using BrowserSelector.Presentation.ViewModels;
+using BrowserSelector.Core.Models;
+using System.ComponentModel;
 
 namespace BrowserSelector.Presentation.Views;
 
@@ -14,9 +16,6 @@ public partial class MainWindow : Window
         InitializeComponent();
         DataContext = viewModel;
         
-        // 視覚設定を適用
-        ApplyVisualSettings();
-        
         // ウィンドウをアクティブにする
         this.Activate();
         this.Focus();
@@ -28,30 +27,40 @@ public partial class MainWindow : Window
         this.Width = 800;
         this.Height = 600;
         
-        // デバッグ情報を出力
-        System.Diagnostics.Debug.WriteLine($"ウィンドウ位置: Left={this.Left}, Top={this.Top}, Width={this.Width}, Height={this.Height}");
-        System.Diagnostics.Debug.WriteLine($"ウィンドウ状態: WindowState={this.WindowState}, Visibility={this.Visibility}");
-        
-        // ウィンドウを確実に表示
-        this.Show();
+        // ウィンドウを確実に表示（App.xaml.csでShow()が呼ばれるため削除）
+        // this.Show();
         this.BringIntoView();
     }
-    
+
+
+
     /// <summary>
-    /// 視覚設定を適用
+    /// DataContext変更時の処理
     /// </summary>
-    private void ApplyVisualSettings()
+    protected override void OnSourceInitialized(EventArgs e)
     {
-        try
+        base.OnSourceInitialized(e);
+        
+        // DataContext変更の監視を開始
+        if (DataContext is INotifyPropertyChanged notifyPropertyChanged)
         {
-            // TODO: 設定サービスから視覚設定を読み込んで適用
-            // 現在はデフォルト設定を使用
-            var visualSettings = new Core.Models.VisualSettings();
-            // ApplyVisualSettings(visualSettings); // 一時的にコメントアウト
+            notifyPropertyChanged.PropertyChanged += OnDataContextPropertyChanged;
+            System.Diagnostics.Debug.WriteLine("MainWindow: DataContext変更監視を開始しました");
         }
-        catch (Exception ex)
+    }
+
+    /// <summary>
+    /// DataContextのプロパティ変更時の処理
+    /// </summary>
+    private void OnDataContextPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        System.Diagnostics.Debug.WriteLine($"MainWindow: DataContextプロパティ変更検知: {e.PropertyName}");
+        
+        if (e.PropertyName == nameof(MainViewModel.VisualSettings))
         {
-            System.Diagnostics.Debug.WriteLine($"視覚設定適用エラー: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine("MainWindow: VisualSettingsプロパティ変更を検知しました。UI更新を通知します。");
+            // UI更新を強制
+            this.InvalidateVisual();
         }
     }
     
@@ -62,18 +71,15 @@ public partial class MainWindow : Window
     {
         if (sender is Button button)
         {
-            System.Diagnostics.Debug.WriteLine($"ブラウザボタンがクリックされました: {button.Content}");
-            
             // データコンテキストの確認
             if (DataContext is MainViewModel viewModel)
             {
-                System.Diagnostics.Debug.WriteLine($"ViewModelの状態 - URL: '{viewModel.Url}', ブラウザ数: {viewModel.Browsers.Count}");
+                // ViewModelの状態確認
             }
             
             // ボタンのバインディング情報を確認
             var command = button.Command;
             var commandParameter = button.CommandParameter;
-            System.Diagnostics.Debug.WriteLine($"ボタンのコマンド: {command}, パラメータ: {commandParameter}");
         }
     }
 }

@@ -1,0 +1,30 @@
+using System;
+using System.Globalization;
+using System.Windows.Data;
+using BrowserSelector.Core.Enums;
+
+namespace BrowserSelector.Presentation.Converters;
+
+/// <summary>
+/// グラデーション方向の列挙型をコンボボックスのインデックスに変換するコンバーター
+/// </summary>
+public class GradientDirectionToIndexConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (value is GradientDirection direction)
+        {
+            return (int)direction;
+        }
+        return 0; // デフォルトは垂直（インデックス0）
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (value is int index)
+        {
+            return (GradientDirection)index;
+        }
+        return GradientDirection.Vertical; // デフォルトは垂直
+    }
+}

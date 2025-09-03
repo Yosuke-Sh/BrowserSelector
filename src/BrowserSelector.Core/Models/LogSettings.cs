@@ -19,7 +19,7 @@ public partial class LogSettings : ObservableObject
     /// ログレベル
     /// </summary>
     [ObservableProperty]
-    private LogLevel _logLevel = LogLevel.Information;
+    private LogLevel _logLevel = LogLevel.Debug;
 
     /// <summary>
     /// ログファイルの出力先フォルダ
@@ -43,7 +43,7 @@ public partial class LogSettings : ObservableObject
     /// コンソールにログを出力するかどうか
     /// </summary>
     [ObservableProperty]
-    private bool _enableConsoleLogging = false;
+    private bool _enableConsoleLogging = true;
 
     /// <summary>
     /// ファイルにログを出力するかどうか

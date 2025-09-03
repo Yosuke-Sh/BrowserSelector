@@ -1,5 +1,7 @@
 using System.Windows;
+using System.Windows.Controls;
 using BrowserSelector.Presentation.ViewModels;
+using BrowserSelector.Core.Enums;
 
 namespace BrowserSelector.Presentation.Views;
 
@@ -17,6 +19,24 @@ public partial class SettingsWindow : Window
         if (Application.Current.MainWindow != null)
         {
             Owner = Application.Current.MainWindow;
+        }
+    }
+
+    /// <summary>
+    /// グラデーション方向コンボボックスの選択変更イベントハンドラー
+    /// </summary>
+    private void GradientDirectionComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (sender is ComboBox comboBox && DataContext is SettingsViewModel viewModel)
+        {
+            var selectedIndex = comboBox.SelectedIndex;
+            var newDirection = (GradientDirection)selectedIndex;
+            
+            // ViewModelのプロパティを更新
+            viewModel.VisualSettings.GradientDirection = newDirection;
+            
+            // ログ出力（デバッグ用）
+            System.Diagnostics.Debug.WriteLine($"グラデーション方向が変更されました: {newDirection} (インデックス: {selectedIndex})");
         }
     }
 }

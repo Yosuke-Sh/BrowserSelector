@@ -14,7 +14,8 @@
         WindowState="Normal"
         ShowInTaskbar="True"
         Icon="/BrowserSelector.Presentation;component/Resources/Images/BrowserSelector_Icon_32.png"
-        d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}">
+        d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}">
 
     <Window.Resources>
         <!-- コンバーター -->
@@ -40,7 +41,7 @@
         </Style>
     </Window.Resources>
 
-    <Grid Background="White">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -58,21 +59,33 @@
             <!-- ロゴ（左上） -->
             <Image Grid.Column="0"
                    Source="/BrowserSelector.Presentation;component/Resources/Images/BrowserSelector_Logo_240.png"
-                   Width="125" 
-                   Height="88"
+                   Width="157" 
+                   Height="79"
                    HorizontalAlignment="Left"
-                   VerticalAlignment="Center"
-                   Margin="20,0,0,0"
+                   VerticalAlignment="Top"
+                   Margin="-15,-9,0,0"
                    RenderOptions.BitmapScalingMode="HighQuality" Grid.ColumnSpan="2"/>
 
             <!-- タイトルテキスト（中央） -->
             <TextBlock Grid.Column="1"
                        Text="{Binding TitleMessage}"
                        FontSize="20" 
-                       FontWeight="Bold"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"
-                       Foreground="#2196F3" Width="443"/>
+                       Width="443"
+                       >
+                <TextBlock.Effect>
+                    <DropShadowEffect
+                          ShadowDepth="4"
+                          Direction="330"
+                          Color="{DynamicResource {x:Static SystemColors.GrayTextColorKey}}"
+                          Opacity="0.5"
+                         BlurRadius="4"/>
+                </TextBlock.Effect>
+                <TextBlock.Background>
+                    <SolidColorBrush  Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}" Opacity="0.25"/>
+                </TextBlock.Background>
+            </TextBlock>
         </Grid>
 
         <!-- URLが指定されている場合の表示 -->
@@ -139,9 +152,9 @@
                      Command="{Binding OpenSettingsCommand}"
                      Padding="15,8"
                      VerticalAlignment="Center"
-                     Background="#2196F3"
-                     Foreground="White"
-                     BorderBrush="#1976D2"
+                     Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
+                     Foreground="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
+                     BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"
                      BorderThickness="1"
                      Cursor="Hand">
                 <StackPanel Orientation="Horizontal">
@@ -186,11 +199,12 @@
                 <TextBlock Text="🔍 ブラウザを検出中..." 
                            FontSize="18" 
                            HorizontalAlignment="Center"
-                           Margin="0,0,0,20"/>
+                           Margin="0,0,0,20"
+                           Foreground="{Binding VisualSettings.MessageTextColor}"/>
                 <TextBlock Text="システムにインストールされたブラウザを自動検出しています。" 
                            FontSize="14" 
                            HorizontalAlignment="Center"
-                           Foreground="Gray"/>
+                           Foreground="{Binding VisualSettings.MessageTextColor}"/>
             </StackPanel>
         </Grid>
 
@@ -202,7 +216,8 @@
         <!-- ローディング表示 -->
         <Grid Grid.Row="2" 
               Background="#80000000"
-              Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}">
+              Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}"
+              Panel.ZIndex="1000">
             <StackPanel HorizontalAlignment="Center" 
                         VerticalAlignment="Center">
                 <ProgressBar IsIndeterminate="True" 

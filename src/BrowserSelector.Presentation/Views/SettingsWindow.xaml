@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BrowserSelector.Presentation.Views"
         xmlns:controls="clr-namespace:BrowserSelector.Presentation.Controls"
+        xmlns:enums="clr-namespace:BrowserSelector.Core.Enums"
         xmlns:converters="clr-namespace:BrowserSelector.Presentation.Converters"
         mc:Ignorable="d"
         Title="設定" Height="600" Width="800"
@@ -31,6 +32,7 @@
         
         <!-- コンバーター -->
         <converters:ColorToBrushConverter x:Key="ColorToBrushConverter"/>
+        <converters:GradientDirectionToIndexConverter x:Key="GradientDirectionToIndexConverter"/>
     </Window.Resources>
 
     <Grid>
@@ -147,10 +149,10 @@
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="10">
                         
-                        <!-- 背景設定（先頭に移動） -->
+                        <!-- 背景設定 -->
                         <GroupBox Header="背景設定" Style="{StaticResource GroupBoxStyle}">
                             <StackPanel>
-                                <!-- 背景色（透明化色と共通） -->
+                                <!-- 背景色 -->
                                 <Grid Style="{StaticResource SettingRowStyle}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
@@ -166,29 +168,6 @@
                                             Background="{Binding VisualSettings.BackgroundColor, Converter={StaticResource ColorToBrushConverter}}" />
                                 </Grid>
 
-                                <!-- 背景透明化 -->
-                                <Grid Style="{StaticResource SettingRowStyle}">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="背景透明化" VerticalAlignment="Center"/>
-                                    <CheckBox Grid.Column="1" IsChecked="{Binding VisualSettings.IsBackgroundTransparent}"/>
-                                </Grid>
-
-                                <!-- 透明度（背景透明化時のみ有効） -->
-                                <Grid Style="{StaticResource SettingRowStyle}">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="150"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="透明度" VerticalAlignment="Center"/>
-                                    <Slider Grid.Column="1" Value="{Binding VisualSettings.Opacity}"
-                                            Minimum="0.01" Maximum="1.0" TickFrequency="0.1" IsSnapToTickEnabled="True"
-                                            VerticalAlignment="Center"
-                                            IsEnabled="{Binding VisualSettings.IsBackgroundTransparent}"/>
-                                </Grid>
-
                                 <!-- 背景グラデーション -->
                                 <Grid Style="{StaticResource SettingRowStyle}">
                                     <Grid.ColumnDefinitions>
@@ -198,36 +177,58 @@
                                     <TextBlock Text="背景グラディエーション" VerticalAlignment="Center"/>
                                     <CheckBox Grid.Column="1" IsChecked="{Binding VisualSettings.UseBackgroundGradient}"/>
                                 </Grid>
-                            </StackPanel>
-                        </GroupBox>
 
-                        <!-- タイトルバー設定（2番目） -->
-                        <GroupBox Header="タイトルバー設定" Style="{StaticResource GroupBoxStyle}">
-                            <StackPanel>
+                                <!-- グラデーション開始色 -->
                                 <Grid Style="{StaticResource SettingRowStyle}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="40"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="タイトルバーを表示" VerticalAlignment="Center"/>
-                                    <CheckBox Grid.Column="1" IsChecked="{Binding VisualSettings.ShowTitleBar}"/>
+                                    <TextBlock Text="グラデーション開始色" VerticalAlignment="Center"/>
+                                    <Button Grid.Column="1" Content="色を選択" Padding="10,5"
+                                            Command="{Binding SelectGradientStartColorCommand}"/>
+                                    <!-- 現在色を可視化 -->
+                                    <Border Grid.Column="2" Width="24" Height="24" Margin="10,0,0,0"
+                                            BorderBrush="#DDD" BorderThickness="1"
+                                            Background="{Binding VisualSettings.GradientStartColor, Converter={StaticResource ColorToBrushConverter}}" />
                                 </Grid>
-                            </StackPanel>
-                        </GroupBox>
 
-                        <!-- 角の丸み設定（最後） -->
-                        <GroupBox Header="角の丸み設定" Style="{StaticResource GroupBoxStyle}">
-                            <StackPanel>
+                                <!-- グラデーション終了色 -->
+                                <Grid Style="{StaticResource SettingRowStyle}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="40"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="グラデーション終了色" VerticalAlignment="Center"/>
+                                    <Button Grid.Column="1" Content="色を選択" Padding="10,5"
+                                            Command="{Binding SelectGradientEndColorCommand}"/>
+                                    <!-- 現在色を可視化 -->
+                                    <Border Grid.Column="2" Width="24" Height="24" Margin="10,0,0,0"
+                                            BorderBrush="#DDD" BorderThickness="1"
+                                            Background="{Binding VisualSettings.GradientEndColor, Converter={StaticResource ColorToBrushConverter}}" />
+                                </Grid>
+
+                                <!-- グラデーション方向 -->
                                 <Grid Style="{StaticResource SettingRowStyle}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="150"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="角の丸み" VerticalAlignment="Center"/>
-                                    <Slider Grid.Column="1" Value="{Binding VisualSettings.CornerRadius}" 
-                                            Minimum="0" Maximum="50" TickFrequency="5" IsSnapToTickEnabled="True"
-                                            VerticalAlignment="Center"/>
+                                    <TextBlock Text="グラデーション方向" VerticalAlignment="Center"/>
+                                    <ComboBox Grid.Column="1" 
+                                              SelectedIndex="{Binding VisualSettings.GradientDirection, Converter={StaticResource GradientDirectionToIndexConverter}}"
+                                              VerticalAlignment="Center"
+                                              IsEnabled="{Binding VisualSettings.UseBackgroundGradient}"
+                                              SelectionChanged="GradientDirectionComboBox_SelectionChanged">
+                                        <ComboBoxItem Content="垂直"/>
+                                        <ComboBoxItem Content="水平"/>
+                                        <ComboBoxItem Content="斜め"/>
+                                    </ComboBox>
                                 </Grid>
+
+
                             </StackPanel>
                         </GroupBox>
                     </StackPanel>

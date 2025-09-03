@@ -1,8 +1,10 @@
-using BrowserSelector.Core.Models;
 using BrowserSelector.Core.Services;
 using BrowserSelector.Infrastructure.SystemIntegration;
 using System.Diagnostics;
 using System.IO;
+using BrowserSelector.Core.Models;
+using BrowserSelector.Core.Enums;
+using BrowserSelector.Infrastructure.Logging;
 
 namespace BrowserSelector.Infrastructure.Services;
 
@@ -13,12 +15,20 @@ public class BrowserService : IBrowserService
 {
     private readonly IRegistryService _registryService;
     private readonly IUrlService _urlService;
+    private readonly ILogService _logService;
     private readonly List<Browser> _browsers = new();
 
+    // 後方互換: 旧シグネチャ用コンストラクタ（テスト等）
     public BrowserService(IRegistryService registryService, IUrlService urlService)
+        : this(registryService, urlService, new LogService())
+    {
+    }
+
+    public BrowserService(IRegistryService registryService, IUrlService urlService, ILogService logService)
     {
         _registryService = registryService;
         _urlService = urlService;
+        _logService = logService;
     }
 
     public async Task<IEnumerable<Browser>> DetectBrowsersAsync()
@@ -38,7 +48,7 @@ public class BrowserService : IBrowserService
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"ブラウザ検出エラー: {ex.Message}");
+            _logService.LogError($"ブラウザ検出エラー: {ex.Message}", nameof(BrowserService), ex);
             return Enumerable.Empty<Browser>();
         }
     }
@@ -47,37 +57,37 @@ public class BrowserService : IBrowserService
     {
         try
         {
-            Debug.WriteLine($"BrowserService: ブラウザ起動開始 - {browser.Name}, パス: {browser.ExecutablePath}, URL: {url}");
+            _logService.LogDebug($"ブラウザ起動開始 - {browser.Name}, パス: {browser.ExecutablePath}, URL: {url}", nameof(BrowserService));
             
             if (!browser.IsValid)
             {
-                Debug.WriteLine($"BrowserService: ブラウザが無効です - {browser.Name}");
+                _logService.LogWarning($"ブラウザが無効です - {browser.Name}", nameof(BrowserService));
                 return false;
             }
             
             if (!File.Exists(browser.ExecutablePath))
             {
-                Debug.WriteLine($"BrowserService: 実行ファイルが存在しません - {browser.ExecutablePath}");
+                _logService.LogWarning($"実行ファイルが存在しません - {browser.ExecutablePath}", nameof(BrowserService));
                 return false;
             }
 
             // URLを正規化
             var normalizedUrl = await _urlService.NormalizeUrlAsync(url);
-            Debug.WriteLine($"BrowserService: 正規化されたURL - {normalizedUrl}");
+            _logService.LogDebug($"正規化されたURL - {normalizedUrl}", nameof(BrowserService));
             
             if (string.IsNullOrEmpty(normalizedUrl))
             {
-                Debug.WriteLine($"BrowserService: URLの正規化に失敗しました");
+                _logService.LogWarning("URLの正規化に失敗しました", nameof(BrowserService));
                 return false;
             }
 
             // URLを検証
             var isValidUrl = await _urlService.ValidateUrlAsync(normalizedUrl);
-            Debug.WriteLine($"BrowserService: URL検証結果 - {isValidUrl}");
+            _logService.LogDebug($"URL検証結果 - {isValidUrl}", nameof(BrowserService));
             
             if (!isValidUrl)
             {
-                Debug.WriteLine($"BrowserService: URLが無効です - {normalizedUrl}");
+                _logService.LogWarning($"URLが無効です - {normalizedUrl}", nameof(BrowserService));
                 return false;
             }
 
@@ -95,22 +105,22 @@ public class BrowserService : IBrowserService
                 CreateNoWindow = false
             };
 
-            Debug.WriteLine($"BrowserService: プロセス起動 - FileName: {startInfo.FileName}, Arguments: {startInfo.Arguments}");
+            _logService.LogDebug($"プロセス起動 - FileName: {startInfo.FileName}, Arguments: {startInfo.Arguments}", nameof(BrowserService));
 
             using var process = Process.Start(startInfo);
             if (process != null)
             {
-                Debug.WriteLine($"BrowserService: プロセス起動成功 - PID: {process.Id}");
+                _logService.LogInformation($"プロセス起動成功 - PID: {process.Id}", nameof(BrowserService));
                 
                 // プロセス情報を取得して確認
                 try
                 {
                     var processInfo = Process.GetProcessById(process.Id);
-                    Debug.WriteLine($"BrowserService: 実際に起動されたプロセス - 名前: {processInfo.ProcessName}, ファイル名: {processInfo.MainModule?.FileName}");
+                    _logService.LogDebug($"実際に起動されたプロセス - 名前: {processInfo.ProcessName}, ファイル名: {processInfo.MainModule?.FileName}", nameof(BrowserService));
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine($"BrowserService: プロセス情報取得エラー - {ex.Message}");
+                    _logService.LogDebug($"プロセス情報取得エラー - {ex.Message}", nameof(BrowserService), ex);
                 }
                 
                 // 使用回数を増加
@@ -119,13 +129,12 @@ public class BrowserService : IBrowserService
                 return true;
             }
 
-            Debug.WriteLine($"BrowserService: プロセス起動失敗");
+            _logService.LogError("プロセス起動失敗", nameof(BrowserService));
             return false;
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"BrowserService: ブラウザ起動エラー - {ex.Message}");
-            Debug.WriteLine($"BrowserService: スタックトレース - {ex.StackTrace}");
+            _logService.LogError($"ブラウザ起動エラー - {ex.Message}", nameof(BrowserService), ex);
             return false;
         }
     }
@@ -150,7 +159,7 @@ public class BrowserService : IBrowserService
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"ブラウザ追加エラー: {ex.Message}");
+            _logService.LogError($"ブラウザ追加エラー: {ex.Message}", nameof(BrowserService), ex);
             return false;
         }
     }
@@ -173,7 +182,7 @@ public class BrowserService : IBrowserService
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"ブラウザ更新エラー: {ex.Message}");
+            _logService.LogError($"ブラウザ更新エラー: {ex.Message}", nameof(BrowserService), ex);
             return false;
         }
     }
@@ -196,7 +205,7 @@ public class BrowserService : IBrowserService
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"ブラウザ削除エラー: {ex.Message}");
+            _logService.LogError($"ブラウザ削除エラー: {ex.Message}", nameof(BrowserService), ex);
             return false;
         }
     }
@@ -205,7 +214,12 @@ public class BrowserService : IBrowserService
     {
         if (!_browsers.Any())
         {
+            _logService.LogDebug("Source=Detect Reason=CacheEmpty", nameof(BrowserService));
             await DetectBrowsersAsync();
+        }
+        else
+        {
+            _logService.LogDebug($"Source=Cache Count={_browsers.Count}", nameof(BrowserService));
         }
 
         return _browsers.OrderBy(b => b.DisplayOrder);
@@ -230,7 +244,7 @@ public class BrowserService : IBrowserService
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"デフォルトブラウザ設定エラー: {ex.Message}");
+            _logService.LogError($"デフォルトブラウザ設定エラー: {ex.Message}", nameof(BrowserService), ex);
             return false;
         }
     }
@@ -248,7 +262,7 @@ public class BrowserService : IBrowserService
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"デフォルトブラウザ取得エラー: {ex.Message}");
+            _logService.LogError($"デフォルトブラウザ取得エラー: {ex.Message}", nameof(BrowserService), ex);
             return null;
         }
     }
@@ -261,7 +275,7 @@ public class BrowserService : IBrowserService
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"使用統計更新エラー: {ex.Message}");
+            _logService.LogError($"使用統計更新エラー: {ex.Message}", nameof(BrowserService), ex);
         }
     }
 
@@ -277,11 +291,9 @@ public class BrowserService : IBrowserService
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"使用統計更新エラー: {ex.Message}");
+            _logService.LogError($"使用統計更新エラー: {ex.Message}", nameof(BrowserService), ex);
         }
     }
-
-
 
     private Task<List<Browser>> LoadCustomBrowsersAsync()
     {

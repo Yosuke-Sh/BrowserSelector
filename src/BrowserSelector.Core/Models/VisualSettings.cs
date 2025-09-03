@@ -1,5 +1,6 @@
 using System.Windows.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
+using BrowserSelector.Core.Enums;
 
 namespace BrowserSelector.Core.Models;
 
@@ -9,32 +10,7 @@ namespace BrowserSelector.Core.Models;
 public partial class VisualSettings : ObservableObject
 {
     [ObservableProperty]
-    private double _opacity = 1.0;
-
-    [ObservableProperty]
-    private Color _transparencyColor = Colors.Black;
-
-    [ObservableProperty]
-    private bool _useCustomTransparencyColor = false;
-
-    [ObservableProperty]
-    private double _cornerRadius = 0;
-
-    [ObservableProperty]
-    private bool _showTitleBar = true;
-
-    [ObservableProperty]
-    private Color _backgroundColor = Colors.Transparent;
-
-    [ObservableProperty]
-    private bool _useCustomBackgroundColor = false; // 互換維持（UIでは使用しない）
-
-    // 背景透明化（新）: 背景色を透明として扱い、Opacityで透明度指定
-    [ObservableProperty]
-    private bool _isBackgroundTransparent = false;
-
-    [ObservableProperty]
-    private bool _enableGradient = false;
+    private Color _backgroundColor = Colors.White;
 
     [ObservableProperty]
     private bool _useBackgroundGradient = false;
@@ -44,6 +20,9 @@ public partial class VisualSettings : ObservableObject
 
     [ObservableProperty]
     private Color _gradientEndColor = Colors.Transparent;
+
+    [ObservableProperty]
+    private GradientDirection _gradientDirection = GradientDirection.Vertical;
 
     [ObservableProperty]
     private double _iconScale = 1.0;
@@ -59,4 +38,6 @@ public partial class VisualSettings : ObservableObject
 
     [ObservableProperty]
     private double _focusWidth = 100.0;
+
+
 }

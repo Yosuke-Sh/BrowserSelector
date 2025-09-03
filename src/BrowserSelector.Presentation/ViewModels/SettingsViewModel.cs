@@ -53,22 +53,13 @@ public partial class SettingsViewModel : ObservableObject
     private bool _showFocusIndicator = true;
 
     [ObservableProperty]
-    private Color _focusColor = Colors.Blue;
+    private Color _focusColor = Colors.Black;
 
     [ObservableProperty]
     private double _focusThickness = 2.0;
 
     [ObservableProperty]
-    private bool _enableKeyboardNavigation = true;
-
-    [ObservableProperty]
-    private bool _enableShortcuts = true;
-
-    [ObservableProperty]
-    private bool _enableScreenReaderSupport = true;
-
-    [ObservableProperty]
-    private bool _provideDetailedDescriptions = true;
+    private double _focusWidth = 100.0;
 
     // URLルール関連
     [ObservableProperty]
@@ -109,31 +100,78 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
+            _logService?.LogDebug("SettingsViewModel初期化開始", "SettingsViewModel");
+            
             // 設定を読み込み
             AppSettings = await _settingsService.LoadAppSettingsAsync();
+            _logService?.LogDebug($"AppSettings読み込み完了: Language={AppSettings.Language}", "SettingsViewModel");
+            
             VisualSettings = await _settingsService.LoadVisualSettingsAsync();
+            
+            // グラデーション設定の初期化（デフォルト値の設定）
+            _logService?.LogDebug($"初期化前のGradientDirection: {VisualSettings.GradientDirection}", "SettingsViewModel");
+            
+            if (VisualSettings.UseBackgroundGradient)
+            {
+                _logService?.LogDebug("グラデーションが有効です。初期値を設定します。", "SettingsViewModel");
+                
+                if (VisualSettings.GradientStartColor == Colors.Transparent)
+                {
+                    VisualSettings.GradientStartColor = Colors.White;
+                    _logService?.LogDebug("グラデーション開始色をWhiteに設定", "SettingsViewModel");
+                }
+                if (VisualSettings.GradientEndColor == Colors.Transparent)
+                {
+                    VisualSettings.GradientEndColor = Colors.LightGray;
+                    _logService?.LogDebug("グラデーション終了色をLightGrayに設定", "SettingsViewModel");
+                }
+                // グラデーション方向の初期値を確実に設定
+                if (VisualSettings.GradientDirection == 0)
+                {
+                    VisualSettings.GradientDirection = BrowserSelector.Core.Enums.GradientDirection.Vertical;
+                    _logService?.LogDebug("グラデーション方向をVerticalに設定（初期値0から変更）", "SettingsViewModel");
+                }
+                else
+                {
+                    _logService?.LogDebug($"グラデーション方向は既に設定済み: {VisualSettings.GradientDirection}", "SettingsViewModel");
+                }
+            }
+            else
+            {
+                _logService?.LogDebug("グラデーションは無効です", "SettingsViewModel");
+            }
+            
+            _logService?.LogDebug($"VisualSettings読み込み完了: BackgroundColor={VisualSettings.BackgroundColor}, UseBackgroundGradient={VisualSettings.UseBackgroundGradient}, GradientDirection={VisualSettings.GradientDirection}", "SettingsViewModel");
 
             // 言語リストを初期化
             InitializeLanguages();
+            _logService?.LogDebug("言語リスト初期化完了", "SettingsViewModel");
 
             // ブラウザリストを更新
             await RefreshBrowsersAsync();
+            _logService?.LogDebug("ブラウザリスト更新完了", "SettingsViewModel");
 
             // URLルールリストを更新
             await RefreshUrlRulesAsync();
+            _logService?.LogDebug("URLルールリスト更新完了", "SettingsViewModel");
             
             // ログ設定の初期化
             await RefreshLogSettingsAsync();
+            _logService?.LogDebug("ログ設定初期化完了", "SettingsViewModel");
             
             // ログレベルの初期化
             InitializeLogLevels();
+            _logService?.LogDebug("ログレベル初期化完了", "SettingsViewModel");
 
             // プロパティ変更イベントを監視
             PropertyChanged += OnPropertyChanged;
+            _logService?.LogDebug("プロパティ変更イベント監視開始", "SettingsViewModel");
+            
+            _logService?.LogDebug("SettingsViewModel初期化完了", "SettingsViewModel");
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"設定画面の初期化エラー: {ex.Message}");
+            _logService?.LogError($"設定画面の初期化エラー: {ex.Message}", "SettingsViewModel", ex);
         }
     }
 
@@ -247,12 +285,46 @@ public partial class SettingsViewModel : ObservableObject
     {
         // リアルタイムプレビューの更新
         if (e.PropertyName == nameof(VisualSettings) || 
-            e.PropertyName == "VisualSettings.Opacity" ||
-            e.PropertyName == "VisualSettings.TransparencyColor" ||
-            e.PropertyName == "VisualSettings.CornerRadius" ||
             e.PropertyName == "VisualSettings.BackgroundColor" ||
-            e.PropertyName == "VisualSettings.UseBackgroundGradient")
+            e.PropertyName == "VisualSettings.UseBackgroundGradient" ||
+            e.PropertyName == "VisualSettings.GradientStartColor" ||
+            e.PropertyName == "VisualSettings.GradientEndColor" ||
+            e.PropertyName == "VisualSettings.GradientDirection")
         {
+            _logService?.LogDebug($"視覚設定プロパティ変更検知: {e.PropertyName}", "SettingsViewModel");
+            
+            // グラデーション方向の変更を詳細にログ出力
+            if (e.PropertyName == "VisualSettings.GradientDirection")
+            {
+                _logService?.LogDebug($"グラデーション方向が変更されました: {VisualSettings.GradientDirection}", "SettingsViewModel");
+            }
+            
+            // グラデーションチェックボックスが有効になった時のデフォルト値設定
+            if (e.PropertyName == "VisualSettings.UseBackgroundGradient" && VisualSettings.UseBackgroundGradient)
+            {
+                _logService?.LogDebug("グラデーションチェックボックスが有効になりました。デフォルト値を設定します。", "SettingsViewModel");
+                
+                if (VisualSettings.GradientStartColor == Colors.Transparent)
+                {
+                    VisualSettings.GradientStartColor = Colors.White;
+                    _logService?.LogDebug("グラデーション開始色をWhiteに設定", "SettingsViewModel");
+                }
+                if (VisualSettings.GradientEndColor == Colors.Transparent)
+                {
+                    VisualSettings.GradientEndColor = Colors.LightGray;
+                    _logService?.LogDebug("グラデーション終了色をLightGrayに設定", "SettingsViewModel");
+                }
+                if (VisualSettings.GradientDirection == 0) // デフォルト値
+                {
+                    VisualSettings.GradientDirection = BrowserSelector.Core.Enums.GradientDirection.Vertical;
+                    _logService?.LogDebug("グラデーション方向をVerticalに設定", "SettingsViewModel");
+                }
+                else
+                {
+                    _logService?.LogDebug($"グラデーション方向は既に設定済み: {VisualSettings.GradientDirection}", "SettingsViewModel");
+                }
+            }
+            
             await UpdateVisualSettingsAsync();
         }
 
@@ -279,31 +351,35 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
-            await _settingsService.SaveVisualSettingsAsync(VisualSettings);
-            ApplyVisualToActiveWindow(VisualSettings);
-            EnforceMutualExclusion();
+            _logService?.LogDebug("UpdateVisualSettingsAsync開始", "SettingsViewModel");
+            _logService?.LogDebug($"保存対象: UseBackgroundGradient={VisualSettings.UseBackgroundGradient}, GradientDirection={VisualSettings.GradientDirection}, StartColor={VisualSettings.GradientStartColor}, EndColor={VisualSettings.GradientEndColor}", "SettingsViewModel");
+            
+            // グラデーション方向の詳細ログ
+            if (VisualSettings.UseBackgroundGradient)
+            {
+                _logService?.LogDebug($"グラデーション設定詳細: 方向={VisualSettings.GradientDirection} (値={Convert.ToInt32(VisualSettings.GradientDirection)})", "SettingsViewModel");
+            }
+            
+            var result = await _settingsService.SaveVisualSettingsAsync(VisualSettings);
+            _logService?.LogDebug($"設定保存結果: {result}", "SettingsViewModel");
+            
+            if (result)
+            {
+                ApplyVisualToActiveWindow(VisualSettings);
+                _logService?.LogDebug("視覚設定の適用完了", "SettingsViewModel");
+            }
+            else
+            {
+                _logService?.LogWarning("設定の保存に失敗しました", "SettingsViewModel");
+            }
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"視覚設定更新エラー: {ex.Message}");
+            _logService?.LogError($"視覚設定更新エラー: {ex.Message}", "SettingsViewModel", ex);
         }
     }
 
-    /// <summary>
-    /// 背景透明化と背景グラディエーションの相互排他を強制
-    /// </summary>
-    private void EnforceMutualExclusion()
-    {
-        if (VisualSettings.IsBackgroundTransparent && VisualSettings.UseBackgroundGradient)
-        {
-            // 両方チェックは不可 → エラー表示して無効化
-            MessageBox.Show("背景透明化と背景グラディエーションは同時に有効にできません。どちらか一方を選択してください。",
-                            "設定エラー", MessageBoxButton.OK, MessageBoxImage.Warning);
-            // 直近の変更を優先し、もう片方を落とす（簡易運用）
-            // ここではグラディエーションをオフにする
-            VisualSettings.UseBackgroundGradient = false;
-        }
-    }
+
 
     /// <summary>
     /// 現在表示中のウィンドウへ視覚設定を即時適用
@@ -312,57 +388,82 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
+            _logService?.LogDebug("ApplyVisualToActiveWindow開始", "SettingsViewModel");
+            _logService?.LogDebug($"受領値: BackgroundColor={settings.BackgroundColor}", "SettingsViewModel");
+            
             var window = Application.Current?.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive)
                          ?? Application.Current?.MainWindow;
-            if (window == null) return;
+            if (window == null) 
+            {
+                _logService?.LogDebug("適用対象のウィンドウが見つかりません", "SettingsViewModel");
+                return;
+            }
+            
+            _logService?.LogDebug($"適用対象ウィンドウ: {window.GetType().Name}, Title={window.Title}", "SettingsViewModel");
 
-            // 透明度
-            window.Opacity = Math.Max(0.01, Math.Min(1.0, settings.Opacity));
+            // 適用前の値を記録
+            var beforeBackground = window.Background;
+            _logService?.LogDebug($"適用前の背景: {beforeBackground}", "SettingsViewModel");
+
+
 
             // 背景色 / グラデーション
             if (settings.UseBackgroundGradient)
             {
-                window.Background = new LinearGradientBrush
+                _logService?.LogDebug($"グラデーション設定開始: 方向={settings.GradientDirection}, 開始色={settings.GradientStartColor}, 終了色={settings.GradientEndColor}", "SettingsViewModel");
+                
+                // グラデーション方向に応じてStartPointとEndPointを設定
+                System.Windows.Point startPoint, endPoint;
+                switch (settings.GradientDirection)
                 {
-                    StartPoint = new System.Windows.Point(0, 0),
-                    EndPoint = new System.Windows.Point(0, 1),
+                    case BrowserSelector.Core.Enums.GradientDirection.Horizontal:
+                        startPoint = new System.Windows.Point(0, 0);
+                        endPoint = new System.Windows.Point(1, 0);
+                        _logService?.LogDebug("水平方向グラデーションを設定", "SettingsViewModel");
+                        break;
+                    case BrowserSelector.Core.Enums.GradientDirection.Diagonal:
+                        startPoint = new System.Windows.Point(0, 0);
+                        endPoint = new System.Windows.Point(1, 1);
+                        _logService?.LogDebug("斜め方向グラデーションを設定", "SettingsViewModel");
+                        break;
+                    default: // Vertical
+                        startPoint = new System.Windows.Point(0, 0);
+                        endPoint = new System.Windows.Point(0, 1);
+                        _logService?.LogDebug("垂直方向グラデーションを設定", "SettingsViewModel");
+                        break;
+                }
+                
+                var gradientBrush = new LinearGradientBrush
+                {
+                    StartPoint = startPoint,
+                    EndPoint = endPoint,
                     GradientStops = new GradientStopCollection
                     {
                         new GradientStop(settings.GradientStartColor, 0),
                         new GradientStop(settings.GradientEndColor, 1)
                     }
                 };
+                
+                window.Background = gradientBrush;
+                _logService?.LogDebug($"背景グラデーション設定完了: 方向={settings.GradientDirection}, 開始色={settings.GradientStartColor}, 終了色={settings.GradientEndColor}, 適用後={window.Background}", "SettingsViewModel");
             }
             else
             {
-                window.Background = new SolidColorBrush(settings.BackgroundColor);
+                _logService?.LogDebug($"背景色設定開始: 設定値={settings.BackgroundColor}", "SettingsViewModel");
+                
+                var newBrush = new SolidColorBrush(settings.BackgroundColor);
+                window.Background = newBrush;
+                
+                _logService?.LogDebug($"背景色設定完了: 設定値={settings.BackgroundColor}, 適用後={window.Background}", "SettingsViewModel");
             }
 
-            // 角の丸み（Clip）
-            var radius = Math.Max(0, Math.Min(50, settings.CornerRadius));
-            if (radius > 0)
-            {
-                var geometry = new RectangleGeometry(new Rect(0, 0, window.ActualWidth, window.ActualHeight), radius, radius);
-                window.Clip = geometry;
-                // サイズ変更時も維持
-                void handler(object? s, SizeChangedEventArgs e)
-                {
-                    window.Clip = new RectangleGeometry(new Rect(0, 0, e.NewSize.Width, e.NewSize.Height), radius, radius);
-                }
-                window.SizeChanged -= handler; // 二重登録防止
-                window.SizeChanged += handler;
-            }
-            else
-            {
-                window.ClearValue(UIElement.ClipProperty);
-            }
 
-            // タイトルバー表示
-            window.WindowStyle = settings.ShowTitleBar ? WindowStyle.SingleBorderWindow : WindowStyle.None;
+            
+            _logService?.LogDebug("ApplyVisualToActiveWindow完了", "SettingsViewModel");
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"視覚設定即時適用エラー: {ex.Message}");
+            _logService?.LogError($"視覚設定即時適用エラー: {ex.Message}", "SettingsViewModel", ex);
         }
     }
 
@@ -453,19 +554,7 @@ public partial class SettingsViewModel : ObservableObject
         }
     }
 
-    /// <summary>
-    /// 透明化色を選択するコマンド
-    /// </summary>
-    [RelayCommand]
-    private void SelectTransparencyColor()
-    {
-        var colorDialog = new System.Windows.Forms.ColorDialog();
-        if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-        {
-            var color = Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
-            VisualSettings.TransparencyColor = color;
-        }
-    }
+
 
     /// <summary>
     /// 背景色を選択するコマンド
@@ -480,6 +569,36 @@ public partial class SettingsViewModel : ObservableObject
             VisualSettings.BackgroundColor = color;
         }
     }
+
+    /// <summary>
+    /// グラデーション開始色を選択するコマンド
+    /// </summary>
+    [RelayCommand]
+    private void SelectGradientStartColor()
+    {
+        var colorDialog = new System.Windows.Forms.ColorDialog();
+        if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+        {
+            var color = Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
+            VisualSettings.GradientStartColor = color;
+        }
+    }
+
+    /// <summary>
+    /// グラデーション終了色を選択するコマンド
+    /// </summary>
+    [RelayCommand]
+    private void SelectGradientEndColor()
+    {
+        var colorDialog = new System.Windows.Forms.ColorDialog();
+        if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+        {
+            var color = Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
+            VisualSettings.GradientEndColor = color;
+        }
+    }
+
+
 
     /// <summary>
     /// フォーカス色を選択するコマンド
@@ -594,30 +713,52 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private async Task SaveSettings()
     {
+        _logService?.LogDebug("SaveSettingsコマンド実行開始", "SettingsViewModel");
+        await SaveSettingsInternal();
+    }
+
+    private async Task SaveSettingsInternal()
+    {
         try
         {
+            _logService?.LogDebug("SaveSettings開始", "SettingsViewModel");
+            _logService?.LogDebug($"保存対象VisualSettings: BackgroundColor={VisualSettings.BackgroundColor}", "SettingsViewModel");
+            
             // アプリケーション設定を保存
             var appSettingsResult = await _settingsService.SaveAppSettingsAsync(AppSettings);
+            _logService?.LogDebug($"AppSettings保存結果: {appSettingsResult}", "SettingsViewModel");
             
             // 視覚設定を保存
             var visualSettingsResult = await _settingsService.SaveVisualSettingsAsync(VisualSettings);
+            _logService?.LogDebug($"VisualSettings保存結果: {visualSettingsResult}", "SettingsViewModel");
 
             if (appSettingsResult && visualSettingsResult)
             {
+                _logService?.LogDebug("設定保存成功、メイン画面への反映開始", "SettingsViewModel");
+                
                 // メイン画面へ反映
                 ApplyVisualToActiveWindow(VisualSettings);
+                
+                _logService?.LogDebug("メイン画面への反映完了", "SettingsViewModel");
 
                 // 成功時はウィンドウを閉じる
                 if (Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.DataContext == this) is Window window)
                 {
+                    _logService?.LogDebug($"設定ウィンドウを閉じる: {window.GetType().Name}", "SettingsViewModel");
                     window.DialogResult = true;
                     window.Close();
                 }
             }
+            else
+            {
+                _logService?.LogWarning($"設定保存に失敗: AppSettings={appSettingsResult}, VisualSettings={visualSettingsResult}", "SettingsViewModel");
+            }
+            
+            _logService?.LogDebug("SaveSettings完了", "SettingsViewModel");
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"設定保存エラー: {ex.Message}");
+            _logService?.LogError($"設定保存エラー: {ex.Message}", "SettingsViewModel", ex);
         }
     }
 
