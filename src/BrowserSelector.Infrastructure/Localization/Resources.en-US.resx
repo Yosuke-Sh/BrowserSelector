@@ -97,15 +97,6 @@
   <data name="Settings.Display.FocusWidth" xml:space="preserve">
     <value>Focus Width</value>
   </data>
-  <data name="Settings.App.StartMinimized" xml:space="preserve">
-    <value>Start Minimized</value>
-  </data>
-  <data name="Settings.App.StartInSystemTray" xml:space="preserve">
-    <value>Start in System Tray</value>
-  </data>
-  <data name="Settings.App.StartupDelay" xml:space="preserve">
-    <value>Startup Delay (seconds)</value>
-  </data>
   <data name="Settings.App.EnableLogging" xml:space="preserve">
     <value>Enable Logging</value>
   </data>

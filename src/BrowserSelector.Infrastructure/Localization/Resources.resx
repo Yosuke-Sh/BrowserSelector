@@ -97,15 +97,6 @@
   <data name="Settings.Display.FocusWidth" xml:space="preserve">
     <value>フォーカス幅</value>
   </data>
-  <data name="Settings.App.StartMinimized" xml:space="preserve">
-    <value>最小化して起動</value>
-  </data>
-  <data name="Settings.App.StartInSystemTray" xml:space="preserve">
-    <value>システムトレイで起動</value>
-  </data>
-  <data name="Settings.App.StartupDelay" xml:space="preserve">
-    <value>起動遅延（秒）</value>
-  </data>
   <data name="Settings.App.EnableLogging" xml:space="preserve">
     <value>ログを有効にする</value>
   </data>

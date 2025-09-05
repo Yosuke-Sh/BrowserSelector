@@ -15,6 +15,23 @@ using System.Text.Json;
 namespace BrowserSelector.Presentation.ViewModels;
 
 /// <summary>
+/// 設定変更イベントの引数
+/// </summary>
+public class SettingsChangedEventArgs : EventArgs
+{
+    public string SettingType { get; }
+    public object? OldValue { get; }
+    public object? NewValue { get; }
+
+    public SettingsChangedEventArgs(string settingType, object? oldValue, object? newValue)
+    {
+        SettingType = settingType;
+        OldValue = oldValue;
+        NewValue = newValue;
+    }
+}
+
+/// <summary>
 /// 設定画面のViewModel
 /// </summary>
 public partial class SettingsViewModel : ObservableObject
@@ -48,6 +65,11 @@ public partial class SettingsViewModel : ObservableObject
 
     [ObservableProperty]
     private LogSettings _logSettings = new();
+
+    /// <summary>
+    /// 設定変更通知イベント
+    /// </summary>
+    public event EventHandler<SettingsChangedEventArgs>? SettingsChanged;
 
     [ObservableProperty]
     private bool _showFocusIndicator = true;
@@ -166,13 +188,13 @@ public partial class SettingsViewModel : ObservableObject
             await RefreshUrlRulesAsync();
             _logService?.LogDebug("URLルールリスト更新完了", "SettingsViewModel");
             
-            // ログ設定の初期化
-            await RefreshLogSettingsAsync();
-            _logService?.LogDebug("ログ設定初期化完了", "SettingsViewModel");
-            
-            // ログレベルの初期化
+            // ログレベルの初期化（先に実行）
             InitializeLogLevels();
             _logService?.LogDebug("ログレベル初期化完了", "SettingsViewModel");
+            
+            // ログ設定の読み込み
+            await LoadLogSettingsAsync();
+            _logService?.LogDebug("ログ設定読み込み完了", "SettingsViewModel");
 
             // プロパティ変更イベントを監視
             PropertyChanged += OnPropertyChanged;
@@ -214,9 +236,8 @@ public partial class SettingsViewModel : ObservableObject
                 DetectedBrowsers.Add(browser);
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            System.Diagnostics.Debug.WriteLine($"ブラウザリスト更新エラー: {ex.Message}");
         }
     }
 
@@ -234,9 +255,36 @@ public partial class SettingsViewModel : ObservableObject
                 UrlRules.Add(rule);
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            System.Diagnostics.Debug.WriteLine($"URLルールリスト更新エラー: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// ログ設定の読み込み
+    /// </summary>
+    private async Task LoadLogSettingsAsync()
+    {
+        try
+        {
+            // ログ設定を読み込み
+            LogSettings = await _settingsService.LoadLogSettingsAsync();
+            
+            // 現在のログファイルパスを設定
+            CurrentLogFilePath = _logService.GetLogFilePath();
+            
+            // ログサービスの設定を更新
+            _logService.UpdateSettings(LogSettings);
+            
+            // 選択されたログレベルを設定
+            SelectedLogLevel = AvailableLogLevels.FirstOrDefault(l => l.LogLevel == LogSettings.LogLevel);
+            
+            // デバッグ情報を出力
+        }
+        catch (Exception)
+        {
+            // エラー時はデフォルト設定を使用
+            await RefreshLogSettingsAsync();
         }
     }
 
@@ -249,7 +297,7 @@ public partial class SettingsViewModel : ObservableObject
         {
             // ログ設定の初期化
             LogSettings.EnableLogging = true;
-            LogSettings.LogLevel = LogLevel.Information;
+            LogSettings.LogLevel = LogLevel.Information; // デフォルトをInformationに変更
             LogSettings.LogOutputFolder = LogSettings.GetDefaultLogFolder();
             LogSettings.MaxLogFileSize = 10;
             LogSettings.LogRetentionDays = 30;
@@ -266,10 +314,11 @@ public partial class SettingsViewModel : ObservableObject
             
             // 選択されたログレベルを設定
             SelectedLogLevel = AvailableLogLevels.FirstOrDefault(l => l.LogLevel == LogSettings.LogLevel);
+            
+            // デバッグ情報を出力
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            System.Diagnostics.Debug.WriteLine($"ログ設定初期化エラー: {ex.Message}");
         }
         
         return Task.CompletedTask;
@@ -774,9 +823,8 @@ public partial class SettingsViewModel : ObservableObject
                 InitializeLanguages();
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            System.Diagnostics.Debug.WriteLine($"設定リセットエラー: {ex.Message}");
         }
     }
 
@@ -806,9 +854,8 @@ public partial class SettingsViewModel : ObservableObject
                 }
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            System.Diagnostics.Debug.WriteLine($"設定インポートエラー: {ex.Message}");
         }
     }
 
@@ -844,9 +891,8 @@ public partial class SettingsViewModel : ObservableObject
                 await File.WriteAllTextAsync(saveFileDialog.FileName, json);
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            System.Diagnostics.Debug.WriteLine($"設定エクスポートエラー: {ex.Message}");
         }
     }
 
@@ -874,10 +920,17 @@ public partial class SettingsViewModel : ObservableObject
             // 視覚設定を保存
             var visualSettingsResult = await _settingsService.SaveVisualSettingsAsync(VisualSettings);
             _logService?.LogDebug($"VisualSettings保存結果: {visualSettingsResult}", "SettingsViewModel");
+            
+            // ログ設定を保存
+            var logSettingsResult = await _settingsService.SaveLogSettingsAsync(LogSettings);
+            _logService?.LogDebug($"LogSettings保存結果: {logSettingsResult}", "SettingsViewModel");
 
-            if (appSettingsResult && visualSettingsResult)
+            if (appSettingsResult && visualSettingsResult && logSettingsResult)
             {
                 _logService?.LogDebug("設定保存成功、メイン画面への反映開始", "SettingsViewModel");
+                
+                // 設定変更通知を送信
+                SettingsChanged?.Invoke(this, new SettingsChangedEventArgs("VisualSettings", null, VisualSettings));
                 
                 // メイン画面へ反映
                 ApplyVisualToActiveWindow(VisualSettings);
@@ -942,9 +995,8 @@ public partial class SettingsViewModel : ObservableObject
                 _logService.UpdateSettings(LogSettings);
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            System.Diagnostics.Debug.WriteLine($"ログフォルダ選択エラー: {ex.Message}");
         }
     }
 
@@ -960,9 +1012,8 @@ public partial class SettingsViewModel : ObservableObject
             var logWindow = new Views.LogViewerWindow(logContent);
             logWindow.ShowDialog();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            System.Diagnostics.Debug.WriteLine($"ログ表示エラー: {ex.Message}");
         }
     }
 
@@ -985,9 +1036,8 @@ public partial class SettingsViewModel : ObservableObject
                               MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            System.Diagnostics.Debug.WriteLine($"ログクリアエラー: {ex.Message}");
         }
     }
 
@@ -1009,9 +1059,8 @@ public partial class SettingsViewModel : ObservableObject
                               MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            System.Diagnostics.Debug.WriteLine($"古いログ削除エラー: {ex.Message}");
         }
     }
 

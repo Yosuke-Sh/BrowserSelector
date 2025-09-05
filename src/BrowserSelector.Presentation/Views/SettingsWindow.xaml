@@ -57,43 +57,16 @@
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="10">
                         
-                        <!-- 起動設定 -->
-                        <GroupBox Header="起動設定" Style="{StaticResource GroupBoxStyle}">
+                        <!-- アプリケーション設定 -->
+                        <GroupBox Header="アプリケーション設定" Style="{StaticResource GroupBoxStyle}">
                             <StackPanel>
-                                <Grid Style="{StaticResource SettingRowStyle}">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="最小化で起動" VerticalAlignment="Center"/>
-                                    <CheckBox Grid.Column="1" IsChecked="{Binding AppSettings.StartMinimized}"/>
-                                </Grid>
                                 
                                 <Grid Style="{StaticResource SettingRowStyle}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="システムトレイで起動" VerticalAlignment="Center"/>
-                                    <CheckBox Grid.Column="1" IsChecked="{Binding AppSettings.StartInSystemTray}"/>
-                                </Grid>
-                                
-                                <Grid Style="{StaticResource SettingRowStyle}">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="100"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="起動遅延（秒）" VerticalAlignment="Center"/>
-                                    <TextBox Grid.Column="1" Text="{Binding AppSettings.StartupDelay}" 
-                                             VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                                </Grid>
-                                
-                                <Grid Style="{StaticResource SettingRowStyle}">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="URLルール合致後にアプリを終了" VerticalAlignment="Center"/>
+                                    <TextBlock Text="ブラウザ起動後にアプリを終了" VerticalAlignment="Center"/>
                                     <CheckBox Grid.Column="1" IsChecked="{Binding AppSettings.CloseAfterUrlRuleMatch}"/>
                                 </Grid>
                             </StackPanel>
@@ -238,6 +211,49 @@
                                 </Grid>
 
 
+                            </StackPanel>
+                        </GroupBox>
+
+                        <!-- ウィンドウ設定 -->
+                        <GroupBox Header="ウィンドウ設定" Style="{StaticResource GroupBoxStyle}">
+                            <StackPanel>
+                                <!-- 初期起動サイズ -->
+                                <Grid Style="{StaticResource SettingRowStyle}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="20"/>
+                                        <ColumnDefinition Width="100"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="初期起動サイズ" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Column="1" Text="{Binding VisualSettings.InitialWindowWidth}" 
+                                             VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                    <TextBlock Grid.Column="2" Text="×" VerticalAlignment="Center" 
+                                               HorizontalAlignment="Center"/>
+                                    <TextBox Grid.Column="3" Text="{Binding VisualSettings.InitialWindowHeight}" 
+                                             VerticalAlignment="Center"/>
+                                </Grid>
+                                
+                                <!-- ロゴ表示 -->
+                                <Grid Style="{StaticResource SettingRowStyle}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="ロゴ表示" VerticalAlignment="Center"/>
+                                    <CheckBox Grid.Column="1" IsChecked="{Binding VisualSettings.ShowLogo}"/>
+                                </Grid>
+                                
+                                <!-- URL入力表示 -->
+                                <Grid Style="{StaticResource SettingRowStyle}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="URL入力表示" VerticalAlignment="Center"/>
+                                    <CheckBox Grid.Column="1" IsChecked="{Binding VisualSettings.ShowUrlInput}"/>
+                                </Grid>
+                                
                             </StackPanel>
                         </GroupBox>
                     </StackPanel>

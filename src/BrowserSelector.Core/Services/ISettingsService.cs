@@ -28,6 +28,16 @@ public interface ISettingsService
     Task<bool> SaveVisualSettingsAsync(VisualSettings settings);
 
     /// <summary>
+    /// ログ設定を読み込み
+    /// </summary>
+    Task<LogSettings> LoadLogSettingsAsync();
+
+    /// <summary>
+    /// ログ設定を保存
+    /// </summary>
+    Task<bool> SaveLogSettingsAsync(LogSettings settings);
+
+    /// <summary>
     /// 設定ファイルのパスを取得
     /// </summary>
     string GetSettingsFilePath();

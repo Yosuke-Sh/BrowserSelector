@@ -39,5 +39,17 @@ public partial class VisualSettings : ObservableObject
     [ObservableProperty]
     private double _focusWidth = 100.0;
 
+    [ObservableProperty]
+    private double _initialWindowWidth = 800.0;
+
+    [ObservableProperty]
+    private double _initialWindowHeight = 600.0;
+
+    [ObservableProperty]
+    private bool _showLogo = true;
+
+    [ObservableProperty]
+    private bool _showUrlInput = true;
+
 
 }

@@ -7,14 +7,6 @@ namespace BrowserSelector.Core.Models;
 /// </summary>
 public partial class AppSettings : ObservableObject
 {
-    [ObservableProperty]
-    private bool _startMinimized;
-
-    [ObservableProperty]
-    private bool _startInSystemTray;
-
-    [ObservableProperty]
-    private int _startupDelay;
 
     [ObservableProperty]
     private string _startupMessage = string.Empty;
@@ -44,5 +36,5 @@ public partial class AppSettings : ObservableObject
     private bool _registerProtocol = true;
 
     [ObservableProperty]
-    private bool _closeAfterUrlRuleMatch = false;
+    private bool _closeAfterUrlRuleMatch = true;
 }

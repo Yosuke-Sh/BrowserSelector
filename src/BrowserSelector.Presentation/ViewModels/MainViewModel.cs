@@ -44,6 +44,51 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private VisualSettings _visualSettings = new();
 
+    /// <summary>
+    /// 設定変更通知を受け取る
+    /// </summary>
+    public void OnSettingsChanged(object? sender, SettingsChangedEventArgs e)
+    {
+        if (e.SettingType == "VisualSettings" && e.NewValue is VisualSettings newVisualSettings)
+        {
+            // VisualSettingsを更新
+            VisualSettings = newVisualSettings;
+            
+            // ウィンドウサイズの即座変更
+            if (Application.Current.MainWindow is Views.MainWindow mainWindow)
+            {
+                ApplyWindowSizeChanges(mainWindow, newVisualSettings);
+            }
+        }
+    }
+
+    /// <summary>
+    /// ウィンドウサイズの変更を適用
+    /// </summary>
+    private void ApplyWindowSizeChanges(Views.MainWindow mainWindow, VisualSettings visualSettings)
+    {
+        try
+        {
+            // 最小・最大サイズの制限
+            var width = Math.Max(400, Math.Min(2000, visualSettings.InitialWindowWidth));
+            var height = Math.Max(300, Math.Min(1500, visualSettings.InitialWindowHeight));
+            
+            // ウィンドウサイズを変更
+            mainWindow.Width = width;
+            mainWindow.Height = height;
+            
+            // ウィンドウ位置を中央に調整
+            mainWindow.Left = (SystemParameters.PrimaryScreenWidth - width) / 2;
+            mainWindow.Top = (SystemParameters.PrimaryScreenHeight - height) / 2;
+            
+            _logService?.LogInformation($"ウィンドウサイズを即座に変更: {width}x{height}", "MainViewModel");
+        }
+        catch (Exception ex)
+        {
+            _logService?.LogError($"ウィンドウサイズ変更エラー: {ex.Message}", "MainViewModel", ex);
+        }
+    }
+
     public MainViewModel(
         IBrowserService browserService,
         ISettingsService settingsService,
@@ -220,6 +265,14 @@ public partial class MainViewModel : ObservableObject
                 browser.IncrementUseCount();
                 StatusMessage = $"ブラウザ {browser.Name} を起動しました";
                 System.Diagnostics.Debug.WriteLine($"ブラウザ起動成功: {browser.Name}");
+                
+                // ブラウザ起動後のアプリ終了設定が有効な場合
+                var appSettings = await _settingsService.LoadAppSettingsAsync();
+                if (appSettings.CloseAfterUrlRuleMatch)
+                {
+                    _logService?.LogInformation("ブラウザ起動後のアプリ終了", "MainViewModel");
+                    Application.Current.Shutdown();
+                }
             }
             else
             {
@@ -254,10 +307,16 @@ public partial class MainViewModel : ObservableObject
         try
         {
             // 設定画面を開く
-            var settingsWindow = new Views.SettingsWindow(
-                new SettingsViewModel(_settingsService, _browserService, _localizationService, _urlRuleService, _logService));
+            var settingsViewModel = new SettingsViewModel(_settingsService, _browserService, _localizationService, _urlRuleService, _logService);
+            var settingsWindow = new Views.SettingsWindow(settingsViewModel);
+            
+            // 設定変更通知のイベントハンドラーを登録
+            settingsViewModel.SettingsChanged += OnSettingsChanged;
             
             var result = settingsWindow.ShowDialog();
+            
+            // イベントハンドラーを解除
+            settingsViewModel.SettingsChanged -= OnSettingsChanged;
             
             // 設定画面が閉じられた後、設定が保存された場合は再読み込み
             if (result == true)
@@ -399,16 +458,8 @@ public partial class MainViewModel : ObservableObject
                 _logService?.LogInformation($"URLルール適用完了: {url} -> {matchingBrowser.Name}", "MainViewModel");
                 StatusMessage = $"URLルールにより {matchingBrowser.Name} が自動選択されました";
                 
-                // 自動起動
+                // 自動起動（LaunchBrowserAsync内でアプリ終了処理も実行される）
                 await LaunchBrowserAsync(matchingBrowser);
-                
-                // URLルール合致後のアプリ終了設定が有効な場合
-                var appSettings = await _settingsService.LoadAppSettingsAsync();
-                if (appSettings.CloseAfterUrlRuleMatch)
-                {
-                    _logService?.LogInformation("URLルール合致後のアプリ終了", "MainViewModel");
-                    Application.Current.Shutdown();
-                }
             }
             else
             {

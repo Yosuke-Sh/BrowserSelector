@@ -24,7 +24,8 @@ public class LogService : ILogService
         _defaultLogFolder = LogSettings.GetDefaultLogFolder();
         _settings.LogOutputFolder = _defaultLogFolder;
         
-        // デフォルトはLogSettingsのレベル（Information）を使用
+        // 設定ファイルからログ設定を読み込み
+        LoadSettingsFromFile();
         
         // ログフォルダが存在しない場合は作成
         EnsureLogDirectoryExists();
@@ -121,6 +122,33 @@ public class LogService : ILogService
         catch (Exception)
         {
             // ログ出力中のエラーは無視
+        }
+    }
+
+    /// <summary>
+    /// 設定ファイルからログ設定を読み込み
+    /// </summary>
+    private void LoadSettingsFromFile()
+    {
+        try
+        {
+            var settingsDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BrowserSelector");
+            var logSettingsPath = Path.Combine(settingsDirectory, "logsettings.json");
+            
+            if (File.Exists(logSettingsPath))
+            {
+                var json = File.ReadAllText(logSettingsPath);
+                var loadedSettings = System.Text.Json.JsonSerializer.Deserialize<LogSettings>(json);
+                if (loadedSettings != null)
+                {
+                    _settings = loadedSettings;
+                    _settings.LogOutputFolder = _defaultLogFolder; // パスは常にデフォルトを使用
+                }
+            }
+        }
+        catch (Exception)
+        {
+            // 設定ファイル読み込みエラーは無視（デフォルト値を使用）
         }
     }
 

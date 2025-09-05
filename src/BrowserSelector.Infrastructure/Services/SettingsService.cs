@@ -13,6 +13,7 @@ public class SettingsService : ISettingsService
     private readonly string _settingsDirectory;
     private readonly string _appSettingsPath;
     private readonly string _visualSettingsPath;
+    private readonly string _logSettingsPath;
 
     public SettingsService()
     {
@@ -42,6 +43,7 @@ public class SettingsService : ISettingsService
 
         _appSettingsPath = Path.Combine(_settingsDirectory, "appsettings.json");
         _visualSettingsPath = Path.Combine(_settingsDirectory, "visualsettings.json");
+        _logSettingsPath = Path.Combine(_settingsDirectory, "logsettings.json");
     }
 
     public async Task<AppSettings> LoadAppSettingsAsync()
@@ -231,6 +233,46 @@ public class SettingsService : ISettingsService
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"設定エクスポートエラー: {ex.Message}");
+            return false;
+        }
+    }
+
+    public async Task<LogSettings> LoadLogSettingsAsync()
+    {
+        try
+        {
+            if (File.Exists(_logSettingsPath))
+            {
+                var json = await File.ReadAllTextAsync(_logSettingsPath);
+                var settings = JsonSerializer.Deserialize<LogSettings>(json);
+                return settings ?? new LogSettings();
+            }
+            else
+            {
+                return new LogSettings();
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"ログ設定読み込みエラー: {ex.Message}");
+            return new LogSettings();
+        }
+    }
+
+    public async Task<bool> SaveLogSettingsAsync(LogSettings settings)
+    {
+        try
+        {
+            var json = JsonSerializer.Serialize(settings, new JsonSerializerOptions
+            {
+                WriteIndented = true
+            });
+            await File.WriteAllTextAsync(_logSettingsPath, json);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"ログ設定保存エラー: {ex.Message}");
             return false;
         }
     }
