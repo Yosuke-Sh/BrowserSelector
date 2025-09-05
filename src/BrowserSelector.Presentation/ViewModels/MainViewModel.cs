@@ -370,12 +370,56 @@ public partial class MainViewModel : ObservableObject
     /// 起動引数で指定されたURLを設定
     /// </summary>
     /// <param name="url">設定するURL</param>
-    public void SetInitialUrl(string url)
+    public async void SetInitialUrl(string url)
     {
         if (!string.IsNullOrWhiteSpace(url))
         {
             Url = url;
-            System.Diagnostics.Debug.WriteLine($"初期URLを設定: {url}");
+            _logService?.LogInformation($"初期URLを設定: {url}", "MainViewModel");
+            
+            // URLルールに基づいてブラウザを自動選択
+            await ApplyUrlRulesAsync(url);
+        }
+    }
+
+    /// <summary>
+    /// URLルールに基づいてブラウザを自動選択
+    /// </summary>
+    /// <param name="url">対象URL</param>
+    private async Task ApplyUrlRulesAsync(string url)
+    {
+        try
+        {
+            _logService?.LogInformation($"URLルール適用開始: {url}", "MainViewModel");
+            
+            var matchingBrowser = await _urlRuleService.FindMatchingBrowserAsync(url, Browsers);
+            if (matchingBrowser != null)
+            {
+                SelectedBrowser = matchingBrowser;
+                _logService?.LogInformation($"URLルール適用完了: {url} -> {matchingBrowser.Name}", "MainViewModel");
+                StatusMessage = $"URLルールにより {matchingBrowser.Name} が自動選択されました";
+                
+                // 自動起動
+                await LaunchBrowserAsync(matchingBrowser);
+                
+                // URLルール合致後のアプリ終了設定が有効な場合
+                var appSettings = await _settingsService.LoadAppSettingsAsync();
+                if (appSettings.CloseAfterUrlRuleMatch)
+                {
+                    _logService?.LogInformation("URLルール合致後のアプリ終了", "MainViewModel");
+                    Application.Current.Shutdown();
+                }
+            }
+            else
+            {
+                _logService?.LogInformation($"URLルールにマッチするブラウザなし: {url}", "MainViewModel");
+                StatusMessage = "URLルールにマッチするブラウザがありません";
+            }
+        }
+        catch (Exception ex)
+        {
+            _logService?.LogError($"URLルール適用エラー: {ex.Message}", "MainViewModel", ex);
+            StatusMessage = "URLルールの適用中にエラーが発生しました";
         }
     }
 
@@ -388,6 +432,12 @@ public partial class MainViewModel : ObservableObject
         
         // タイトルメッセージを更新
         UpdateTitleMessage();
+        
+        // URLルールに基づいてブラウザを自動選択
+        if (!string.IsNullOrWhiteSpace(value))
+        {
+            _ = ApplyUrlRulesAsync(value);
+        }
     }
     
     /// <summary>

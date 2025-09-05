@@ -99,6 +99,13 @@ public class UrlRule
             if (pattern.EndsWith("*"))
                 return url.StartsWith(parts[0]);
         }
+        
+        // パターンが "text*" で終わる場合の特別処理
+        if (pattern.EndsWith("*") && parts.Length > 0)
+        {
+            var prefix = pattern.Substring(0, pattern.Length - 1);
+            return url.StartsWith(prefix);
+        }
 
         // 複数のワイルドカードがある場合
         var currentIndex = 0;

@@ -87,6 +87,15 @@
                                     <TextBox Grid.Column="1" Text="{Binding AppSettings.StartupDelay}" 
                                              VerticalAlignment="Center" HorizontalAlignment="Right"/>
                                 </Grid>
+                                
+                                <Grid Style="{StaticResource SettingRowStyle}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="URLルール合致後にアプリを終了" VerticalAlignment="Center"/>
+                                    <CheckBox Grid.Column="1" IsChecked="{Binding AppSettings.CloseAfterUrlRuleMatch}"/>
+                                </Grid>
                             </StackPanel>
                         </GroupBox>
 
@@ -348,8 +357,10 @@
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <CheckBox Grid.Column="0" IsChecked="{Binding IsEnabled}" 
+                                                          IsEnabled="False"
                                                           Margin="0,0,10,0" VerticalAlignment="Center"/>
                                                 <TextBlock Grid.Column="1" Text="{Binding DisplayName}" 
                                                            VerticalAlignment="Center"/>
@@ -358,6 +369,10 @@
                                                            Margin="10,0,0,0" VerticalAlignment="Center"/>
                                                 <Button Grid.Column="3" Content="編集" Padding="5,2" 
                                                         Margin="10,0,0,0" Command="{Binding DataContext.EditUrlRuleCommand, 
+                                                        RelativeSource={RelativeSource AncestorType=Window}}"
+                                                        CommandParameter="{Binding}"/>
+                                                <Button Grid.Column="4" Content="削除" Padding="5,2" 
+                                                        Margin="10,0,0,0" Command="{Binding DataContext.RemoveUrlRuleCommand, 
                                                         RelativeSource={RelativeSource AncestorType=Window}}"
                                                         CommandParameter="{Binding}"/>
                                             </Grid>

@@ -42,4 +42,7 @@ public partial class AppSettings : ObservableObject
 
     [ObservableProperty]
     private bool _registerProtocol = true;
+
+    [ObservableProperty]
+    private bool _closeAfterUrlRuleMatch = false;
 }

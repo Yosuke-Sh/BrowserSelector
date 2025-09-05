@@ -558,22 +558,109 @@ public partial class SettingsViewModel : ObservableObject
     /// URLルールを追加するコマンド
     /// </summary>
     [RelayCommand]
-    private Task AddUrlRule()
+    private async Task AddUrlRule()
     {
-        // TODO: URLルール追加ダイアログを実装
-        System.Diagnostics.Debug.WriteLine("URLルール追加機能は未実装です");
-        return Task.CompletedTask;
+        try
+        {
+            _logService?.LogInformation("URLルール追加開始", "SettingsViewModel");
+            
+            var dialog = new Views.UrlRuleEditDialog(_browserService, _logService!);
+            if (dialog.ShowDialog() == true)
+            {
+                var newRule = dialog.UrlRule;
+                var result = await _urlRuleService.AddRuleAsync(newRule);
+                if (result)
+                {
+                    await RefreshUrlRulesAsync();
+                    _logService?.LogInformation("URLルール追加完了", "SettingsViewModel");
+                    MessageBox.Show("URLルールを追加しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    _logService?.LogWarning("URLルール追加失敗", "SettingsViewModel");
+                    MessageBox.Show("URLルールの追加に失敗しました。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logService?.LogError($"URLルール追加エラー: {ex.Message}", "SettingsViewModel", ex);
+            MessageBox.Show($"URLルールの追加中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
     }
 
     /// <summary>
     /// URLルールを編集するコマンド
     /// </summary>
     [RelayCommand]
-    private Task EditUrlRule(UrlRule rule)
+    private async Task EditUrlRule(UrlRule rule)
     {
-        // TODO: URLルール編集ダイアログを実装
-        System.Diagnostics.Debug.WriteLine($"URLルール編集機能は未実装です: {rule.Pattern}");
-        return Task.CompletedTask;
+        try
+        {
+            _logService?.LogInformation($"URLルール編集開始: {rule.Pattern}", "SettingsViewModel");
+            
+            var dialog = new Views.UrlRuleEditDialog(rule, _browserService, _logService!);
+            if (dialog.ShowDialog() == true)
+            {
+                var updatedRule = dialog.UrlRule;
+                var result = await _urlRuleService.UpdateRuleAsync(updatedRule);
+                if (result)
+                {
+                    await RefreshUrlRulesAsync();
+                    _logService?.LogInformation("URLルール編集完了", "SettingsViewModel");
+                    MessageBox.Show("URLルールを更新しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    _logService?.LogWarning("URLルール編集失敗", "SettingsViewModel");
+                    MessageBox.Show("URLルールの更新に失敗しました。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logService?.LogError($"URLルール編集エラー: {ex.Message}", "SettingsViewModel", ex);
+            MessageBox.Show($"URLルールの編集中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    /// <summary>
+    /// URLルールを削除するコマンド
+    /// </summary>
+    [RelayCommand]
+    private async Task RemoveUrlRule(UrlRule rule)
+    {
+        try
+        {
+            _logService?.LogInformation($"URLルール削除開始: {rule.Pattern}", "SettingsViewModel");
+            
+            var result = MessageBox.Show(
+                $"URLルール「{rule.Pattern}」を削除しますか？", 
+                "削除確認", 
+                MessageBoxButton.YesNo, 
+                MessageBoxImage.Question);
+            
+            if (result == MessageBoxResult.Yes)
+            {
+                var deleteResult = await _urlRuleService.DeleteRuleAsync(rule.Id);
+                if (deleteResult)
+                {
+                    await RefreshUrlRulesAsync();
+                    _logService?.LogInformation("URLルール削除完了", "SettingsViewModel");
+                    MessageBox.Show("URLルールを削除しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    _logService?.LogWarning("URLルール削除失敗", "SettingsViewModel");
+                    MessageBox.Show("URLルールの削除に失敗しました。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logService?.LogError($"URLルール削除エラー: {ex.Message}", "SettingsViewModel", ex);
+            MessageBox.Show($"URLルールの削除中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
     }
 
     /// <summary>
