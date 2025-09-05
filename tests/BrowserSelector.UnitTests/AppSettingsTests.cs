@@ -13,13 +13,11 @@ public class AppSettingsTests
         var settings = new AppSettings();
 
         // Assert
-        settings.StartMinimized.Should().BeFalse();
-        settings.StartInSystemTray.Should().BeFalse();
-        settings.StartupDelay.Should().Be(0);
         settings.EnableLogging.Should().BeTrue();
         settings.Language.Should().Be("ja-JP");
         settings.PortableMode.Should().BeFalse();
         settings.CustomProtocol.Should().Be("browserselector");
+        settings.CloseAfterUrlRuleMatch.Should().BeTrue();
     }
 
     [Fact]
@@ -31,15 +29,13 @@ public class AppSettingsTests
         settings.PropertyChanged += (sender, e) => propertyChangedCount++;
 
         // Act
-        settings.StartMinimized = true;
-        settings.StartInSystemTray = true;
-        settings.StartupDelay = 5;
         settings.EnableLogging = false;
         settings.Language = "en-US";
         settings.PortableMode = true;
         settings.CustomProtocol = "custom";
+        settings.CloseAfterUrlRuleMatch = false;
 
         // Assert
-        propertyChangedCount.Should().Be(7);
+        propertyChangedCount.Should().Be(5);
     }
 }

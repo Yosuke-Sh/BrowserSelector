@@ -807,6 +807,34 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     /// <summary>
+    /// ブラウザボタン背景色を選択するコマンド
+    /// </summary>
+    [RelayCommand]
+    private void SelectBrowserButtonBackgroundColor()
+    {
+        var colorDialog = new System.Windows.Forms.ColorDialog();
+        if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+        {
+            var color = Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
+            VisualSettings.BrowserButtonBackgroundColor = color;
+        }
+    }
+
+    /// <summary>
+    /// ブラウザボタンテキスト色を選択するコマンド
+    /// </summary>
+    [RelayCommand]
+    private void SelectBrowserButtonForegroundColor()
+    {
+        var colorDialog = new System.Windows.Forms.ColorDialog();
+        if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+        {
+            var color = Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
+            VisualSettings.BrowserButtonForegroundColor = color;
+        }
+    }
+
+    /// <summary>
     /// 設定をリセットするコマンド
     /// </summary>
     [RelayCommand]

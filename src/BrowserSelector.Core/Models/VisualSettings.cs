@@ -51,5 +51,29 @@ public partial class VisualSettings : ObservableObject
     [ObservableProperty]
     private bool _showUrlInput = true;
 
+    // ブラウザボタン設定
+    [ObservableProperty]
+    private double _browserButtonWidth = 120.0;
+
+    [ObservableProperty]
+    private double _browserButtonHeight = 90.0;
+
+    [ObservableProperty]
+    private Color _browserButtonBackgroundColor = Colors.Transparent;
+
+    [ObservableProperty]
+    private Color _browserButtonForegroundColor = Colors.Black;
+
+    [ObservableProperty]
+    private double _browserButtonOpacity = 1.0;
+
+    [ObservableProperty]
+    private double _browserButtonCornerRadius = 8.0;
+
+    [ObservableProperty]
+    private bool _showBrowserName = true;
+
+    [ObservableProperty]
+    private double _browserIconSize = 32.0;
 
 }

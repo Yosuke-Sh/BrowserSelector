@@ -44,6 +44,28 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private VisualSettings _visualSettings = new();
 
+    partial void OnVisualSettingsChanged(VisualSettings value)
+    {
+        // VisualSettingsの変更を監視してPropertyChangedイベントを購読
+        if (value != null)
+        {
+            value.PropertyChanged += OnVisualSettingsPropertyChanged;
+        }
+    }
+
+    /// <summary>
+    /// VisualSettingsのプロパティ変更を監視
+    /// </summary>
+    private void OnVisualSettingsPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        // ブラウザボタン設定の変更を即座に反映
+        if (e.PropertyName?.StartsWith("BrowserButton") == true || e.PropertyName == "ShowBrowserName" || e.PropertyName == "BrowserIconSize")
+        {
+            // UIの更新を強制
+            OnPropertyChanged(nameof(VisualSettings));
+        }
+    }
+
     /// <summary>
     /// 設定変更通知を受け取る
     /// </summary>

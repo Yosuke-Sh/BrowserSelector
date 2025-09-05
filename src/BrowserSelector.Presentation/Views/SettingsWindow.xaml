@@ -256,6 +256,116 @@
                                 
                             </StackPanel>
                         </GroupBox>
+
+                        <!-- ブラウザボタン設定 -->
+                        <GroupBox Header="ブラウザボタン設定" Style="{StaticResource GroupBoxStyle}">
+                            <StackPanel>
+                                <!-- ボタンサイズ -->
+                                <Grid Style="{StaticResource SettingRowStyle}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="20"/>
+                                        <ColumnDefinition Width="100"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="ボタンサイズ" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Column="1" Text="{Binding VisualSettings.BrowserButtonWidth}" 
+                                             VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                    <TextBlock Grid.Column="2" Text="×" VerticalAlignment="Center" 
+                                               HorizontalAlignment="Center"/>
+                                    <TextBox Grid.Column="3" Text="{Binding VisualSettings.BrowserButtonHeight}" 
+                                             VerticalAlignment="Center"/>
+                                </Grid>
+
+                                <!-- ボタン背景色 -->
+                                <Grid Style="{StaticResource SettingRowStyle}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="40"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="ボタン背景色" VerticalAlignment="Center"/>
+                                    <Button Grid.Column="1" Content="色を選択" Padding="10,5"
+                                            Command="{Binding SelectBrowserButtonBackgroundColorCommand}"/>
+                                    <!-- 現在色を可視化 -->
+                                    <Border Grid.Column="2" Width="24" Height="24" Margin="10,0,0,0"
+                                            BorderBrush="#DDD" BorderThickness="1"
+                                            Background="{Binding VisualSettings.BrowserButtonBackgroundColor, Converter={StaticResource ColorToBrushConverter}}" />
+                                </Grid>
+
+                                <!-- ボタンテキスト色 -->
+                                <Grid Style="{StaticResource SettingRowStyle}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="40"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="ボタンテキスト色" VerticalAlignment="Center"/>
+                                    <Button Grid.Column="1" Content="色を選択" Padding="10,5"
+                                            Command="{Binding SelectBrowserButtonForegroundColorCommand}"/>
+                                    <!-- 現在色を可視化 -->
+                                    <Border Grid.Column="2" Width="24" Height="24" Margin="10,0,0,0"
+                                            BorderBrush="#DDD" BorderThickness="1"
+                                            Background="{Binding VisualSettings.BrowserButtonForegroundColor, Converter={StaticResource ColorToBrushConverter}}" />
+                                </Grid>
+
+                                <!-- ボタン背景透明化 -->
+                                <Grid Style="{StaticResource SettingRowStyle}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="40"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="ボタン背景透明化" VerticalAlignment="Center"/>
+                                    <Slider Grid.Column="1" Minimum="0.1" Maximum="1.0" 
+                                            Value="{Binding VisualSettings.BrowserButtonOpacity}"
+                                            VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                    <TextBlock Grid.Column="2" Text="{Binding VisualSettings.BrowserButtonOpacity, StringFormat={}{0:P0}}" 
+                                               VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </Grid>
+
+                                <!-- ボタン角丸半径 -->
+                                <Grid Style="{StaticResource SettingRowStyle}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="40"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="ボタン角丸半径" VerticalAlignment="Center"/>
+                                    <Slider Grid.Column="1" Minimum="0" Maximum="20" 
+                                            Value="{Binding VisualSettings.BrowserButtonCornerRadius}"
+                                            VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                    <TextBlock Grid.Column="2" Text="{Binding VisualSettings.BrowserButtonCornerRadius, StringFormat={}{0:F0}px}" 
+                                               VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </Grid>
+
+                                <!-- ブラウザ名表示 -->
+                                <Grid Style="{StaticResource SettingRowStyle}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="ブラウザ名表示" VerticalAlignment="Center"/>
+                                    <CheckBox Grid.Column="1" IsChecked="{Binding VisualSettings.ShowBrowserName}"/>
+                                </Grid>
+
+                                <!-- アイコンサイズ -->
+                                <Grid Style="{StaticResource SettingRowStyle}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="40"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="アイコンサイズ" VerticalAlignment="Center"/>
+                                    <Slider Grid.Column="1" Minimum="16" Maximum="64" 
+                                            Value="{Binding VisualSettings.BrowserIconSize}"
+                                            VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                    <TextBlock Grid.Column="2" Text="{Binding VisualSettings.BrowserIconSize, StringFormat={}{0:F0}px}" 
+                                               VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </Grid>
+                                
+                            </StackPanel>
+                        </GroupBox>
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>

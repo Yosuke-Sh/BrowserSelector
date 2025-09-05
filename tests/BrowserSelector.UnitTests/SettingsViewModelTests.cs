@@ -31,7 +31,7 @@ public class SettingsViewModelTests
             .ReturnsAsync(new AppSettings
             {
                 Language = "ja-JP",
-                StartMinimized = false
+                CloseAfterUrlRuleMatch = true
             });
 
         _mockSettingsService
