@@ -642,7 +642,7 @@
                                     </Button>
                                     <Button Command="{Binding CleanupOldLogsCommand}" Padding="10,5">
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                            <Image Source="/BrowserSelector.Presentation;component/Resources/Icon_Cleanup.png" 
+                                            <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Cleanup.png" 
                                                    Width="18" Height="18" 
                                                    Margin="8,0,8,0" VerticalAlignment="Center"/>
                                             <TextBlock Text="古いログを削除" VerticalAlignment="Center"/>

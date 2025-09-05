@@ -9,6 +9,7 @@ using BrowserSelector.Presentation.ViewModels;
 using BrowserSelector.Presentation.Views;
 using BrowserSelector.Core.Services;
 using BrowserSelector.Core.Enums;
+using BrowserSelector.Presentation.Services;
 
 namespace BrowserSelector.App;
 
@@ -40,6 +41,22 @@ public partial class App : Application
             _logService = _host.Services.GetRequiredService<ILogService>();
             _logService.LogDetailed(LogLevel.Information, "アプリケーション起動開始", "App", 
                                   "STARTUP", "Application", "System", "App", "Initialize", "Started");
+
+            // 不足アイコンの作成
+            try
+            {
+                var iconService = new IconResourceService();
+                var missingIcons = iconService.GetMissingIcons();
+                if (missingIcons.Length > 0)
+                {
+                    var createdCount = iconService.CreateMissingIcons(missingIcons);
+                    _logService.LogInformation($"不足アイコンを {createdCount} 個作成しました: {string.Join(", ", missingIcons)}", "App");
+                }
+            }
+            catch (Exception iconEx)
+            {
+                _logService.LogError($"アイコン作成エラー: {iconEx.Message}", "App", iconEx);
+            }
 
             // 起動引数からURLを取得
             string? initialUrl = null;
