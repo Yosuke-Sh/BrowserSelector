@@ -53,12 +53,11 @@ public partial class IconSelectionDialog : Window
                     AddIconButton(iconInfo, ExecutableIconsPanel);
                 }
                 
-                System.Diagnostics.Debug.WriteLine($"実行ファイルから {icons.Count} 個のアイコンを読み込み: {executablePath}");
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            System.Diagnostics.Debug.WriteLine($"実行ファイルアイコン読み込みエラー: {executablePath}, {ex.Message}");
+            // 実行ファイルアイコン読み込みエラーは無視
         }
     }
 
@@ -240,7 +239,7 @@ public partial class IconSelectionDialog : Window
             // 高解像度アイコンをボタンに設定
             var image = new Image
             {
-                Source = ConvertIconToBitmapImage(iconInfo.Icon),
+                Source = iconInfo.Icon != null ? ConvertIconToBitmapImage(iconInfo.Icon) : null,
                 Stretch = Stretch.Uniform,
                 Width = 32,
                 Height = 32
@@ -286,7 +285,7 @@ public partial class IconSelectionDialog : Window
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"アイコン変換エラー: {ex.Message}");
-            return null;
+            return null!;
         }
     }
 
@@ -329,7 +328,7 @@ public partial class IconSelectionDialog : Window
         try
         {
             // アイコンプレビューを更新
-            SelectedIconPreview.Source = ConvertIconToBitmapImage(iconInfo.Icon);
+            SelectedIconPreview.Source = iconInfo.Icon != null ? ConvertIconToBitmapImage(iconInfo.Icon) : null;
             
             // パス情報を更新
             SelectedIconPathText.Text = iconInfo.Name;
@@ -416,7 +415,7 @@ public partial class IconSelectionDialog : Window
 /// </summary>
 public class IconInfo
 {
-    public System.Drawing.Icon Icon { get; set; }
+    public System.Drawing.Icon? Icon { get; set; }
     public int Index { get; set; }
     public string Path { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;

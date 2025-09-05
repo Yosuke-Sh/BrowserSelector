@@ -21,12 +21,10 @@ public class IconPathConverter : IMultiValueConverter
             var executablePath = values[1] as string;
             var name = values[2] as string;
 
-            System.Diagnostics.Debug.WriteLine($"IconPathConverter: IconPath='{iconPath}', ExecutablePath='{executablePath}', Name='{name}'");
 
             // 1. IconPathが設定されている場合はそれを優先
             if (!string.IsNullOrEmpty(iconPath) && File.Exists(iconPath))
             {
-                System.Diagnostics.Debug.WriteLine($"IconPathConverter: IconPathを使用 - {iconPath}");
                 
                 // IconPathがexeファイルの場合は、高解像度アイコンを抽出
                 if (iconPath.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) || 
@@ -37,13 +35,12 @@ public class IconPathConverter : IMultiValueConverter
                         var bitmap = ExtractHighQualityIcon(iconPath, 0); // 最初のアイコンを取得
                         if (bitmap != null)
                         {
-                            System.Diagnostics.Debug.WriteLine($"IconPathConverter: IconPathから高解像度アイコン抽出成功");
                             return bitmap;
                         }
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
-                        System.Diagnostics.Debug.WriteLine($"IconPathConverter: IconPathアイコン抽出エラー: {ex.Message}");
+                        // アイコン抽出エラーは無視
                     }
                 }
                 else
@@ -51,12 +48,11 @@ public class IconPathConverter : IMultiValueConverter
                     // 画像ファイル（.ico, .png等）の場合は直接読み込み
                     try
                     {
-                        System.Diagnostics.Debug.WriteLine($"IconPathConverter: 画像ファイルを直接読み込み");
                         return new BitmapImage(new Uri(iconPath));
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
-                        System.Diagnostics.Debug.WriteLine($"IconPathConverter: 画像ファイル読み込みエラー: {ex.Message}");
+                        // 画像ファイル読み込みエラーは無視
                     }
                 }
             }
@@ -66,28 +62,24 @@ public class IconPathConverter : IMultiValueConverter
             {
                 try
                 {
-                    System.Diagnostics.Debug.WriteLine($"IconPathConverter: ExecutablePathから高解像度アイコン抽出 - {executablePath}");
                     var bitmap = ExtractHighQualityIcon(executablePath, 0); // 最初のアイコンを取得
                     if (bitmap != null)
                     {
-                        System.Diagnostics.Debug.WriteLine($"IconPathConverter: 高解像度アイコン抽出成功");
                         return bitmap;
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    System.Diagnostics.Debug.WriteLine($"IconPathConverter: アイコン抽出エラー: {ex.Message}");
+                    // アイコン抽出エラーは無視
                 }
             }
 
             // 3. デフォルトアイコンを返す
-            System.Diagnostics.Debug.WriteLine($"IconPathConverter: デフォルトアイコンを使用");
             return GetDefaultIcon(name);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             // エラーが発生した場合はデフォルトアイコンを返す
-            System.Diagnostics.Debug.WriteLine($"IconPathConverter: 全体エラー: {ex.Message}");
             return GetDefaultIcon(null);
         }
     }
@@ -121,7 +113,6 @@ public class IconPathConverter : IMultiValueConverter
                         
                         // アイコンの元のサイズを取得
                         var originalSize = icon.Size;
-                        System.Diagnostics.Debug.WriteLine($"アイコン元サイズ: {originalSize.Width}x{originalSize.Height}");
                         
                         // リサイズせずに元のアイコンをそのまま使用
                         var bitmap = ConvertIconToHighQualityBitmapImage(icon, originalSize);
@@ -142,9 +133,9 @@ public class IconPathConverter : IMultiValueConverter
                 }
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            System.Diagnostics.Debug.WriteLine($"ExtractHighQualityIcon エラー: {ex.Message}");
+            // アイコン抽出エラーは無視
         }
         
         return null;
@@ -175,10 +166,9 @@ public class IconPathConverter : IMultiValueConverter
             
             return bitmap;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            System.Diagnostics.Debug.WriteLine($"アイコン変換エラー: {ex.Message}");
-            return null;
+            return null!;
         }
     }
 

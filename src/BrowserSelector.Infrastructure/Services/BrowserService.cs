@@ -220,11 +220,11 @@ public class BrowserService : IBrowserService
         }
     }
 
-    public async Task<IEnumerable<Browser>> GetAllBrowsersAsync()
+    public Task<IEnumerable<Browser>> GetAllBrowsersAsync()
     {
         // 既存のブラウザデータを返すのみ（自動検出は行わない）
         _logService.LogDebug($"Source=Cache Count={_browsers.Count}", nameof(BrowserService));
-        return _browsers.OrderBy(b => b.DisplayOrder);
+        return Task.FromResult<IEnumerable<Browser>>(_browsers.OrderBy(b => b.DisplayOrder));
     }
 
     public async Task<bool> SetDefaultBrowserAsync(Guid browserId)

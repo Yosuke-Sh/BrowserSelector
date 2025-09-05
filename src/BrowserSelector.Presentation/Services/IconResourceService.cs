@@ -53,12 +53,10 @@ public class IconResourceService
             encoder.Frames.Add(BitmapFrame.Create(defaultIcon));
             encoder.Save(fileStream);
 
-            System.Diagnostics.Debug.WriteLine($"不足アイコンを作成しました: {filePath}");
             return filePath;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            System.Diagnostics.Debug.WriteLine($"アイコン作成エラー: {iconName}, {ex.Message}");
             return "";
         }
     }
@@ -96,7 +94,6 @@ public class IconResourceService
             }
         }
 
-        System.Diagnostics.Debug.WriteLine($"不足アイコンを {createdCount} 個作成しました");
         return createdCount;
     }
 

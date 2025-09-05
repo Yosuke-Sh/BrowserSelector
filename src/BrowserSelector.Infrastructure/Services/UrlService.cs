@@ -19,10 +19,10 @@ public class UrlService : IUrlService
         _httpClient.Timeout = TimeSpan.FromSeconds(10);
     }
 
-    public async Task<string> NormalizeUrlAsync(string url)
+    public Task<string> NormalizeUrlAsync(string url)
     {
         if (string.IsNullOrWhiteSpace(url))
-            return string.Empty;
+            return Task.FromResult(string.Empty);
 
         // URLの正規化
         url = url.Trim();
@@ -30,9 +30,7 @@ public class UrlService : IUrlService
         // プロトコルを追加
         url = AddProtocolIfNeeded(url);
 
-
-
-        return url;
+        return Task.FromResult(url);
     }
 
 

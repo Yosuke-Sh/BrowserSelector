@@ -259,7 +259,7 @@ public partial class App : Application
             }
             else
             {
-                System.Diagnostics.Debug.WriteLine($"アプリケーション終了エラー: {ex.Message}");
+                // アプリケーション終了エラーは無視
             }
         }
 

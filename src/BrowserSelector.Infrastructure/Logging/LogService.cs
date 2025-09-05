@@ -20,15 +20,9 @@ public class LogService : ILogService
 
     public LogService()
     {
-        System.Diagnostics.Debug.WriteLine($"=== LogServiceコンストラクタ開始 ===");
-        
         _settings = new LogSettings();
-        System.Diagnostics.Debug.WriteLine($"デフォルトLogSettings: LogLevel={_settings.LogLevel}, EnableLogging={_settings.EnableLogging}, EnableConsoleLogging={_settings.EnableConsoleLogging}");
-        
         _defaultLogFolder = LogSettings.GetDefaultLogFolder();
         _settings.LogOutputFolder = _defaultLogFolder;
-        
-        System.Diagnostics.Debug.WriteLine($"設定されたログフォルダ: {_settings.LogOutputFolder}");
         
         // デフォルトはLogSettingsのレベル（Information）を使用
         
@@ -37,8 +31,6 @@ public class LogService : ILogService
         
         // 起動時のログ（INFO）
         LogInformation("LogService初期化完了", "LogService");
-        
-        System.Diagnostics.Debug.WriteLine($"=== LogServiceコンストラクタ完了 ===");
     }
 
     /// <summary>
@@ -105,13 +97,8 @@ public class LogService : ILogService
                            string? processTarget = null, string? processAction = null, string? processResult = null,
                            Exception? exception = null)
     {
-        System.Diagnostics.Debug.WriteLine($"=== LogService.LogDetailed呼び出し ===");
-        System.Diagnostics.Debug.WriteLine($"要求レベル: {level}, 設定レベル: {_settings.LogLevel}");
-        System.Diagnostics.Debug.WriteLine($"EnableLogging: {_settings.EnableLogging}, メッセージ: {message}");
-        
         if (!_settings.EnableLogging || level < _settings.LogLevel)
         {
-            System.Diagnostics.Debug.WriteLine($"ログがフィルタリングされました: EnableLogging={_settings.EnableLogging}, 要求レベル={level} < 設定レベル={_settings.LogLevel}");
             return;
         }
 
@@ -131,10 +118,9 @@ public class LogService : ILogService
                 WriteToFile(logMessage);
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            // ログ出力中のエラーはコンソールに出力
-            System.Diagnostics.Debug.WriteLine($"ログ出力エラー: {ex.Message}");
+            // ログ出力中のエラーは無視
         }
     }
 
@@ -145,20 +131,12 @@ public class LogService : ILogService
     {
         lock (_lockObject)
         {
-            System.Diagnostics.Debug.WriteLine($"=== LogService.UpdateSettings開始 ===");
-            System.Diagnostics.Debug.WriteLine($"更新前設定: LogLevel={_settings.LogLevel}, EnableLogging={_settings.EnableLogging}, EnableConsoleLogging={_settings.EnableConsoleLogging}");
-            System.Diagnostics.Debug.WriteLine($"新しい設定: LogLevel={settings.LogLevel}, EnableLogging={settings.EnableLogging}, EnableConsoleLogging={settings.EnableConsoleLogging}");
-            
             _settings = settings;
-            
-            System.Diagnostics.Debug.WriteLine($"更新後設定: LogLevel={_settings.LogLevel}, EnableLogging={_settings.EnableLogging}, EnableConsoleLogging={_settings.EnableConsoleLogging}");
             
             // ログフォルダが存在しない場合は作成
             EnsureLogDirectoryExists();
             
             LogInformation("ログ設定を更新しました", "LogService");
-            
-            System.Diagnostics.Debug.WriteLine($"=== LogService.UpdateSettings完了 ===");
         }
     }
 
@@ -363,9 +341,9 @@ public class LogService : ILogService
             // ログファイルに追記
             File.AppendAllText(logFilePath, logMessage, Encoding.UTF8);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            System.Diagnostics.Debug.WriteLine($"ログファイル出力エラー: {ex.Message}");
+            // ログファイル出力エラーは無視
         }
     }
 
@@ -391,9 +369,9 @@ public class LogService : ILogService
                 LogInformation($"ログファイルをローテーションしました: {backupPath}", "LogService");
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            System.Diagnostics.Debug.WriteLine($"ログファイルローテーションエラー: {ex.Message}");
+            // ログファイルローテーションエラーは無視
         }
     }
 
@@ -409,9 +387,9 @@ public class LogService : ILogService
                 Directory.CreateDirectory(_settings.LogOutputFolder);
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            System.Diagnostics.Debug.WriteLine($"ログディレクトリ作成エラー: {ex.Message}");
+            // ログディレクトリ作成エラーは無視
         }
     }
 }
