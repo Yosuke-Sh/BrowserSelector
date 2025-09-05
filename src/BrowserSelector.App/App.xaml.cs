@@ -1,15 +1,12 @@
-﻿using System.Configuration;
-using System.Data;
-using System.Windows;
-using System.IO;
+﻿using BrowserSelector.App.DependencyInjection;
+using BrowserSelector.Core.Enums;
+using BrowserSelector.Core.Services;
+using BrowserSelector.Presentation.Services;
+using BrowserSelector.Presentation.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using BrowserSelector.App.DependencyInjection;
-using BrowserSelector.Presentation.ViewModels;
-using BrowserSelector.Presentation.Views;
-using BrowserSelector.Core.Services;
-using BrowserSelector.Core.Enums;
-using BrowserSelector.Presentation.Services;
+using System.IO;
+using System.Windows;
 
 namespace BrowserSelector.App;
 
@@ -39,7 +36,7 @@ public partial class App : Application
 
             // ログサービスの取得
             _logService = _host.Services.GetRequiredService<ILogService>();
-            _logService.LogDetailed(LogLevel.Information, "アプリケーション起動開始", "App", 
+            _logService.LogDetailed(LogLevel.Information, "アプリケーション起動開始", "App",
                                   "STARTUP", "Application", "System", "App", "Initialize", "Started");
 
             // 不足アイコンの作成
@@ -63,7 +60,7 @@ public partial class App : Application
             if (e.Args.Length > 0)
             {
                 initialUrl = e.Args[0];
-                _logService.LogDetailed(LogLevel.Debug, $"起動引数でURLを受信: {initialUrl}", "App", 
+                _logService.LogDetailed(LogLevel.Debug, $"起動引数でURLを受信: {initialUrl}", "App",
                                       "ARGS", initialUrl, "System", "Args", "Parse", "Success");
             }
 
@@ -71,36 +68,36 @@ public partial class App : Application
             MainViewModel mainViewModel;
             try
             {
-                _logService.LogDetailed(LogLevel.Information, "MainViewModel作成開始", "App", 
+                _logService.LogDetailed(LogLevel.Information, "MainViewModel作成開始", "App",
                                       "MVVM_CREATE", "ViewModel", "System", "MainViewModel", "Create", "Started");
-                
-                _logService.LogDetailed(LogLevel.Debug, "DIコンテナからMainViewModelを取得開始", "App", 
+
+                _logService.LogDetailed(LogLevel.Debug, "DIコンテナからMainViewModelを取得開始", "App",
                                       "MVVM_CREATE", "ViewModel", "System", "MainViewModel", "Resolve", "Started");
-                
+
                 mainViewModel = _host.Services.GetRequiredService<MainViewModel>();
-                
-                _logService.LogDetailed(LogLevel.Debug, "DIコンテナからMainViewModel取得完了", "App", 
+
+                _logService.LogDetailed(LogLevel.Debug, "DIコンテナからMainViewModel取得完了", "App",
                                       "MVVM_CREATE", "ViewModel", "System", "MainViewModel", "Resolve", "Success");
-                
-                _logService.LogDetailed(LogLevel.Information, "MainViewModel作成完了", "App", 
+
+                _logService.LogDetailed(LogLevel.Information, "MainViewModel作成完了", "App",
                                       "MVVM_CREATE", "ViewModel", "System", "MainViewModel", "Create", "Success");
             }
             catch (Exception ex)
             {
-                _logService.LogDetailed(LogLevel.Error, $"MainViewModel作成エラー: {ex.Message}", "App", 
+                _logService.LogDetailed(LogLevel.Error, $"MainViewModel作成エラー: {ex.Message}", "App",
                                       "MVVM_CREATE", "ViewModel", "System", "MainViewModel", "Create", "Failed", ex);
                 throw;
             }
-            
+
             // 起動引数でURLが指定されている場合は設定
             if (!string.IsNullOrEmpty(initialUrl))
             {
                 mainViewModel.SetInitialUrl(initialUrl);
             }
-            
+
             var mainWindow = new BrowserSelector.Presentation.Views.MainWindow(mainViewModel);
             _logService.LogInformation("MainWindow作成完了", "App");
-            
+
             // 起動時設定読み込み（適用を実行）
             try
             {
@@ -134,7 +131,7 @@ public partial class App : Application
                                 endPoint = new System.Windows.Point(0, 1);
                                 break;
                         }
-                        
+
                         mainWindow.Background = new System.Windows.Media.LinearGradientBrush
                         {
                             StartPoint = startPoint,
@@ -202,7 +199,7 @@ public partial class App : Application
             {
                 _logService.LogDebug($"Startup.VisualSettings.Load.Error {vex.Message}", "App", vex);
             }
-            
+
             MainWindow = mainWindow;
             _logService.LogInformation("MainWindow表示開始", "App");
             mainWindow.Show(); // 起動時の背景色設定のため必要
@@ -224,8 +221,8 @@ public partial class App : Application
                 File.AppendAllText(logPath, $"起動エラー: {ex}\n");
                 File.AppendAllText(logPath, $"スタックトレース: {ex.StackTrace}\n");
             }
-            
-            MessageBox.Show($"アプリケーションの起動に失敗しました: {ex.Message}", 
+
+            MessageBox.Show($"アプリケーションの起動に失敗しました: {ex.Message}",
                           "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
             Shutdown();
         }
@@ -239,13 +236,13 @@ public partial class App : Application
             {
                 _logService.LogInformation("アプリケーション終了開始", "App");
             }
-            
+
             if (_host != null)
             {
                 await _host.StopAsync();
                 _host.Dispose();
             }
-            
+
             if (_logService != null)
             {
                 _logService.LogInformation("アプリケーション終了完了", "App");

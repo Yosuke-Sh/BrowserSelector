@@ -1,10 +1,7 @@
-using System.Collections.ObjectModel;
-using System.Windows;
-using System.Windows.Media;
 using BrowserSelector.Core.Models;
 using BrowserSelector.Core.Services;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace BrowserSelector.Presentation.Views;
 
@@ -24,10 +21,10 @@ public partial class UrlRuleEditDialog : Window
     {
         InitializeComponent();
         DataContext = this;
-        
+
         _browserService = browserService;
         _logService = logService;
-        
+
         LoadBrowsers();
     }
 
@@ -63,14 +60,14 @@ public partial class UrlRuleEditDialog : Window
             // バリデーション
             if (string.IsNullOrWhiteSpace(UrlRule.Pattern))
             {
-                MessageBox.Show("パターンを入力してください。", "入力エラー", 
+                MessageBox.Show("パターンを入力してください。", "入力エラー",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             if (SelectedBrowser == null)
             {
-                MessageBox.Show("ブラウザを選択してください。", "入力エラー", 
+                MessageBox.Show("ブラウザを選択してください。", "入力エラー",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
@@ -85,7 +82,7 @@ public partial class UrlRuleEditDialog : Window
         catch (Exception ex)
         {
             _logService?.LogError($"URLルール保存エラー: {ex.Message}", "UrlRuleEditDialog", ex);
-            MessageBox.Show($"保存中にエラーが発生しました: {ex.Message}", "エラー", 
+            MessageBox.Show($"保存中にエラーが発生しました: {ex.Message}", "エラー",
                 MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }

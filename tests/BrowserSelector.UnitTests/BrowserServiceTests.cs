@@ -1,10 +1,8 @@
 using BrowserSelector.Core.Models;
 using BrowserSelector.Core.Services;
 using BrowserSelector.Infrastructure.Services;
-using BrowserSelector.Infrastructure.SystemIntegration;
 using FluentAssertions;
 using Moq;
-using Xunit;
 
 namespace BrowserSelector.UnitTests;
 

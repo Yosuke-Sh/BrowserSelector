@@ -1,9 +1,8 @@
-using System;
 using System.Globalization;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
-using System.Runtime.InteropServices;
 
 namespace BrowserSelector.Presentation.Converters;
 
@@ -25,9 +24,9 @@ public class IconPathConverter : IMultiValueConverter
             // 1. IconPathが設定されている場合はそれを優先
             if (!string.IsNullOrEmpty(iconPath) && File.Exists(iconPath))
             {
-                
+
                 // IconPathがexeファイルの場合は、高解像度アイコンを抽出
-                if (iconPath.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) || 
+                if (iconPath.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) ||
                     iconPath.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
                 {
                     try
@@ -101,7 +100,7 @@ public class IconPathConverter : IMultiValueConverter
         {
             // まず、利用可能なアイコン数を取得
             var iconCount = ExtractIconEx(filePath, -1, out IntPtr dummy1, out IntPtr dummy2, 0);
-            
+
             if (iconCount > 0 && iconIndex < iconCount)
             {
                 // 指定されたインデックスのアイコンを抽出
@@ -110,10 +109,10 @@ public class IconPathConverter : IMultiValueConverter
                     if (largeIcon != IntPtr.Zero)
                     {
                         using var icon = System.Drawing.Icon.FromHandle(largeIcon);
-                        
+
                         // アイコンの元のサイズを取得
                         var originalSize = icon.Size;
-                        
+
                         // リサイズせずに元のアイコンをそのまま使用
                         var bitmap = ConvertIconToHighQualityBitmapImage(icon, originalSize);
                         return bitmap;
@@ -137,7 +136,7 @@ public class IconPathConverter : IMultiValueConverter
         {
             // アイコン抽出エラーは無視
         }
-        
+
         return null;
     }
 
@@ -155,7 +154,7 @@ public class IconPathConverter : IMultiValueConverter
             using var stream = new MemoryStream();
             icon.Save(stream);
             stream.Position = 0;
-            
+
             var bitmap = new BitmapImage();
             bitmap.BeginInit();
             bitmap.CacheOption = BitmapCacheOption.OnLoad;
@@ -163,7 +162,7 @@ public class IconPathConverter : IMultiValueConverter
             // リサイズせずに元のサイズでデコード
             bitmap.EndInit();
             bitmap.Freeze();
-            
+
             return bitmap;
         }
         catch (Exception)

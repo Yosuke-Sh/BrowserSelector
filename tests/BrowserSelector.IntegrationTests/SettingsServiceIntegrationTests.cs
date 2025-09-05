@@ -1,11 +1,9 @@
-using Xunit;
-using FluentAssertions;
 using BrowserSelector.Core.Services;
 using BrowserSelector.Infrastructure.Services;
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.IO;
-using System.Threading.Tasks;
+using Xunit;
 
 namespace BrowserSelector.IntegrationTests;
 

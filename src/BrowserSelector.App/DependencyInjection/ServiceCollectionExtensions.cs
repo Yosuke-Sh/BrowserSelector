@@ -18,19 +18,19 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ILocalizationService, LocalizationService>();
         services.AddScoped<IUrlService, UrlService>();
         services.AddScoped<IUrlRuleService, UrlRuleService>();
-        
+
         // Infrastructure Services
         services.AddScoped<IRegistryService, WindowsRegistryService>();
         services.AddSingleton<ILogService, BrowserSelector.Infrastructure.Logging.LogService>();
         services.AddScoped<ISystemTrayService, SystemTrayService>();
         services.AddScoped<IProtocolHandler, ProtocolHandler>();
-        services.AddScoped<IUpdateService>(provider => 
+        services.AddScoped<IUpdateService>(provider =>
             new UpdateService("https://api.github.com/repos/your-repo/releases/latest", "1.0.0"));
-        
+
         // Presentation Services
         services.AddTransient<MainViewModel>();
         services.AddTransient<SettingsViewModel>();
-        
+
         return services;
     }
 }

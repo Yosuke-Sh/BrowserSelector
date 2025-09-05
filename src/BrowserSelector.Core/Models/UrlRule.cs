@@ -87,7 +87,7 @@ public class UrlRule
     {
         // パターンをワイルドカードで分割
         var parts = pattern.Split('*', StringSplitOptions.RemoveEmptyEntries);
-        
+
         if (parts.Length == 0)
             return true; // パターンが "*" のみの場合
 
@@ -99,7 +99,7 @@ public class UrlRule
             if (pattern.EndsWith("*"))
                 return url.StartsWith(parts[0]);
         }
-        
+
         // パターンが "text*" で終わる場合の特別処理
         if (pattern.EndsWith("*") && parts.Length > 0)
         {

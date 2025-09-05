@@ -1,9 +1,9 @@
+using BrowserSelector.Core.Models;
 using System.Windows;
+using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Automation;
-using BrowserSelector.Core.Models;
 
 namespace BrowserSelector.Presentation.Controls;
 
@@ -66,7 +66,7 @@ public class BrowserIconDisplay : Control
 
     static BrowserIconDisplay()
     {
-        DefaultStyleKeyProperty.OverrideMetadata(typeof(BrowserIconDisplay), 
+        DefaultStyleKeyProperty.OverrideMetadata(typeof(BrowserIconDisplay),
             new FrameworkPropertyMetadata(typeof(BrowserIconDisplay)));
     }
 

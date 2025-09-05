@@ -1,10 +1,9 @@
-using System.Text;
-using System.IO;
-using System.Threading;
-using System.Text.RegularExpressions;
 using BrowserSelector.Core.Enums;
 using BrowserSelector.Core.Models;
 using BrowserSelector.Core.Services;
+using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace BrowserSelector.Infrastructure.Logging;
 
@@ -23,13 +22,13 @@ public class LogService : ILogService
         _settings = new LogSettings();
         _defaultLogFolder = LogSettings.GetDefaultLogFolder();
         _settings.LogOutputFolder = _defaultLogFolder;
-        
+
         // 設定ファイルからログ設定を読み込み
         LoadSettingsFromFile();
-        
+
         // ログフォルダが存在しない場合は作成
         EnsureLogDirectoryExists();
-        
+
         // 起動時のログ（INFO）
         LogInformation("LogService初期化完了", "LogService");
     }
@@ -93,7 +92,7 @@ public class LogService : ILogService
     /// <summary>
     /// 詳細情報付きのログを出力
     /// </summary>
-    public void LogDetailed(LogLevel level, string message, string? category = null, 
+    public void LogDetailed(LogLevel level, string message, string? category = null,
                            string? eventId = null, string? requestTarget = null, string? userInfo = null,
                            string? processTarget = null, string? processAction = null, string? processResult = null,
                            Exception? exception = null)
@@ -106,13 +105,13 @@ public class LogService : ILogService
         try
         {
             var logMessage = FormatDetailedLogMessage(level, message, category, eventId, requestTarget, userInfo, processTarget, processAction, processResult, exception);
-            
+
             // コンソール出力
             if (_settings.EnableConsoleLogging)
             {
                 WriteToConsole(level, logMessage);
             }
-            
+
             // ファイル出力
             if (_settings.EnableFileLogging)
             {
@@ -134,7 +133,7 @@ public class LogService : ILogService
         {
             var settingsDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BrowserSelector");
             var logSettingsPath = Path.Combine(settingsDirectory, "logsettings.json");
-            
+
             if (File.Exists(logSettingsPath))
             {
                 var json = File.ReadAllText(logSettingsPath);
@@ -160,10 +159,10 @@ public class LogService : ILogService
         lock (_lockObject)
         {
             _settings = settings;
-            
+
             // ログフォルダが存在しない場合は作成
             EnsureLogDirectoryExists();
-            
+
             LogInformation("ログ設定を更新しました", "LogService");
         }
     }
@@ -230,7 +229,7 @@ public class LogService : ILogService
 
             var lines = File.ReadAllLines(logFilePath);
             var recentLines = lines.TakeLast(maxLines).ToArray();
-            
+
             return string.Join(Environment.NewLine, recentLines);
         }
         catch (Exception ex)
@@ -258,7 +257,7 @@ public class LogService : ILogService
     /// <summary>
     /// 詳細ログメッセージをフォーマット
     /// </summary>
-    private string FormatDetailedLogMessage(LogLevel level, string message, string? category, 
+    private string FormatDetailedLogMessage(LogLevel level, string message, string? category,
                                           string? eventId, string? requestTarget, string? userInfo,
                                           string? processTarget, string? processAction, string? processResult,
                                           Exception? exception)
@@ -273,7 +272,7 @@ public class LogService : ILogService
         var processTargetText = string.IsNullOrWhiteSpace(processTarget) ? string.Empty : processTarget;
         var processActionText = string.IsNullOrWhiteSpace(processAction) ? string.Empty : processAction;
         var processResultText = string.IsNullOrWhiteSpace(processResult) ? string.Empty : processResult;
-        
+
         var logMessage = _settings.LogMessageTemplate
             .Replace("{Timestamp}", timestamp)
             .Replace("{Level}", levelText)
@@ -331,7 +330,7 @@ public class LogService : ILogService
     private void WriteToConsole(LogLevel level, string message)
     {
         var originalColor = Console.ForegroundColor;
-        
+
         try
         {
             Console.ForegroundColor = level switch
@@ -344,7 +343,7 @@ public class LogService : ILogService
                 LogLevel.Critical => ConsoleColor.DarkRed,
                 _ => ConsoleColor.White
             };
-            
+
             Console.WriteLine(message);
         }
         finally
@@ -362,10 +361,10 @@ public class LogService : ILogService
         {
             var logFilePath = _settings.GetLogFilePath();
             var logMessage = message + Environment.NewLine;
-            
+
             // ファイルサイズチェック
             CheckAndRotateLogFile(logFilePath);
-            
+
             // ログファイルに追記
             File.AppendAllText(logFilePath, logMessage, Encoding.UTF8);
         }
@@ -390,9 +389,9 @@ public class LogService : ILogService
 
             if (fileInfo.Length > maxSizeBytes)
             {
-                var backupPath = logFilePath.Replace($".{_settings.LogFileSuffix}", 
+                var backupPath = logFilePath.Replace($".{_settings.LogFileSuffix}",
                     $"_{DateTime.Now:yyyyMMdd_HHmmss}.{_settings.LogFileSuffix}");
-                
+
                 File.Move(logFilePath, backupPath);
                 LogInformation($"ログファイルをローテーションしました: {backupPath}", "LogService");
             }

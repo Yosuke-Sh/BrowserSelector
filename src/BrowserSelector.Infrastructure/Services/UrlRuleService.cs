@@ -166,7 +166,7 @@ public class UrlRuleService : IUrlRuleService
             {
                 // 有効なルールを優先度順に並べて検索
                 var enabledRules = _rules.Where(r => r.IsEnabled).OrderByDescending(r => r.Priority);
-                
+
                 foreach (var rule in enabledRules)
                 {
                     if (rule.IsMatch(url))
@@ -304,7 +304,7 @@ public class UrlRuleService : IUrlRuleService
 
             var json = System.Text.Json.JsonSerializer.Serialize(rulesToSave, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
             await File.WriteAllTextAsync(_rulesFilePath, json);
-            
+
             Debug.WriteLine($"UrlRuleService: {rulesToSave.Count} 個のルールを保存しました");
         }
         catch (Exception ex)

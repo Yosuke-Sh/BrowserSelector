@@ -1,5 +1,5 @@
-using CommunityToolkit.Mvvm.ComponentModel;
 using BrowserSelector.Core.Enums;
+using CommunityToolkit.Mvvm.ComponentModel;
 using System.IO;
 
 namespace BrowserSelector.Core.Models;

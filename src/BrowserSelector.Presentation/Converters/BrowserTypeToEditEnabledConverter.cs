@@ -1,7 +1,6 @@
-using System;
+using BrowserSelector.Core.Models;
 using System.Globalization;
 using System.Windows.Data;
-using BrowserSelector.Core.Models;
 
 namespace BrowserSelector.Presentation.Converters;
 

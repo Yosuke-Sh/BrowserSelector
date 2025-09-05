@@ -1,9 +1,7 @@
-using System;
-using System.IO;
-using System.Security;
-using Microsoft.Win32;
-using BrowserSelector.Core.Services;
 using BrowserSelector.Core.Models;
+using BrowserSelector.Core.Services;
+using Microsoft.Win32;
+using System.Security;
 
 namespace BrowserSelector.Infrastructure.SystemIntegration;
 

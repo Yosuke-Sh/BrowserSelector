@@ -1,8 +1,5 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FlaUI.Core;
 using FlaUI.UIA3;
-using FlaUI.Core.Definitions;
-using System.Threading;
 
 namespace BrowserSelector.UITests;
 

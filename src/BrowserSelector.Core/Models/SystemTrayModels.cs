@@ -1,5 +1,3 @@
-using System;
-
 namespace BrowserSelector.Core.Models;
 
 /// <summary>

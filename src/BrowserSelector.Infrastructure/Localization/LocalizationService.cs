@@ -1,6 +1,6 @@
+using BrowserSelector.Core.Services;
 using System.Globalization;
 using System.Resources;
-using BrowserSelector.Core.Services;
 
 namespace BrowserSelector.Infrastructure.Localization;
 

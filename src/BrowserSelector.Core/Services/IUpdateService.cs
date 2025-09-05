@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using BrowserSelector.Core.Models;
 
 namespace BrowserSelector.Core.Services;

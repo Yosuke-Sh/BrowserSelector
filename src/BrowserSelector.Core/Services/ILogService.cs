@@ -46,7 +46,7 @@ public interface ILogService
     /// <summary>
     /// 詳細情報付きのログを出力
     /// </summary>
-    void LogDetailed(LogLevel level, string message, string? category = null, 
+    void LogDetailed(LogLevel level, string message, string? category = null,
                     string? eventId = null, string? requestTarget = null, string? userInfo = null,
                     string? processTarget = null, string? processAction = null, string? processResult = null,
                     Exception? exception = null);

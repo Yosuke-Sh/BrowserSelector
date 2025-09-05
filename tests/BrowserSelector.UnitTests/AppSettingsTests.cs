@@ -1,6 +1,5 @@
 using BrowserSelector.Core.Models;
 using FluentAssertions;
-using Xunit;
 
 namespace BrowserSelector.UnitTests;
 

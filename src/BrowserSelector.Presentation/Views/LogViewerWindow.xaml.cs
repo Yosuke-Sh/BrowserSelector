@@ -1,7 +1,6 @@
-using System.Windows;
-using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System.Windows;
 
 namespace BrowserSelector.Presentation.Views;
 
@@ -56,12 +55,12 @@ public partial class LogViewerViewModel : ObservableObject
         try
         {
             Clipboard.SetText(LogContent);
-            MessageBox.Show("ログ内容をクリップボードにコピーしました。", "完了", 
+            MessageBox.Show("ログ内容をクリップボードにコピーしました。", "完了",
                           MessageBoxButton.OK, MessageBoxImage.Information);
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"クリップボードへのコピーに失敗しました: {ex.Message}", "エラー", 
+            MessageBox.Show($"クリップボードへのコピーに失敗しました: {ex.Message}", "エラー",
                           MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }

@@ -9,12 +9,12 @@ public enum GradientDirection
     /// 垂直方向（上から下）
     /// </summary>
     Vertical,
-    
+
     /// <summary>
     /// 水平方向（左から右）
     /// </summary>
     Horizontal,
-    
+
     /// <summary>
     /// 斜め方向（左上から右下）
     /// </summary>

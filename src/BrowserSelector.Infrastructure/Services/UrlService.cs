@@ -1,6 +1,5 @@
-using System.Net.Http;
-using System.Text.RegularExpressions;
 using BrowserSelector.Core.Services;
+using System.Net.Http;
 
 namespace BrowserSelector.Infrastructure.Services;
 
@@ -47,8 +46,8 @@ public class UrlService : IUrlService
                 return Task.FromResult(false);
 
             // サポートされているプロトコルかチェック
-            return Task.FromResult(uri.Scheme == Uri.UriSchemeHttp || 
-                   uri.Scheme == Uri.UriSchemeHttps || 
+            return Task.FromResult(uri.Scheme == Uri.UriSchemeHttp ||
+                   uri.Scheme == Uri.UriSchemeHttps ||
                    uri.Scheme == Uri.UriSchemeFtp);
         }
         catch
@@ -88,7 +87,7 @@ public class UrlService : IUrlService
         url = url.Trim();
 
         // 既にプロトコルがある場合はそのまま返す
-        if (url.StartsWith("http://") || url.StartsWith("https://") || 
+        if (url.StartsWith("http://") || url.StartsWith("https://") ||
             url.StartsWith("ftp://") || url.StartsWith("file://"))
         {
             return url;

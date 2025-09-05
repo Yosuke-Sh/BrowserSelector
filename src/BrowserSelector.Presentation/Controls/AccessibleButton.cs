@@ -1,8 +1,8 @@
 using System.Windows;
+using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Automation;
 
 namespace BrowserSelector.Presentation.Controls;
 
@@ -78,7 +78,7 @@ public class AccessibleButton : Button
 
     static AccessibleButton()
     {
-        DefaultStyleKeyProperty.OverrideMetadata(typeof(AccessibleButton), 
+        DefaultStyleKeyProperty.OverrideMetadata(typeof(AccessibleButton),
             new FrameworkPropertyMetadata(typeof(AccessibleButton)));
     }
 
@@ -102,7 +102,7 @@ public class AccessibleButton : Button
     protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
     {
         base.OnMouseLeftButtonDown(e);
-        
+
         // フォーカスを設定
         Focus();
     }
@@ -216,7 +216,7 @@ public class AccessibleButton : Button
     {
         SetValue(AutomationProperties.NameProperty, name);
         SetValue(AutomationProperties.HelpTextProperty, helpText);
-        
+
         if (!string.IsNullOrEmpty(description))
         {
             SetValue(AutomationProperties.ItemStatusProperty, description);

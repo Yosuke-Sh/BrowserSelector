@@ -1,13 +1,10 @@
-using System;
-using System.Collections.Generic;
+using Microsoft.Win32;
 using System.IO;
-using System.Linq;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Microsoft.Win32;
-using System.Runtime.InteropServices;
 
 namespace BrowserSelector.Presentation.Views;
 
@@ -18,7 +15,7 @@ public partial class IconSelectionDialog : Window
 {
     public string? SelectedIconPath { get; private set; }
     public int SelectedIconIndex { get; private set; } = -1;
-    
+
     private readonly List<IconInfo> _icons = new();
     private string? _currentSelectedPath;
     private string? _executablePath;
@@ -39,20 +36,20 @@ public partial class IconSelectionDialog : Window
         try
         {
             _executablePath = executablePath;
-            
+
             if (File.Exists(executablePath))
             {
                 // 既存のアイコンをクリア
                 ExecutableIconsPanel.Children.Clear();
-                
+
                 // 実行ファイルから複数のアイコンを抽出
                 var icons = ExtractIconsFromExecutable(executablePath);
-                
+
                 foreach (var iconInfo in icons)
                 {
                     AddIconButton(iconInfo, ExecutableIconsPanel);
                 }
-                
+
             }
         }
         catch (Exception)
@@ -74,15 +71,15 @@ public partial class IconSelectionDialog : Window
         {
             // アイコン数を取得
             var iconCount = ExtractIconEx(executablePath, -1, (IntPtr[]?)null!, (IntPtr[]?)null!, 0);
-            
+
             if (iconCount > 0)
             {
                 var largeIcons = new IntPtr[iconCount];
                 var smallIcons = new IntPtr[iconCount];
-                
+
                 // すべてのアイコンを抽出
                 ExtractIconEx(executablePath, 0, largeIcons, smallIcons, iconCount);
-                
+
                 for (int i = 0; i < iconCount; i++)
                 {
                     if (largeIcons[i] != IntPtr.Zero)
@@ -117,7 +114,7 @@ public partial class IconSelectionDialog : Window
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"アイコン抽出エラー: {executablePath}, {ex.Message}");
-            
+
             // フォールバック: 関連付けられたアイコンを取得
             try
             {
@@ -155,7 +152,7 @@ public partial class IconSelectionDialog : Window
             };
 
             var iconExtensions = new[] { ".ico", ".exe", ".dll" };
-            
+
             foreach (var folder in systemFolders)
             {
                 if (Directory.Exists(folder))
@@ -201,7 +198,7 @@ public partial class IconSelectionDialog : Window
             // 最近使用したアイコンのパスを設定ファイルから読み込み
             // ここではサンプルとして空のリストを使用
             var recentIcons = new List<string>();
-            
+
             // 最近使用したアイコンがあれば表示
             foreach (var iconPath in recentIcons)
             {
@@ -267,11 +264,11 @@ public partial class IconSelectionDialog : Window
             // リサイズせずに元のアイコンをそのまま使用
             var originalSize = icon.Size;
             System.Diagnostics.Debug.WriteLine($"アイコン元サイズ: {originalSize.Width}x{originalSize.Height}");
-            
+
             using var stream = new MemoryStream();
             icon.Save(stream);
             stream.Position = 0;
-            
+
             var bitmap = new BitmapImage();
             bitmap.BeginInit();
             bitmap.CacheOption = BitmapCacheOption.OnLoad;
@@ -279,7 +276,7 @@ public partial class IconSelectionDialog : Window
             // リサイズせずに元のサイズでデコード
             bitmap.EndInit();
             bitmap.Freeze();
-            
+
             return bitmap;
         }
         catch (Exception ex)
@@ -297,7 +294,7 @@ public partial class IconSelectionDialog : Window
             {
                 return true;
             }
-            else if (filePath.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) || 
+            else if (filePath.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) ||
                      filePath.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
             {
                 // 実行ファイルにアイコンが含まれているかチェック
@@ -329,17 +326,17 @@ public partial class IconSelectionDialog : Window
         {
             // アイコンプレビューを更新
             SelectedIconPreview.Source = iconInfo.Icon != null ? ConvertIconToBitmapImage(iconInfo.Icon) : null;
-            
+
             // パス情報を更新
             SelectedIconPathText.Text = iconInfo.Name;
-            
+
             // 詳細情報を更新
             var fileInfo = new FileInfo(iconInfo.Path);
             SelectedIconInfo.Text = $"パス: {iconInfo.Path}\nインデックス: {iconInfo.Index}\nサイズ: {fileInfo.Length:N0} bytes\n更新日: {fileInfo.LastWriteTime:yyyy/MM/dd}";
-            
+
             // 確認ボタンを有効化
             ConfirmButton.IsEnabled = true;
-            
+
             System.Diagnostics.Debug.WriteLine($"アイコンが選択されました: {iconInfo.Path}, インデックス: {iconInfo.Index}");
         }
         catch (Exception ex)
@@ -370,13 +367,13 @@ public partial class IconSelectionDialog : Window
                     Path = iconPath,
                     Name = Path.GetFileName(iconPath)
                 };
-                
+
                 UpdateSelectedIconDisplay(iconInfo);
                 _currentSelectedPath = iconPath;
             }
             else
             {
-                MessageBox.Show("選択されたファイルは有効なアイコンファイルではありません。", "エラー", 
+                MessageBox.Show("選択されたファイルは有効なアイコンファイルではありません。", "エラー",
                               MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }

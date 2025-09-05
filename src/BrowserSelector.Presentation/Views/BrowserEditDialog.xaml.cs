@@ -1,8 +1,7 @@
-using System;
+using BrowserSelector.Core.Models;
+using Microsoft.Win32;
 using System.IO;
 using System.Windows;
-using Microsoft.Win32;
-using BrowserSelector.Core.Models;
 
 namespace BrowserSelector.Presentation.Views;
 
@@ -18,7 +17,7 @@ public partial class BrowserEditDialog : Window
     public BrowserEditDialog(Browser? browser = null, bool isSystemBrowser = false)
     {
         InitializeComponent();
-        
+
         if (browser == null)
         {
             // 新規作成
@@ -46,7 +45,7 @@ public partial class BrowserEditDialog : Window
 
         DataContext = Browser;
         Title = _isNewBrowser ? "ブラウザ追加" : (_isSystemBrowser ? "システムブラウザ設定" : "ブラウザ編集");
-        
+
         // システムブラウザの場合は、編集不可能な項目を無効化
         if (_isSystemBrowser)
         {
@@ -54,7 +53,7 @@ public partial class BrowserEditDialog : Window
             NameTextBox.IsEnabled = false;
             ExecutablePathTextBox.IsEnabled = false;
             BrowseExecutableButton.IsEnabled = false;
-            
+
             // 説明を追加
             SystemBrowserInfoText.Visibility = Visibility.Visible;
         }
@@ -72,7 +71,7 @@ public partial class BrowserEditDialog : Window
         if (openFileDialog.ShowDialog() == true)
         {
             Browser.ExecutablePath = openFileDialog.FileName;
-            
+
             // 実行ファイルが選択された場合、自動的にアイコンパスを設定
             // 既存のアイコンが設定されていない場合のみ自動設定
             if (string.IsNullOrEmpty(Browser.IconPath))
@@ -80,7 +79,7 @@ public partial class BrowserEditDialog : Window
                 Browser.IconPath = openFileDialog.FileName;
                 System.Diagnostics.Debug.WriteLine($"アイコンを実行ファイルから自動設定: {openFileDialog.FileName}");
             }
-            
+
             // 名前がデフォルトの場合、ファイル名から自動設定
             if (Browser.Name == "新しいブラウザ" || string.IsNullOrEmpty(Browser.Name))
             {
@@ -108,7 +107,7 @@ public partial class BrowserEditDialog : Window
     private void SelectIcon_Click(object sender, RoutedEventArgs e)
     {
         var dialog = new IconSelectionDialog();
-        
+
         // 実行ファイルが設定されている場合、そのアイコンを優先表示
         if (!string.IsNullOrEmpty(Browser.ExecutablePath) && File.Exists(Browser.ExecutablePath))
         {
@@ -119,7 +118,7 @@ public partial class BrowserEditDialog : Window
         {
             dialog.LoadExecutableIcon(Browser.IconPath);
         }
-        
+
         if (dialog.ShowDialog() == true && !string.IsNullOrEmpty(dialog.SelectedIconPath))
         {
             Browser.IconPath = dialog.SelectedIconPath;

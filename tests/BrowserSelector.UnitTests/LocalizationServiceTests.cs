@@ -1,7 +1,6 @@
 using BrowserSelector.Infrastructure.Localization;
 using FluentAssertions;
 using System.Globalization;
-using Xunit;
 
 namespace BrowserSelector.UnitTests;
 

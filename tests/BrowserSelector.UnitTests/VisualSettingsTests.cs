@@ -1,7 +1,6 @@
 using BrowserSelector.Core.Models;
 using FluentAssertions;
 using System.Windows.Media;
-using Xunit;
 
 namespace BrowserSelector.UnitTests;
 

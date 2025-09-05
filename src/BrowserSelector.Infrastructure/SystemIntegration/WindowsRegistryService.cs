@@ -1,6 +1,6 @@
-using Microsoft.Win32;
 using BrowserSelector.Core.Models;
 using BrowserSelector.Core.Services;
+using Microsoft.Win32;
 using System.IO;
 
 namespace BrowserSelector.Infrastructure.SystemIntegration;
@@ -18,19 +18,19 @@ public class WindowsRegistryService : IRegistryService
         {
             // Chrome検出
             browsers.AddRange(DetectChrome());
-            
+
             // Firefox検出
             browsers.AddRange(DetectFirefox());
-            
+
             // Edge検出
             browsers.AddRange(DetectEdge());
-            
+
             // Opera検出
             browsers.AddRange(DetectOpera());
-            
+
             // Brave検出
             browsers.AddRange(DetectBrave());
-            
+
             // Vivaldi検出
             browsers.AddRange(DetectVivaldi());
         }
@@ -46,7 +46,7 @@ public class WindowsRegistryService : IRegistryService
         {
             System.Diagnostics.Debug.WriteLine($"重複除去前: {browser.Name}, ID: {browser.Id}, パス: {browser.ExecutablePath}");
         }
-        
+
         var uniqueBrowsers = browsers
             .Where(b => b.IsValid)
             .GroupBy(b => b.ExecutablePath?.ToLowerInvariant())
@@ -65,13 +65,13 @@ public class WindowsRegistryService : IRegistryService
     private IEnumerable<Browser> DetectChrome()
     {
         var browsers = new List<Browser>();
-        
+
         try
         {
             // Chrome 64bit
             var chromePath = GetRegistryValue(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe", "");
             System.Diagnostics.Debug.WriteLine($"Chrome 64bit パス: {chromePath}");
-            
+
             if (!string.IsNullOrEmpty(chromePath) && File.Exists(chromePath))
             {
                 var chrome64 = new Browser
@@ -92,7 +92,7 @@ public class WindowsRegistryService : IRegistryService
             // Chrome 32bit
             var chromePath32 = GetRegistryValue(@"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe", "");
             System.Diagnostics.Debug.WriteLine($"Chrome 32bit パス: {chromePath32}");
-            
+
             if (!string.IsNullOrEmpty(chromePath32) && File.Exists(chromePath32))
             {
                 var chrome32 = new Browser
@@ -121,7 +121,7 @@ public class WindowsRegistryService : IRegistryService
     private IEnumerable<Browser> DetectFirefox()
     {
         var browsers = new List<Browser>();
-        
+
         try
         {
             // Firefox 64bit
@@ -161,13 +161,13 @@ public class WindowsRegistryService : IRegistryService
     private IEnumerable<Browser> DetectEdge()
     {
         var browsers = new List<Browser>();
-        
+
         try
         {
             // Edge Chromium
             var edgePath = GetRegistryValue(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\msedge.exe", "");
             System.Diagnostics.Debug.WriteLine($"Edge パス: {edgePath}");
-            
+
             if (!string.IsNullOrEmpty(edgePath) && File.Exists(edgePath))
             {
                 var edge = new Browser
@@ -196,7 +196,7 @@ public class WindowsRegistryService : IRegistryService
     private IEnumerable<Browser> DetectOpera()
     {
         var browsers = new List<Browser>();
-        
+
         try
         {
             // Opera
@@ -223,7 +223,7 @@ public class WindowsRegistryService : IRegistryService
     private IEnumerable<Browser> DetectBrave()
     {
         var browsers = new List<Browser>();
-        
+
         try
         {
             // Brave
@@ -250,7 +250,7 @@ public class WindowsRegistryService : IRegistryService
     private IEnumerable<Browser> DetectVivaldi()
     {
         var browsers = new List<Browser>();
-        
+
         try
         {
             // Vivaldi

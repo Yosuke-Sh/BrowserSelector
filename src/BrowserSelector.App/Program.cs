@@ -1,4 +1,3 @@
-using System;
 using System.Windows;
 
 namespace BrowserSelector.App;
@@ -19,7 +18,7 @@ public class Program
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"アプリケーションの起動に失敗しました: {ex.Message}", 
+            MessageBox.Show($"アプリケーションの起動に失敗しました: {ex.Message}",
                           "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }

@@ -1,11 +1,8 @@
-using Xunit;
+using BrowserSelector.Core.Models;
+using BrowserSelector.Core.Services;
+using BrowserSelector.Presentation.ViewModels;
 using FluentAssertions;
 using Moq;
-using BrowserSelector.Presentation.ViewModels;
-using BrowserSelector.Core.Services;
-using BrowserSelector.Core.Models;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace BrowserSelector.UnitTests;
 

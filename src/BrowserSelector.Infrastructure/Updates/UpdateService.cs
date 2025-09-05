@@ -1,10 +1,8 @@
-using System;
+using BrowserSelector.Core.Models;
+using BrowserSelector.Core.Services;
 using System.IO;
 using System.Net.Http;
-using System.Threading.Tasks;
 using System.Text.Json;
-using BrowserSelector.Core.Services;
-using BrowserSelector.Core.Models;
 
 namespace BrowserSelector.Infrastructure.Updates;
 

@@ -1,10 +1,8 @@
+using BrowserSelector.Core.Models;
 using BrowserSelector.Core.Services;
-using BrowserSelector.Infrastructure.SystemIntegration;
+using BrowserSelector.Infrastructure.Logging;
 using System.Diagnostics;
 using System.IO;
-using BrowserSelector.Core.Models;
-using BrowserSelector.Core.Enums;
-using BrowserSelector.Infrastructure.Logging;
 
 namespace BrowserSelector.Infrastructure.Services;
 
@@ -38,7 +36,7 @@ public class BrowserService : IBrowserService
             // レジストリからブラウザを検出
             var registryBrowsers = await _registryService.DetectBrowsersFromRegistryAsync();
             _browsers.Clear();
-            
+
             // 自動検出されたブラウザにアイコンを設定
             foreach (var browser in registryBrowsers)
             {
@@ -47,7 +45,7 @@ public class BrowserService : IBrowserService
                     browser.IconPath = browser.ExecutablePath; // 実行ファイルからアイコンを抽出
                 }
             }
-            
+
             _browsers.AddRange(registryBrowsers);
 
             // カスタムブラウザを追加（設定から読み込み）
@@ -68,13 +66,13 @@ public class BrowserService : IBrowserService
         try
         {
             _logService.LogDebug($"ブラウザ起動開始 - {browser.Name}, パス: {browser.ExecutablePath}, URL: {url}", nameof(BrowserService));
-            
+
             if (!browser.IsValid)
             {
                 _logService.LogWarning($"ブラウザが無効です - {browser.Name}", nameof(BrowserService));
                 return false;
             }
-            
+
             if (!File.Exists(browser.ExecutablePath))
             {
                 _logService.LogWarning($"実行ファイルが存在しません - {browser.ExecutablePath}", nameof(BrowserService));
@@ -84,7 +82,7 @@ public class BrowserService : IBrowserService
             // URLを正規化
             var normalizedUrl = await _urlService.NormalizeUrlAsync(url);
             _logService.LogDebug($"正規化されたURL - {normalizedUrl}", nameof(BrowserService));
-            
+
             if (string.IsNullOrEmpty(normalizedUrl))
             {
                 _logService.LogWarning("URLの正規化に失敗しました", nameof(BrowserService));
@@ -94,7 +92,7 @@ public class BrowserService : IBrowserService
             // URLを検証
             var isValidUrl = await _urlService.ValidateUrlAsync(normalizedUrl);
             _logService.LogDebug($"URL検証結果 - {isValidUrl}", nameof(BrowserService));
-            
+
             if (!isValidUrl)
             {
                 _logService.LogWarning($"URLが無効です - {normalizedUrl}", nameof(BrowserService));
@@ -103,7 +101,7 @@ public class BrowserService : IBrowserService
 
             // ブラウザタイプに応じた起動引数を設定
             string arguments = GetBrowserArguments(browser.Type, normalizedUrl);
-            
+
             // ブラウザを起動
             var startInfo = new ProcessStartInfo
             {
@@ -121,7 +119,7 @@ public class BrowserService : IBrowserService
             if (process != null)
             {
                 _logService.LogInformation($"プロセス起動成功 - PID: {process.Id}", nameof(BrowserService));
-                
+
                 // プロセス情報を取得して確認
                 try
                 {
@@ -132,7 +130,7 @@ public class BrowserService : IBrowserService
                 {
                     _logService.LogDebug($"プロセス情報取得エラー - {ex.Message}", nameof(BrowserService), ex);
                 }
-                
+
                 // 使用回数を増加
                 browser.IncrementUseCount();
                 await SaveBrowserUsageAsync(browser);

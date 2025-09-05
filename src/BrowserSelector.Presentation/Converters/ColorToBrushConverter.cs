@@ -1,4 +1,3 @@
-using System;
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
@@ -16,7 +15,7 @@ public class ColorToBrushConverter : IValueConverter
         {
             return new SolidColorBrush(color);
         }
-        
+
         // デフォルトの背景色
         return new SolidColorBrush(Colors.Transparent);
     }
@@ -27,7 +26,7 @@ public class ColorToBrushConverter : IValueConverter
         {
             return brush.Color;
         }
-        
+
         // デフォルトの色
         return Colors.Transparent;
     }

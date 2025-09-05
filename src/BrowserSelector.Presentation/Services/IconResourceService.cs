@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Reflection;
 using System.Windows.Media.Imaging;
@@ -46,7 +45,7 @@ public class IconResourceService
 
             // デフォルトアイコンを作成（32x32の透明PNG）
             var defaultIcon = CreateDefaultIcon(32, 32);
-            
+
             // PNGファイルとして保存
             using var fileStream = new FileStream(filePath, FileMode.Create);
             var encoder = new PngBitmapEncoder();
@@ -81,7 +80,7 @@ public class IconResourceService
     public int CreateMissingIcons(string[] iconNames)
     {
         var createdCount = 0;
-        
+
         foreach (var iconName in iconNames)
         {
             if (!IconExists(iconName))
@@ -139,7 +138,7 @@ public class IconResourceService
         };
 
         var missingIcons = new List<string>();
-        
+
         foreach (var iconName in requiredIcons)
         {
             if (!IconExists(iconName))

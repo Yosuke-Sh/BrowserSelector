@@ -1,8 +1,7 @@
+using BrowserSelector.Presentation.ViewModels;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
-using BrowserSelector.Presentation.ViewModels;
-using BrowserSelector.Core.Models;
-using System.ComponentModel;
 
 namespace BrowserSelector.Presentation.Views;
 
@@ -15,17 +14,17 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         DataContext = viewModel;
-        
+
         // 初期サイズ設定を適用（InitializeComponentの後）
         ApplyInitialSizeSettings(viewModel);
-        
+
         // ウィンドウをアクティブにする
         this.Activate();
         this.Focus();
-        
+
         // ウィンドウのLoadedイベントでサイズ設定を再適用
         this.Loaded += MainWindow_Loaded;
-        
+
         // ウィンドウを確実に表示（App.xaml.csでShow()が呼ばれるため削除）
         // this.Show();
         this.BringIntoView();
@@ -44,23 +43,23 @@ public partial class MainWindow : Window
                 // 最小・最大サイズの制限
                 var width = Math.Max(400, Math.Min(2000, visualSettings.InitialWindowWidth));
                 var height = Math.Max(300, Math.Min(1500, visualSettings.InitialWindowHeight));
-                
+
                 // デバッグ情報を出力
                 System.Diagnostics.Debug.WriteLine($"初期サイズ設定適用: Width={width}, Height={height}");
                 System.Diagnostics.Debug.WriteLine($"VisualSettings: InitialWindowWidth={visualSettings.InitialWindowWidth}, InitialWindowHeight={visualSettings.InitialWindowHeight}");
-                
+
                 // ウィンドウの位置を中央に設定
                 this.WindowState = WindowState.Normal;
                 this.Left = (SystemParameters.PrimaryScreenWidth - width) / 2;
                 this.Top = (SystemParameters.PrimaryScreenHeight - height) / 2;
-                
+
                 // サイズを設定（位置設定の後）
                 this.Width = width;
                 this.Height = height;
-                
+
                 // 設定を強制適用
                 this.UpdateLayout();
-                
+
                 System.Diagnostics.Debug.WriteLine($"ウィンドウサイズ設定完了: ActualWidth={this.ActualWidth}, ActualHeight={this.ActualHeight}");
             }
             else
@@ -112,7 +111,7 @@ public partial class MainWindow : Window
     protected override void OnSourceInitialized(EventArgs e)
     {
         base.OnSourceInitialized(e);
-        
+
         // DataContext変更の監視を開始
         if (DataContext is INotifyPropertyChanged notifyPropertyChanged)
         {
@@ -127,7 +126,7 @@ public partial class MainWindow : Window
     private void OnDataContextPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         System.Diagnostics.Debug.WriteLine($"MainWindow: DataContextプロパティ変更検知: {e.PropertyName}");
-        
+
         if (e.PropertyName == nameof(MainViewModel.VisualSettings))
         {
             System.Diagnostics.Debug.WriteLine("MainWindow: VisualSettingsプロパティ変更を検知しました。UI更新を通知します。");
@@ -135,7 +134,7 @@ public partial class MainWindow : Window
             this.InvalidateVisual();
         }
     }
-    
+
     /// <summary>
     /// ブラウザボタンのクリックイベントハンドラー（デバッグ用）
     /// </summary>
@@ -148,7 +147,7 @@ public partial class MainWindow : Window
             {
                 // ViewModelの状態確認
             }
-            
+
             // ボタンのバインディング情報を確認
             var command = button.Command;
             var commandParameter = button.CommandParameter;

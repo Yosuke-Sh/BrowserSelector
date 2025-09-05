@@ -1,7 +1,6 @@
-using System;
+using BrowserSelector.Core.Enums;
 using System.Globalization;
 using System.Windows.Data;
-using BrowserSelector.Core.Enums;
 
 namespace BrowserSelector.Presentation.Converters;
 

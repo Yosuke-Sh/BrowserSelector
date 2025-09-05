@@ -1,4 +1,3 @@
-using System;
 using BrowserSelector.Core.Models;
 
 namespace BrowserSelector.Core.Services;

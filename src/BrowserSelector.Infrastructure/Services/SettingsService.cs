@@ -1,7 +1,7 @@
-using System.IO;
-using System.Text.Json;
 using BrowserSelector.Core.Models;
 using BrowserSelector.Core.Services;
+using System.IO;
+using System.Text.Json;
 
 namespace BrowserSelector.Infrastructure.Services;
 
