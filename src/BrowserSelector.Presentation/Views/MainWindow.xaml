@@ -21,6 +21,7 @@
         <!-- コンバーター -->
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:StringToBoolConverter x:Key="StringToBoolConverter"/>
+        <converters:IconPathConverter x:Key="IconPathConverter"/>
 
         <!-- スタイル定義 -->
         <Style x:Key="BrowserButtonStyle" TargetType="Button">
@@ -41,16 +42,34 @@
                             <StackPanel Orientation="Vertical" 
                                         HorizontalAlignment="Center" 
                                         VerticalAlignment="Center">
-                                <Image Source="{Binding IconPath}" 
-                                       Width="32" Height="32" 
+                                <Image Width="32" Height="32" 
                                        Margin="0,0,0,5"
-                                       RenderOptions.BitmapScalingMode="HighQuality"/>
+                                       RenderOptions.BitmapScalingMode="HighQuality">
+                                    <Image.Source>
+                                        <MultiBinding Converter="{StaticResource IconPathConverter}">
+                                            <Binding Path="IconPath"/>
+                                            <Binding Path="ExecutablePath"/>
+                                            <Binding Path="Name"/>
+                                        </MultiBinding>
+                                    </Image.Source>
+                                </Image>
                                 <TextBlock Text="{TemplateBinding Content}" 
                                            HorizontalAlignment="Center"
                                            TextWrapping="Wrap"
                                            MaxWidth="100"/>
                             </StackPanel>
                         </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.5"/>
+                                <Setter Property="Background" Value="#F0F0F0"/>
+                                <Setter Property="BorderBrush" Value="#D0D0D0"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#E3F2FD"/>
+                                <Setter Property="BorderBrush" Value="#2196F3"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -106,7 +125,7 @@
                          BlurRadius="2"/>
                 </TextBlock.Effect>
                 <TextBlock.Background>
-                    <SolidColorBrush  Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}" Opacity="0.25"/>
+                    <SolidColorBrush  Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}" Opacity="0.10"/>
                 </TextBlock.Background>
             </TextBlock>
         </Grid>

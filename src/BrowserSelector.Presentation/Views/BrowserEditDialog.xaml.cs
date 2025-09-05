@@ -114,11 +114,16 @@ public partial class BrowserEditDialog : Window
         {
             dialog.LoadExecutableIcon(Browser.ExecutablePath);
         }
+        // 現在のアイコンパスが設定されている場合、そのファイルを表示
+        else if (!string.IsNullOrEmpty(Browser.IconPath) && File.Exists(Browser.IconPath))
+        {
+            dialog.LoadExecutableIcon(Browser.IconPath);
+        }
         
         if (dialog.ShowDialog() == true && !string.IsNullOrEmpty(dialog.SelectedIconPath))
         {
             Browser.IconPath = dialog.SelectedIconPath;
-            System.Diagnostics.Debug.WriteLine($"アイコンが選択されました: {dialog.SelectedIconPath}");
+            System.Diagnostics.Debug.WriteLine($"アイコンが選択されました: {dialog.SelectedIconPath}, インデックス: {dialog.SelectedIconIndex}");
         }
     }
 

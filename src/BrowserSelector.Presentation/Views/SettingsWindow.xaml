@@ -248,23 +248,49 @@
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="10">
                         <!-- ブラウザ管理 -->
-                        <GroupBox Header="ブラウザ管理" Style="{StaticResource GroupBoxStyle}" Height="500">
+                        <GroupBox Header="ブラウザ管理" Style="{StaticResource GroupBoxStyle}" Height="400">
                             <StackPanel>
                                 <TextBlock Text="検出されたブラウザ:" FontWeight="SemiBold" Margin="0,0,0,10"/>
-                                <ListBox Height="350" ItemsSource="{Binding DetectedBrowsers}">
+                                <ListBox Height="250" ItemsSource="{Binding DetectedBrowsers}">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <TextBlock Grid.Column="1" Text="{Binding Name}" 
-                                                           VerticalAlignment="Center"/>
-                                                <TextBlock Grid.Column="2" Text="{Binding ExecutablePath}" 
+                                                <TextBlock Grid.Column="0" Text="{Binding DisplayOrder}" 
                                                            FontSize="10" Foreground="Gray" 
-                                                           VerticalAlignment="Center"/>
+                                                           VerticalAlignment="Center" Margin="0,0,5,0" Width="20"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="0,0,0,0">
+                                                    <Button Content="↑" Padding="0,0" FontSize="12" Width="30" Height="30"
+                                                            Command="{Binding DataContext.MoveBrowserUpCommand, 
+                                                            RelativeSource={RelativeSource AncestorType=Window}}"
+                                                            CommandParameter="{Binding}"/>
+                                                    <Button Content="↓" Padding="0,0" FontSize="12" Width="30" Height="30"
+                                                            Command="{Binding DataContext.MoveBrowserDownCommand, 
+                                                            RelativeSource={RelativeSource AncestorType=Window}}"
+                                                            CommandParameter="{Binding}"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="0,0,5,0">
+                                                    <TextBlock Text="{Binding Name}" 
+                                                               VerticalAlignment="Center" FontSize="12"/>
+                                                    <TextBlock Text="{Binding ExecutablePath}" 
+                                                               FontSize="9" Foreground="Gray" 
+                                                               VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                                </StackPanel>
+                                                <Button Grid.Column="3" Content="編集" Padding="1,1" FontSize="12"  Width="80" Height="30"
+                                                        Margin="2,0,0,0" Command="{Binding DataContext.EditBrowserCommand, 
+                                                        RelativeSource={RelativeSource AncestorType=Window}}"
+                                                        CommandParameter="{Binding}"/>
+                                                <Button Grid.Column="4" Content="削除" Padding="1,1" FontSize="12" Width="80" Height="30"
+                                                        Margin="2,0,0,0" Command="{Binding DataContext.RemoveBrowserCommand, 
+                                                        RelativeSource={RelativeSource AncestorType=Window}}"
+                                                        CommandParameter="{Binding}"/>
                                             </Grid>
                                         </DataTemplate>
                                     </ListBox.ItemTemplate>

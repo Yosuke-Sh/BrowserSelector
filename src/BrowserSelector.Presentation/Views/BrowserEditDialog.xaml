@@ -4,11 +4,16 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BrowserSelector.Presentation.Views"
+        xmlns:converters="clr-namespace:BrowserSelector.Presentation.Converters"
         mc:Ignorable="d"
         Title="ブラウザ編集" Height="450" Width="600"
         WindowStartupLocation="CenterOwner"
         ResizeMode="CanResize"
         MinHeight="400" MinWidth="500">
+
+    <Window.Resources>
+        <converters:IconPathConverter x:Key="IconPathConverter"/>
+    </Window.Resources>
 
     <Grid Margin="20">
         <Grid.RowDefinitions>
@@ -125,9 +130,16 @@
                         </Grid.ColumnDefinitions>
 
                         <!-- アイコン表示 -->
-                        <Image Grid.Column="0" Source="{Binding IconPath}" 
-                               Width="32" Height="32" Margin="0,0,10,0"
-                               Stretch="Uniform"/>
+                        <Image Grid.Column="0" Width="32" Height="32" Margin="0,0,10,0"
+                               Stretch="Uniform">
+                            <Image.Source>
+                                <MultiBinding Converter="{StaticResource IconPathConverter}">
+                                    <Binding Path="IconPath"/>
+                                    <Binding Path="ExecutablePath"/>
+                                    <Binding Path="Name"/>
+                                </MultiBinding>
+                            </Image.Source>
+                        </Image>
                         
                         <!-- ブラウザ情報 -->
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">

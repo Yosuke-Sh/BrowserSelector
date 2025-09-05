@@ -38,6 +38,16 @@ public class BrowserService : IBrowserService
             // レジストリからブラウザを検出
             var registryBrowsers = await _registryService.DetectBrowsersFromRegistryAsync();
             _browsers.Clear();
+            
+            // 自動検出されたブラウザにアイコンを設定
+            foreach (var browser in registryBrowsers)
+            {
+                if (string.IsNullOrEmpty(browser.IconPath) && !string.IsNullOrEmpty(browser.ExecutablePath))
+                {
+                    browser.IconPath = browser.ExecutablePath; // 実行ファイルからアイコンを抽出
+                }
+            }
+            
             _browsers.AddRange(registryBrowsers);
 
             // カスタムブラウザを追加（設定から読み込み）
@@ -195,9 +205,9 @@ public class BrowserService : IBrowserService
             if (browser == null)
                 return false;
 
-            // カスタムブラウザのみ削除可能
-            if (browser.Type != BrowserType.Custom)
-                return false;
+            // システム検出ブラウザも削除可能にする
+            // if (browser.Type != BrowserType.Custom)
+            //     return false;
 
             _browsers.Remove(browser);
             await SaveCustomBrowsersAsync();
@@ -212,16 +222,8 @@ public class BrowserService : IBrowserService
 
     public async Task<IEnumerable<Browser>> GetAllBrowsersAsync()
     {
-        if (!_browsers.Any())
-        {
-            _logService.LogDebug("Source=Detect Reason=CacheEmpty", nameof(BrowserService));
-            await DetectBrowsersAsync();
-        }
-        else
-        {
-            _logService.LogDebug($"Source=Cache Count={_browsers.Count}", nameof(BrowserService));
-        }
-
+        // 既存のブラウザデータを返すのみ（自動検出は行わない）
+        _logService.LogDebug($"Source=Cache Count={_browsers.Count}", nameof(BrowserService));
         return _browsers.OrderBy(b => b.DisplayOrder);
     }
 

@@ -84,6 +84,8 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     private bool _isBrowserDialogOpen = false;
 
+
+
     public SettingsViewModel(
         ISettingsService settingsService,
         IBrowserService browserService,
@@ -96,6 +98,8 @@ public partial class SettingsViewModel : ObservableObject
         _localizationService = localizationService;
         _urlRuleService = urlRuleService;
         _logService = logService;
+
+
 
         InitializeAsync();
     }
@@ -482,7 +486,26 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private async Task RefreshBrowsers()
     {
-        await RefreshBrowsersAsync();
+        try
+        {
+            _logService?.LogInformation("ブラウザ再検出開始", "SettingsViewModel");
+            
+            // 明示的にブラウザ検出を実行
+            var browsers = await _browserService.DetectBrowsersAsync();
+            DetectedBrowsers.Clear();
+            foreach (var browser in browsers)
+            {
+                DetectedBrowsers.Add(browser);
+            }
+            
+            _logService?.LogInformation($"ブラウザ再検出完了: {browsers.Count()}個のブラウザを検出", "SettingsViewModel");
+            MessageBox.Show($"ブラウザ {browsers.Count()} 個を検出しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+        catch (Exception ex)
+        {
+            _logService?.LogError($"ブラウザ再検出エラー: {ex.Message}", "SettingsViewModel", ex);
+            MessageBox.Show($"ブラウザの再検出中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
     }
 
     /// <summary>
@@ -913,33 +936,34 @@ public partial class SettingsViewModel : ObservableObject
     /// ブラウザを編集するコマンド
     /// </summary>
     [RelayCommand]
-    private async Task EditBrowserAsync()
+    private async Task EditBrowserAsync(Browser? browser = null)
     {
         try
         {
-            if (SelectedBrowser == null)
+            var targetBrowser = browser ?? SelectedBrowser;
+            if (targetBrowser == null)
             {
                 MessageBox.Show("編集するブラウザを選択してください。", "警告", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            _logService?.LogInformation($"ブラウザ編集開始: {SelectedBrowser.Name}", "SettingsViewModel");
+            _logService?.LogInformation($"ブラウザ編集開始: {targetBrowser.Name}", "SettingsViewModel");
             
             // システムで検出されたブラウザは、順序・アイコン・パラメーターのみ編集可能
-            if (SelectedBrowser.Type != BrowserType.Custom)
+            if (targetBrowser.Type != BrowserType.Custom)
             {
                 // システムブラウザの場合は、編集可能な項目を制限
                 var limitedBrowser = new Browser
                 {
-                    Id = SelectedBrowser.Id,
-                    Name = SelectedBrowser.Name,
-                    ExecutablePath = SelectedBrowser.ExecutablePath,
-                    Type = SelectedBrowser.Type,
-                    DisplayOrder = SelectedBrowser.DisplayOrder,
-                    IconPath = SelectedBrowser.IconPath,
-                    Arguments = SelectedBrowser.Arguments,
-                    IsEnabled = SelectedBrowser.IsEnabled,
-                    IsDefault = SelectedBrowser.IsDefault
+                    Id = targetBrowser.Id,
+                    Name = targetBrowser.Name,
+                    ExecutablePath = targetBrowser.ExecutablePath,
+                    Type = targetBrowser.Type,
+                    DisplayOrder = targetBrowser.DisplayOrder,
+                    IconPath = targetBrowser.IconPath,
+                    Arguments = targetBrowser.Arguments,
+                    IsEnabled = targetBrowser.IsEnabled,
+                    IsDefault = targetBrowser.IsDefault
                 };
                 
                 var systemBrowserDialog = new Views.BrowserEditDialog(limitedBrowser, true); // システムブラウザフラグ
@@ -948,12 +972,12 @@ public partial class SettingsViewModel : ObservableObject
                     var updatedBrowser = systemBrowserDialog.Browser;
                     
                     // システムブラウザの場合は、編集可能な項目のみ更新
-                    SelectedBrowser.DisplayOrder = updatedBrowser.DisplayOrder;
-                    SelectedBrowser.IconPath = updatedBrowser.IconPath;
-                    SelectedBrowser.Arguments = updatedBrowser.Arguments;
-                    SelectedBrowser.IsEnabled = updatedBrowser.IsEnabled;
+                    targetBrowser.DisplayOrder = updatedBrowser.DisplayOrder;
+                    targetBrowser.IconPath = updatedBrowser.IconPath;
+                    targetBrowser.Arguments = updatedBrowser.Arguments;
+                    targetBrowser.IsEnabled = updatedBrowser.IsEnabled;
                     
-                    var result = await _browserService.UpdateBrowserAsync(SelectedBrowser);
+                    var result = await _browserService.UpdateBrowserAsync(targetBrowser);
                     if (result)
                     {
                         await RefreshBrowsersAsync();
@@ -969,7 +993,7 @@ public partial class SettingsViewModel : ObservableObject
                 return;
             }
 
-            var dialog = new Views.BrowserEditDialog(SelectedBrowser);
+            var dialog = new Views.BrowserEditDialog(targetBrowser);
             if (dialog.ShowDialog() == true)
             {
                 var updatedBrowser = dialog.Browser;
@@ -999,36 +1023,40 @@ public partial class SettingsViewModel : ObservableObject
     /// ブラウザを削除するコマンド
     /// </summary>
     [RelayCommand]
-    private async Task RemoveBrowserAsync()
+    private async Task RemoveBrowserAsync(Browser? browser = null)
     {
         try
         {
-            if (SelectedBrowser == null)
+            var targetBrowser = browser ?? SelectedBrowser;
+            if (targetBrowser == null)
             {
                 MessageBox.Show("削除するブラウザを選択してください。", "警告", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            _logService?.LogInformation($"ブラウザ削除開始: {SelectedBrowser.Name}", "SettingsViewModel");
+            _logService?.LogInformation($"ブラウザ削除開始: {targetBrowser.Name}", "SettingsViewModel");
             
-            // カスタムブラウザのみ削除可能
-            if (SelectedBrowser.Type != BrowserType.Custom)
-            {
-                MessageBox.Show("システムで検出されたブラウザは削除できません。", "警告", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
+            // システム検出ブラウザも削除可能にする
+            // if (targetBrowser.Type != BrowserType.Custom)
+            // {
+            //     MessageBox.Show("システムで検出されたブラウザは削除できません。", "警告", MessageBoxButton.OK, MessageBoxImage.Warning);
+            //     return;
+            // }
 
-            var result = MessageBox.Show($"ブラウザ「{SelectedBrowser.Name}」を削除しますか？", "確認", 
+            var result = MessageBox.Show($"ブラウザ「{targetBrowser.Name}」を削除しますか？", "確認", 
                                        MessageBoxButton.YesNo, MessageBoxImage.Question);
             
             if (result == MessageBoxResult.Yes)
             {
-                var deleteResult = await _browserService.RemoveBrowserAsync(SelectedBrowser.Id);
+                var deleteResult = await _browserService.RemoveBrowserAsync(targetBrowser.Id);
                 if (deleteResult)
                 {
                     await RefreshBrowsersAsync();
-                    SelectedBrowser = null;
-                    _logService?.LogInformation($"ブラウザ削除完了: {SelectedBrowser?.Name}", "SettingsViewModel");
+                    if (SelectedBrowser == targetBrowser)
+                    {
+                        SelectedBrowser = null;
+                    }
+                    _logService?.LogInformation($"ブラウザ削除完了: {targetBrowser.Name}", "SettingsViewModel");
                     MessageBox.Show("ブラウザを削除しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
@@ -1042,6 +1070,74 @@ public partial class SettingsViewModel : ObservableObject
         {
             _logService?.LogError($"ブラウザ削除エラー: {ex.Message}", "SettingsViewModel", ex);
             MessageBox.Show($"ブラウザの削除中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    /// <summary>
+    /// ブラウザを上に移動するコマンド
+    /// </summary>
+    [RelayCommand]
+    private async Task MoveBrowserUpAsync(Browser browser)
+    {
+        try
+        {
+            var currentIndex = DetectedBrowsers.IndexOf(browser);
+            if (currentIndex > 0)
+            {
+                var previousBrowser = DetectedBrowsers[currentIndex - 1];
+                
+                // DisplayOrderを交換
+                var tempOrder = browser.DisplayOrder;
+                browser.DisplayOrder = previousBrowser.DisplayOrder;
+                previousBrowser.DisplayOrder = tempOrder;
+                
+                // コレクション内の順序を更新
+                DetectedBrowsers.Move(currentIndex, currentIndex - 1);
+                
+                // サービスに保存
+                await _browserService.UpdateBrowserAsync(browser);
+                await _browserService.UpdateBrowserAsync(previousBrowser);
+                
+                _logService?.LogInformation($"ブラウザ順序変更: {browser.Name} を上に移動", "SettingsViewModel");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logService?.LogError($"ブラウザ順序変更エラー: {ex.Message}", "SettingsViewModel", ex);
+        }
+    }
+
+    /// <summary>
+    /// ブラウザを下に移動するコマンド
+    /// </summary>
+    [RelayCommand]
+    private async Task MoveBrowserDownAsync(Browser browser)
+    {
+        try
+        {
+            var currentIndex = DetectedBrowsers.IndexOf(browser);
+            if (currentIndex < DetectedBrowsers.Count - 1)
+            {
+                var nextBrowser = DetectedBrowsers[currentIndex + 1];
+                
+                // DisplayOrderを交換
+                var tempOrder = browser.DisplayOrder;
+                browser.DisplayOrder = nextBrowser.DisplayOrder;
+                nextBrowser.DisplayOrder = tempOrder;
+                
+                // コレクション内の順序を更新
+                DetectedBrowsers.Move(currentIndex, currentIndex + 1);
+                
+                // サービスに保存
+                await _browserService.UpdateBrowserAsync(browser);
+                await _browserService.UpdateBrowserAsync(nextBrowser);
+                
+                _logService?.LogInformation($"ブラウザ順序変更: {browser.Name} を下に移動", "SettingsViewModel");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logService?.LogError($"ブラウザ順序変更エラー: {ex.Message}", "SettingsViewModel", ex);
         }
     }
 

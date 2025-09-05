@@ -95,7 +95,7 @@ public partial class MainViewModel : ObservableObject
             _logService?.LogDetailed(LogLevel.Information, "コマンド初期化完了", "MainViewModel", 
                                     "MVVM_INIT", "ViewModel", "System", "MainViewModel", "Initialize", "Commands");
 
-            // 初期化時にブラウザ一覧を読み込み
+            // 初期化時にブラウザ一覧を読み込み（データが存在しない場合のみ検出）
             _logService?.LogDetailed(LogLevel.Debug, "ブラウザ一覧読み込み開始", "MainViewModel", 
                                     "MVVM_INIT", "ViewModel", "System", "MainViewModel", "Initialize", "LoadBrowsers_Start");
             _logService?.LogDebug("BrowserLoad.Init Triggered", "MainViewModel");
@@ -150,10 +150,24 @@ public partial class MainViewModel : ObservableObject
     {
         try
         {
+            // 既存のブラウザデータがある場合は読み込みのみ
+            var existingBrowsers = await _browserService.GetAllBrowsersAsync();
+            if (existingBrowsers.Any())
+            {
+                Browsers.Clear();
+                foreach (var browser in existingBrowsers.Where(b => b.IsEnabled))
+                {
+                    Browsers.Add(browser);
+                }
+                StatusMessage = $"ブラウザ {Browsers.Count} 個を読み込みました";
+                return;
+            }
+
+            // ブラウザデータが存在しない場合のみ検出を実行
             IsLoading = true;
             StatusMessage = "ブラウザを検出中...";
 
-            var browsers = await _browserService.GetAllBrowsersAsync();
+            var browsers = await _browserService.DetectBrowsersAsync();
             
             Browsers.Clear();
             foreach (var browser in browsers.Where(b => b.IsEnabled))
@@ -168,7 +182,7 @@ public partial class MainViewModel : ObservableObject
                 System.Diagnostics.Debug.WriteLine($"ブラウザ: {browser.Name}, ID: {browser.Id}, 有効: {browser.IsEnabled}, パス: {browser.ExecutablePath}, タイプ: {browser.Type}");
             }
 
-            StatusMessage = $"ブラウザ {Browsers.Count} 個を読み込みました";
+            StatusMessage = $"ブラウザ {Browsers.Count} 個を検出しました";
         }
         catch (Exception ex)
         {
