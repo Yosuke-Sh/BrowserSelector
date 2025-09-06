@@ -126,9 +126,10 @@ public class BrowserIconDisplay : Control
 
             UpdateIconScale();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            System.Diagnostics.Debug.WriteLine($"アイコン読み込みエラー: {ex.Message}");
+            // アイコン読み込みエラーは通常の操作なので、ログレベルを下げる
+            // System.Diagnostics.Debug.WriteLine($"アイコン読み込みエラー: {ex.Message}");
             IconSource = GetDefaultIcon();
         }
     }

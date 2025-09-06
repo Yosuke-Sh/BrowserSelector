@@ -566,7 +566,7 @@ public partial class SettingsViewModel : ObservableObject
         {
             _logService?.LogInformation("ブラウザ追加開始", "SettingsViewModel");
 
-            var dialog = new Views.BrowserEditDialog();
+            var dialog = new Views.BrowserEditDialog(null, false, _logService);
             if (dialog.ShowDialog() == true)
             {
                 var newBrowser = dialog.Browser;
@@ -1129,7 +1129,7 @@ public partial class SettingsViewModel : ObservableObject
                     IsDefault = targetBrowser.IsDefault
                 };
 
-                var systemBrowserDialog = new Views.BrowserEditDialog(limitedBrowser, true); // システムブラウザフラグ
+                var systemBrowserDialog = new Views.BrowserEditDialog(limitedBrowser, true, _logService); // システムブラウザフラグ
                 if (systemBrowserDialog.ShowDialog() == true)
                 {
                     var updatedBrowser = systemBrowserDialog.Browser;
@@ -1156,7 +1156,7 @@ public partial class SettingsViewModel : ObservableObject
                 return;
             }
 
-            var dialog = new Views.BrowserEditDialog(targetBrowser);
+            var dialog = new Views.BrowserEditDialog(targetBrowser, false, _logService);
             if (dialog.ShowDialog() == true)
             {
                 var updatedBrowser = dialog.Browser;

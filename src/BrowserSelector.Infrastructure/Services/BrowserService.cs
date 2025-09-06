@@ -31,6 +31,7 @@ public class BrowserService : IBrowserService
 
     public async Task<IEnumerable<Browser>> DetectBrowsersAsync()
     {
+        _logService.LogTrace("ブラウザ検出処理開始", "BrowserService");
         try
         {
             // レジストリからブラウザを検出
@@ -52,11 +53,14 @@ public class BrowserService : IBrowserService
             var customBrowsers = await LoadCustomBrowsersAsync();
             _browsers.AddRange(customBrowsers);
 
+            // Traceレベルで詳細なブラウザ情報を出力
+            var browserDetails = string.Join(", ", _browsers.Select(b => $"{b.Name}({b.Type}, Enabled:{b.IsEnabled})"));
+            _logService.LogTrace($"ブラウザ検出処理完了: {_browsers.Count}個のブラウザを検出 - {browserDetails}", "BrowserService");
             return _browsers.OrderBy(b => b.DisplayOrder);
         }
         catch (Exception ex)
         {
-            _logService.LogError($"ブラウザ検出エラー: {ex.Message}", nameof(BrowserService), ex);
+            _logService.LogCritical($"ブラウザ検出で致命的エラーが発生: {ex.Message}", nameof(BrowserService), ex);
             return Enumerable.Empty<Browser>();
         }
     }

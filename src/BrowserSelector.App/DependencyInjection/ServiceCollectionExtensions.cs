@@ -14,14 +14,18 @@ public static class ServiceCollectionExtensions
     {
         // Core Services
         services.AddScoped<IBrowserService, BrowserService>();
-        services.AddScoped<ISettingsService, SettingsService>();
+        services.AddScoped<ISettingsService>(provider => 
+            new SettingsService(provider.GetRequiredService<ILogService>()));
         services.AddScoped<ILocalizationService, LocalizationService>();
-        services.AddScoped<IUrlService, UrlService>();
-        services.AddScoped<IUrlRuleService, UrlRuleService>();
+        services.AddScoped<IUrlService>(provider => 
+            new UrlService(provider.GetRequiredService<ISettingsService>(), provider.GetRequiredService<ILogService>()));
+        services.AddScoped<IUrlRuleService>(provider => 
+            new UrlRuleService(provider.GetRequiredService<ILogService>()));
 
         // Infrastructure Services
-        services.AddScoped<IRegistryService, WindowsRegistryService>();
         services.AddSingleton<ILogService, BrowserSelector.Infrastructure.Logging.LogService>();
+        services.AddScoped<IRegistryService>(provider => 
+            new WindowsRegistryService(provider.GetRequiredService<ILogService>()));
         services.AddScoped<ISystemTrayService, SystemTrayService>();
         services.AddScoped<IProtocolHandler, ProtocolHandler>();
         services.AddScoped<IUpdateService>(provider =>

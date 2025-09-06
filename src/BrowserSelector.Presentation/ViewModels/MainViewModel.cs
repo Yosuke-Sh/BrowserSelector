@@ -241,11 +241,11 @@ public partial class MainViewModel : ObservableObject
                 Browsers.Add(browser);
             }
 
-            // デバッグ情報を出力
-            System.Diagnostics.Debug.WriteLine($"検出されたブラウザ数: {browsers.Count()}");
+            // ログ出力
+            _logService?.LogDebug($"検出されたブラウザ数: {browsers.Count()}", "MainViewModel");
             foreach (var browser in browsers)
             {
-                System.Diagnostics.Debug.WriteLine($"ブラウザ: {browser.Name}, ID: {browser.Id}, 有効: {browser.IsEnabled}, パス: {browser.ExecutablePath}, タイプ: {browser.Type}");
+                _logService?.LogDebug($"ブラウザ: {browser.Name}, ID: {browser.Id}, 有効: {browser.IsEnabled}, パス: {browser.ExecutablePath}, タイプ: {browser.Type}", "MainViewModel");
             }
 
             StatusMessage = $"ブラウザ {Browsers.Count} 個を検出しました";
@@ -253,7 +253,7 @@ public partial class MainViewModel : ObservableObject
         catch (Exception ex)
         {
             StatusMessage = $"ブラウザ読み込みエラー: {ex.Message}";
-            System.Diagnostics.Debug.WriteLine($"ブラウザ読み込みエラー: {ex}");
+            _logService?.LogError($"ブラウザ読み込みエラー: {ex.Message}", "MainViewModel", ex);
         }
         finally
         {
@@ -273,8 +273,8 @@ public partial class MainViewModel : ObservableObject
         {
             IsLoading = true;
 
-            // デバッグ情報を出力
-            System.Diagnostics.Debug.WriteLine($"ブラウザ起動試行: {browser.Name}, ID: {browser.Id}, パス: {browser.ExecutablePath}, URL: {Url}");
+            // ログ出力
+            _logService?.LogInformation($"ブラウザ起動試行: {browser.Name}, ID: {browser.Id}, パス: {browser.ExecutablePath}, URL: {Url}", "MainViewModel");
 
             StatusMessage = $"ブラウザ {browser.Name} を起動中...";
 
@@ -285,7 +285,7 @@ public partial class MainViewModel : ObservableObject
                 await _browserService.UpdateUsageAsync(browser);
                 browser.IncrementUseCount();
                 StatusMessage = $"ブラウザ {browser.Name} を起動しました";
-                System.Diagnostics.Debug.WriteLine($"ブラウザ起動成功: {browser.Name}");
+                _logService?.LogInformation($"ブラウザ起動成功: {browser.Name}", "MainViewModel");
 
                 // ブラウザ起動後のアプリ終了設定が有効な場合
                 var appSettings = await _settingsService.LoadAppSettingsAsync();
@@ -298,13 +298,13 @@ public partial class MainViewModel : ObservableObject
             else
             {
                 StatusMessage = $"ブラウザ {browser.Name} の起動に失敗しました";
-                System.Diagnostics.Debug.WriteLine($"ブラウザ起動失敗: {browser.Name}");
+                _logService?.LogWarning($"ブラウザ起動失敗: {browser.Name}", "MainViewModel");
             }
         }
         catch (Exception ex)
         {
             StatusMessage = $"ブラウザ起動エラー: {ex.Message}";
-            System.Diagnostics.Debug.WriteLine($"ブラウザ起動例外: {browser?.Name}, エラー: {ex}");
+            _logService?.LogError($"ブラウザ起動例外: {browser?.Name}, エラー: {ex.Message}", "MainViewModel", ex);
         }
         finally
         {

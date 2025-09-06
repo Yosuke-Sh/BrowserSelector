@@ -13,9 +13,11 @@ public class UrlRuleService : IUrlRuleService
     private readonly List<UrlRule> _rules = new();
     private readonly string _rulesFilePath;
     private readonly object _lockObject = new();
+    private readonly ILogService? _logService;
 
-    public UrlRuleService()
+    public UrlRuleService(ILogService? logService = null)
     {
+        _logService = logService;
         // 設定ファイルのパスを設定
         var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         var appFolder = Path.Combine(appDataPath, "BrowserSelector");
@@ -174,23 +176,23 @@ public class UrlRuleService : IUrlRuleService
                         var browser = browsers.FirstOrDefault(b => b.Name.Equals(rule.BrowserName, StringComparison.OrdinalIgnoreCase));
                         if (browser != null)
                         {
-                            Debug.WriteLine($"UrlRuleService: URL '{url}' にマッチするルール '{rule.Pattern}' が見つかりました -> {browser.Name}");
+                            _logService?.LogInformation($"URL '{url}' にマッチするルール '{rule.Pattern}' が見つかりました -> {browser.Name}", "UrlRuleService");
                             return Task.FromResult<Browser?>(browser);
                         }
                         else
                         {
-                            Debug.WriteLine($"UrlRuleService: ルール '{rule.Pattern}' で指定されたブラウザ '{rule.BrowserName}' が見つかりません");
+                            _logService?.LogWarning($"ルール '{rule.Pattern}' で指定されたブラウザ '{rule.BrowserName}' が見つかりません", "UrlRuleService");
                         }
                     }
                 }
 
-                Debug.WriteLine($"UrlRuleService: URL '{url}' にマッチするルールが見つかりませんでした");
+                _logService?.LogDebug($"URL '{url}' にマッチするルールが見つかりませんでした", "UrlRuleService");
                 return Task.FromResult<Browser?>(null);
             }
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"UrlRuleService: ブラウザ検索エラー - {ex.Message}");
+            _logService?.LogError($"ブラウザ検索エラー - {ex.Message}", "UrlRuleService", ex);
             return Task.FromResult<Browser?>(null);
         }
     }

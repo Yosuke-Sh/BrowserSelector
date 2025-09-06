@@ -1,4 +1,5 @@
 using BrowserSelector.Presentation.ViewModels;
+using BrowserSelector.Core.Services;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
@@ -10,8 +11,11 @@ namespace BrowserSelector.Presentation.Views;
 /// </summary>
 public partial class MainWindow : Window
 {
-    public MainWindow(MainViewModel viewModel)
+    private readonly ILogService _logService;
+
+    public MainWindow(MainViewModel viewModel, ILogService logService)
     {
+        _logService = logService;
         InitializeComponent();
         DataContext = viewModel;
 
@@ -44,9 +48,9 @@ public partial class MainWindow : Window
                 var width = Math.Max(400, Math.Min(2000, visualSettings.InitialWindowWidth));
                 var height = Math.Max(300, Math.Min(1500, visualSettings.InitialWindowHeight));
 
-                // デバッグ情報を出力
-                System.Diagnostics.Debug.WriteLine($"初期サイズ設定適用: Width={width}, Height={height}");
-                System.Diagnostics.Debug.WriteLine($"VisualSettings: InitialWindowWidth={visualSettings.InitialWindowWidth}, InitialWindowHeight={visualSettings.InitialWindowHeight}");
+                // ログ出力
+                _logService?.LogDebug($"初期サイズ設定適用: Width={width}, Height={height}", "MainWindow");
+                _logService?.LogDebug($"VisualSettings: InitialWindowWidth={visualSettings.InitialWindowWidth}, InitialWindowHeight={visualSettings.InitialWindowHeight}", "MainWindow");
 
                 // ウィンドウの位置を中央に設定
                 this.WindowState = WindowState.Normal;
@@ -60,12 +64,12 @@ public partial class MainWindow : Window
                 // 設定を強制適用
                 this.UpdateLayout();
 
-                System.Diagnostics.Debug.WriteLine($"ウィンドウサイズ設定完了: ActualWidth={this.ActualWidth}, ActualHeight={this.ActualHeight}");
+                _logService?.LogDebug($"ウィンドウサイズ設定完了: ActualWidth={this.ActualWidth}, ActualHeight={this.ActualHeight}", "MainWindow");
             }
             else
             {
                 // デフォルトサイズ
-                System.Diagnostics.Debug.WriteLine("VisualSettingsがnullのため、デフォルトサイズを使用");
+                _logService?.LogWarning("VisualSettingsがnullのため、デフォルトサイズを使用", "MainWindow");
                 this.WindowState = WindowState.Normal;
                 this.Left = 100;
                 this.Top = 100;
@@ -76,7 +80,7 @@ public partial class MainWindow : Window
         catch (Exception ex)
         {
             // エラー時はデフォルトサイズを使用
-            System.Diagnostics.Debug.WriteLine($"初期サイズ設定適用エラー: {ex.Message}");
+            _logService?.LogError($"初期サイズ設定適用エラー: {ex.Message}", "MainWindow", ex);
             this.WindowState = WindowState.Normal;
             this.Left = 100;
             this.Top = 100;
@@ -95,13 +99,13 @@ public partial class MainWindow : Window
             // ウィンドウが完全に読み込まれた後にサイズ設定を再適用
             if (DataContext is MainViewModel viewModel)
             {
-                System.Diagnostics.Debug.WriteLine("MainWindow_Loaded: サイズ設定を再適用");
+                _logService?.LogDebug("MainWindow_Loaded: サイズ設定を再適用", "MainWindow");
                 ApplyInitialSizeSettings(viewModel);
             }
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"MainWindow_Loaded エラー: {ex.Message}");
+            _logService?.LogError($"MainWindow_Loaded エラー: {ex.Message}", "MainWindow", ex);
         }
     }
 
@@ -116,7 +120,7 @@ public partial class MainWindow : Window
         if (DataContext is INotifyPropertyChanged notifyPropertyChanged)
         {
             notifyPropertyChanged.PropertyChanged += OnDataContextPropertyChanged;
-            System.Diagnostics.Debug.WriteLine("MainWindow: DataContext変更監視を開始しました");
+            _logService?.LogDebug("MainWindow: DataContext変更監視を開始しました", "MainWindow");
         }
     }
 
@@ -125,11 +129,11 @@ public partial class MainWindow : Window
     /// </summary>
     private void OnDataContextPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        System.Diagnostics.Debug.WriteLine($"MainWindow: DataContextプロパティ変更検知: {e.PropertyName}");
+        _logService?.LogDebug($"MainWindow: DataContextプロパティ変更検知: {e.PropertyName}", "MainWindow");
 
         if (e.PropertyName == nameof(MainViewModel.VisualSettings))
         {
-            System.Diagnostics.Debug.WriteLine("MainWindow: VisualSettingsプロパティ変更を検知しました。UI更新を通知します。");
+            _logService?.LogDebug("MainWindow: VisualSettingsプロパティ変更を検知しました。UI更新を通知します。", "MainWindow");
             // UI更新を強制
             this.InvalidateVisual();
         }

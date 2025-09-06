@@ -35,8 +35,9 @@ public partial class SettingsWindow : Window
             // ViewModelのプロパティを更新
             viewModel.VisualSettings.GradientDirection = newDirection;
 
-            // ログ出力（デバッグ用）
-            System.Diagnostics.Debug.WriteLine($"グラデーション方向が変更されました: {newDirection} (インデックス: {selectedIndex})");
+            // ログ出力
+            // グラデーション方向の変更は通常の操作なので、ログレベルを下げる
+            // System.Diagnostics.Debug.WriteLine($"グラデーション方向が変更されました: {newDirection} (インデックス: {selectedIndex})");
         }
     }
 }

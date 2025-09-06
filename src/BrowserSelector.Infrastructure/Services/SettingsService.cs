@@ -14,9 +14,11 @@ public class SettingsService : ISettingsService
     private readonly string _appSettingsPath;
     private readonly string _visualSettingsPath;
     private readonly string _logSettingsPath;
+    private readonly ILogService? _logService;
 
-    public SettingsService()
+    public SettingsService(ILogService? logService = null)
     {
+        _logService = logService;
         // ポータブルモードかどうかを判定
         var executablePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
         var executableDirectory = Path.GetDirectoryName(executablePath) ?? Environment.CurrentDirectory;
@@ -48,6 +50,7 @@ public class SettingsService : ISettingsService
 
     public async Task<AppSettings> LoadAppSettingsAsync()
     {
+        _logService?.LogTrace("アプリケーション設定読み込み開始", "SettingsService");
         try
         {
             if (!File.Exists(_appSettingsPath))
@@ -59,11 +62,15 @@ public class SettingsService : ISettingsService
 
             var json = await File.ReadAllTextAsync(_appSettingsPath);
             var settings = JsonSerializer.Deserialize<AppSettings>(json);
-            return settings ?? new AppSettings();
+            var result = settings ?? new AppSettings();
+            
+            // Traceレベルで詳細な設定情報を出力
+            _logService?.LogTrace($"アプリケーション設定読み込み完了: Language={result.Language}, CloseAfterUrlRuleMatch={result.CloseAfterUrlRuleMatch}", "SettingsService");
+            return result;
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"アプリケーション設定の読み込みエラー: {ex.Message}");
+            _logService?.LogError($"アプリケーション設定の読み込みエラー: {ex.Message}", "SettingsService", ex);
             return new AppSettings();
         }
     }
@@ -84,13 +91,14 @@ public class SettingsService : ISettingsService
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"アプリケーション設定の保存エラー: {ex.Message}");
+            _logService?.LogError($"アプリケーション設定の保存エラー: {ex.Message}", "SettingsService", ex);
             return false;
         }
     }
 
     public async Task<VisualSettings> LoadVisualSettingsAsync()
     {
+        _logService?.LogTrace("視覚設定読み込み開始", "SettingsService");
         try
         {
             if (!File.Exists(_visualSettingsPath))
@@ -102,11 +110,15 @@ public class SettingsService : ISettingsService
 
             var json = await File.ReadAllTextAsync(_visualSettingsPath);
             var settings = JsonSerializer.Deserialize<VisualSettings>(json);
-            return settings ?? new VisualSettings();
+            var result = settings ?? new VisualSettings();
+            
+            // Traceレベルで詳細な設定情報を出力
+            _logService?.LogTrace($"視覚設定読み込み完了: BackgroundColor={result.BackgroundColor}, UseBackgroundGradient={result.UseBackgroundGradient}, GradientDirection={result.GradientDirection}, InitialWindowWidth={result.InitialWindowWidth}, InitialWindowHeight={result.InitialWindowHeight}, ShowLogo={result.ShowLogo}, ShowUrlInput={result.ShowUrlInput}, BrowserButtonOpacity={result.BrowserButtonOpacity}", "SettingsService");
+            return result;
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"視覚設定の読み込みエラー: {ex.Message}");
+            _logService?.LogError($"視覚設定の読み込みエラー: {ex.Message}", "SettingsService", ex);
             return new VisualSettings();
         }
     }
@@ -127,7 +139,7 @@ public class SettingsService : ISettingsService
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"視覚設定の保存エラー: {ex.Message}");
+            _logService?.LogError($"視覚設定の保存エラー: {ex.Message}", "SettingsService", ex);
             return false;
         }
     }
@@ -156,7 +168,7 @@ public class SettingsService : ISettingsService
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"設定リセットエラー: {ex.Message}");
+            _logService?.LogError($"設定リセットエラー: {ex.Message}", "SettingsService", ex);
             return false;
         }
     }
@@ -199,7 +211,7 @@ public class SettingsService : ISettingsService
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"設定インポートエラー: {ex.Message}");
+            _logService?.LogError($"設定インポートエラー: {ex.Message}", "SettingsService", ex);
             return false;
         }
     }
@@ -232,29 +244,36 @@ public class SettingsService : ISettingsService
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"設定エクスポートエラー: {ex.Message}");
+            _logService?.LogError($"設定エクスポートエラー: {ex.Message}", "SettingsService", ex);
             return false;
         }
     }
 
     public async Task<LogSettings> LoadLogSettingsAsync()
     {
+        _logService?.LogTrace("ログ設定読み込み開始", "SettingsService");
         try
         {
             if (File.Exists(_logSettingsPath))
             {
                 var json = await File.ReadAllTextAsync(_logSettingsPath);
                 var settings = JsonSerializer.Deserialize<LogSettings>(json);
-                return settings ?? new LogSettings();
+                var result = settings ?? new LogSettings();
+                
+                // Traceレベルで詳細な設定情報を出力
+                _logService?.LogTrace($"ログ設定読み込み完了: EnableLogging={result.EnableLogging}, LogLevel={result.LogLevel}, EnableConsoleLogging={result.EnableConsoleLogging}, EnableFileLogging={result.EnableFileLogging}, LogOutputFolder={result.LogOutputFolder}", "SettingsService");
+                return result;
             }
             else
             {
-                return new LogSettings();
+                var defaultSettings = new LogSettings();
+                _logService?.LogTrace("ログ設定ファイルが存在しないため、デフォルト設定を使用", "SettingsService");
+                return defaultSettings;
             }
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"ログ設定読み込みエラー: {ex.Message}");
+            _logService?.LogError($"ログ設定読み込みエラー: {ex.Message}", "SettingsService", ex);
             return new LogSettings();
         }
     }
@@ -272,7 +291,7 @@ public class SettingsService : ISettingsService
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"ログ設定保存エラー: {ex.Message}");
+            _logService?.LogError($"ログ設定保存エラー: {ex.Message}", "SettingsService", ex);
             return false;
         }
     }

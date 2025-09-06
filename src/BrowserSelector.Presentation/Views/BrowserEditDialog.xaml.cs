@@ -1,4 +1,5 @@
 using BrowserSelector.Core.Models;
+using BrowserSelector.Core.Services;
 using Microsoft.Win32;
 using System.IO;
 using System.Windows;
@@ -13,9 +14,11 @@ public partial class BrowserEditDialog : Window
     public Browser Browser { get; private set; }
     private readonly bool _isNewBrowser;
     private readonly bool _isSystemBrowser;
+    private readonly ILogService? _logService;
 
-    public BrowserEditDialog(Browser? browser = null, bool isSystemBrowser = false)
+    public BrowserEditDialog(Browser? browser = null, bool isSystemBrowser = false, ILogService? logService = null)
     {
+        _logService = logService;
         InitializeComponent();
 
         if (browser == null)
@@ -77,14 +80,14 @@ public partial class BrowserEditDialog : Window
             if (string.IsNullOrEmpty(Browser.IconPath))
             {
                 Browser.IconPath = openFileDialog.FileName;
-                System.Diagnostics.Debug.WriteLine($"アイコンを実行ファイルから自動設定: {openFileDialog.FileName}");
+                _logService?.LogInformation($"アイコンを実行ファイルから自動設定: {openFileDialog.FileName}", "BrowserEditDialog");
             }
 
             // 名前がデフォルトの場合、ファイル名から自動設定
             if (Browser.Name == "新しいブラウザ" || string.IsNullOrEmpty(Browser.Name))
             {
                 Browser.Name = Path.GetFileNameWithoutExtension(openFileDialog.FileName);
-                System.Diagnostics.Debug.WriteLine($"ブラウザ名を実行ファイルから自動設定: {Browser.Name}");
+                _logService?.LogInformation($"ブラウザ名を実行ファイルから自動設定: {Browser.Name}", "BrowserEditDialog");
             }
         }
     }
@@ -106,7 +109,7 @@ public partial class BrowserEditDialog : Window
 
     private void SelectIcon_Click(object sender, RoutedEventArgs e)
     {
-        var dialog = new IconSelectionDialog();
+        var dialog = new IconSelectionDialog(_logService);
 
         // 実行ファイルが設定されている場合、そのアイコンを優先表示
         if (!string.IsNullOrEmpty(Browser.ExecutablePath) && File.Exists(Browser.ExecutablePath))
@@ -122,7 +125,7 @@ public partial class BrowserEditDialog : Window
         if (dialog.ShowDialog() == true && !string.IsNullOrEmpty(dialog.SelectedIconPath))
         {
             Browser.IconPath = dialog.SelectedIconPath;
-            System.Diagnostics.Debug.WriteLine($"アイコンが選択されました: {dialog.SelectedIconPath}, インデックス: {dialog.SelectedIconIndex}");
+            _logService?.LogInformation($"アイコンが選択されました: {dialog.SelectedIconPath}, インデックス: {dialog.SelectedIconIndex}", "BrowserEditDialog");
         }
     }
 

@@ -1,3 +1,4 @@
+using BrowserSelector.Core.Services;
 using Microsoft.Win32;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -19,9 +20,11 @@ public partial class IconSelectionDialog : Window
     private readonly List<IconInfo> _icons = new();
     private string? _currentSelectedPath;
     private string? _executablePath;
+    private readonly ILogService? _logService;
 
-    public IconSelectionDialog()
+    public IconSelectionDialog(ILogService? logService = null)
     {
+        _logService = logService;
         InitializeComponent();
         LoadSystemIcons();
         LoadRecentIcons();
@@ -113,7 +116,7 @@ public partial class IconSelectionDialog : Window
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"アイコン抽出エラー: {executablePath}, {ex.Message}");
+            _logService?.LogError($"アイコン抽出エラー: {executablePath}, {ex.Message}", "IconSelectionDialog", ex);
 
             // フォールバック: 関連付けられたアイコンを取得
             try
@@ -132,7 +135,7 @@ public partial class IconSelectionDialog : Window
             }
             catch (Exception fallbackEx)
             {
-                System.Diagnostics.Debug.WriteLine($"フォールバックアイコン抽出エラー: {fallbackEx.Message}");
+                _logService?.LogError($"フォールバックアイコン抽出エラー: {fallbackEx.Message}", "IconSelectionDialog", fallbackEx);
             }
         }
 
@@ -180,14 +183,14 @@ public partial class IconSelectionDialog : Window
                     catch (Exception ex)
                     {
                         // フォルダアクセスエラーは無視
-                        System.Diagnostics.Debug.WriteLine($"フォルダアクセスエラー: {folder}, {ex.Message}");
+                        _logService?.LogWarning($"フォルダアクセスエラー: {folder}, {ex.Message}", "IconSelectionDialog");
                     }
                 }
             }
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"システムアイコン読み込みエラー: {ex.Message}");
+            _logService?.LogError($"システムアイコン読み込みエラー: {ex.Message}", "IconSelectionDialog", ex);
         }
     }
 
@@ -216,7 +219,7 @@ public partial class IconSelectionDialog : Window
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"最近使用アイコン読み込みエラー: {ex.Message}");
+            _logService?.LogError($"最近使用アイコン読み込みエラー: {ex.Message}", "IconSelectionDialog", ex);
         }
     }
 
@@ -248,7 +251,7 @@ public partial class IconSelectionDialog : Window
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"アイコンボタン作成エラー: {iconInfo.Path}, {ex.Message}");
+            _logService?.LogError($"アイコンボタン作成エラー: {iconInfo.Path}, {ex.Message}", "IconSelectionDialog", ex);
         }
     }
 
@@ -263,7 +266,7 @@ public partial class IconSelectionDialog : Window
         {
             // リサイズせずに元のアイコンをそのまま使用
             var originalSize = icon.Size;
-            System.Diagnostics.Debug.WriteLine($"アイコン元サイズ: {originalSize.Width}x{originalSize.Height}");
+            _logService?.LogDebug($"アイコン元サイズ: {originalSize.Width}x{originalSize.Height}", "IconSelectionDialog");
 
             using var stream = new MemoryStream();
             icon.Save(stream);
@@ -281,7 +284,7 @@ public partial class IconSelectionDialog : Window
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"アイコン変換エラー: {ex.Message}");
+            _logService?.LogError($"アイコン変換エラー: {ex.Message}", "IconSelectionDialog", ex);
             return null!;
         }
     }
@@ -337,11 +340,11 @@ public partial class IconSelectionDialog : Window
             // 確認ボタンを有効化
             ConfirmButton.IsEnabled = true;
 
-            System.Diagnostics.Debug.WriteLine($"アイコンが選択されました: {iconInfo.Path}, インデックス: {iconInfo.Index}");
+            _logService?.LogInformation($"アイコンが選択されました: {iconInfo.Path}, インデックス: {iconInfo.Index}", "IconSelectionDialog");
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"アイコン表示更新エラー: {iconInfo.Path}, {ex.Message}");
+            _logService?.LogError($"アイコン表示更新エラー: {iconInfo.Path}, {ex.Message}", "IconSelectionDialog", ex);
         }
     }
 

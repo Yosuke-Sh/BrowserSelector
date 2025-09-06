@@ -22,6 +22,7 @@ public partial class App : Application
     {
         try
         {
+            _logService?.LogTrace($"アプリケーション起動処理開始: コマンドライン引数={string.Join(" ", e.Args)}", "App");
             // ホストの構築
             _host = Host.CreateDefaultBuilder()
                 .ConfigureServices((context, services) =>
@@ -95,7 +96,7 @@ public partial class App : Application
                 mainViewModel.SetInitialUrl(initialUrl);
             }
 
-            var mainWindow = new BrowserSelector.Presentation.Views.MainWindow(mainViewModel);
+            var mainWindow = new BrowserSelector.Presentation.Views.MainWindow(mainViewModel, _logService);
             _logService.LogInformation("MainWindow作成完了", "App");
 
             // 起動時設定読み込み（適用を実行）
@@ -206,13 +207,14 @@ public partial class App : Application
             _logService.LogInformation("MainWindow表示完了", "App");
 
             base.OnStartup(e);
+            _logService.LogTrace($"アプリケーション起動処理完了: MainWindow表示済み, 初期URL={initialUrl ?? "なし"}", "App");
             _logService.LogInformation("OnStartup完了", "App");
         }
         catch (Exception ex)
         {
             if (_logService != null)
             {
-                _logService.LogError($"アプリケーションの起動に失敗しました: {ex.Message}", "App", ex);
+                _logService.LogCritical($"アプリケーション起動で致命的エラーが発生: {ex.Message}", "App", ex);
             }
             else
             {

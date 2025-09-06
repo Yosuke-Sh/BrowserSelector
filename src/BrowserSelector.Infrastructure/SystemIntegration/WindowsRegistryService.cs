@@ -10,6 +10,12 @@ namespace BrowserSelector.Infrastructure.SystemIntegration;
 /// </summary>
 public class WindowsRegistryService : IRegistryService
 {
+    private readonly ILogService? _logService;
+
+    public WindowsRegistryService(ILogService? logService = null)
+    {
+        _logService = logService;
+    }
     public Task<IEnumerable<Browser>> DetectBrowsersFromRegistryAsync()
     {
         var browsers = new List<Browser>();
@@ -36,15 +42,14 @@ public class WindowsRegistryService : IRegistryService
         }
         catch (Exception ex)
         {
-            // ログ出力（後で実装）
-            System.Diagnostics.Debug.WriteLine($"ブラウザ検出エラー: {ex.Message}");
+            _logService?.LogError($"ブラウザ検出エラー: {ex.Message}", "WindowsRegistryService", ex);
         }
 
         // 重複を除去（同じパスのブラウザは最初に見つかったもののみ保持）
-        System.Diagnostics.Debug.WriteLine($"重複除去前のブラウザ数: {browsers.Count}");
+        _logService?.LogDebug($"重複除去前のブラウザ数: {browsers.Count}", "WindowsRegistryService");
         foreach (var browser in browsers)
         {
-            System.Diagnostics.Debug.WriteLine($"重複除去前: {browser.Name}, ID: {browser.Id}, パス: {browser.ExecutablePath}");
+            _logService?.LogDebug($"重複除去前: {browser.Name}, ID: {browser.Id}, パス: {browser.ExecutablePath}", "WindowsRegistryService");
         }
 
         var uniqueBrowsers = browsers
@@ -53,10 +58,10 @@ public class WindowsRegistryService : IRegistryService
             .Select(g => g.First())
             .OrderBy(b => b.DisplayOrder);
 
-        System.Diagnostics.Debug.WriteLine($"重複除去後のブラウザ数: {uniqueBrowsers.Count()}");
+        _logService?.LogDebug($"重複除去後のブラウザ数: {uniqueBrowsers.Count()}", "WindowsRegistryService");
         foreach (var browser in uniqueBrowsers)
         {
-            System.Diagnostics.Debug.WriteLine($"重複除去後: {browser.Name}, ID: {browser.Id}, パス: {browser.ExecutablePath}");
+            _logService?.LogDebug($"重複除去後: {browser.Name}, ID: {browser.Id}, パス: {browser.ExecutablePath}", "WindowsRegistryService");
         }
 
         return Task.FromResult<IEnumerable<Browser>>(uniqueBrowsers);
@@ -70,7 +75,7 @@ public class WindowsRegistryService : IRegistryService
         {
             // Chrome 64bit
             var chromePath = GetRegistryValue(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe", "");
-            System.Diagnostics.Debug.WriteLine($"Chrome 64bit パス: {chromePath}");
+            _logService?.LogDebug($"Chrome 64bit パス: {chromePath}", "WindowsRegistryService");
 
             if (!string.IsNullOrEmpty(chromePath) && File.Exists(chromePath))
             {
@@ -82,16 +87,16 @@ public class WindowsRegistryService : IRegistryService
                     DisplayOrder = 1
                 };
                 browsers.Add(chrome64);
-                System.Diagnostics.Debug.WriteLine($"Chrome 64bit 追加: {chrome64.Name}, ID: {chrome64.Id}, パス: {chrome64.ExecutablePath}");
+                _logService?.LogDebug($"Chrome 64bit 追加: {chrome64.Name}, ID: {chrome64.Id}, パス: {chrome64.ExecutablePath}", "WindowsRegistryService");
             }
             else
             {
-                System.Diagnostics.Debug.WriteLine($"Chrome 64bit が見つかりません - パス: {chromePath}, 存在: {File.Exists(chromePath)}");
+                _logService?.LogDebug($"Chrome 64bit が見つかりません - パス: {chromePath}, 存在: {File.Exists(chromePath)}", "WindowsRegistryService");
             }
 
             // Chrome 32bit
             var chromePath32 = GetRegistryValue(@"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe", "");
-            System.Diagnostics.Debug.WriteLine($"Chrome 32bit パス: {chromePath32}");
+            _logService?.LogDebug($"Chrome 32bit パス: {chromePath32}", "WindowsRegistryService");
 
             if (!string.IsNullOrEmpty(chromePath32) && File.Exists(chromePath32))
             {
@@ -103,16 +108,16 @@ public class WindowsRegistryService : IRegistryService
                     DisplayOrder = 2
                 };
                 browsers.Add(chrome32);
-                System.Diagnostics.Debug.WriteLine($"Chrome 32bit 追加: {chrome32.Name}, ID: {chrome32.Id}, パス: {chrome32.ExecutablePath}");
+                _logService?.LogDebug($"Chrome 32bit 追加: {chrome32.Name}, ID: {chrome32.Id}, パス: {chrome32.ExecutablePath}", "WindowsRegistryService");
             }
             else
             {
-                System.Diagnostics.Debug.WriteLine($"Chrome 32bit が見つかりません - パス: {chromePath32}, 存在: {File.Exists(chromePath32)}");
+                _logService?.LogDebug($"Chrome 32bit が見つかりません - パス: {chromePath32}, 存在: {File.Exists(chromePath32)}", "WindowsRegistryService");
             }
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Chrome検出エラー: {ex.Message}");
+            _logService?.LogError($"Chrome検出エラー: {ex.Message}", "WindowsRegistryService", ex);
         }
 
         return browsers;
@@ -152,7 +157,7 @@ public class WindowsRegistryService : IRegistryService
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Firefox検出エラー: {ex.Message}");
+            _logService?.LogError($"Firefox検出エラー: {ex.Message}", "WindowsRegistryService", ex);
         }
 
         return browsers;
@@ -166,7 +171,7 @@ public class WindowsRegistryService : IRegistryService
         {
             // Edge Chromium
             var edgePath = GetRegistryValue(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\msedge.exe", "");
-            System.Diagnostics.Debug.WriteLine($"Edge パス: {edgePath}");
+            _logService?.LogDebug($"Edge パス: {edgePath}", "WindowsRegistryService");
 
             if (!string.IsNullOrEmpty(edgePath) && File.Exists(edgePath))
             {
@@ -178,16 +183,16 @@ public class WindowsRegistryService : IRegistryService
                     DisplayOrder = 5
                 };
                 browsers.Add(edge);
-                System.Diagnostics.Debug.WriteLine($"Edge 追加: {edge.Name}, ID: {edge.Id}, パス: {edge.ExecutablePath}");
+                _logService?.LogDebug($"Edge 追加: {edge.Name}, ID: {edge.Id}, パス: {edge.ExecutablePath}", "WindowsRegistryService");
             }
             else
             {
-                System.Diagnostics.Debug.WriteLine($"Edge が見つかりません - パス: {edgePath}, 存在: {File.Exists(edgePath)}");
+                _logService?.LogDebug($"Edge が見つかりません - パス: {edgePath}, 存在: {File.Exists(edgePath)}", "WindowsRegistryService");
             }
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Edge検出エラー: {ex.Message}");
+            _logService?.LogError($"Edge検出エラー: {ex.Message}", "WindowsRegistryService", ex);
         }
 
         return browsers;
@@ -214,7 +219,7 @@ public class WindowsRegistryService : IRegistryService
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Opera検出エラー: {ex.Message}");
+            _logService?.LogError($"Opera検出エラー: {ex.Message}", "WindowsRegistryService", ex);
         }
 
         return browsers;
@@ -241,7 +246,7 @@ public class WindowsRegistryService : IRegistryService
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Brave検出エラー: {ex.Message}");
+            _logService?.LogError($"Brave検出エラー: {ex.Message}", "WindowsRegistryService", ex);
         }
 
         return browsers;
@@ -268,7 +273,7 @@ public class WindowsRegistryService : IRegistryService
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Vivaldi検出エラー: {ex.Message}");
+            _logService?.LogError($"Vivaldi検出エラー: {ex.Message}", "WindowsRegistryService", ex);
         }
 
         return browsers;
@@ -287,7 +292,7 @@ public class WindowsRegistryService : IRegistryService
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"レジストリ読み取りエラー {keyPath}: {ex.Message}");
+            _logService?.LogError($"レジストリ読み取りエラー {keyPath}: {ex.Message}", "WindowsRegistryService", ex);
         }
 
         return string.Empty;
