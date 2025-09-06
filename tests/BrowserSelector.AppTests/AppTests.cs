@@ -157,6 +157,151 @@ public class AppTests : IDisposable
         browserService2.Should().NotBeNull();
     }
 
+    [Fact]
+    public void App_ServiceCollectionExtensions_ShouldRegisterAllViewModels()
+    {
+        // Arrange & Act
+        var services = new ServiceCollection();
+        services.AddBrowserSelectorServices();
+        var provider = services.BuildServiceProvider();
+
+        // Assert
+        provider.Should().NotBeNull();
+
+        // ViewModelの登録を確認
+        var mainViewModel = provider.GetService<BrowserSelector.Presentation.ViewModels.MainViewModel>();
+        mainViewModel.Should().NotBeNull();
+
+        var settingsViewModel = provider.GetService<BrowserSelector.Presentation.ViewModels.SettingsViewModel>();
+        settingsViewModel.Should().NotBeNull();
+
+        // BrowserListViewModelは存在しないため、コメントアウト
+        // var browserListViewModel = provider.GetService<BrowserSelector.Presentation.ViewModels.BrowserListViewModel>();
+        // browserListViewModel.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void App_ServiceCollectionExtensions_ShouldRegisterAllServicesWithCorrectTypes()
+    {
+        // Arrange & Act
+        var services = new ServiceCollection();
+        services.AddBrowserSelectorServices();
+        var provider = services.BuildServiceProvider();
+
+        // Assert
+        provider.Should().NotBeNull();
+
+        // 各サービスの型を確認
+        var browserService = provider.GetService<BrowserSelector.Core.Services.IBrowserService>();
+        browserService.Should().NotBeNull();
+        browserService.Should().BeOfType<BrowserSelector.Infrastructure.Services.BrowserService>();
+
+        var settingsService = provider.GetService<BrowserSelector.Core.Services.ISettingsService>();
+        settingsService.Should().NotBeNull();
+        settingsService.Should().BeOfType<BrowserSelector.Infrastructure.Services.SettingsService>();
+
+        var localizationService = provider.GetService<BrowserSelector.Core.Services.ILocalizationService>();
+        localizationService.Should().NotBeNull();
+        localizationService.Should().BeOfType<BrowserSelector.Infrastructure.Localization.LocalizationService>();
+    }
+
+    [Fact]
+    public void App_ServiceCollectionExtensions_ShouldRegisterLoggingServices()
+    {
+        // Arrange & Act
+        var services = new ServiceCollection();
+        services.AddBrowserSelectorServices();
+        var provider = services.BuildServiceProvider();
+
+        // Assert
+        provider.Should().NotBeNull();
+
+        // ログサービスの登録を確認
+        var logService = provider.GetService<BrowserSelector.Core.Services.ILogService>();
+        logService.Should().NotBeNull();
+        logService.Should().BeOfType<BrowserSelector.Infrastructure.Logging.LogService>();
+    }
+
+    [Fact]
+    public void App_ServiceCollectionExtensions_ShouldRegisterUrlServices()
+    {
+        // Arrange & Act
+        var services = new ServiceCollection();
+        services.AddBrowserSelectorServices();
+        var provider = services.BuildServiceProvider();
+
+        // Assert
+        provider.Should().NotBeNull();
+
+        // URL関連サービスの登録を確認
+        var urlService = provider.GetService<BrowserSelector.Core.Services.IUrlService>();
+        urlService.Should().NotBeNull();
+        urlService.Should().BeOfType<BrowserSelector.Infrastructure.Services.UrlService>();
+
+        var urlRuleService = provider.GetService<BrowserSelector.Core.Services.IUrlRuleService>();
+        urlRuleService.Should().NotBeNull();
+        urlRuleService.Should().BeOfType<BrowserSelector.Infrastructure.Services.UrlRuleService>();
+    }
+
+    [Fact]
+    public void App_ServiceCollectionExtensions_ShouldRegisterSystemServices()
+    {
+        // Arrange & Act
+        var services = new ServiceCollection();
+        services.AddBrowserSelectorServices();
+        var provider = services.BuildServiceProvider();
+
+        // Assert
+        provider.Should().NotBeNull();
+
+        // システム関連サービスの登録を確認
+        var registryService = provider.GetService<BrowserSelector.Core.Services.IRegistryService>();
+        registryService.Should().NotBeNull();
+        registryService.Should().BeOfType<BrowserSelector.Infrastructure.SystemIntegration.WindowsRegistryService>();
+
+        var systemTrayService = provider.GetService<BrowserSelector.Core.Services.ISystemTrayService>();
+        systemTrayService.Should().NotBeNull();
+        systemTrayService.Should().BeOfType<BrowserSelector.Infrastructure.SystemIntegration.SystemTrayService>();
+
+        var protocolHandler = provider.GetService<BrowserSelector.Core.Services.IProtocolHandler>();
+        protocolHandler.Should().NotBeNull();
+        protocolHandler.Should().BeOfType<BrowserSelector.Infrastructure.SystemIntegration.ProtocolHandler>();
+    }
+
+    [Fact]
+    public void App_ServiceCollectionExtensions_ShouldRegisterUpdateServices()
+    {
+        // Arrange & Act
+        var services = new ServiceCollection();
+        services.AddBrowserSelectorServices();
+        var provider = services.BuildServiceProvider();
+
+        // Assert
+        provider.Should().NotBeNull();
+
+        // アップデート関連サービスの登録を確認
+        var updateService = provider.GetService<BrowserSelector.Core.Services.IUpdateService>();
+        updateService.Should().NotBeNull();
+        updateService.Should().BeOfType<BrowserSelector.Infrastructure.Updates.UpdateService>();
+    }
+
+    [Fact]
+    public void App_ServiceCollectionExtensions_ShouldRegisterCustomLanguageServices()
+    {
+        // Arrange & Act
+        var services = new ServiceCollection();
+        services.AddBrowserSelectorServices();
+        var provider = services.BuildServiceProvider();
+
+        // Assert
+        provider.Should().NotBeNull();
+
+        // カスタム言語サービスの登録を確認
+        var customLanguageService = provider.GetService<BrowserSelector.Core.Services.ICustomLanguageService>();
+        customLanguageService.Should().NotBeNull();
+        customLanguageService.Should().BeOfType<BrowserSelector.Infrastructure.Services.CustomLanguageService>();
+    }
+
     public void Dispose()
     {
         _serviceProvider?.Dispose();
