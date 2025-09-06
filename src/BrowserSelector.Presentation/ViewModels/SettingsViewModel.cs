@@ -1,6 +1,7 @@
 using BrowserSelector.Core.Enums;
 using BrowserSelector.Core.Models;
 using BrowserSelector.Core.Services;
+using BrowserSelector.Presentation.Helpers;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Win32;
@@ -55,6 +56,24 @@ public partial class SettingsViewModel : ObservableObject
 
     [ObservableProperty]
     private LanguageInfo? _selectedLanguage;
+
+    partial void OnSelectedLanguageChanged(LanguageInfo? value)
+    {
+        if (value != null && value.CultureCode != AppSettings.Language)
+        {
+            // 言語設定を更新
+            AppSettings.Language = value.CultureCode;
+            
+            // ローカライゼーションサービスに言語変更を通知
+            var culture = new System.Globalization.CultureInfo(value.CultureCode);
+            _localizationService.SetLanguage(culture);
+            
+            // 設定を保存
+            _ = Task.Run(async () => await _settingsService.SaveAppSettingsAsync(AppSettings));
+            
+            LocalizedLogHelper.LogLanguageChanged(_logService, "SettingsViewModel", value.CultureCode);
+        }
+    }
 
     [ObservableProperty]
     private ObservableCollection<LogLevelInfo> _availableLogLevels = new();
@@ -213,8 +232,8 @@ public partial class SettingsViewModel : ObservableObject
     private void InitializeLanguages()
     {
         AvailableLanguages.Clear();
-        AvailableLanguages.Add(new LanguageInfo("ja-JP", "日本語"));
         AvailableLanguages.Add(new LanguageInfo("en-US", "English"));
+        AvailableLanguages.Add(new LanguageInfo("ja-JP", "日本語"));
 
         // 現在の言語を選択
         SelectedLanguage = AvailableLanguages.FirstOrDefault(l => l.CultureCode == AppSettings.Language)
@@ -1052,15 +1071,13 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
-            var result = MessageBox.Show("ログファイルをクリアしますか？", "確認",
-                                       MessageBoxButton.YesNo, MessageBoxImage.Question);
+            var result = LocalizedMessageBox.ShowLogClearConfirm();
 
             if (result == MessageBoxResult.Yes)
             {
                 _logService.ClearLogs();
                 CurrentLogFilePath = _logService.GetLogFilePath();
-                MessageBox.Show("ログファイルをクリアしました。", "完了",
-                              MessageBoxButton.OK, MessageBoxImage.Information);
+                LocalizedMessageBox.ShowLogClearComplete();
             }
         }
         catch (Exception)
@@ -1076,14 +1093,12 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
-            var result = MessageBox.Show("古いログファイルを削除しますか？", "確認",
-                                       MessageBoxButton.YesNo, MessageBoxImage.Question);
+            var result = LocalizedMessageBox.ShowOldLogDeleteConfirm();
 
             if (result == MessageBoxResult.Yes)
             {
                 _logService.CleanupOldLogs();
-                MessageBox.Show("古いログファイルを削除しました。", "完了",
-                              MessageBoxButton.OK, MessageBoxImage.Information);
+                LocalizedMessageBox.ShowOldLogDeleteComplete();
             }
         }
         catch (Exception)

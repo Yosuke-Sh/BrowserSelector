@@ -1,6 +1,8 @@
 ﻿using BrowserSelector.App.DependencyInjection;
 using BrowserSelector.Core.Enums;
 using BrowserSelector.Core.Services;
+using BrowserSelector.Presentation.Extensions;
+using BrowserSelector.Presentation.Helpers;
 using BrowserSelector.Presentation.Services;
 using BrowserSelector.Presentation.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,6 +41,19 @@ public partial class App : Application
             _logService = _host.Services.GetRequiredService<ILogService>();
             _logService.LogDetailed(LogLevel.Information, "アプリケーション起動開始", "App",
                                   "STARTUP", "Application", "System", "App", "Initialize", "Started");
+
+            // ローカライゼーションサービスの設定
+            var localizationService = _host.Services.GetRequiredService<ILocalizationService>();
+            LocalizationExtension.SetLocalizationService(localizationService);
+            LocalizedMessageBox.SetLocalizationService(localizationService);
+            LocalizedLogHelper.SetLocalizationService(localizationService);
+            LocalizedFormatHelper.SetLocalizationService(localizationService);
+
+            // 設定された言語を適用
+            var settingsService = _host.Services.GetRequiredService<ISettingsService>();
+            var appSettings = await settingsService.LoadAppSettingsAsync();
+            var culture = new System.Globalization.CultureInfo(appSettings.Language);
+            localizationService.SetLanguage(culture);
 
             // 不足アイコンの作成
             try

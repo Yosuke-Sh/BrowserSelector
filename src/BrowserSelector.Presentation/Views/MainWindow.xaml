@@ -6,8 +6,9 @@
         xmlns:viewmodels="clr-namespace:BrowserSelector.Presentation.ViewModels"
 
         xmlns:converters="clr-namespace:BrowserSelector.Presentation.Converters"
+        xmlns:extensions="clr-namespace:BrowserSelector.Presentation.Extensions"
         mc:Ignorable="d"
-        Title="BrowserSelector" 
+        Title="{extensions:Localization MainWindow.Title}" 
         WindowStartupLocation="CenterScreen"
         WindowState="Normal"
         ShowInTaskbar="True"
@@ -189,7 +190,7 @@
                                                     <StackPanel Orientation="Horizontal" Margin="10,0,0,0">
                                                         <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Globe.png"
                                                                 Width="16" Height="16" Margin="0,0,8,0"/>
-                                                        <TextBlock Text="URLを入力してください..." 
+                                                        <TextBlock Text="{extensions:Localization MainWindow.UrlPrompt}" 
                                                                     Foreground="Gray" 
                                                                     FontSize="16" 
                                                                     VerticalAlignment="Center"/>
@@ -258,7 +259,7 @@
                     <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Settings_Gray.png"
                             Width="16" Height="16" 
                             Margin="0,0,8,0"/>
-                    <TextBlock Text="設定" 
+                    <TextBlock Text="{extensions:Localization MainWindow.Settings}" 
                                 FontSize="14" 
                                 FontWeight="Medium"
                                 VerticalAlignment="Center"/>
@@ -269,12 +270,12 @@
             <StackPanel HorizontalAlignment="Center" 
                         VerticalAlignment="Center"
                         Visibility="{Binding Browsers.Count, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Invert}">
-                <TextBlock Text="🔍 ブラウザを検出中..." 
+                <TextBlock Text="{extensions:Localization MainWindow.DetectingBrowsers}" 
                            FontSize="18" 
                            HorizontalAlignment="Center"
                            Margin="0,0,0,20"
                            Foreground="{Binding VisualSettings.MessageTextColor}"/>
-                <TextBlock Text="システムにインストールされたブラウザを自動検出しています。" 
+                <TextBlock Text="{extensions:Localization MainWindow.DetectingBrowsersDescription}" 
                            FontSize="14" 
                            HorizontalAlignment="Center"
                            Foreground="{Binding VisualSettings.MessageTextColor}"/>
@@ -297,7 +298,7 @@
                              Width="100" 
                              Height="4" 
                              Margin="0,0,0,10"/>
-                <TextBlock Text="読み込み中..." 
+                <TextBlock Text="{extensions:Localization MainWindow.Loading}" 
                            Foreground="White" 
                            HorizontalAlignment="Center"/>
             </StackPanel>

@@ -109,6 +109,15 @@
   <data name="Settings.App.CustomProtocol" xml:space="preserve">
     <value>カスタムプロトコル</value>
   </data>
+  <data name="Settings.App.ApplicationSettings" xml:space="preserve">
+    <value>アプリケーション設定</value>
+  </data>
+  <data name="Settings.App.LanguageSettings" xml:space="preserve">
+    <value>言語設定</value>
+  </data>
+  <data name="Settings.App.UpdateSettings" xml:space="preserve">
+    <value>アップデート設定</value>
+  </data>
   <data name="Common.OK" xml:space="preserve">
     <value>OK</value>
   </data>
@@ -126,5 +135,227 @@
   </data>
   <data name="Common.Load" xml:space="preserve">
     <value>読み込み</value>
+  </data>
+  <data name="MainWindow.Title" xml:space="preserve">
+    <value>BrowserSelector</value>
+  </data>
+  <data name="MainWindow.Settings" xml:space="preserve">
+    <value>設定</value>
+  </data>
+  <data name="MainWindow.DetectingBrowsers" xml:space="preserve">
+    <value>🔍 ブラウザを検出中...</value>
+  </data>
+  <data name="MainWindow.DetectingBrowsersDescription" xml:space="preserve">
+    <value>システムにインストールされたブラウザを自動検出しています。</value>
+  </data>
+  <data name="MainWindow.Loading" xml:space="preserve">
+    <value>読み込み中...</value>
+  </data>
+  <data name="MainWindow.UrlPrompt" xml:space="preserve">
+    <value>URLを入力してください...</value>
+  </data>
+  <data name="SettingsWindow.Title" xml:space="preserve">
+    <value>設定</value>
+  </data>
+  <data name="SettingsWindow.General" xml:space="preserve">
+    <value>一般</value>
+  </data>
+  <data name="SettingsWindow.Display" xml:space="preserve">
+    <value>表示</value>
+  </data>
+  <data name="SettingsWindow.Browser" xml:space="preserve">
+    <value>ブラウザ</value>
+  </data>
+  <data name="SettingsWindow.UrlRules" xml:space="preserve">
+    <value>URLルール</value>
+  </data>
+  <data name="SettingsWindow.Accessibility" xml:space="preserve">
+    <value>アクセシビリティ</value>
+  </data>
+  <data name="SettingsWindow.Logging" xml:space="preserve">
+    <value>ログ</value>
+  </data>
+  <data name="Settings.App.CloseAfterLaunch" xml:space="preserve">
+    <value>ブラウザ起動後にアプリを終了</value>
+  </data>
+  <data name="Settings.App.AutoUpdateCheck" xml:space="preserve">
+    <value>自動更新チェック</value>
+  </data>
+  <data name="Settings.App.UpdateCheckInterval" xml:space="preserve">
+    <value>チェック間隔（時間）</value>
+  </data>
+  <data name="Settings.Display.BackgroundGradient" xml:space="preserve">
+    <value>背景グラディエーション</value>
+  </data>
+  <data name="Settings.Display.GradientStartColor" xml:space="preserve">
+    <value>グラデーション開始色</value>
+  </data>
+  <data name="Settings.Display.GradientEndColor" xml:space="preserve">
+    <value>グラデーション終了色</value>
+  </data>
+  <data name="Settings.Display.GradientDirection" xml:space="preserve">
+    <value>グラデーション方向</value>
+  </data>
+  <data name="Settings.Display.InitialSize" xml:space="preserve">
+    <value>初期起動サイズ</value>
+  </data>
+  <data name="Settings.Display.ShowLogo" xml:space="preserve">
+    <value>ロゴ表示</value>
+  </data>
+  <data name="Settings.Display.ShowUrlInput" xml:space="preserve">
+    <value>URL入力表示</value>
+  </data>
+  <data name="Settings.Display.ButtonSize" xml:space="preserve">
+    <value>ボタンサイズ</value>
+  </data>
+  <data name="Settings.Display.ButtonBackgroundColor" xml:space="preserve">
+    <value>ボタン背景色</value>
+  </data>
+  <data name="Settings.Display.ButtonTextColor" xml:space="preserve">
+    <value>ボタンテキスト色</value>
+  </data>
+  <data name="Settings.Display.ButtonTransparency" xml:space="preserve">
+    <value>ボタン背景透明化</value>
+  </data>
+  <data name="Settings.Display.ButtonCornerRadius" xml:space="preserve">
+    <value>ボタン角丸半径</value>
+  </data>
+  <data name="Settings.Display.ShowBrowserName" xml:space="preserve">
+    <value>ブラウザ名表示</value>
+  </data>
+  <data name="Settings.Display.IconSize" xml:space="preserve">
+    <value>アイコンサイズ</value>
+  </data>
+  <data name="Settings.Browser.DetectedBrowsers" xml:space="preserve">
+    <value>検出されたブラウザ:</value>
+  </data>
+  <data name="Settings.Browser.RedetectBrowsers" xml:space="preserve">
+    <value>ブラウザを再検出</value>
+  </data>
+  <data name="Settings.UrlRules.RuleList" xml:space="preserve">
+    <value>URLルール一覧</value>
+  </data>
+  <data name="Settings.UrlRules.RuleTest" xml:space="preserve">
+    <value>ルールテスト</value>
+  </data>
+  <data name="Settings.Accessibility.FocusSettings" xml:space="preserve">
+    <value>フォーカス設定</value>
+  </data>
+  <data name="Settings.Accessibility.KeyboardSettings" xml:space="preserve">
+    <value>キーボード設定</value>
+  </data>
+  <data name="Settings.Accessibility.ScreenReaderSettings" xml:space="preserve">
+    <value>スクリーンリーダー設定</value>
+  </data>
+  <data name="Settings.Logging.BasicLogSettings" xml:space="preserve">
+    <value>基本ログ設定</value>
+  </data>
+  <data name="Settings.Logging.FileLogSettings" xml:space="preserve">
+    <value>ファイルログ設定</value>
+  </data>
+  <data name="Settings.Logging.LogManagement" xml:space="preserve">
+    <value>ログ管理</value>
+  </data>
+  <data name="Dialog.BrowserEdit.Title" xml:space="preserve">
+    <value>ブラウザ編集</value>
+  </data>
+  <data name="Dialog.UrlRuleEdit.Title" xml:space="preserve">
+    <value>URLルール編集</value>
+  </data>
+  <data name="Dialog.IconSelection.Title" xml:space="preserve">
+    <value>アイコン選択</value>
+  </data>
+  <data name="Dialog.LogViewer.Title" xml:space="preserve">
+    <value>ログビューアー</value>
+  </data>
+  <data name="Dialog.BrowserEdit.BasicInfo" xml:space="preserve">
+    <value>基本情報</value>
+  </data>
+  <data name="Dialog.BrowserEdit.DisplaySettings" xml:space="preserve">
+    <value>表示設定</value>
+  </data>
+  <data name="Dialog.BrowserEdit.Preview" xml:space="preserve">
+    <value>プレビュー</value>
+  </data>
+  <data name="Dialog.UrlRuleEdit.UrlPattern" xml:space="preserve">
+    <value>URLパターン</value>
+  </data>
+  <data name="Dialog.UrlRuleEdit.TargetBrowser" xml:space="preserve">
+    <value>対象ブラウザ</value>
+  </data>
+  <data name="Dialog.UrlRuleEdit.PrioritySettings" xml:space="preserve">
+    <value>優先度設定</value>
+  </data>
+  <data name="Dialog.UrlRuleEdit.OtherSettings" xml:space="preserve">
+    <value>その他設定</value>
+  </data>
+  <data name="Dialog.IconSelection.SystemIcons" xml:space="preserve">
+    <value>システムアイコン</value>
+  </data>
+  <data name="Dialog.IconSelection.CustomIcons" xml:space="preserve">
+    <value>カスタムアイコン</value>
+  </data>
+  <data name="Dialog.IconSelection.SelectionConfirmation" xml:space="preserve">
+    <value>選択確認</value>
+  </data>
+  <data name="MessageBox.Confirm" xml:space="preserve">
+    <value>確認</value>
+  </data>
+  <data name="MessageBox.Information" xml:space="preserve">
+    <value>情報</value>
+  </data>
+  <data name="MessageBox.Warning" xml:space="preserve">
+    <value>警告</value>
+  </data>
+  <data name="MessageBox.Error" xml:space="preserve">
+    <value>エラー</value>
+  </data>
+  <data name="MessageBox.Yes" xml:space="preserve">
+    <value>はい</value>
+  </data>
+  <data name="MessageBox.No" xml:space="preserve">
+    <value>いいえ</value>
+  </data>
+  <data name="MessageBox.LogClearConfirm" xml:space="preserve">
+    <value>ログファイルをクリアしますか？</value>
+  </data>
+  <data name="MessageBox.LogClearComplete" xml:space="preserve">
+    <value>ログファイルをクリアしました。</value>
+  </data>
+  <data name="MessageBox.OldLogDeleteConfirm" xml:space="preserve">
+    <value>古いログファイルを削除しますか？</value>
+  </data>
+  <data name="MessageBox.OldLogDeleteComplete" xml:space="preserve">
+    <value>古いログファイルを削除しました。</value>
+  </data>
+  <data name="Log.ApplicationStart" xml:space="preserve">
+    <value>アプリケーション起動開始</value>
+  </data>
+  <data name="Log.ApplicationStartComplete" xml:space="preserve">
+    <value>アプリケーション起動完了</value>
+  </data>
+  <data name="Log.BrowserDetectionStart" xml:space="preserve">
+    <value>ブラウザ検出開始</value>
+  </data>
+  <data name="Log.BrowserDetectionComplete" xml:space="preserve">
+    <value>ブラウザ検出完了: {0}個のブラウザを検出 - {1}</value>
+  </data>
+  <data name="Log.SettingsLoadStart" xml:space="preserve">
+    <value>設定読み込み開始</value>
+  </data>
+  <data name="Log.SettingsLoadComplete" xml:space="preserve">
+    <value>設定読み込み完了</value>
+  </data>
+  <data name="Log.LanguageChanged" xml:space="preserve">
+    <value>言語を {0} に変更しました</value>
+  </data>
+  <data name="Log.BrowserLaunchStart" xml:space="preserve">
+    <value>{0}を起動中...</value>
+  </data>
+  <data name="Log.BrowserLaunchComplete" xml:space="preserve">
+    <value>{0}を起動しました</value>
+  </data>
+  <data name="Log.BrowserLaunchError" xml:space="preserve">
+    <value>ブラウザの起動に失敗しました: {0}</value>
   </data>
 </root>

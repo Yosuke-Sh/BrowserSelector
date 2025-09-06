@@ -109,6 +109,15 @@
   <data name="Settings.App.CustomProtocol" xml:space="preserve">
     <value>Custom Protocol</value>
   </data>
+  <data name="Settings.App.ApplicationSettings" xml:space="preserve">
+    <value>Application Settings</value>
+  </data>
+  <data name="Settings.App.LanguageSettings" xml:space="preserve">
+    <value>Language Settings</value>
+  </data>
+  <data name="Settings.App.UpdateSettings" xml:space="preserve">
+    <value>Update Settings</value>
+  </data>
   <data name="Common.OK" xml:space="preserve">
     <value>OK</value>
   </data>
@@ -126,5 +135,227 @@
   </data>
   <data name="Common.Load" xml:space="preserve">
     <value>Load</value>
+  </data>
+  <data name="MainWindow.Title" xml:space="preserve">
+    <value>BrowserSelector</value>
+  </data>
+  <data name="MainWindow.Settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="MainWindow.DetectingBrowsers" xml:space="preserve">
+    <value>🔍 Detecting browsers...</value>
+  </data>
+  <data name="MainWindow.DetectingBrowsersDescription" xml:space="preserve">
+    <value>Automatically detecting browsers installed on the system.</value>
+  </data>
+  <data name="MainWindow.Loading" xml:space="preserve">
+    <value>Loading...</value>
+  </data>
+  <data name="MainWindow.UrlPrompt" xml:space="preserve">
+    <value>Please enter URL...</value>
+  </data>
+  <data name="SettingsWindow.Title" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="SettingsWindow.General" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="SettingsWindow.Display" xml:space="preserve">
+    <value>Display</value>
+  </data>
+  <data name="SettingsWindow.Browser" xml:space="preserve">
+    <value>Browser</value>
+  </data>
+  <data name="SettingsWindow.UrlRules" xml:space="preserve">
+    <value>URL Rules</value>
+  </data>
+  <data name="SettingsWindow.Accessibility" xml:space="preserve">
+    <value>Accessibility</value>
+  </data>
+  <data name="SettingsWindow.Logging" xml:space="preserve">
+    <value>Logging</value>
+  </data>
+  <data name="Settings.App.CloseAfterLaunch" xml:space="preserve">
+    <value>Close app after browser launch</value>
+  </data>
+  <data name="Settings.App.AutoUpdateCheck" xml:space="preserve">
+    <value>Auto update check</value>
+  </data>
+  <data name="Settings.App.UpdateCheckInterval" xml:space="preserve">
+    <value>Check interval (hours)</value>
+  </data>
+  <data name="Settings.Display.BackgroundGradient" xml:space="preserve">
+    <value>Background Gradient</value>
+  </data>
+  <data name="Settings.Display.GradientStartColor" xml:space="preserve">
+    <value>Gradient Start Color</value>
+  </data>
+  <data name="Settings.Display.GradientEndColor" xml:space="preserve">
+    <value>Gradient End Color</value>
+  </data>
+  <data name="Settings.Display.GradientDirection" xml:space="preserve">
+    <value>Gradient Direction</value>
+  </data>
+  <data name="Settings.Display.InitialSize" xml:space="preserve">
+    <value>Initial Size</value>
+  </data>
+  <data name="Settings.Display.ShowLogo" xml:space="preserve">
+    <value>Show Logo</value>
+  </data>
+  <data name="Settings.Display.ShowUrlInput" xml:space="preserve">
+    <value>Show URL Input</value>
+  </data>
+  <data name="Settings.Display.ButtonSize" xml:space="preserve">
+    <value>Button Size</value>
+  </data>
+  <data name="Settings.Display.ButtonBackgroundColor" xml:space="preserve">
+    <value>Button Background Color</value>
+  </data>
+  <data name="Settings.Display.ButtonTextColor" xml:space="preserve">
+    <value>Button Text Color</value>
+  </data>
+  <data name="Settings.Display.ButtonTransparency" xml:space="preserve">
+    <value>Button Transparency</value>
+  </data>
+  <data name="Settings.Display.ButtonCornerRadius" xml:space="preserve">
+    <value>Button Corner Radius</value>
+  </data>
+  <data name="Settings.Display.ShowBrowserName" xml:space="preserve">
+    <value>Show Browser Name</value>
+  </data>
+  <data name="Settings.Display.IconSize" xml:space="preserve">
+    <value>Icon Size</value>
+  </data>
+  <data name="Settings.Browser.DetectedBrowsers" xml:space="preserve">
+    <value>Detected Browsers:</value>
+  </data>
+  <data name="Settings.Browser.RedetectBrowsers" xml:space="preserve">
+    <value>Redetect Browsers</value>
+  </data>
+  <data name="Settings.UrlRules.RuleList" xml:space="preserve">
+    <value>URL Rule List</value>
+  </data>
+  <data name="Settings.UrlRules.RuleTest" xml:space="preserve">
+    <value>Rule Test</value>
+  </data>
+  <data name="Settings.Accessibility.FocusSettings" xml:space="preserve">
+    <value>Focus Settings</value>
+  </data>
+  <data name="Settings.Accessibility.KeyboardSettings" xml:space="preserve">
+    <value>Keyboard Settings</value>
+  </data>
+  <data name="Settings.Accessibility.ScreenReaderSettings" xml:space="preserve">
+    <value>Screen Reader Settings</value>
+  </data>
+  <data name="Settings.Logging.BasicLogSettings" xml:space="preserve">
+    <value>Basic Log Settings</value>
+  </data>
+  <data name="Settings.Logging.FileLogSettings" xml:space="preserve">
+    <value>File Log Settings</value>
+  </data>
+  <data name="Settings.Logging.LogManagement" xml:space="preserve">
+    <value>Log Management</value>
+  </data>
+  <data name="Dialog.BrowserEdit.Title" xml:space="preserve">
+    <value>Browser Edit</value>
+  </data>
+  <data name="Dialog.UrlRuleEdit.Title" xml:space="preserve">
+    <value>URL Rule Edit</value>
+  </data>
+  <data name="Dialog.IconSelection.Title" xml:space="preserve">
+    <value>Icon Selection</value>
+  </data>
+  <data name="Dialog.LogViewer.Title" xml:space="preserve">
+    <value>Log Viewer</value>
+  </data>
+  <data name="Dialog.BrowserEdit.BasicInfo" xml:space="preserve">
+    <value>Basic Information</value>
+  </data>
+  <data name="Dialog.BrowserEdit.DisplaySettings" xml:space="preserve">
+    <value>Display Settings</value>
+  </data>
+  <data name="Dialog.BrowserEdit.Preview" xml:space="preserve">
+    <value>Preview</value>
+  </data>
+  <data name="Dialog.UrlRuleEdit.UrlPattern" xml:space="preserve">
+    <value>URL Pattern</value>
+  </data>
+  <data name="Dialog.UrlRuleEdit.TargetBrowser" xml:space="preserve">
+    <value>Target Browser</value>
+  </data>
+  <data name="Dialog.UrlRuleEdit.PrioritySettings" xml:space="preserve">
+    <value>Priority Settings</value>
+  </data>
+  <data name="Dialog.UrlRuleEdit.OtherSettings" xml:space="preserve">
+    <value>Other Settings</value>
+  </data>
+  <data name="Dialog.IconSelection.SystemIcons" xml:space="preserve">
+    <value>System Icons</value>
+  </data>
+  <data name="Dialog.IconSelection.CustomIcons" xml:space="preserve">
+    <value>Custom Icons</value>
+  </data>
+  <data name="Dialog.IconSelection.SelectionConfirmation" xml:space="preserve">
+    <value>Selection Confirmation</value>
+  </data>
+  <data name="MessageBox.Confirm" xml:space="preserve">
+    <value>Confirm</value>
+  </data>
+  <data name="MessageBox.Information" xml:space="preserve">
+    <value>Information</value>
+  </data>
+  <data name="MessageBox.Warning" xml:space="preserve">
+    <value>Warning</value>
+  </data>
+  <data name="MessageBox.Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="MessageBox.Yes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="MessageBox.No" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="MessageBox.LogClearConfirm" xml:space="preserve">
+    <value>Do you want to clear the log file?</value>
+  </data>
+  <data name="MessageBox.LogClearComplete" xml:space="preserve">
+    <value>Log file has been cleared.</value>
+  </data>
+  <data name="MessageBox.OldLogDeleteConfirm" xml:space="preserve">
+    <value>Do you want to delete old log files?</value>
+  </data>
+  <data name="MessageBox.OldLogDeleteComplete" xml:space="preserve">
+    <value>Old log files have been deleted.</value>
+  </data>
+  <data name="Log.ApplicationStart" xml:space="preserve">
+    <value>Application startup started</value>
+  </data>
+  <data name="Log.ApplicationStartComplete" xml:space="preserve">
+    <value>Application startup completed</value>
+  </data>
+  <data name="Log.BrowserDetectionStart" xml:space="preserve">
+    <value>Browser detection started</value>
+  </data>
+  <data name="Log.BrowserDetectionComplete" xml:space="preserve">
+    <value>Browser detection completed: {0} browsers detected - {1}</value>
+  </data>
+  <data name="Log.SettingsLoadStart" xml:space="preserve">
+    <value>Settings loading started</value>
+  </data>
+  <data name="Log.SettingsLoadComplete" xml:space="preserve">
+    <value>Settings loading completed</value>
+  </data>
+  <data name="Log.LanguageChanged" xml:space="preserve">
+    <value>Language changed to {0}</value>
+  </data>
+  <data name="Log.BrowserLaunchStart" xml:space="preserve">
+    <value>Launching {0}...</value>
+  </data>
+  <data name="Log.BrowserLaunchComplete" xml:space="preserve">
+    <value>Launched {0}</value>
+  </data>
+  <data name="Log.BrowserLaunchError" xml:space="preserve">
+    <value>Failed to launch browser: {0}</value>
   </data>
 </root>

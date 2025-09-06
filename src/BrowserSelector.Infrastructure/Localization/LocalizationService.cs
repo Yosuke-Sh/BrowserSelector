@@ -15,7 +15,7 @@ public class LocalizationService : ILocalizationService
     public LocalizationService()
     {
         _resourceManager = new ResourceManager("BrowserSelector.Infrastructure.Localization.Resources", typeof(LocalizationService).Assembly);
-        _currentCulture = CultureInfo.CurrentCulture;
+        _currentCulture = new CultureInfo("en-US");
     }
 
     public string GetString(string key)
@@ -43,8 +43,8 @@ public class LocalizationService : ILocalizationService
 
     public IEnumerable<CultureInfo> SupportedLanguages => new[]
     {
-        new CultureInfo("ja-JP"),
-        new CultureInfo("en-US")
+        new CultureInfo("en-US"),
+        new CultureInfo("ja-JP")
     };
 
     public event EventHandler<LanguageChangedEventArgs>? LanguageChanged;

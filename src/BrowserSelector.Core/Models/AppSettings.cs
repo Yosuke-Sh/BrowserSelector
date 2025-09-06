@@ -24,7 +24,7 @@ public partial class AppSettings : ObservableObject
     private int _updateCheckInterval = 24; // 時間単位
 
     [ObservableProperty]
-    private string _language = "ja-JP";
+    private string _language = "en-US";
 
     [ObservableProperty]
     private bool _portableMode;

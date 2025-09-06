@@ -7,8 +7,9 @@
         xmlns:controls="clr-namespace:BrowserSelector.Presentation.Controls"
         xmlns:enums="clr-namespace:BrowserSelector.Core.Enums"
         xmlns:converters="clr-namespace:BrowserSelector.Presentation.Converters"
+        xmlns:extensions="clr-namespace:BrowserSelector.Presentation.Extensions"
         mc:Ignorable="d"
-        Title="設定" Height="600" Width="800"
+        Title="{extensions:Localization SettingsWindow.Title}" Height="600" Width="800"
         WindowStartupLocation="CenterOwner"
         ResizeMode="CanResize"
         MinHeight="500" MinWidth="700">
@@ -51,14 +52,14 @@
                         <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_General.png" 
                                Width="18" Height="18" 
                                Margin="0,0,8,0" VerticalAlignment="Center"/>
-                        <TextBlock Text="一般" VerticalAlignment="Center"/>
+                        <TextBlock Text="{extensions:Localization SettingsWindow.General}" VerticalAlignment="Center"/>
                     </StackPanel>
                 </TabItem.Header>
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="10">
                         
                         <!-- アプリケーション設定 -->
-                        <GroupBox Header="アプリケーション設定" Style="{StaticResource GroupBoxStyle}">
+                        <GroupBox Header="{extensions:Localization Settings.App.ApplicationSettings}" Style="{StaticResource GroupBoxStyle}">
                             <StackPanel>
                                 
                                 <Grid Style="{StaticResource SettingRowStyle}">
@@ -66,21 +67,21 @@
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="ブラウザ起動後にアプリを終了" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{extensions:Localization Settings.App.CloseAfterLaunch}" VerticalAlignment="Center"/>
                                     <CheckBox Grid.Column="1" IsChecked="{Binding AppSettings.CloseAfterUrlRuleMatch}"/>
                                 </Grid>
                             </StackPanel>
                         </GroupBox>
 
                         <!-- 言語設定 -->
-                        <GroupBox Header="言語設定" Style="{StaticResource GroupBoxStyle}">
+                        <GroupBox Header="{extensions:Localization Settings.App.LanguageSettings}" Style="{StaticResource GroupBoxStyle}">
                             <StackPanel>
                                 <Grid Style="{StaticResource SettingRowStyle}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="150"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="言語" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{extensions:Localization Settings.App.Language}" VerticalAlignment="Center"/>
                                     <ComboBox Grid.Column="1" SelectedItem="{Binding SelectedLanguage}"
                                               ItemsSource="{Binding AvailableLanguages}"
                                               DisplayMemberPath="DisplayName"
@@ -92,14 +93,14 @@
 
 
                         <!-- アップデート設定 -->
-                        <GroupBox Header="アップデート設定" Style="{StaticResource GroupBoxStyle}">
+                        <GroupBox Header="{extensions:Localization Settings.App.UpdateSettings}" Style="{StaticResource GroupBoxStyle}">
                             <StackPanel>
                                 <Grid Style="{StaticResource SettingRowStyle}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="自動更新チェック" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{extensions:Localization Settings.App.AutoUpdateCheck}" VerticalAlignment="Center"/>
                                     <CheckBox Grid.Column="1" IsChecked="{Binding AppSettings.CheckForUpdates}"/>
                                 </Grid>
                                 
@@ -108,7 +109,7 @@
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="100"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="チェック間隔（時間）" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{extensions:Localization Settings.App.UpdateCheckInterval}" VerticalAlignment="Center"/>
                                     <TextBox Grid.Column="1" Text="{Binding AppSettings.UpdateCheckInterval}" 
                                              VerticalAlignment="Center" HorizontalAlignment="Right"/>
                                 </Grid>
