@@ -715,4 +715,13 @@
   <data name="Settings.ExportSettings" xml:space="preserve">
     <value>設定をエクスポート</value>
   </data>
+  <data name="Settings.UrlRules.RefreshRules" xml:space="preserve">
+    <value>ルールを更新</value>
+  </data>
+  <data name="Settings.UrlRules.TestUrl" xml:space="preserve">
+    <value>テストURL</value>
+  </data>
+  <data name="Settings.UrlRules.TestUrlTooltip" xml:space="preserve">
+    <value>URLルールのテストに使用するURLを入力してください</value>
+  </data>
 </root>

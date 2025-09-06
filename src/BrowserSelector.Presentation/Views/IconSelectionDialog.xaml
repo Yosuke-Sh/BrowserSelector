@@ -97,8 +97,10 @@
         <!-- ボタン -->
         <StackPanel Grid.Row="3" Orientation="Horizontal" 
                     HorizontalAlignment="Right" Margin="0,20,0,0">
+            <Button Content="{extensions:Localization Common.OK}" Width="80" Height="30" 
+                    Click="OkButton_Click" IsDefault="True" Margin="0,0,10,0"/>
             <Button Content="{extensions:Localization Common.Cancel}" Width="80" Height="30" 
-                    Click="CancelButton_Click"/>
+                    Click="CancelButton_Click" IsCancel="True"/>
         </StackPanel>
     </Grid>
 </Window>

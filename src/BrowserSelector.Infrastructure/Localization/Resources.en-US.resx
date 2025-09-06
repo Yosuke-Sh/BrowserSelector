@@ -715,4 +715,13 @@
   <data name="Settings.ExportSettings" xml:space="preserve">
     <value>Export Settings</value>
   </data>
+  <data name="Settings.UrlRules.RefreshRules" xml:space="preserve">
+    <value>Refresh Rules</value>
+  </data>
+  <data name="Settings.UrlRules.TestUrl" xml:space="preserve">
+    <value>Test URL</value>
+  </data>
+  <data name="Settings.UrlRules.TestUrlTooltip" xml:space="preserve">
+    <value>Enter URL to test URL rules</value>
+  </data>
 </root>
