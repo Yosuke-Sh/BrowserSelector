@@ -6,6 +6,25 @@
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
+    <CollectCoverage>true</CollectCoverage>
+    <CoverletOutputFormat>cobertura</CoverletOutputFormat>
+    <CoverletOutput>./TestResults/</CoverletOutput>
+    <Include>[BrowserSelector.Core]*</Include>
+    <Include>[BrowserSelector.Infrastructure]*</Include>
+    <Include>[BrowserSelector.Presentation]*</Include>
+    <Include>[BrowserSelector.App]*</Include>
+    <Exclude>[*.Tests]*</Exclude>
+    <Exclude>[*.Test]*</Exclude>
+    <Exclude>[xunit.*]*</Exclude>
+    <Exclude>[Moq]*</Exclude>
+    <Exclude>[FluentAssertions]*</Exclude>
+    <Exclude>[Microsoft.*]*</Exclude>
+    <Exclude>[System.*]*</Exclude>
+    <Exclude>[NUnit.*]*</Exclude>
+    <Exclude>[MSTest.*]*</Exclude>
+    <SkipAutoProps>true</SkipAutoProps>
+    <UseSourceLink>true</UseSourceLink>
+    <IncludeTestAssembly>false</IncludeTestAssembly>
   </PropertyGroup>
 
   <ItemGroup>

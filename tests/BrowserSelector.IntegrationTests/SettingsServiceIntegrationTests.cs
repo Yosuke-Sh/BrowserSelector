@@ -7,21 +7,48 @@ using Xunit;
 
 namespace BrowserSelector.IntegrationTests;
 
-public class SettingsServiceIntegrationTests
+public class SettingsServiceIntegrationTests : IDisposable
 {
     private readonly IHost _host;
     private readonly ISettingsService _settingsService;
+    private readonly string _tempDirectory;
 
     public SettingsServiceIntegrationTests()
     {
+        // テスト用の一時ディレクトリを作成
+        _tempDirectory = Path.Combine(Path.GetTempPath(), "BrowserSelectorTest", Guid.NewGuid().ToString());
+        Directory.CreateDirectory(_tempDirectory);
+
         _host = Host.CreateDefaultBuilder()
             .ConfigureServices(services =>
             {
-                services.AddScoped<ISettingsService, SettingsService>();
+                services.AddScoped<ISettingsService>(provider => 
+                {
+                    var logService = provider.GetService<ILogService>();
+                    return new TestSettingsService(logService, _tempDirectory);
+                });
             })
             .Build();
 
         _settingsService = _host.Services.GetRequiredService<ISettingsService>();
+    }
+
+    public void Dispose()
+    {
+        // テスト用の一時ディレクトリを削除
+        if (Directory.Exists(_tempDirectory))
+        {
+            try
+            {
+                Directory.Delete(_tempDirectory, true);
+            }
+            catch
+            {
+                // 削除に失敗しても無視
+            }
+        }
+        
+        _host?.Dispose();
     }
 
     [Fact]
@@ -39,6 +66,7 @@ public class SettingsServiceIntegrationTests
         var loadedSettings = await _settingsService.LoadAppSettingsAsync();
 
         // Assert
+        // TestSettingsServiceを使用するため、保存と読み込みが正常に動作する
         saveResult.Should().BeTrue();
         loadedSettings.Should().NotBeNull();
 

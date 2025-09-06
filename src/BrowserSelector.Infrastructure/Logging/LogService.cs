@@ -23,6 +23,16 @@ public class LogService : ILogService
         _defaultLogFolder = LogSettings.GetDefaultLogFolder();
         _settings.LogOutputFolder = _defaultLogFolder;
 
+        // コンソールの文字エンコーディングをUTF-8に設定（文字化け対策）
+        try
+        {
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+        }
+        catch
+        {
+            // コンソールエンコーディング設定に失敗しても続行
+        }
+
         // 設定ファイルからログ設定を読み込み
         LoadSettingsFromFile();
 
