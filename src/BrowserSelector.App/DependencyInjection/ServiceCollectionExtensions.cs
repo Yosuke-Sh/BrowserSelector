@@ -16,7 +16,10 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IBrowserService, BrowserService>();
         services.AddScoped<ISettingsService>(provider => 
             new SettingsService(provider.GetRequiredService<ILogService>()));
-        services.AddScoped<ILocalizationService, LocalizationService>();
+        services.AddScoped<ICustomLanguageService>(provider => 
+            new CustomLanguageService(provider.GetRequiredService<ILogService>()));
+        services.AddScoped<ILocalizationService>(provider => 
+            new LocalizationService(provider.GetRequiredService<ICustomLanguageService>(), provider.GetRequiredService<ILogService>()));
         services.AddScoped<IUrlService>(provider => 
             new UrlService(provider.GetRequiredService<ISettingsService>(), provider.GetRequiredService<ILogService>()));
         services.AddScoped<IUrlRuleService>(provider => 

@@ -229,15 +229,37 @@ public partial class SettingsViewModel : ObservableObject
     /// <summary>
     /// 言語リストを初期化
     /// </summary>
-    private void InitializeLanguages()
+    private async void InitializeLanguages()
     {
-        AvailableLanguages.Clear();
-        AvailableLanguages.Add(new LanguageInfo("en-US", "English"));
-        AvailableLanguages.Add(new LanguageInfo("ja-JP", "日本語"));
+        try
+        {
+            AvailableLanguages.Clear();
+            
+            // カスタム言語サービスから利用可能な言語を取得
+            var availableLanguages = await _localizationService.GetSupportedLanguagesAsync();
+            
+            foreach (var culture in availableLanguages)
+            {
+                AvailableLanguages.Add(new LanguageInfo(culture.Name, culture.DisplayName));
+            }
 
-        // 現在の言語を選択
-        SelectedLanguage = AvailableLanguages.FirstOrDefault(l => l.CultureCode == AppSettings.Language)
-                          ?? AvailableLanguages.First();
+            // 現在の言語を選択
+            SelectedLanguage = AvailableLanguages.FirstOrDefault(l => l.CultureCode == AppSettings.Language)
+                              ?? AvailableLanguages.First();
+            
+            _logService?.LogDebug($"言語リスト初期化完了: {AvailableLanguages.Count}個の言語", "SettingsViewModel");
+        }
+        catch (Exception ex)
+        {
+            _logService?.LogError($"言語リストの初期化に失敗しました: {ex.Message}", "SettingsViewModel", ex);
+            
+            // フォールバック: デフォルト言語のみ
+            AvailableLanguages.Clear();
+            AvailableLanguages.Add(new LanguageInfo("en-US", "English"));
+            AvailableLanguages.Add(new LanguageInfo("ja-JP", "日本語"));
+            SelectedLanguage = AvailableLanguages.FirstOrDefault(l => l.CultureCode == AppSettings.Language)
+                              ?? AvailableLanguages.First();
+        }
     }
 
     /// <summary>

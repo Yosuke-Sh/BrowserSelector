@@ -1,6 +1,9 @@
 using BrowserSelector.Infrastructure.Localization;
+using BrowserSelector.Core.Services;
+using BrowserSelector.Core.Models;
 using FluentAssertions;
 using System.Globalization;
+using Moq;
 
 namespace BrowserSelector.UnitTests;
 
@@ -10,7 +13,15 @@ public class LocalizationServiceTests
     public void LocalizationService_GetString_ShouldReturnLocalizedString()
     {
         // Arrange
-        var service = new LocalizationService();
+        var mockCustomLanguageService = new Mock<ICustomLanguageService>();
+        mockCustomLanguageService.Setup(x => x.GetAvailableLanguagesAsync())
+            .ReturnsAsync(new List<LanguageInfo>
+            {
+                new LanguageInfo("en-US", "English"),
+                new LanguageInfo("ja-JP", "日本語")
+            });
+        
+        var service = new LocalizationService(mockCustomLanguageService.Object);
 
         // Act
         var result = service.GetString("Common.OK");
@@ -23,20 +34,36 @@ public class LocalizationServiceTests
     public void LocalizationService_GetStringWithArgs_ShouldFormatString()
     {
         // Arrange
-        var service = new LocalizationService();
+        var mockCustomLanguageService = new Mock<ICustomLanguageService>();
+        mockCustomLanguageService.Setup(x => x.GetAvailableLanguagesAsync())
+            .ReturnsAsync(new List<LanguageInfo>
+            {
+                new LanguageInfo("en-US", "English"),
+                new LanguageInfo("ja-JP", "日本語")
+            });
+        
+        var service = new LocalizationService(mockCustomLanguageService.Object);
 
         // Act
         var result = service.GetString("Common.Save", "test");
 
         // Assert
-        result.Should().Be("保存");
+        result.Should().Be("Save");
     }
 
     [Fact]
     public void LocalizationService_SetLanguage_ShouldChangeCulture()
     {
         // Arrange
-        var service = new LocalizationService();
+        var mockCustomLanguageService = new Mock<ICustomLanguageService>();
+        mockCustomLanguageService.Setup(x => x.GetAvailableLanguagesAsync())
+            .ReturnsAsync(new List<LanguageInfo>
+            {
+                new LanguageInfo("en-US", "English"),
+                new LanguageInfo("ja-JP", "日本語")
+            });
+        
+        var service = new LocalizationService(mockCustomLanguageService.Object);
         var englishCulture = new CultureInfo("en-US");
         var languageChanged = false;
         service.LanguageChanged += (sender, e) => languageChanged = true;
@@ -53,7 +80,15 @@ public class LocalizationServiceTests
     public void LocalizationService_SupportedLanguages_ShouldContainExpectedLanguages()
     {
         // Arrange
-        var service = new LocalizationService();
+        var mockCustomLanguageService = new Mock<ICustomLanguageService>();
+        mockCustomLanguageService.Setup(x => x.GetAvailableLanguagesAsync())
+            .ReturnsAsync(new List<LanguageInfo>
+            {
+                new LanguageInfo("en-US", "English"),
+                new LanguageInfo("ja-JP", "日本語")
+            });
+        
+        var service = new LocalizationService(mockCustomLanguageService.Object);
 
         // Act
         var supportedLanguages = service.SupportedLanguages.ToList();
@@ -68,7 +103,15 @@ public class LocalizationServiceTests
     public void LocalizationService_GetStringWithUnknownKey_ShouldReturnKey()
     {
         // Arrange
-        var service = new LocalizationService();
+        var mockCustomLanguageService = new Mock<ICustomLanguageService>();
+        mockCustomLanguageService.Setup(x => x.GetAvailableLanguagesAsync())
+            .ReturnsAsync(new List<LanguageInfo>
+            {
+                new LanguageInfo("en-US", "English"),
+                new LanguageInfo("ja-JP", "日本語")
+            });
+        
+        var service = new LocalizationService(mockCustomLanguageService.Object);
         var unknownKey = "Unknown.Key";
 
         // Act

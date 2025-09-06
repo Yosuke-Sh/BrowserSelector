@@ -33,6 +33,11 @@ public interface ILocalizationService
     IEnumerable<CultureInfo> SupportedLanguages { get; }
 
     /// <summary>
+    /// サポートされている言語の一覧を非同期で取得
+    /// </summary>
+    Task<IEnumerable<CultureInfo>> GetSupportedLanguagesAsync();
+
+    /// <summary>
     /// 言語変更イベント
     /// </summary>
     event EventHandler<LanguageChangedEventArgs>? LanguageChanged;
