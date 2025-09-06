@@ -2,6 +2,7 @@ using BrowserSelector.Core.Models;
 using BrowserSelector.Core.Services;
 using System.IO;
 using System.Text.Json;
+using System.IO.Compression;
 
 namespace BrowserSelector.Infrastructure.Services;
 
@@ -180,34 +181,18 @@ public class SettingsService : ISettingsService
             if (!File.Exists(filePath))
                 return false;
 
-            var json = await File.ReadAllTextAsync(filePath);
-            var importedData = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
+            _logService?.LogInformation("設定ファイル群のインポート開始", "SettingsService");
 
-            if (importedData == null)
-                return false;
-
-            // 設定の種類を判定してインポート
-            if (importedData.ContainsKey("StartMinimized") || importedData.ContainsKey("Language"))
+            // ZIPファイルかどうかを判定
+            if (Path.GetExtension(filePath).ToLower() == ".zip")
             {
-                // アプリケーション設定
-                var appSettings = JsonSerializer.Deserialize<AppSettings>(json);
-                if (appSettings != null)
-                {
-                    await SaveAppSettingsAsync(appSettings);
-                }
+                return await ImportSettingsFromZipAsync(filePath);
             }
-
-            if (importedData.ContainsKey("Opacity") || importedData.ContainsKey("BackgroundColor"))
+            else
             {
-                // 視覚設定
-                var visualSettings = JsonSerializer.Deserialize<VisualSettings>(json);
-                if (visualSettings != null)
-                {
-                    await SaveVisualSettingsAsync(visualSettings);
-                }
+                // 従来のJSONファイル形式（後方互換性）
+                return await ImportSettingsFromJsonAsync(filePath);
             }
-
-            return true;
         }
         catch (Exception ex)
         {
@@ -216,36 +201,187 @@ public class SettingsService : ISettingsService
         }
     }
 
+    /// <summary>
+    /// ZIPファイルから設定ファイル群をインポート
+    /// </summary>
+    private async Task<bool> ImportSettingsFromZipAsync(string zipFilePath)
+    {
+        using var fileStream = new FileStream(zipFilePath, FileMode.Open, FileAccess.Read);
+        using var archive = new ZipArchive(fileStream, ZipArchiveMode.Read);
+
+        var importedFiles = new List<string>();
+
+        // ZIP内の各ファイルを処理
+        foreach (var entry in archive.Entries)
+        {
+            if (string.IsNullOrEmpty(entry.Name))
+                continue; // ディレクトリエントリをスキップ
+
+            var targetPath = GetTargetPathForEntry(entry.FullName);
+            if (targetPath == null)
+                continue; // サポートされていないファイルをスキップ
+
+            try
+            {
+                // ディレクトリを作成
+                var targetDirectory = Path.GetDirectoryName(targetPath);
+                if (!string.IsNullOrEmpty(targetDirectory) && !Directory.Exists(targetDirectory))
+                {
+                    Directory.CreateDirectory(targetDirectory);
+                }
+
+                // ファイルを展開
+                using var entryStream = entry.Open();
+                using var targetStream = new FileStream(targetPath, FileMode.Create, FileAccess.Write);
+                await entryStream.CopyToAsync(targetStream);
+
+                importedFiles.Add(entry.FullName);
+                _logService?.LogDebug($"インポート完了: {entry.FullName} -> {targetPath}", "SettingsService");
+            }
+            catch (Exception ex)
+            {
+                _logService?.LogWarning($"ファイルインポートエラー: {entry.FullName} - {ex.Message}", "SettingsService");
+            }
+        }
+
+        _logService?.LogInformation($"設定ファイル群のインポート完了: {importedFiles.Count}個のファイルをインポート", "SettingsService");
+        return importedFiles.Count > 0;
+    }
+
+    /// <summary>
+    /// エントリ名から対象パスを取得
+    /// </summary>
+    private string? GetTargetPathForEntry(string entryName)
+    {
+        return entryName.ToLower() switch
+        {
+            "appsettings.json" => _appSettingsPath,
+            "visualsettings.json" => _visualSettingsPath,
+            "logsettings.json" => _logSettingsPath,
+            "urlrules.json" => Path.Combine(_settingsDirectory, "urlrules.json"),
+            "export-info.json" => null, // エクスポート情報ファイルは無視
+            _ when entryName.StartsWith("Languages/", StringComparison.OrdinalIgnoreCase) => 
+                Path.Combine(_settingsDirectory, entryName),
+            _ => null // サポートされていないファイル
+        };
+    }
+
+    /// <summary>
+    /// 従来のJSONファイル形式からインポート（後方互換性）
+    /// </summary>
+    private async Task<bool> ImportSettingsFromJsonAsync(string filePath)
+    {
+        var json = await File.ReadAllTextAsync(filePath);
+        var importedData = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
+
+        if (importedData == null)
+            return false;
+
+        // 設定の種類を判定してインポート
+        if (importedData.ContainsKey("StartMinimized") || importedData.ContainsKey("Language"))
+        {
+            // アプリケーション設定
+            var appSettings = JsonSerializer.Deserialize<AppSettings>(json);
+            if (appSettings != null)
+            {
+                await SaveAppSettingsAsync(appSettings);
+            }
+        }
+
+        if (importedData.ContainsKey("Opacity") || importedData.ContainsKey("BackgroundColor"))
+        {
+            // 視覚設定
+            var visualSettings = JsonSerializer.Deserialize<VisualSettings>(json);
+            if (visualSettings != null)
+            {
+                await SaveVisualSettingsAsync(visualSettings);
+            }
+        }
+
+        return true;
+    }
+
     public async Task<bool> ExportSettingsAsync(string filePath)
     {
         try
         {
-            var appSettings = await LoadAppSettingsAsync();
-            var visualSettings = await LoadVisualSettingsAsync();
-
-            var exportData = new
-            {
-                AppSettings = appSettings,
-                VisualSettings = visualSettings,
-                ExportedAt = DateTime.Now,
-                Version = "1.0"
-            };
-
-            var options = new JsonSerializerOptions
-            {
-                WriteIndented = true,
-                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-            };
-
-            var json = JsonSerializer.Serialize(exportData, options);
-            await File.WriteAllTextAsync(filePath, json);
-
+            _logService?.LogInformation("設定ファイル群のエクスポート開始", "SettingsService");
+            
+            // ZIPファイルとして設定ファイル群をエクスポート
+            await ExportSettingsAsZipAsync(filePath);
+            
+            _logService?.LogInformation($"設定ファイル群のエクスポート完了: {filePath}", "SettingsService");
             return true;
         }
         catch (Exception ex)
         {
             _logService?.LogError($"設定エクスポートエラー: {ex.Message}", "SettingsService", ex);
             return false;
+        }
+    }
+
+    /// <summary>
+    /// 設定ファイル群をZIP形式でエクスポート
+    /// </summary>
+    private async Task ExportSettingsAsZipAsync(string zipFilePath)
+    {
+        using var fileStream = new FileStream(zipFilePath, FileMode.Create);
+        using var archive = new ZipArchive(fileStream, ZipArchiveMode.Create);
+
+        // 設定ファイルをZIPに追加
+        await AddFileToZipAsync(archive, _appSettingsPath, "appsettings.json");
+        await AddFileToZipAsync(archive, _visualSettingsPath, "visualsettings.json");
+        await AddFileToZipAsync(archive, _logSettingsPath, "logsettings.json");
+        
+        // URLルールファイルを追加
+        var urlRulesPath = Path.Combine(_settingsDirectory, "urlrules.json");
+        await AddFileToZipAsync(archive, urlRulesPath, "urlrules.json");
+
+        // 言語ファイルを追加
+        var languagesPath = Path.Combine(_settingsDirectory, "Languages");
+        if (Directory.Exists(languagesPath))
+        {
+            var languageFiles = Directory.GetFiles(languagesPath, "*.json");
+            foreach (var languageFile in languageFiles)
+            {
+                var fileName = Path.GetFileName(languageFile);
+                var zipEntryName = Path.Combine("Languages", fileName);
+                await AddFileToZipAsync(archive, languageFile, zipEntryName);
+            }
+        }
+
+        // エクスポート情報ファイルを追加
+        var exportInfo = new
+        {
+            ExportedAt = DateTime.Now,
+            Version = "1.0",
+            ExportedBy = "BrowserSelector",
+            Description = "BrowserSelector設定ファイル群"
+        };
+
+        var exportInfoJson = JsonSerializer.Serialize(exportInfo, new JsonSerializerOptions { WriteIndented = true });
+        var exportInfoEntry = archive.CreateEntry("export-info.json");
+        using var exportInfoStream = exportInfoEntry.Open();
+        using var exportInfoWriter = new StreamWriter(exportInfoStream);
+        await exportInfoWriter.WriteAsync(exportInfoJson);
+    }
+
+    /// <summary>
+    /// ファイルをZIPアーカイブに追加
+    /// </summary>
+    private async Task AddFileToZipAsync(ZipArchive archive, string filePath, string entryName)
+    {
+        if (File.Exists(filePath))
+        {
+            var entry = archive.CreateEntry(entryName);
+            using var entryStream = entry.Open();
+            using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            await fileStream.CopyToAsync(entryStream);
+            _logService?.LogDebug($"ZIPに追加: {entryName}", "SettingsService");
+        }
+        else
+        {
+            _logService?.LogDebug($"ファイルが存在しません（スキップ）: {filePath}", "SettingsService");
         }
     }
 

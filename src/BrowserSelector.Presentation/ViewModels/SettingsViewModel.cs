@@ -970,10 +970,12 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
+            _logService?.LogInformation("設定インポート開始", "SettingsViewModel");
+
             var openFileDialog = new OpenFileDialog
             {
-                Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
-                Title = "設定ファイルを選択"
+                Filter = "ZIP files (*.zip)|*.zip|JSON files (*.json)|*.json|All files (*.*)|*.*",
+                Title = "設定ファイル群を選択"
             };
 
             if (openFileDialog.ShowDialog() == true)
@@ -981,15 +983,26 @@ public partial class SettingsViewModel : ObservableObject
                 var result = await _settingsService.ImportSettingsAsync(openFileDialog.FileName);
                 if (result)
                 {
+                    _logService?.LogInformation($"設定インポート完了: {openFileDialog.FileName}", "SettingsViewModel");
+                    
                     // 設定を再読み込み
                     AppSettings = await _settingsService.LoadAppSettingsAsync();
                     VisualSettings = await _settingsService.LoadVisualSettingsAsync();
-                    InitializeLanguages();
+                    await InitializeLanguagesAsync();
+                    
+                    MessageBox.Show("設定ファイル群をインポートしました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    _logService?.LogWarning("設定インポート失敗", "SettingsViewModel");
+                    MessageBox.Show("設定のインポートに失敗しました。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            _logService?.LogError($"設定インポートエラー: {ex.Message}", "SettingsViewModel", ex);
+            MessageBox.Show($"設定のインポート中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -1001,32 +1014,34 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
+            _logService?.LogInformation("設定エクスポート開始", "SettingsViewModel");
+
             var saveFileDialog = new SaveFileDialog
             {
-                Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
-                Title = "設定ファイルを保存",
-                FileName = $"browserselector_settings_{DateTime.Now:yyyyMMdd_HHmmss}.json"
+                Filter = "ZIP files (*.zip)|*.zip|JSON files (*.json)|*.json|All files (*.*)|*.*",
+                Title = "設定ファイル群を保存",
+                FileName = $"browserselector_settings_{DateTime.Now:yyyyMMdd_HHmmss}.zip"
             };
 
             if (saveFileDialog.ShowDialog() == true)
             {
-                var exportData = new
+                var result = await _settingsService.ExportSettingsAsync(saveFileDialog.FileName);
+                if (result)
                 {
-                    AppSettings = AppSettings,
-                    VisualSettings = VisualSettings,
-                    ExportDate = DateTime.Now
-                };
-
-                var json = JsonSerializer.Serialize(exportData, new JsonSerializerOptions
+                    _logService?.LogInformation($"設定エクスポート完了: {saveFileDialog.FileName}", "SettingsViewModel");
+                    MessageBox.Show("設定ファイル群をエクスポートしました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
                 {
-                    WriteIndented = true
-                });
-
-                await File.WriteAllTextAsync(saveFileDialog.FileName, json);
+                    _logService?.LogWarning("設定エクスポート失敗", "SettingsViewModel");
+                    MessageBox.Show("設定のエクスポートに失敗しました。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            _logService?.LogError($"設定エクスポートエラー: {ex.Message}", "SettingsViewModel", ex);
+            MessageBox.Show($"設定のエクスポート中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
