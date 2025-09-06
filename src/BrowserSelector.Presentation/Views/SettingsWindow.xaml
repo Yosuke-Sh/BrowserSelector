@@ -126,14 +126,14 @@
                         <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Display.png" 
                                Width="18" Height="18" 
                                Margin="0,0,8,0" VerticalAlignment="Center"/>
-                        <TextBlock Text="表示" VerticalAlignment="Center"/>
+                        <TextBlock Text="{extensions:Localization SettingsWindow.Display}" VerticalAlignment="Center"/>
                     </StackPanel>
                 </TabItem.Header>
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="10">
                         
                         <!-- 背景設定 -->
-                        <GroupBox Header="背景設定" Style="{StaticResource GroupBoxStyle}">
+                        <GroupBox Header="{extensions:Localization Settings.Display.BackgroundSettings}" Style="{StaticResource GroupBoxStyle}">
                             <StackPanel>
                                 <!-- 背景色 -->
                                 <Grid Style="{StaticResource SettingRowStyle}">
@@ -142,8 +142,8 @@
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="40"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="背景色" VerticalAlignment="Center"/>
-                                    <Button Grid.Column="1" Content="色を選択" Padding="10,5"
+                                    <TextBlock Text="{extensions:Localization Settings.Display.BackgroundColor}" VerticalAlignment="Center"/>
+                                    <Button Grid.Column="1" Content="{extensions:Localization Common.SelectColor}" Padding="10,5"
                                             Command="{Binding SelectBackgroundColorCommand}"/>
                                     <!-- 現在色を可視化 -->
                                     <Border Grid.Column="2" Width="24" Height="24" Margin="10,0,0,0"
@@ -157,7 +157,7 @@
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="背景グラディエーション" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{extensions:Localization Settings.Display.BackgroundGradient}" VerticalAlignment="Center"/>
                                     <CheckBox Grid.Column="1" IsChecked="{Binding VisualSettings.UseBackgroundGradient}"/>
                                 </Grid>
 
@@ -168,8 +168,8 @@
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="40"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="グラデーション開始色" VerticalAlignment="Center"/>
-                                    <Button Grid.Column="1" Content="色を選択" Padding="10,5"
+                                    <TextBlock Text="{extensions:Localization Settings.Display.GradientStartColor}" VerticalAlignment="Center"/>
+                                    <Button Grid.Column="1" Content="{extensions:Localization Common.SelectColor}" Padding="10,5"
                                             Command="{Binding SelectGradientStartColorCommand}"/>
                                     <!-- 現在色を可視化 -->
                                     <Border Grid.Column="2" Width="24" Height="24" Margin="10,0,0,0"
@@ -184,8 +184,8 @@
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="40"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="グラデーション終了色" VerticalAlignment="Center"/>
-                                    <Button Grid.Column="1" Content="色を選択" Padding="10,5"
+                                    <TextBlock Text="{extensions:Localization Settings.Display.GradientEndColor}" VerticalAlignment="Center"/>
+                                    <Button Grid.Column="1" Content="{extensions:Localization Common.SelectColor}" Padding="10,5"
                                             Command="{Binding SelectGradientEndColorCommand}"/>
                                     <!-- 現在色を可視化 -->
                                     <Border Grid.Column="2" Width="24" Height="24" Margin="10,0,0,0"
@@ -199,15 +199,15 @@
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="150"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="グラデーション方向" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{extensions:Localization Settings.Display.GradientDirection}" VerticalAlignment="Center"/>
                                     <ComboBox Grid.Column="1" 
                                               SelectedIndex="{Binding VisualSettings.GradientDirection, Converter={StaticResource GradientDirectionToIndexConverter}}"
                                               VerticalAlignment="Center"
                                               IsEnabled="{Binding VisualSettings.UseBackgroundGradient}"
                                               SelectionChanged="GradientDirectionComboBox_SelectionChanged">
-                                        <ComboBoxItem Content="垂直"/>
-                                        <ComboBoxItem Content="水平"/>
-                                        <ComboBoxItem Content="斜め"/>
+                                        <ComboBoxItem Content="{extensions:Localization Common.Vertical}"/>
+                                        <ComboBoxItem Content="{extensions:Localization Common.Horizontal}"/>
+                                        <ComboBoxItem Content="{extensions:Localization Common.Diagonal}"/>
                                     </ComboBox>
                                 </Grid>
 
@@ -216,7 +216,7 @@
                         </GroupBox>
 
                         <!-- ウィンドウ設定 -->
-                        <GroupBox Header="ウィンドウ設定" Style="{StaticResource GroupBoxStyle}">
+                        <GroupBox Header="{extensions:Localization Settings.Display.WindowSettings}" Style="{StaticResource GroupBoxStyle}">
                             <StackPanel>
                                 <!-- 初期起動サイズ -->
                                 <Grid Style="{StaticResource SettingRowStyle}">
@@ -226,10 +226,10 @@
                                         <ColumnDefinition Width="20"/>
                                         <ColumnDefinition Width="100"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="初期起動サイズ" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{extensions:Localization Settings.Display.InitialSize}" VerticalAlignment="Center"/>
                                     <TextBox Grid.Column="1" Text="{Binding VisualSettings.InitialWindowWidth}" 
                                              VerticalAlignment="Center" Margin="0,0,5,0"/>
-                                    <TextBlock Grid.Column="2" Text="×" VerticalAlignment="Center" 
+                                    <TextBlock Grid.Column="2" Text="{extensions:Localization Common.Multiply}" VerticalAlignment="Center" 
                                                HorizontalAlignment="Center"/>
                                     <TextBox Grid.Column="3" Text="{Binding VisualSettings.InitialWindowHeight}" 
                                              VerticalAlignment="Center"/>
@@ -241,7 +241,7 @@
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="ロゴ表示" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{extensions:Localization Settings.Display.ShowLogo}" VerticalAlignment="Center"/>
                                     <CheckBox Grid.Column="1" IsChecked="{Binding VisualSettings.ShowLogo}"/>
                                 </Grid>
                                 
@@ -251,7 +251,7 @@
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="URL入力表示" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{extensions:Localization Settings.Display.ShowUrlInput}" VerticalAlignment="Center"/>
                                     <CheckBox Grid.Column="1" IsChecked="{Binding VisualSettings.ShowUrlInput}"/>
                                 </Grid>
                                 
@@ -259,7 +259,7 @@
                         </GroupBox>
 
                         <!-- ブラウザボタン設定 -->
-                        <GroupBox Header="ブラウザボタン設定" Style="{StaticResource GroupBoxStyle}">
+                        <GroupBox Header="{extensions:Localization Settings.Display.BrowserButtonSettings}" Style="{StaticResource GroupBoxStyle}">
                             <StackPanel>
                                 <!-- ボタンサイズ -->
                                 <Grid Style="{StaticResource SettingRowStyle}">
@@ -269,10 +269,10 @@
                                         <ColumnDefinition Width="20"/>
                                         <ColumnDefinition Width="100"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="ボタンサイズ" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{extensions:Localization Settings.Display.ButtonSize}" VerticalAlignment="Center"/>
                                     <TextBox Grid.Column="1" Text="{Binding VisualSettings.BrowserButtonWidth}" 
                                              VerticalAlignment="Center" Margin="0,0,5,0"/>
-                                    <TextBlock Grid.Column="2" Text="×" VerticalAlignment="Center" 
+                                    <TextBlock Grid.Column="2" Text="{extensions:Localization Common.Multiply}" VerticalAlignment="Center" 
                                                HorizontalAlignment="Center"/>
                                     <TextBox Grid.Column="3" Text="{Binding VisualSettings.BrowserButtonHeight}" 
                                              VerticalAlignment="Center"/>
@@ -285,8 +285,8 @@
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="40"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="ボタン背景色" VerticalAlignment="Center"/>
-                                    <Button Grid.Column="1" Content="色を選択" Padding="10,5"
+                                    <TextBlock Text="{extensions:Localization Settings.Display.ButtonBackgroundColor}" VerticalAlignment="Center"/>
+                                    <Button Grid.Column="1" Content="{extensions:Localization Common.SelectColor}" Padding="10,5"
                                             Command="{Binding SelectBrowserButtonBackgroundColorCommand}"/>
                                     <!-- 現在色を可視化 -->
                                     <Border Grid.Column="2" Width="24" Height="24" Margin="10,0,0,0"
@@ -301,8 +301,8 @@
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="40"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="ボタンテキスト色" VerticalAlignment="Center"/>
-                                    <Button Grid.Column="1" Content="色を選択" Padding="10,5"
+                                    <TextBlock Text="{extensions:Localization Settings.Display.ButtonTextColor}" VerticalAlignment="Center"/>
+                                    <Button Grid.Column="1" Content="{extensions:Localization Common.SelectColor}" Padding="10,5"
                                             Command="{Binding SelectBrowserButtonForegroundColorCommand}"/>
                                     <!-- 現在色を可視化 -->
                                     <Border Grid.Column="2" Width="24" Height="24" Margin="10,0,0,0"
@@ -317,7 +317,7 @@
                                         <ColumnDefinition Width="100"/>
                                         <ColumnDefinition Width="40"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="ボタン背景透明化" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{extensions:Localization Settings.Display.ButtonTransparency}" VerticalAlignment="Center"/>
                                     <Slider Grid.Column="1" Minimum="0.1" Maximum="1.0" 
                                             Value="{Binding VisualSettings.BrowserButtonOpacity}"
                                             VerticalAlignment="Center" Margin="0,0,5,0"/>
@@ -332,7 +332,7 @@
                                         <ColumnDefinition Width="100"/>
                                         <ColumnDefinition Width="40"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="ボタン角丸半径" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{extensions:Localization Settings.Display.ButtonCornerRadius}" VerticalAlignment="Center"/>
                                     <Slider Grid.Column="1" Minimum="0" Maximum="20" 
                                             Value="{Binding VisualSettings.BrowserButtonCornerRadius}"
                                             VerticalAlignment="Center" Margin="0,0,5,0"/>
@@ -346,7 +346,7 @@
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="ブラウザ名表示" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{extensions:Localization Settings.Display.ShowBrowserName}" VerticalAlignment="Center"/>
                                     <CheckBox Grid.Column="1" IsChecked="{Binding VisualSettings.ShowBrowserName}"/>
                                 </Grid>
 
@@ -357,7 +357,7 @@
                                         <ColumnDefinition Width="100"/>
                                         <ColumnDefinition Width="40"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="アイコンサイズ" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{extensions:Localization Settings.Display.IconSize}" VerticalAlignment="Center"/>
                                     <Slider Grid.Column="1" Minimum="16" Maximum="64" 
                                             Value="{Binding VisualSettings.BrowserIconSize}"
                                             VerticalAlignment="Center" Margin="0,0,5,0"/>
@@ -378,15 +378,15 @@
                         <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Browser.png" 
                                Width="18" Height="18" 
                                Margin="0,0,8,0" VerticalAlignment="Center"/>
-                        <TextBlock Text="ブラウザ" VerticalAlignment="Center"/>
+                        <TextBlock Text="{extensions:Localization SettingsWindow.Browser}" VerticalAlignment="Center"/>
                     </StackPanel>
                 </TabItem.Header>
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="10">
                         <!-- ブラウザ管理 -->
-                        <GroupBox Header="ブラウザ管理" Style="{StaticResource GroupBoxStyle}" Height="400">
+                        <GroupBox Header="{extensions:Localization Settings.Browser.BrowserManagement}" Style="{StaticResource GroupBoxStyle}" Height="400">
                             <StackPanel>
-                                <TextBlock Text="検出されたブラウザ:" FontWeight="SemiBold" Margin="0,0,0,10"/>
+                                <TextBlock Text="{extensions:Localization Settings.Browser.DetectedBrowsers}" FontWeight="SemiBold" Margin="0,0,0,10"/>
                                 <ListBox Height="250" ItemsSource="{Binding DetectedBrowsers}">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
@@ -403,11 +403,11 @@
                                                            FontSize="10" Foreground="Gray" 
                                                            VerticalAlignment="Center" Margin="0,0,5,0" Width="20"/>
                                                 <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="0,0,0,0">
-                                                    <Button Content="↑" Padding="0,0" FontSize="12" Width="30" Height="30"
+                                                    <Button Content="{extensions:Localization Common.Up}" Padding="0,0" FontSize="12" Width="30" Height="30"
                                                             Command="{Binding DataContext.MoveBrowserUpCommand, 
                                                             RelativeSource={RelativeSource AncestorType=Window}}"
                                                             CommandParameter="{Binding}"/>
-                                                    <Button Content="↓" Padding="0,0" FontSize="12" Width="30" Height="30"
+                                                    <Button Content="{extensions:Localization Common.Down}" Padding="0,0" FontSize="12" Width="30" Height="30"
                                                             Command="{Binding DataContext.MoveBrowserDownCommand, 
                                                             RelativeSource={RelativeSource AncestorType=Window}}"
                                                             CommandParameter="{Binding}"/>
@@ -419,11 +419,11 @@
                                                                FontSize="9" Foreground="Gray" 
                                                                VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
                                                 </StackPanel>
-                                                <Button Grid.Column="3" Content="編集" Padding="1,1" FontSize="12"  Width="80" Height="30"
+                                                <Button Grid.Column="3" Content="{extensions:Localization Common.Edit}" Padding="1,1" FontSize="12"  Width="80" Height="30"
                                                         Margin="2,0,0,0" Command="{Binding DataContext.EditBrowserCommand, 
                                                         RelativeSource={RelativeSource AncestorType=Window}}"
                                                         CommandParameter="{Binding}"/>
-                                                <Button Grid.Column="4" Content="削除" Padding="1,1" FontSize="12" Width="80" Height="30"
+                                                <Button Grid.Column="4" Content="{extensions:Localization Common.Delete}" Padding="1,1" FontSize="12" Width="80" Height="30"
                                                         Margin="2,0,0,0" Command="{Binding DataContext.RemoveBrowserCommand, 
                                                         RelativeSource={RelativeSource AncestorType=Window}}"
                                                         CommandParameter="{Binding}"/>
@@ -439,7 +439,7 @@
                                             <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Refresh.png" 
                                                    Width="18" Height="18" 
                                                    Margin="8,0,8,0" VerticalAlignment="Center"/>
-                                            <TextBlock Text="ブラウザを再検出" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{extensions:Localization Settings.Browser.RedetectBrowsers}" VerticalAlignment="Center"/>
                                         </StackPanel>
                                     </Button>
                                     <Button Command="{Binding AddBrowserCommand}" 
@@ -448,7 +448,7 @@
                                             <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Add.png" 
                                                    Width="18" Height="19" 
                                                    Margin="8,0,8,0" VerticalAlignment="Center"/>
-                                            <TextBlock Text="ブラウザを追加" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{extensions:Localization Common.Add}" VerticalAlignment="Center"/>
                                         </StackPanel>
                                     </Button>
                                 </StackPanel>
@@ -465,16 +465,16 @@
                         <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Rules.png" 
                                Width="18" Height="18" 
                                Margin="0,0,8,0" VerticalAlignment="Center"/>
-                        <TextBlock Text="URLルール" VerticalAlignment="Center"/>
+                        <TextBlock Text="{extensions:Localization Settings.UrlRules.Title}" VerticalAlignment="Center"/>
                     </StackPanel>
                 </TabItem.Header>
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="10">
                         
                         <!-- URLルール一覧 -->
-                        <GroupBox Header="URLルール一覧" Style="{StaticResource GroupBoxStyle}">
+                        <GroupBox Header="{extensions:Localization Settings.UrlRules.UrlRuleList}" Style="{StaticResource GroupBoxStyle}">
                             <StackPanel>
-                                <TextBlock Text="設定されたURLルール:" FontWeight="SemiBold" Margin="0,0,0,10"/>
+                                <TextBlock Text="{extensions:Localization Settings.UrlRules.ConfiguredRules}" FontWeight="SemiBold" Margin="0,0,0,10"/>
                                 <ListBox Height="200" ItemsSource="{Binding UrlRules}">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
@@ -494,11 +494,11 @@
                                                 <TextBlock Grid.Column="2" Text="{Binding Priority}" 
                                                            FontSize="10" Foreground="Gray" 
                                                            Margin="10,0,0,0" VerticalAlignment="Center"/>
-                                                <Button Grid.Column="3" Content="編集" Padding="5,2" 
+                                                <Button Grid.Column="3" Content="{extensions:Localization Common.Edit}" Padding="5,2" 
                                                         Margin="10,0,0,0" Command="{Binding DataContext.EditUrlRuleCommand, 
                                                         RelativeSource={RelativeSource AncestorType=Window}}"
                                                         CommandParameter="{Binding}"/>
-                                                <Button Grid.Column="4" Content="削除" Padding="5,2" 
+                                                <Button Grid.Column="4" Content="{extensions:Localization Common.Delete}" Padding="5,2" 
                                                         Margin="10,0,0,0" Command="{Binding DataContext.RemoveUrlRuleCommand, 
                                                         RelativeSource={RelativeSource AncestorType=Window}}"
                                                         CommandParameter="{Binding}"/>
@@ -514,7 +514,7 @@
                                             <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Add.png" 
                                                    Width="18" Height="19" 
                                                    Margin="8,0,8,0" VerticalAlignment="Center"/>
-                                            <TextBlock Text="ルールを追加" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{extensions:Localization Settings.UrlRules.AddRule}" VerticalAlignment="Center"/>
                                         </StackPanel>
                                     </Button>
                                     <Button Command="{Binding RefreshUrlRulesCommand}" 
@@ -523,7 +523,7 @@
                                             <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Refresh.png" 
                                                    Width="18" Height="18" 
                                                    Margin="8,0,8,0" VerticalAlignment="Center"/>
-                                            <TextBlock Text="ルールを更新" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{extensions:Localization Settings.UrlRules.RefreshRules}" VerticalAlignment="Center"/>
                                         </StackPanel>
                                     </Button>
                                 </StackPanel>
@@ -531,16 +531,16 @@
                         </GroupBox>
 
                         <!-- ルールテスト -->
-                        <GroupBox Header="ルールテスト" Style="{StaticResource GroupBoxStyle}">
+                        <GroupBox Header="{extensions:Localization Settings.UrlRules.RuleTest}" Style="{StaticResource GroupBoxStyle}">
                             <StackPanel>
                                 <Grid Style="{StaticResource SettingRowStyle}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="テストURL:" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{extensions:Localization Settings.UrlRules.TestUrl}" VerticalAlignment="Center"/>
                                     <Button Grid.Column="1" Command="{Binding TestUrlRuleCommand}" 
-                                            Content="テスト" Padding="10,5"/>
+                                            Content="{extensions:Localization Common.Test}" Padding="10,5"/>
                                 </Grid>
                                 
                                 <Grid Style="{StaticResource SettingRowStyle}">
@@ -550,7 +550,7 @@
                                     </Grid.ColumnDefinitions>
                                     <TextBox Text="{Binding TestUrl}" 
                                              VerticalAlignment="Center" 
-                                             ToolTip="テストしたいURLを入力してください"/>
+                                             ToolTip="{extensions:Localization Settings.UrlRules.TestUrlTooltip}"/>
                                     <TextBlock Grid.Column="1" Text="{Binding TestResult}" 
                                                VerticalAlignment="Center" 
                                                Margin="10,0,0,0" 
@@ -569,21 +569,21 @@
                         <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Accessibility.png" 
                                Width="18" Height="18" 
                                Margin="0,0,8,0" VerticalAlignment="Center"/>
-                        <TextBlock Text="アクセシビリティ" VerticalAlignment="Center"/>
+                        <TextBlock Text="{extensions:Localization Settings.Accessibility.Title}" VerticalAlignment="Center"/>
                     </StackPanel>
                 </TabItem.Header>
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="10">
                         
                         <!-- フォーカス設定 -->
-                        <GroupBox Header="フォーカス設定" Style="{StaticResource GroupBoxStyle}">
+                        <GroupBox Header="{extensions:Localization Settings.Accessibility.FocusSettings}" Style="{StaticResource GroupBoxStyle}">
                             <StackPanel>
                                 <Grid Style="{StaticResource SettingRowStyle}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="フォーカス表示を有効にする" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{extensions:Localization Settings.Accessibility.EnableFocusIndicator}" VerticalAlignment="Center"/>
                                     <CheckBox Grid.Column="1" IsChecked="{Binding ShowFocusIndicator}"/>
                                 </Grid>
                                 
@@ -592,7 +592,7 @@
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="100"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="フォーカス線幅" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{extensions:Localization Settings.Accessibility.FocusThickness}" VerticalAlignment="Center"/>
                                     <Slider Grid.Column="1" Value="{Binding FocusThickness}" 
                                             Minimum="1" Maximum="5" 
                                             TickFrequency="1" IsSnapToTickEnabled="True"
@@ -602,14 +602,14 @@
                         </GroupBox>
 
                         <!-- キーボード設定 -->
-                        <GroupBox Header="キーボード設定" Style="{StaticResource GroupBoxStyle}">
+                        <GroupBox Header="{extensions:Localization Settings.Accessibility.KeyboardSettings}" Style="{StaticResource GroupBoxStyle}">
                             <StackPanel>
                                 <Grid Style="{StaticResource SettingRowStyle}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="キーボードナビゲーションを有効にする" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{extensions:Localization Settings.Accessibility.EnableKeyboardNavigation}" VerticalAlignment="Center"/>
                                     <CheckBox Grid.Column="1" IsChecked="{Binding EnableKeyboardNavigation}"/>
                                 </Grid>
                                 
@@ -618,21 +618,21 @@
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="ショートカットキーを有効にする" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{extensions:Localization Settings.Accessibility.EnableShortcuts}" VerticalAlignment="Center"/>
                                     <CheckBox Grid.Column="1" IsChecked="{Binding EnableShortcuts}"/>
                                 </Grid>
                             </StackPanel>
                         </GroupBox>
 
                         <!-- スクリーンリーダー設定 -->
-                        <GroupBox Header="スクリーンリーダー設定" Style="{StaticResource GroupBoxStyle}">
+                        <GroupBox Header="{extensions:Localization Settings.Accessibility.ScreenReaderSettings}" Style="{StaticResource GroupBoxStyle}">
                             <StackPanel>
                                 <Grid Style="{StaticResource SettingRowStyle}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="スクリーンリーダー対応を有効にする" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{extensions:Localization Settings.Accessibility.EnableScreenReaderSupport}" VerticalAlignment="Center"/>
                                     <CheckBox Grid.Column="1" IsChecked="{Binding EnableScreenReaderSupport}"/>
                                 </Grid>
                                 
@@ -641,7 +641,7 @@
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="詳細な説明を提供" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{extensions:Localization Settings.Accessibility.ProvideDetailedDescriptions}" VerticalAlignment="Center"/>
                                     <CheckBox Grid.Column="1" IsChecked="{Binding ProvideDetailedDescriptions}"/>
                                 </Grid>
                             </StackPanel>
@@ -657,21 +657,21 @@
                         <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Log.png" 
                                Width="18" Height="18" 
                                Margin="0,0,8,0" VerticalAlignment="Center"/>
-                        <TextBlock Text="ログ設定" VerticalAlignment="Center"/>
+                        <TextBlock Text="{extensions:Localization Settings.Logging.Title}" VerticalAlignment="Center"/>
                     </StackPanel>
                 </TabItem.Header>
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="10">
                         
                         <!-- 基本ログ設定 -->
-                        <GroupBox Header="基本ログ設定" Style="{StaticResource GroupBoxStyle}">
+                        <GroupBox Header="{extensions:Localization Settings.Logging.BasicLogSettings}" Style="{StaticResource GroupBoxStyle}">
                             <StackPanel>
                                 <Grid Style="{StaticResource SettingRowStyle}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="ログを有効にする" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{extensions:Localization Settings.Logging.EnableLogging}" VerticalAlignment="Center"/>
                                     <CheckBox Grid.Column="1" IsChecked="{Binding LogSettings.EnableLogging}"/>
                                 </Grid>
                                 
@@ -680,7 +680,7 @@
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="150"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="ログレベル" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{extensions:Localization Settings.Logging.LogLevel}" VerticalAlignment="Center"/>
                                     <ComboBox Grid.Column="1" SelectedItem="{Binding SelectedLogLevel}"
                                               ItemsSource="{Binding AvailableLogLevels}"
                                               DisplayMemberPath="DisplayName"
@@ -692,7 +692,7 @@
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="コンソールにログを出力" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{extensions:Localization Settings.Logging.EnableConsoleLogging}" VerticalAlignment="Center"/>
                                     <CheckBox Grid.Column="1" IsChecked="{Binding LogSettings.EnableConsoleLogging}"/>
                                 </Grid>
                                 
@@ -701,22 +701,22 @@
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="ファイルにログを出力" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{extensions:Localization Settings.Logging.EnableFileLogging}" VerticalAlignment="Center"/>
                                     <CheckBox Grid.Column="1" IsChecked="{Binding LogSettings.EnableFileLogging}"/>
                                 </Grid>
                             </StackPanel>
                         </GroupBox>
 
                         <!-- ファイルログ設定 -->
-                        <GroupBox Header="ファイルログ設定" Style="{StaticResource GroupBoxStyle}">
+                        <GroupBox Header="{extensions:Localization Settings.Logging.FileLogSettings}" Style="{StaticResource GroupBoxStyle}">
                             <StackPanel>
                                 <Grid Style="{StaticResource SettingRowStyle}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="ログ出力フォルダ" VerticalAlignment="Center"/>
-                                    <Button Grid.Column="1" Content="フォルダ選択" Padding="10,5"
+                                    <TextBlock Text="{extensions:Localization Settings.Logging.LogOutputFolder}" VerticalAlignment="Center"/>
+                                    <Button Grid.Column="1" Content="{extensions:Localization Common.SelectFolder}" Padding="10,5"
                                             Command="{Binding SelectLogFolderCommand}"/>
                                 </Grid>
                                 
@@ -725,7 +725,7 @@
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="100"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="最大ログファイルサイズ（MB）" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{extensions:Localization Settings.Logging.MaxLogFileSize}" VerticalAlignment="Center"/>
                                     <TextBox Grid.Column="1" Text="{Binding LogSettings.MaxLogFileSize}" 
                                              VerticalAlignment="Center" HorizontalAlignment="Right"/>
                                 </Grid>
@@ -735,7 +735,7 @@
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="100"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="ログ保持期間（日数）" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{extensions:Localization Settings.Logging.LogRetentionDays}" VerticalAlignment="Center"/>
                                     <TextBox Grid.Column="1" Text="{Binding LogSettings.LogRetentionDays}" 
                                              VerticalAlignment="Center" HorizontalAlignment="Right"/>
                                 </Grid>
@@ -745,7 +745,7 @@
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="ログファイル名プレフィックス" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{extensions:Localization Settings.Logging.LogFilePrefix}" VerticalAlignment="Center"/>
                                     <TextBox Grid.Column="1" Text="{Binding LogSettings.LogFilePrefix}" 
                                              Width="150" VerticalAlignment="Center"/>
                                 </Grid>
@@ -753,14 +753,14 @@
                         </GroupBox>
 
                         <!-- ログ管理 -->
-                        <GroupBox Header="ログ管理" Style="{StaticResource GroupBoxStyle}">
+                        <GroupBox Header="{extensions:Localization Settings.Logging.LogManagement}" Style="{StaticResource GroupBoxStyle}">
                             <StackPanel>
                                 <Grid Style="{StaticResource SettingRowStyle}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="現在のログファイル" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{extensions:Localization Settings.Logging.CurrentLogFile}" VerticalAlignment="Center"/>
                                     <TextBlock Grid.Column="1" Text="{Binding CurrentLogFilePath}" 
                                                Foreground="Gray" FontSize="10" VerticalAlignment="Center"/>
                                 </Grid>
@@ -771,7 +771,7 @@
                                             <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_View.png" 
                                                    Width="18" Height="18" 
                                                    Margin="8,0,8,0" VerticalAlignment="Center"/>
-                                            <TextBlock Text="ログを表示" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{extensions:Localization Settings.Logging.ViewLogs}" VerticalAlignment="Center"/>
                                         </StackPanel>
                                     </Button>
                                     <Button Command="{Binding ClearLogsCommand}" Margin="0,0,10,0" Padding="10,5">
@@ -779,7 +779,7 @@
                                             <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Clear.png" 
                                                    Width="18" Height="18" 
                                                    Margin="8,0,8,0" VerticalAlignment="Center"/>
-                                            <TextBlock Text="ログをクリア" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{extensions:Localization Settings.Logging.ClearLogs}" VerticalAlignment="Center"/>
                                         </StackPanel>
                                     </Button>
                                     <Button Command="{Binding CleanupOldLogsCommand}" Padding="10,5">
@@ -787,7 +787,7 @@
                                             <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Cleanup.png" 
                                                    Width="18" Height="18" 
                                                    Margin="8,0,8,0" VerticalAlignment="Center"/>
-                                            <TextBlock Text="古いログを削除" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{extensions:Localization Settings.Logging.CleanupOldLogs}" VerticalAlignment="Center"/>
                                         </StackPanel>
                                     </Button>
                                 </StackPanel>
@@ -806,7 +806,7 @@
                     <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Reset.png" 
                            Width="18" Height="18" 
                            Margin="8,0,8,0" VerticalAlignment="Center"/>
-                    <TextBlock Text="設定をリセット" VerticalAlignment="Center"/>
+                    <TextBlock Text="{extensions:Localization Common.Reset}" VerticalAlignment="Center"/>
                 </StackPanel>
             </Button>
             <Button Command="{Binding ImportSettingsCommand}" 
@@ -815,7 +815,7 @@
                     <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Import.png" 
                            Width="18" Height="18" 
                            Margin="8,0,8,0" VerticalAlignment="Center"/>
-                    <TextBlock Text="設定をインポート" VerticalAlignment="Center"/>
+                    <TextBlock Text="{extensions:Localization Common.Import}" VerticalAlignment="Center"/>
                 </StackPanel>
             </Button>
             <Button Command="{Binding ExportSettingsCommand}" 
@@ -824,7 +824,7 @@
                     <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Export.png" 
                            Width="18" Height="18" 
                            Margin="8,0,8,0" VerticalAlignment="Center"/>
-                    <TextBlock Text="設定をエクスポート" VerticalAlignment="Center"/>
+                    <TextBlock Text="{extensions:Localization Common.Export}" VerticalAlignment="Center"/>
                 </StackPanel>
             </Button>
             <Button Command="{Binding SaveSettingsCommand}" 
@@ -833,7 +833,7 @@
                     <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Check.png" 
                            Width="18" Height="18" 
                            Margin="8,0,8,0" VerticalAlignment="Center"/>
-                    <TextBlock Text="OK" VerticalAlignment="Center"/>
+                    <TextBlock Text="{extensions:Localization Common.OK}" VerticalAlignment="Center"/>
                 </StackPanel>
             </Button>
             <Button Command="{Binding CancelCommand}" 
@@ -842,7 +842,7 @@
                     <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Close.png" 
                            Width="18" Height="18" 
                            Margin="8,0,8,0" VerticalAlignment="Center"/>
-                    <TextBlock Text="キャンセル" VerticalAlignment="Center"/>
+                    <TextBlock Text="{extensions:Localization Common.Cancel}" VerticalAlignment="Center"/>
                 </StackPanel>
             </Button>
         </StackPanel>

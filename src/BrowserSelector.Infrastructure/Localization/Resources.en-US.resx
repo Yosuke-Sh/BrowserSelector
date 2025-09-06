@@ -358,4 +358,136 @@
   <data name="Log.BrowserLaunchError" xml:space="preserve">
     <value>Failed to launch browser: {0}</value>
   </data>
+  <data name="Settings.Display.BackgroundSettings" xml:space="preserve">
+    <value>Background Settings</value>
+  </data>
+  <data name="Settings.Display.WindowSettings" xml:space="preserve">
+    <value>Window Settings</value>
+  </data>
+  <data name="Settings.Display.BrowserButtonSettings" xml:space="preserve">
+    <value>Browser Button Settings</value>
+  </data>
+  <data name="Settings.Browser.BrowserManagement" xml:space="preserve">
+    <value>Browser Management</value>
+  </data>
+  <data name="Settings.UrlRules.UrlRuleList" xml:space="preserve">
+    <value>URL Rule List</value>
+  </data>
+  <data name="Common.SelectColor" xml:space="preserve">
+    <value>Select Color</value>
+  </data>
+  <data name="Common.Vertical" xml:space="preserve">
+    <value>Vertical</value>
+  </data>
+  <data name="Common.Horizontal" xml:space="preserve">
+    <value>Horizontal</value>
+  </data>
+  <data name="Common.Diagonal" xml:space="preserve">
+    <value>Diagonal</value>
+  </data>
+  <data name="Common.Up" xml:space="preserve">
+    <value>Up</value>
+  </data>
+  <data name="Common.Down" xml:space="preserve">
+    <value>Down</value>
+  </data>
+  <data name="Common.Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Common.Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Common.Add" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="Common.Update" xml:space="preserve">
+    <value>Update</value>
+  </data>
+  <data name="Common.Test" xml:space="preserve">
+    <value>Test</value>
+  </data>
+  <data name="Common.Browse" xml:space="preserve">
+    <value>Browse...</value>
+  </data>
+  <data name="Common.Select" xml:space="preserve">
+    <value>Select</value>
+  </data>
+  <data name="Common.SelectFolder" xml:space="preserve">
+    <value>Select Folder</value>
+  </data>
+  <data name="Common.Import" xml:space="preserve">
+    <value>Import</value>
+  </data>
+  <data name="Common.Export" xml:space="preserve">
+    <value>Export</value>
+  </data>
+  <data name="Common.CopyToClipboard" xml:space="preserve">
+    <value>Copy to Clipboard</value>
+  </data>
+  <data name="Common.Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Settings.Display.EnableFocusDisplay" xml:space="preserve">
+    <value>Enable Focus Display</value>
+  </data>
+  <data name="Settings.Display.FocusLineWidth" xml:space="preserve">
+    <value>Focus Line Width</value>
+  </data>
+  <data name="Settings.Accessibility.EnableKeyboardNavigation" xml:space="preserve">
+    <value>Enable Keyboard Navigation</value>
+  </data>
+  <data name="Settings.Accessibility.EnableShortcutKeys" xml:space="preserve">
+    <value>Enable Shortcut Keys</value>
+  </data>
+  <data name="Settings.Accessibility.EnableScreenReader" xml:space="preserve">
+    <value>Enable Screen Reader</value>
+  </data>
+  <data name="Settings.Accessibility.ProvideDetailedDescription" xml:space="preserve">
+    <value>Provide Detailed Description</value>
+  </data>
+  <data name="Settings.Logging.EnableLogging" xml:space="preserve">
+    <value>Enable Logging</value>
+  </data>
+  <data name="Settings.Logging.LogLevel" xml:space="preserve">
+    <value>Log Level</value>
+  </data>
+  <data name="Settings.Logging.OutputToConsole" xml:space="preserve">
+    <value>Output to Console</value>
+  </data>
+  <data name="Settings.Logging.OutputToFile" xml:space="preserve">
+    <value>Output to File</value>
+  </data>
+  <data name="Settings.Logging.LogOutputFolder" xml:space="preserve">
+    <value>Log Output Folder</value>
+  </data>
+  <data name="Settings.Logging.MaxLogFileSize" xml:space="preserve">
+    <value>Max Log File Size (MB)</value>
+  </data>
+  <data name="Settings.Logging.LogRetentionPeriod" xml:space="preserve">
+    <value>Log Retention Period (Days)</value>
+  </data>
+  <data name="Settings.Logging.LogFileNamePrefix" xml:space="preserve">
+    <value>Log File Name Prefix</value>
+  </data>
+  <data name="Settings.Logging.CurrentLogFile" xml:space="preserve">
+    <value>Current Log File</value>
+  </data>
+  <data name="Settings.Logging.ShowLog" xml:space="preserve">
+    <value>Show Log</value>
+  </data>
+  <data name="Settings.Logging.ClearLog" xml:space="preserve">
+    <value>Clear Log</value>
+  </data>
+  <data name="Settings.Logging.DeleteOldLogs" xml:space="preserve">
+    <value>Delete Old Logs</value>
+  </data>
+  <data name="Settings.ResetSettings" xml:space="preserve">
+    <value>Reset Settings</value>
+  </data>
+  <data name="Settings.ImportSettings" xml:space="preserve">
+    <value>Import Settings</value>
+  </data>
+  <data name="Settings.ExportSettings" xml:space="preserve">
+    <value>Export Settings</value>
+  </data>
 </root>

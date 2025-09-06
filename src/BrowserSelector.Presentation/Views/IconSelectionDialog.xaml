@@ -4,8 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BrowserSelector.Presentation.Views"
+        xmlns:extensions="clr-namespace:BrowserSelector.Presentation.Extensions"
         mc:Ignorable="d"
-        Title="アイコン選択" Height="650" Width="800"
+        Title="{extensions:Localization Dialog.IconSelection.Title}" Height="650" Width="800"
         WindowStartupLocation="CenterOwner"
         ResizeMode="CanResize"
         MinHeight="500" MinWidth="700">
@@ -19,7 +20,7 @@
         </Grid.RowDefinitions>
 
         <!-- タイトル -->
-        <TextBlock Grid.Row="0" Text="アイコンを選択してください" 
+        <TextBlock Grid.Row="0" Text="{extensions:Localization Dialog.IconSelection.SelectIcon}" 
                    FontSize="18" FontWeight="Bold" 
                    Margin="0,0,0,20" HorizontalAlignment="Center"/>
 
@@ -32,7 +33,7 @@
             </Grid.ColumnDefinitions>
 
             <!-- 左側：システムアイコン -->
-            <GroupBox Grid.Column="0" Header="システムアイコン" Margin="0,0,10,0">
+            <GroupBox Grid.Column="0" Header="{extensions:Localization Dialog.IconSelection.SystemIcons}" Margin="0,0,10,0">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <WrapPanel x:Name="SystemIconsPanel" Margin="10">
                         <!-- システムアイコンが動的に追加される -->
@@ -44,20 +45,20 @@
             <Grid Grid.Column="1" Width="2" Background="LightGray" Margin="10,0"/>
 
             <!-- 右側：カスタムアイコン -->
-            <GroupBox Grid.Column="2" Header="カスタムアイコン" Margin="10,0,0,0">
+            <GroupBox Grid.Column="2" Header="{extensions:Localization Dialog.IconSelection.CustomIcons}" Margin="10,0,0,0">
                 <StackPanel Margin="10">
-                    <TextBlock Text="実行ファイルのアイコン:" Margin="0,0,0,10" FontWeight="Bold" Foreground="Blue"/>
+                    <TextBlock Text="{extensions:Localization Dialog.IconSelection.ExecutableIcons}" Margin="0,0,0,10" FontWeight="Bold" Foreground="Blue"/>
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Height="120">
                         <WrapPanel x:Name="ExecutableIconsPanel">
                             <!-- 実行ファイルのアイコンが優先的に表示される -->
                         </WrapPanel>
                     </ScrollViewer>
                     
-                    <TextBlock Text="ファイルからアイコンを選択:" Margin="0,20,0,10"/>
-                    <Button Content="ファイルを参照..." Padding="10,5" Click="BrowseCustomIcon_Click" 
+                    <TextBlock Text="{extensions:Localization Dialog.IconSelection.SelectFromFile}" Margin="0,20,0,10"/>
+                    <Button Content="{extensions:Localization Dialog.IconSelection.BrowseFile}" Padding="10,5" Click="BrowseCustomIcon_Click" 
                             HorizontalAlignment="Left" Margin="0,0,0,10"/>
                     
-                    <TextBlock Text="最近使用したアイコン:" Margin="0,0,0,10"/>
+                    <TextBlock Text="{extensions:Localization Dialog.IconSelection.RecentIcons}" Margin="0,0,0,10"/>
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Height="100">
                         <WrapPanel x:Name="RecentIconsPanel">
                             <!-- 最近使用したアイコンが動的に追加される -->
@@ -68,7 +69,7 @@
         </Grid>
 
         <!-- 選択確認エリア -->
-        <GroupBox Grid.Row="2" Header="選択確認" Margin="0,20,0,10">
+        <GroupBox Grid.Row="2" Header="{extensions:Localization Dialog.IconSelection.SelectionConfirmation}" Margin="0,20,0,10">
             <Grid Margin="10">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -82,13 +83,13 @@
                 
                 <!-- 選択されたアイコンの情報 -->
                 <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <TextBlock x:Name="SelectedIconPathText" Text="アイコンが選択されていません" 
+                    <TextBlock x:Name="SelectedIconPathText" Text="{extensions:Localization Dialog.IconSelection.NoIconSelected}" 
                                FontWeight="Bold" Margin="0,0,0,5"/>
                     <TextBlock x:Name="SelectedIconInfo" Text="" FontSize="10" Foreground="Gray"/>
                 </StackPanel>
                 
                 <!-- 選択ボタン -->
-                <Button Grid.Column="2" x:Name="ConfirmButton" Content="このアイコンを選択" Padding="10,5" 
+                <Button Grid.Column="2" x:Name="ConfirmButton" Content="{extensions:Localization Dialog.IconSelection.SelectThisIcon}" Padding="10,5" 
                         Click="ConfirmSelection_Click" IsEnabled="False"/>
             </Grid>
         </GroupBox>
@@ -96,7 +97,7 @@
         <!-- ボタン -->
         <StackPanel Grid.Row="3" Orientation="Horizontal" 
                     HorizontalAlignment="Right" Margin="0,20,0,0">
-            <Button Content="キャンセル" Width="80" Height="30" 
+            <Button Content="{extensions:Localization Common.Cancel}" Width="80" Height="30" 
                     Click="CancelButton_Click"/>
         </StackPanel>
     </Grid>
