@@ -20,7 +20,7 @@ public interface ILocalizationService
     /// <summary>
     /// 言語を設定
     /// </summary>
-    void SetLanguage(CultureInfo culture);
+    Task SetLanguage(CultureInfo culture);
 
     /// <summary>
     /// 現在の言語を取得

@@ -40,4 +40,36 @@ public partial class SettingsWindow : Window
             // System.Diagnostics.Debug.WriteLine($"グラデーション方向が変更されました: {newDirection} (インデックス: {selectedIndex})");
         }
     }
+
+    /// <summary>
+    /// 言語管理ボタンのクリックイベントハンドラー
+    /// </summary>
+    private void LanguageManagementButton_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            if (DataContext is SettingsViewModel settingsViewModel)
+            {
+                // 言語管理ダイアログを表示
+                var languageManagementViewModel = new LanguageManagementViewModel(
+                    settingsViewModel.CustomLanguageService, 
+                    settingsViewModel.LogService);
+                
+                var dialog = new LanguageManagementDialog(languageManagementViewModel)
+                {
+                    Owner = this
+                };
+                
+                dialog.ShowDialog();
+                
+                // ダイアログを閉じた後、言語一覧を更新
+                settingsViewModel.RefreshLanguages();
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"言語管理ダイアログの表示に失敗しました: {ex.Message}", "エラー", 
+                MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
 }

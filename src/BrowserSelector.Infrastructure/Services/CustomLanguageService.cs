@@ -1,6 +1,8 @@
 using BrowserSelector.Core.Models;
 using BrowserSelector.Core.Services;
 using System.Text.Json;
+using System.Resources;
+using System.Globalization;
 
 namespace BrowserSelector.Infrastructure.Services;
 
@@ -111,7 +113,7 @@ public class CustomLanguageService : ICustomLanguageService
         }
     }
 
-    public async Task<bool> RemoveCustomLanguageAsync(string cultureCode)
+    public Task<bool> RemoveCustomLanguageAsync(string cultureCode)
     {
         try
         {
@@ -121,17 +123,17 @@ public class CustomLanguageService : ICustomLanguageService
             if (!System.IO.File.Exists(filePath))
             {
                 _logService?.LogWarning($"削除対象の言語ファイルが存在しません: {filePath}", "CustomLanguageService");
-                return false;
+                return Task.FromResult(false);
             }
 
             System.IO.File.Delete(filePath);
             _logService?.LogInformation($"カスタム言語ファイルを削除しました: {cultureCode}", "CustomLanguageService");
-            return true;
+            return Task.FromResult(true);
         }
         catch (Exception ex)
         {
             _logService?.LogError($"カスタム言語ファイルの削除に失敗しました: {ex.Message}", "CustomLanguageService", ex);
-            return false;
+            return Task.FromResult(false);
         }
     }
 
@@ -243,6 +245,102 @@ public class CustomLanguageService : ICustomLanguageService
         {
             _logService?.LogError($"カスタム言語ファイルの保存に失敗しました: {ex.Message}", "CustomLanguageService", ex);
             return false;
+        }
+    }
+
+    public async Task<bool> GenerateLanguageTemplateAsync(string cultureCode, string displayName)
+    {
+        try
+        {
+            // 既存のリソースキーを取得
+            var resourceKeys = await GetAvailableResourceKeysAsync();
+            
+            // テンプレート用のリソース辞書を作成（英語のデフォルト値を埋め込み）
+            var templateResources = new Dictionary<string, string>();
+            
+            // 英語リソースを取得してデフォルト値として使用
+            var englishResourceManager = new ResourceManager("BrowserSelector.Infrastructure.Localization.Resources", typeof(CustomLanguageService).Assembly);
+            var englishCulture = new CultureInfo("en-US");
+            
+            foreach (var key in resourceKeys)
+            {
+                // 英語のデフォルト値を取得
+                var englishValue = englishResourceManager.GetString(key, englishCulture);
+                if (!string.IsNullOrEmpty(englishValue))
+                {
+                    templateResources[key] = englishValue; // 英語のデフォルト値を埋め込み
+                }
+                else
+                {
+                    templateResources[key] = $"[{key}]"; // フォールバック
+                }
+            }
+
+            // テンプレートファイルを作成
+            var languageFile = new CustomLanguageFile
+            {
+                CultureCode = cultureCode,
+                DisplayName = displayName,
+                Resources = templateResources,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now,
+                Version = "1.0",
+                Description = $"BrowserSelector {displayName} Language Template",
+                Author = "User Generated"
+            };
+
+            var fileName = $"{cultureCode}.json";
+            var filePath = System.IO.Path.Combine(_customLanguageFolder, fileName);
+            
+            var json = JsonSerializer.Serialize(languageFile, new JsonSerializerOptions 
+            { 
+                WriteIndented = true,
+                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            });
+            
+            await System.IO.File.WriteAllTextAsync(filePath, json);
+            
+            _logService?.LogInformation($"言語ファイルテンプレートを生成しました: {cultureCode} - {displayName}", "CustomLanguageService");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logService?.LogError($"言語ファイルテンプレートの生成に失敗しました: {ex.Message}", "CustomLanguageService", ex);
+            return false;
+        }
+    }
+
+    public Task<IEnumerable<string>> GetAvailableResourceKeysAsync()
+    {
+        try
+        {
+            // デフォルトの英語リソースからキーを取得
+            var resourceManager = new System.Resources.ResourceManager("BrowserSelector.Infrastructure.Localization.Resources", typeof(CustomLanguageService).Assembly);
+            var englishCulture = new System.Globalization.CultureInfo("en-US");
+            
+            var resourceKeys = new List<string>();
+            
+            // リソースファイルからキーを抽出（リフレクションを使用）
+            var resourceSet = resourceManager.GetResourceSet(englishCulture, true, true);
+            if (resourceSet != null)
+            {
+                var enumerator = resourceSet.GetEnumerator();
+                while (enumerator.MoveNext())
+                {
+                    if (enumerator.Key is string key)
+                    {
+                        resourceKeys.Add(key);
+                    }
+                }
+            }
+
+            _logService?.LogDebug($"利用可能なリソースキー数: {resourceKeys.Count}", "CustomLanguageService");
+            return Task.FromResult<IEnumerable<string>>(resourceKeys.OrderBy(k => k));
+        }
+        catch (Exception ex)
+        {
+            _logService?.LogError($"リソースキーの取得に失敗しました: {ex.Message}", "CustomLanguageService", ex);
+            return Task.FromResult<IEnumerable<string>>(new List<string>());
         }
     }
 

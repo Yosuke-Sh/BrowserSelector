@@ -17,6 +17,7 @@ public partial class MainViewModel : ObservableObject
     private readonly IBrowserService _browserService;
     private readonly ISettingsService _settingsService;
     private readonly ILocalizationService _localizationService;
+    private readonly ICustomLanguageService _customLanguageService;
     private readonly IUrlRuleService _urlRuleService;
     private readonly ILogService _logService = null!;
 
@@ -115,6 +116,7 @@ public partial class MainViewModel : ObservableObject
         IBrowserService browserService,
         ISettingsService settingsService,
         ILocalizationService localizationService,
+        ICustomLanguageService customLanguageService,
         IUrlRuleService urlRuleService,
         ILogService logService)
     {
@@ -135,6 +137,10 @@ public partial class MainViewModel : ObservableObject
         _localizationService = localizationService;
         _logService?.LogDetailed(LogLevel.Debug, "ILocalizationService設定完了", "MainViewModel",
                                 "MVVM_INIT", "ViewModel", "System", "MainViewModel", "Constructor", "Service_Localization");
+
+        _customLanguageService = customLanguageService;
+        _logService?.LogDetailed(LogLevel.Debug, "ICustomLanguageService設定完了", "MainViewModel",
+                                "MVVM_INIT", "ViewModel", "System", "MainViewModel", "Constructor", "Service_CustomLanguage");
 
         _urlRuleService = urlRuleService;
         _logService?.LogDetailed(LogLevel.Debug, "IUrlRuleService設定完了", "MainViewModel",
@@ -329,7 +335,7 @@ public partial class MainViewModel : ObservableObject
         try
         {
             // 設定画面を開く
-            var settingsViewModel = new SettingsViewModel(_settingsService, _browserService, _localizationService, _urlRuleService, _logService);
+            var settingsViewModel = new SettingsViewModel(_settingsService, _browserService, _localizationService, _customLanguageService, _urlRuleService, _logService);
             var settingsWindow = new Views.SettingsWindow(settingsViewModel);
 
             // 設定変更通知のイベントハンドラーを登録

@@ -53,7 +53,7 @@ public partial class App : Application
             var settingsService = _host.Services.GetRequiredService<ISettingsService>();
             var appSettings = await settingsService.LoadAppSettingsAsync();
             var culture = new System.Globalization.CultureInfo(appSettings.Language);
-            localizationService.SetLanguage(culture);
+            await localizationService.SetLanguage(culture);
 
             // 不足アイコンの作成
             try

@@ -11,6 +11,7 @@ public class SettingsViewModelTests
     private readonly Mock<ISettingsService> _mockSettingsService;
     private readonly Mock<IBrowserService> _mockBrowserService;
     private readonly Mock<ILocalizationService> _mockLocalizationService;
+    private readonly Mock<ICustomLanguageService> _mockCustomLanguageService;
     private readonly Mock<IUrlRuleService> _mockUrlRuleService;
     private readonly Mock<ILogService> _mockLogService;
     private readonly SettingsViewModel _viewModel;
@@ -20,6 +21,7 @@ public class SettingsViewModelTests
         _mockSettingsService = new Mock<ISettingsService>();
         _mockBrowserService = new Mock<IBrowserService>();
         _mockLocalizationService = new Mock<ILocalizationService>();
+        _mockCustomLanguageService = new Mock<ICustomLanguageService>();
         _mockUrlRuleService = new Mock<IUrlRuleService>();
 
         // デフォルトの設定を設定
@@ -57,6 +59,7 @@ public class SettingsViewModelTests
             _mockSettingsService.Object,
             _mockBrowserService.Object,
             _mockLocalizationService.Object,
+            _mockCustomLanguageService.Object,
             _mockUrlRuleService.Object,
             _mockLogService.Object);
     }

@@ -39,6 +39,7 @@ public partial class SettingsViewModel : ObservableObject
     private readonly ISettingsService _settingsService;
     private readonly IBrowserService _browserService;
     private readonly ILocalizationService _localizationService;
+    private readonly ICustomLanguageService _customLanguageService;
     private readonly IUrlRuleService _urlRuleService;
     private readonly ILogService _logService;
 
@@ -64,12 +65,13 @@ public partial class SettingsViewModel : ObservableObject
             // 言語設定を更新
             AppSettings.Language = value.CultureCode;
             
-            // ローカライゼーションサービスに言語変更を通知
+            // ローカライゼーションサービスに言語変更を通知（非同期で実行）
             var culture = new System.Globalization.CultureInfo(value.CultureCode);
-            _localizationService.SetLanguage(culture);
-            
-            // 設定を保存
-            _ = Task.Run(async () => await _settingsService.SaveAppSettingsAsync(AppSettings));
+            _ = Task.Run(async () => 
+            {
+                await _localizationService.SetLanguage(culture);
+                await _settingsService.SaveAppSettingsAsync(AppSettings);
+            });
             
             LocalizedLogHelper.LogLanguageChanged(_logService, "SettingsViewModel", value.CultureCode);
         }
@@ -130,12 +132,14 @@ public partial class SettingsViewModel : ObservableObject
         ISettingsService settingsService,
         IBrowserService browserService,
         ILocalizationService localizationService,
+        ICustomLanguageService customLanguageService,
         IUrlRuleService urlRuleService,
         ILogService logService)
     {
         _settingsService = settingsService;
         _browserService = browserService;
         _localizationService = localizationService;
+        _customLanguageService = customLanguageService;
         _urlRuleService = urlRuleService;
         _logService = logService;
 
@@ -261,6 +265,68 @@ public partial class SettingsViewModel : ObservableObject
                               ?? AvailableLanguages.First();
         }
     }
+
+    /// <summary>
+    /// 言語一覧を更新（外部から呼び出し可能）
+    /// </summary>
+    public async Task RefreshLanguagesAsync()
+    {
+        await InitializeLanguagesAsync();
+    }
+
+    /// <summary>
+    /// 言語一覧を更新（同期版）
+    /// </summary>
+    public void RefreshLanguages()
+    {
+        _ = Task.Run(async () => await InitializeLanguagesAsync());
+    }
+
+    /// <summary>
+    /// 言語リストを初期化（非同期版）
+    /// </summary>
+    private async Task InitializeLanguagesAsync()
+    {
+        try
+        {
+            AvailableLanguages.Clear();
+            
+            // カスタム言語サービスから利用可能な言語を取得
+            var availableLanguages = await _localizationService.GetSupportedLanguagesAsync();
+            
+            foreach (var culture in availableLanguages)
+            {
+                AvailableLanguages.Add(new LanguageInfo(culture.Name, culture.DisplayName));
+            }
+
+            // 現在の言語を選択
+            SelectedLanguage = AvailableLanguages.FirstOrDefault(l => l.CultureCode == AppSettings.Language)
+                              ?? AvailableLanguages.First();
+            
+            _logService?.LogDebug($"言語リスト初期化完了: {AvailableLanguages.Count}個の言語", "SettingsViewModel");
+        }
+        catch (Exception ex)
+        {
+            _logService?.LogError($"言語リストの初期化に失敗しました: {ex.Message}", "SettingsViewModel", ex);
+            
+            // フォールバック: デフォルト言語のみ
+            AvailableLanguages.Clear();
+            AvailableLanguages.Add(new LanguageInfo("en-US", "English"));
+            AvailableLanguages.Add(new LanguageInfo("ja-JP", "日本語"));
+            SelectedLanguage = AvailableLanguages.FirstOrDefault(l => l.CultureCode == AppSettings.Language)
+                              ?? AvailableLanguages.First();
+        }
+    }
+
+    /// <summary>
+    /// カスタム言語サービス（外部からアクセス可能）
+    /// </summary>
+    public ICustomLanguageService CustomLanguageService => _customLanguageService;
+
+    /// <summary>
+    /// ログサービス（外部からアクセス可能）
+    /// </summary>
+    public ILogService LogService => _logService;
 
     /// <summary>
     /// ブラウザリストを更新
@@ -432,7 +498,7 @@ public partial class SettingsViewModel : ObservableObject
         if (e.PropertyName == nameof(SelectedLanguage) && SelectedLanguage != null)
         {
             AppSettings.Language = SelectedLanguage.CultureCode;
-            _localizationService.SetLanguage(new System.Globalization.CultureInfo(SelectedLanguage.CultureCode));
+            _ = Task.Run(async () => await _localizationService.SetLanguage(new System.Globalization.CultureInfo(SelectedLanguage.CultureCode)));
         }
 
         // ログ設定の変更時の処理

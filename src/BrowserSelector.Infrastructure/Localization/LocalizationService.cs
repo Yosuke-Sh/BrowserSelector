@@ -1,6 +1,8 @@
 using BrowserSelector.Core.Services;
+using BrowserSelector.Core.Models;
 using System.Globalization;
 using System.Resources;
+using System.Text.Json;
 
 namespace BrowserSelector.Infrastructure.Localization;
 
@@ -14,6 +16,7 @@ public class LocalizationService : ILocalizationService
     private readonly ILogService? _logService;
     private CultureInfo _currentCulture;
     private Dictionary<string, string> _customResources = new();
+    private Dictionary<string, string> _jsonResources = new();
 
     public LocalizationService(ICustomLanguageService customLanguageService, ILogService? logService = null)
     {
@@ -21,18 +24,40 @@ public class LocalizationService : ILocalizationService
         _customLanguageService = customLanguageService;
         _logService = logService;
         _currentCulture = new CultureInfo("en-US");
+        
+        // 初期化時にJSONリソースを読み込み
+        _ = Task.Run(async () => await LoadJsonResourcesAsync(_currentCulture.Name));
     }
 
     public string GetString(string key)
     {
+        _logService?.LogDebug($"GetString呼び出し: {key}, 現在のカルチャ: {_currentCulture.Name}", "LocalizationService");
+        
         // カスタム言語リソースを優先
         if (_customResources.TryGetValue(key, out var customValue))
         {
+            _logService?.LogDebug($"カスタムリソースから取得: {key} = {customValue}", "LocalizationService");
             return customValue;
         }
 
-        // デフォルトリソースを使用
-        return _resourceManager.GetString(key, _currentCulture) ?? key;
+        // JSONリソースを確認
+        if (_jsonResources.TryGetValue(key, out var jsonValue))
+        {
+            _logService?.LogDebug($"JSONリソースから取得: {key} = {jsonValue}", "LocalizationService");
+            return jsonValue;
+        }
+
+        // フォールバック: デフォルトリソースを使用
+        var fallbackValue = _resourceManager.GetString(key, _currentCulture);
+        if (!string.IsNullOrEmpty(fallbackValue))
+        {
+            _logService?.LogDebug($"デフォルトリソースから取得: {key} = {fallbackValue}", "LocalizationService");
+            return fallbackValue;
+        }
+
+        // リソースが見つからない場合はキーをそのまま返す
+        _logService?.LogWarning($"リソースキーが見つかりません: {key}, JSONリソース数: {_jsonResources.Count}", "LocalizationService");
+        return key;
     }
 
     public string GetString(string key, params object[] args)
@@ -41,13 +66,16 @@ public class LocalizationService : ILocalizationService
         return string.Format(format, args);
     }
 
-    public async void SetLanguage(CultureInfo culture)
+    public async Task SetLanguage(CultureInfo culture)
     {
         if (_currentCulture.Equals(culture))
             return;
 
         var oldCulture = _currentCulture;
         _currentCulture = culture;
+        
+        // JSONリソースを読み込み
+        await LoadJsonResourcesAsync(culture.Name);
         
         // カスタム言語リソースを読み込み
         await LoadCustomLanguageResourcesAsync(culture.Name);
@@ -97,6 +125,77 @@ public class LocalizationService : ILocalizationService
     };
 
     public event EventHandler<LanguageChangedEventArgs>? LanguageChanged;
+
+    /// <summary>
+    /// JSONファイルからリソースを読み込み（非同期版）
+    /// </summary>
+    private async Task LoadJsonResourcesAsync(string cultureCode)
+    {
+        try
+        {
+            _jsonResources.Clear();
+            
+            var assembly = typeof(LocalizationService).Assembly;
+            var resourceName = $"BrowserSelector.Infrastructure.Localization.{cultureCode}.json";
+            
+            using var stream = assembly.GetManifestResourceStream(resourceName);
+            if (stream == null)
+            {
+                _logService?.LogDebug($"JSONリソースファイルが見つかりません: {resourceName}", "LocalizationService");
+                return;
+            }
+
+            using var reader = new System.IO.StreamReader(stream);
+            var json = await reader.ReadToEndAsync();
+            
+            var languageFile = System.Text.Json.JsonSerializer.Deserialize<CustomLanguageFile>(json);
+            if (languageFile?.Resources != null)
+            {
+                _jsonResources = languageFile.Resources;
+                _logService?.LogDebug($"JSONリソースを読み込みました: {cultureCode} ({languageFile.Resources.Count}個のリソース)", "LocalizationService");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logService?.LogWarning($"JSONリソースの読み込みに失敗しました: {cultureCode} - {ex.Message}", "LocalizationService");
+        }
+    }
+
+    /// <summary>
+    /// JSONファイルからリソースを読み込み（同期版）
+    /// </summary>
+    private Dictionary<string, string>? LoadJsonResources(string cultureCode)
+    {
+        try
+        {
+            var assembly = typeof(LocalizationService).Assembly;
+            var resourceName = $"BrowserSelector.Infrastructure.Localization.{cultureCode}.json";
+            
+            using var stream = assembly.GetManifestResourceStream(resourceName);
+            if (stream == null)
+            {
+                _logService?.LogDebug($"JSONリソースファイルが見つかりません: {resourceName}", "LocalizationService");
+                return null;
+            }
+
+            using var reader = new System.IO.StreamReader(stream);
+            var json = reader.ReadToEnd();
+            
+            var languageFile = System.Text.Json.JsonSerializer.Deserialize<CustomLanguageFile>(json);
+            if (languageFile?.Resources != null)
+            {
+                _logService?.LogDebug($"JSONリソースを読み込みました: {cultureCode} ({languageFile.Resources.Count}個のリソース)", "LocalizationService");
+                return languageFile.Resources;
+            }
+            
+            return null;
+        }
+        catch (Exception ex)
+        {
+            _logService?.LogWarning($"JSONリソースの読み込みに失敗しました: {cultureCode} - {ex.Message}", "LocalizationService");
+            return null;
+        }
+    }
 
     /// <summary>
     /// カスタム言語リソースを読み込み

@@ -41,4 +41,14 @@ public interface ICustomLanguageService
     /// カスタム言語ファイルの保存
     /// </summary>
     Task<bool> SaveCustomLanguageAsync(string cultureCode, string displayName, Dictionary<string, string> resources);
+
+    /// <summary>
+    /// 言語ファイルテンプレートを生成
+    /// </summary>
+    Task<bool> GenerateLanguageTemplateAsync(string cultureCode, string displayName);
+
+    /// <summary>
+    /// 利用可能なリソースキーの一覧を取得
+    /// </summary>
+    Task<IEnumerable<string>> GetAvailableResourceKeysAsync();
 }
