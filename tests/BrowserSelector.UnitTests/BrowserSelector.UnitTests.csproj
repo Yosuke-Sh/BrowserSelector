@@ -9,7 +9,16 @@
     <CollectCoverage>true</CollectCoverage>
     <CoverletOutputFormat>cobertura</CoverletOutputFormat>
     <CoverletOutput>./TestResults/</CoverletOutput>
-    <Include>[*]*</Include>
+    <!-- プロジェクト参照順序変更: CoreとInfrastructureを優先 -->
+    <Include>[BrowserSelector.Core]*</Include>
+    <Include>[BrowserSelector.Infrastructure]*</Include>
+    <Include>[BrowserSelector.Presentation]*</Include>
+    <!-- Appプロジェクトを強制的に除外（プロセス境界の問題回避） -->
+    <Exclude>[BrowserSelector.App]*</Exclude>
+    <ExcludeByFile>**/BrowserSelector.App/**/*.cs</ExcludeByFile>
+    <ExcludeByFile>**/App.g.cs</ExcludeByFile>
+    <ExcludeByFile>**/App.xaml.cs</ExcludeByFile>
+    <ExcludeByFile>**/Program.cs</ExcludeByFile>
     <Exclude>[*.Tests]*</Exclude>
     <Exclude>[*.Test]*</Exclude>
     <Exclude>[xunit.*]*</Exclude>
@@ -32,7 +41,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="coverlet.collector" Version="6.0.0">
+    <PackageReference Include="coverlet.collector" Version="6.0.2">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -41,10 +50,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\BrowserSelector.App\BrowserSelector.App.csproj" />
+    <!-- プロジェクト参照順序変更: CoreとInfrastructureを優先 -->
     <ProjectReference Include="..\..\src\BrowserSelector.Core\BrowserSelector.Core.csproj" />
     <ProjectReference Include="..\..\src\BrowserSelector.Infrastructure\BrowserSelector.Infrastructure.csproj" />
     <ProjectReference Include="..\..\src\BrowserSelector.Presentation\BrowserSelector.Presentation.csproj" />
+    <!-- Appプロジェクトを最後に追加（依存関係のため必要） -->
+    <ProjectReference Include="..\..\src\BrowserSelector.App\BrowserSelector.App.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -7,13 +7,16 @@
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
     <UseWPF>true</UseWPF>
+    <!-- UIテスト専用のカバレッジ測定 -->
     <CollectCoverage>true</CollectCoverage>
     <CoverletOutputFormat>cobertura</CoverletOutputFormat>
     <CoverletOutput>./TestResults/</CoverletOutput>
-    <Include>[BrowserSelector.Core]*</Include>
-    <Include>[BrowserSelector.Infrastructure]*</Include>
+    <!-- UIテストではPresentation層を重点的に測定 -->
     <Include>[BrowserSelector.Presentation]*</Include>
     <Include>[BrowserSelector.App]*</Include>
+    <!-- Core/Infrastructureは軽微な測定 -->
+    <Include>[BrowserSelector.Core]*</Include>
+    <Include>[BrowserSelector.Infrastructure]*</Include>
     <Exclude>[*.Tests]*</Exclude>
     <Exclude>[*.Test]*</Exclude>
     <Exclude>[xunit.*]*</Exclude>
@@ -33,7 +36,7 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="3.2.2" />
     <PackageReference Include="MSTest.TestFramework" Version="3.2.2" />
-    <PackageReference Include="coverlet.collector" Version="6.0.0">
+    <PackageReference Include="coverlet.collector" Version="6.0.2">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
