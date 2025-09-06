@@ -15,7 +15,7 @@ public partial class UrlRuleEditDialog : Window
     private readonly ILogService _logService;
 
     public UrlRule UrlRule { get; set; } = new();
-    public ObservableCollection<Browser> AvailableBrowsers { get; set; } = new();
+    public ObservableCollection<Browser> AvailableBrowsers { get; set; } = [];
     public Browser? SelectedBrowser { get; set; }
 
     public UrlRuleEditDialog(IBrowserService browserService, ILogService logService)
@@ -40,9 +40,9 @@ public partial class UrlRuleEditDialog : Window
     {
         try
         {
-            var browsers = await _browserService.GetAllBrowsersAsync();
+            IEnumerable<Browser> browsers = await _browserService.GetAllBrowsersAsync();
             AvailableBrowsers.Clear();
-            foreach (var browser in browsers.Where(b => b.IsEnabled))
+            foreach (Browser? browser in browsers.Where(b => b.IsEnabled))
             {
                 AvailableBrowsers.Add(browser);
             }
@@ -61,13 +61,13 @@ public partial class UrlRuleEditDialog : Window
             // バリデーション
             if (string.IsNullOrWhiteSpace(UrlRule.Pattern))
             {
-                LocalizedMessageBox.ShowError("Dialog.UrlRuleEdit.EnterPattern", "MessageBox.InputError");
+                _ = LocalizedMessageBox.ShowError("Dialog.UrlRuleEdit.EnterPattern", "MessageBox.InputError");
                 return;
             }
 
             if (SelectedBrowser == null)
             {
-                LocalizedMessageBox.ShowError("Dialog.UrlRuleEdit.SelectBrowser", "MessageBox.InputError");
+                _ = LocalizedMessageBox.ShowError("Dialog.UrlRuleEdit.SelectBrowser", "MessageBox.InputError");
                 return;
             }
 
@@ -81,7 +81,7 @@ public partial class UrlRuleEditDialog : Window
         catch (Exception ex)
         {
             _logService?.LogError($"URLルール保存エラー: {ex.Message}", "UrlRuleEditDialog", ex);
-            LocalizedMessageBox.ShowError($"Dialog.UrlRuleEdit.SaveError: {ex.Message}", "MessageBox.Error");
+            _ = LocalizedMessageBox.ShowError($"Dialog.UrlRuleEdit.SaveError: {ex.Message}", "MessageBox.Error");
         }
     }
 }

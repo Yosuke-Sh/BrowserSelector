@@ -20,231 +20,231 @@ public class UrlServiceTests
     public async Task NormalizeUrlAsync_WithValidUrl_ShouldReturnNormalizedUrl()
     {
         // Arrange
-        var inputUrl = "example.com";
-        var expectedUrl = "https://example.com";
+        string inputUrl = "example.com";
+        string expectedUrl = "https://example.com";
 
-        _mockSettingsService
+        _ = _mockSettingsService
             .Setup(x => x.LoadAppSettingsAsync())
             .ReturnsAsync(new BrowserSelector.Core.Models.AppSettings());
 
         // Act
-        var result = await _urlService.NormalizeUrlAsync(inputUrl);
+        string result = await _urlService.NormalizeUrlAsync(inputUrl);
 
         // Assert
-        result.Should().Be(expectedUrl);
+        _ = result.Should().Be(expectedUrl);
     }
 
     [Fact]
     public async Task NormalizeUrlAsync_WithHttpUrl_ShouldReturnSameUrl()
     {
         // Arrange
-        var inputUrl = "http://example.com";
+        string inputUrl = "http://example.com";
 
-        _mockSettingsService
+        _ = _mockSettingsService
             .Setup(x => x.LoadAppSettingsAsync())
             .ReturnsAsync(new BrowserSelector.Core.Models.AppSettings());
 
         // Act
-        var result = await _urlService.NormalizeUrlAsync(inputUrl);
+        string result = await _urlService.NormalizeUrlAsync(inputUrl);
 
         // Assert
-        result.Should().Be(inputUrl);
+        _ = result.Should().Be(inputUrl);
     }
 
     [Fact]
     public async Task NormalizeUrlAsync_WithHttpsUrl_ShouldReturnSameUrl()
     {
         // Arrange
-        var inputUrl = "https://example.com";
+        string inputUrl = "https://example.com";
 
-        _mockSettingsService
+        _ = _mockSettingsService
             .Setup(x => x.LoadAppSettingsAsync())
             .ReturnsAsync(new BrowserSelector.Core.Models.AppSettings());
 
         // Act
-        var result = await _urlService.NormalizeUrlAsync(inputUrl);
+        string result = await _urlService.NormalizeUrlAsync(inputUrl);
 
         // Assert
-        result.Should().Be(inputUrl);
+        _ = result.Should().Be(inputUrl);
     }
 
     [Fact]
     public async Task NormalizeUrlAsync_WithEmptyUrl_ShouldReturnEmptyString()
     {
         // Arrange
-        var inputUrl = "";
+        string inputUrl = "";
 
-        _mockSettingsService
+        _ = _mockSettingsService
             .Setup(x => x.LoadAppSettingsAsync())
             .ReturnsAsync(new BrowserSelector.Core.Models.AppSettings());
 
         // Act
-        var result = await _urlService.NormalizeUrlAsync(inputUrl);
+        string result = await _urlService.NormalizeUrlAsync(inputUrl);
 
         // Assert
-        result.Should().BeEmpty();
+        _ = result.Should().BeEmpty();
     }
 
     [Fact]
     public async Task NormalizeUrlAsync_WithWhitespaceUrl_ShouldReturnEmptyString()
     {
         // Arrange
-        var inputUrl = "   ";
+        string inputUrl = "   ";
 
-        _mockSettingsService
+        _ = _mockSettingsService
             .Setup(x => x.LoadAppSettingsAsync())
             .ReturnsAsync(new BrowserSelector.Core.Models.AppSettings());
 
         // Act
-        var result = await _urlService.NormalizeUrlAsync(inputUrl);
+        string result = await _urlService.NormalizeUrlAsync(inputUrl);
 
         // Assert
-        result.Should().BeEmpty();
+        _ = result.Should().BeEmpty();
     }
 
     [Fact]
     public async Task ValidateUrlAsync_WithValidHttpUrl_ShouldReturnTrue()
     {
         // Arrange
-        var url = "http://example.com";
+        string url = "http://example.com";
 
         // Act
-        var result = await _urlService.ValidateUrlAsync(url);
+        bool result = await _urlService.ValidateUrlAsync(url);
 
         // Assert
-        result.Should().BeTrue();
+        _ = result.Should().BeTrue();
     }
 
     [Fact]
     public async Task ValidateUrlAsync_WithValidHttpsUrl_ShouldReturnTrue()
     {
         // Arrange
-        var url = "https://example.com";
+        string url = "https://example.com";
 
         // Act
-        var result = await _urlService.ValidateUrlAsync(url);
+        bool result = await _urlService.ValidateUrlAsync(url);
 
         // Assert
-        result.Should().BeTrue();
+        _ = result.Should().BeTrue();
     }
 
     [Fact]
     public async Task ValidateUrlAsync_WithInvalidUrl_ShouldReturnFalse()
     {
         // Arrange
-        var url = "invalid-url";
+        string url = "invalid-url";
 
         // Act
-        var result = await _urlService.ValidateUrlAsync(url);
+        bool result = await _urlService.ValidateUrlAsync(url);
 
         // Assert
-        result.Should().BeFalse();
+        _ = result.Should().BeFalse();
     }
 
     [Fact]
     public async Task ValidateUrlAsync_WithEmptyUrl_ShouldReturnFalse()
     {
         // Arrange
-        var url = "";
+        string url = "";
 
         // Act
-        var result = await _urlService.ValidateUrlAsync(url);
+        bool result = await _urlService.ValidateUrlAsync(url);
 
         // Assert
-        result.Should().BeFalse();
+        _ = result.Should().BeFalse();
     }
 
     [Fact]
     public void ExtractDomain_WithValidUrl_ShouldReturnDomain()
     {
         // Arrange
-        var url = "https://example.com/path";
-        var expectedDomain = "example.com";
+        string url = "https://example.com/path";
+        string expectedDomain = "example.com";
 
         // Act
-        var result = _urlService.ExtractDomain(url);
+        string result = _urlService.ExtractDomain(url);
 
         // Assert
-        result.Should().Be(expectedDomain);
+        _ = result.Should().Be(expectedDomain);
     }
 
     [Fact]
     public void ExtractDomain_WithUrlWithoutProtocol_ShouldReturnDomain()
     {
         // Arrange
-        var url = "example.com/path";
-        var expectedDomain = "example.com";
+        string url = "example.com/path";
+        string expectedDomain = "example.com";
 
         // Act
-        var result = _urlService.ExtractDomain(url);
+        string result = _urlService.ExtractDomain(url);
 
         // Assert
-        result.Should().Be(expectedDomain);
+        _ = result.Should().Be(expectedDomain);
     }
 
     [Fact]
     public void ExtractDomain_WithEmptyUrl_ShouldReturnEmptyString()
     {
         // Arrange
-        var url = "";
+        string url = "";
 
         // Act
-        var result = _urlService.ExtractDomain(url);
+        string result = _urlService.ExtractDomain(url);
 
         // Assert
-        result.Should().BeEmpty();
+        _ = result.Should().BeEmpty();
     }
 
     [Fact]
     public void AddProtocolIfNeeded_WithUrlWithoutProtocol_ShouldAddHttps()
     {
         // Arrange
-        var url = "example.com";
-        var expectedUrl = "https://example.com";
+        string url = "example.com";
+        string expectedUrl = "https://example.com";
 
         // Act
-        var result = _urlService.AddProtocolIfNeeded(url);
+        string result = _urlService.AddProtocolIfNeeded(url);
 
         // Assert
-        result.Should().Be(expectedUrl);
+        _ = result.Should().Be(expectedUrl);
     }
 
     [Fact]
     public void AddProtocolIfNeeded_WithHttpUrl_ShouldReturnSameUrl()
     {
         // Arrange
-        var url = "http://example.com";
+        string url = "http://example.com";
 
         // Act
-        var result = _urlService.AddProtocolIfNeeded(url);
+        string result = _urlService.AddProtocolIfNeeded(url);
 
         // Assert
-        result.Should().Be(url);
+        _ = result.Should().Be(url);
     }
 
     [Fact]
     public void AddProtocolIfNeeded_WithHttpsUrl_ShouldReturnSameUrl()
     {
         // Arrange
-        var url = "https://example.com";
+        string url = "https://example.com";
 
         // Act
-        var result = _urlService.AddProtocolIfNeeded(url);
+        string result = _urlService.AddProtocolIfNeeded(url);
 
         // Assert
-        result.Should().Be(url);
+        _ = result.Should().Be(url);
     }
 
     [Fact]
     public void AddProtocolIfNeeded_WithEmptyUrl_ShouldReturnEmptyString()
     {
         // Arrange
-        var url = "";
+        string url = "";
 
         // Act
-        var result = _urlService.AddProtocolIfNeeded(url);
+        string result = _urlService.AddProtocolIfNeeded(url);
 
         // Assert
-        result.Should().BeEmpty();
+        _ = result.Should().BeEmpty();
     }
 }

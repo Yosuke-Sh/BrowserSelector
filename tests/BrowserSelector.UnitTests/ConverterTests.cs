@@ -1,8 +1,7 @@
 using BrowserSelector.Presentation.Converters;
+using FluentAssertions;
 using System.Globalization;
 using System.Windows;
-using FluentAssertions;
-using Xunit;
 
 namespace BrowserSelector.UnitTests;
 
@@ -17,147 +16,147 @@ public class ConverterTests
     public void BoolToVisibilityConverter_Convert_True_ShouldReturnVisible()
     {
         // Arrange
-        var converter = new BoolToVisibilityConverter();
+        BoolToVisibilityConverter converter = new();
 
         // Act
-        var result = converter.Convert(true, typeof(Visibility), null!, CultureInfo.InvariantCulture);
+        object result = converter.Convert(true, typeof(Visibility), null!, CultureInfo.InvariantCulture);
 
         // Assert
-        result.Should().Be(Visibility.Visible);
+        _ = result.Should().Be(Visibility.Visible);
     }
 
     [Fact]
     public void BoolToVisibilityConverter_Convert_False_ShouldReturnCollapsed()
     {
         // Arrange
-        var converter = new BoolToVisibilityConverter();
+        BoolToVisibilityConverter converter = new();
 
         // Act
-        var result = converter.Convert(false, typeof(Visibility), null!, CultureInfo.InvariantCulture);
+        object result = converter.Convert(false, typeof(Visibility), null!, CultureInfo.InvariantCulture);
 
         // Assert
-        result.Should().Be(Visibility.Collapsed);
+        _ = result.Should().Be(Visibility.Collapsed);
     }
 
     [Fact]
     public void BoolToVisibilityConverter_Convert_WithInvertParameter_ShouldInvertValue()
     {
         // Arrange
-        var converter = new BoolToVisibilityConverter();
+        BoolToVisibilityConverter converter = new();
 
         // Act
-        var resultTrue = converter.Convert(true, typeof(Visibility), "Invert", CultureInfo.InvariantCulture);
-        var resultFalse = converter.Convert(false, typeof(Visibility), "Invert", CultureInfo.InvariantCulture);
+        object resultTrue = converter.Convert(true, typeof(Visibility), "Invert", CultureInfo.InvariantCulture);
+        object resultFalse = converter.Convert(false, typeof(Visibility), "Invert", CultureInfo.InvariantCulture);
 
         // Assert
-        resultTrue.Should().Be(Visibility.Collapsed);
-        resultFalse.Should().Be(Visibility.Visible);
+        _ = resultTrue.Should().Be(Visibility.Collapsed);
+        _ = resultFalse.Should().Be(Visibility.Visible);
     }
 
     [Fact]
     public void BoolToVisibilityConverter_Convert_WithInvalidValue_ShouldReturnCollapsed()
     {
         // Arrange
-        var converter = new BoolToVisibilityConverter();
+        BoolToVisibilityConverter converter = new();
 
         // Act
-        var result = converter.Convert("invalid", typeof(Visibility), null!, CultureInfo.InvariantCulture);
+        object result = converter.Convert("invalid", typeof(Visibility), null!, CultureInfo.InvariantCulture);
 
         // Assert
-        result.Should().Be(Visibility.Collapsed);
+        _ = result.Should().Be(Visibility.Collapsed);
     }
 
     [Fact]
     public void BoolToVisibilityConverter_Convert_WithNullValue_ShouldReturnCollapsed()
     {
         // Arrange
-        var converter = new BoolToVisibilityConverter();
+        BoolToVisibilityConverter converter = new();
 
         // Act
-        var result = converter.Convert(null!, typeof(Visibility), null!, CultureInfo.InvariantCulture);
+        object result = converter.Convert(null!, typeof(Visibility), null!, CultureInfo.InvariantCulture);
 
         // Assert
-        result.Should().Be(Visibility.Collapsed);
+        _ = result.Should().Be(Visibility.Collapsed);
     }
 
     [Fact]
     public void BoolToVisibilityConverter_ConvertBack_Visible_ShouldReturnTrue()
     {
         // Arrange
-        var converter = new BoolToVisibilityConverter();
+        BoolToVisibilityConverter converter = new();
 
         // Act
-        var result = converter.ConvertBack(Visibility.Visible, typeof(bool), null!, CultureInfo.InvariantCulture);
+        object result = converter.ConvertBack(Visibility.Visible, typeof(bool), null!, CultureInfo.InvariantCulture);
 
         // Assert
-        result.Should().Be(true);
+        _ = result.Should().Be(true);
     }
 
     [Fact]
     public void BoolToVisibilityConverter_ConvertBack_Collapsed_ShouldReturnFalse()
     {
         // Arrange
-        var converter = new BoolToVisibilityConverter();
+        BoolToVisibilityConverter converter = new();
 
         // Act
-        var result = converter.ConvertBack(Visibility.Collapsed, typeof(bool), null!, CultureInfo.InvariantCulture);
+        object result = converter.ConvertBack(Visibility.Collapsed, typeof(bool), null!, CultureInfo.InvariantCulture);
 
         // Assert
-        result.Should().Be(false);
+        _ = result.Should().Be(false);
     }
 
     [Fact]
     public void BoolToVisibilityConverter_ConvertBack_Hidden_ShouldReturnFalse()
     {
         // Arrange
-        var converter = new BoolToVisibilityConverter();
+        BoolToVisibilityConverter converter = new();
 
         // Act
-        var result = converter.ConvertBack(Visibility.Hidden, typeof(bool), null!, CultureInfo.InvariantCulture);
+        object result = converter.ConvertBack(Visibility.Hidden, typeof(bool), null!, CultureInfo.InvariantCulture);
 
         // Assert
-        result.Should().Be(false);
+        _ = result.Should().Be(false);
     }
 
     [Fact]
     public void BoolToVisibilityConverter_ConvertBack_WithInvertParameter_ShouldInvertValue()
     {
         // Arrange
-        var converter = new BoolToVisibilityConverter();
+        BoolToVisibilityConverter converter = new();
 
         // Act
-        var resultVisible = converter.ConvertBack(Visibility.Visible, typeof(bool), "Invert", CultureInfo.InvariantCulture);
-        var resultCollapsed = converter.ConvertBack(Visibility.Collapsed, typeof(bool), "Invert", CultureInfo.InvariantCulture);
+        object resultVisible = converter.ConvertBack(Visibility.Visible, typeof(bool), "Invert", CultureInfo.InvariantCulture);
+        object resultCollapsed = converter.ConvertBack(Visibility.Collapsed, typeof(bool), "Invert", CultureInfo.InvariantCulture);
 
         // Assert
-        resultVisible.Should().Be(false);
-        resultCollapsed.Should().Be(true);
+        _ = resultVisible.Should().Be(false);
+        _ = resultCollapsed.Should().Be(true);
     }
 
     [Fact]
     public void BoolToVisibilityConverter_ConvertBack_WithInvalidValue_ShouldReturnFalse()
     {
         // Arrange
-        var converter = new BoolToVisibilityConverter();
+        BoolToVisibilityConverter converter = new();
 
         // Act
-        var result = converter.ConvertBack("invalid", typeof(bool), null!, CultureInfo.InvariantCulture);
+        object result = converter.ConvertBack("invalid", typeof(bool), null!, CultureInfo.InvariantCulture);
 
         // Assert
-        result.Should().Be(false);
+        _ = result.Should().Be(false);
     }
 
     [Fact]
     public void BoolToVisibilityConverter_ConvertBack_WithNullValue_ShouldReturnFalse()
     {
         // Arrange
-        var converter = new BoolToVisibilityConverter();
+        BoolToVisibilityConverter converter = new();
 
         // Act
-        var result = converter.ConvertBack(null!, typeof(bool), null!, CultureInfo.InvariantCulture);
+        object result = converter.ConvertBack(null!, typeof(bool), null!, CultureInfo.InvariantCulture);
 
         // Assert
-        result.Should().Be(false);
+        _ = result.Should().Be(false);
     }
 
     #endregion
@@ -168,8 +167,8 @@ public class ConverterTests
     public void BoolToVisibilityConverter_Convert_WithDifferentCultures_ShouldWorkCorrectly()
     {
         // Arrange
-        var converter = new BoolToVisibilityConverter();
-        var cultures = new[]
+        BoolToVisibilityConverter converter = new();
+        CultureInfo[] cultures = new[]
         {
             CultureInfo.InvariantCulture,
             new CultureInfo("en-US"),
@@ -178,13 +177,13 @@ public class ConverterTests
         };
 
         // Act & Assert
-        foreach (var culture in cultures)
+        foreach (CultureInfo? culture in cultures)
         {
-            var resultTrue = converter.Convert(true, typeof(Visibility), null!, culture);
-            var resultFalse = converter.Convert(false, typeof(Visibility), null!, culture);
+            object resultTrue = converter.Convert(true, typeof(Visibility), null!, culture);
+            object resultFalse = converter.Convert(false, typeof(Visibility), null!, culture);
 
-            resultTrue.Should().Be(Visibility.Visible);
-            resultFalse.Should().Be(Visibility.Collapsed);
+            _ = resultTrue.Should().Be(Visibility.Visible);
+            _ = resultFalse.Should().Be(Visibility.Collapsed);
         }
     }
 
@@ -192,8 +191,8 @@ public class ConverterTests
     public void BoolToVisibilityConverter_ConvertBack_WithDifferentCultures_ShouldWorkCorrectly()
     {
         // Arrange
-        var converter = new BoolToVisibilityConverter();
-        var cultures = new[]
+        BoolToVisibilityConverter converter = new();
+        CultureInfo[] cultures = new[]
         {
             CultureInfo.InvariantCulture,
             new CultureInfo("en-US"),
@@ -202,13 +201,13 @@ public class ConverterTests
         };
 
         // Act & Assert
-        foreach (var culture in cultures)
+        foreach (CultureInfo? culture in cultures)
         {
-            var resultVisible = converter.ConvertBack(Visibility.Visible, typeof(bool), null!, culture);
-            var resultCollapsed = converter.ConvertBack(Visibility.Collapsed, typeof(bool), null!, culture);
+            object resultVisible = converter.ConvertBack(Visibility.Visible, typeof(bool), null!, culture);
+            object resultCollapsed = converter.ConvertBack(Visibility.Collapsed, typeof(bool), null!, culture);
 
-            resultVisible.Should().Be(true);
-            resultCollapsed.Should().Be(false);
+            _ = resultVisible.Should().Be(true);
+            _ = resultCollapsed.Should().Be(false);
         }
     }
 
@@ -216,14 +215,14 @@ public class ConverterTests
     public void BoolToVisibilityConverter_Convert_WithCaseInsensitiveInvertParameter_ShouldWorkCorrectly()
     {
         // Arrange
-        var converter = new BoolToVisibilityConverter();
-        var invertParameters = new[] { "invert", "INVERT", "Invert", "InVeRt" };
+        BoolToVisibilityConverter converter = new();
+        string[] invertParameters = new[] { "invert", "INVERT", "Invert", "InVeRt" };
 
         // Act & Assert
-        foreach (var parameter in invertParameters)
+        foreach (string? parameter in invertParameters)
         {
-            var result = converter.Convert(true, typeof(Visibility), parameter, CultureInfo.InvariantCulture);
-            result.Should().Be(Visibility.Collapsed);
+            object result = converter.Convert(true, typeof(Visibility), parameter, CultureInfo.InvariantCulture);
+            _ = result.Should().Be(Visibility.Collapsed);
         }
     }
 
@@ -231,14 +230,14 @@ public class ConverterTests
     public void BoolToVisibilityConverter_ConvertBack_WithCaseInsensitiveInvertParameter_ShouldWorkCorrectly()
     {
         // Arrange
-        var converter = new BoolToVisibilityConverter();
-        var invertParameters = new[] { "invert", "INVERT", "Invert", "InVeRt" };
+        BoolToVisibilityConverter converter = new();
+        string[] invertParameters = new[] { "invert", "INVERT", "Invert", "InVeRt" };
 
         // Act & Assert
-        foreach (var parameter in invertParameters)
+        foreach (string? parameter in invertParameters)
         {
-            var result = converter.ConvertBack(Visibility.Visible, typeof(bool), parameter, CultureInfo.InvariantCulture);
-            result.Should().Be(false);
+            object result = converter.ConvertBack(Visibility.Visible, typeof(bool), parameter, CultureInfo.InvariantCulture);
+            _ = result.Should().Be(false);
         }
     }
 
@@ -250,41 +249,41 @@ public class ConverterTests
     public void BoolToVisibilityConverter_Convert_MultipleCalls_ShouldPerformWell()
     {
         // Arrange
-        var converter = new BoolToVisibilityConverter();
-        var iterations = 10000;
+        BoolToVisibilityConverter converter = new();
+        int iterations = 10000;
 
         // Act
-        var startTime = DateTime.Now;
+        DateTime startTime = DateTime.Now;
         for (int i = 0; i < iterations; i++)
         {
-            converter.Convert(i % 2 == 0, typeof(Visibility), null!, CultureInfo.InvariantCulture);
+            _ = converter.Convert(i % 2 == 0, typeof(Visibility), null!, CultureInfo.InvariantCulture);
         }
-        var endTime = DateTime.Now;
+        DateTime endTime = DateTime.Now;
 
         // Assert
-        var duration = endTime - startTime;
-        duration.TotalMilliseconds.Should().BeLessThan(1000); // 1秒以内に完了すること
+        TimeSpan duration = endTime - startTime;
+        _ = duration.TotalMilliseconds.Should().BeLessThan(1000); // 1秒以内に完了すること
     }
 
     [Fact]
     public void BoolToVisibilityConverter_ConvertBack_MultipleCalls_ShouldPerformWell()
     {
         // Arrange
-        var converter = new BoolToVisibilityConverter();
-        var iterations = 10000;
+        BoolToVisibilityConverter converter = new();
+        int iterations = 10000;
 
         // Act
-        var startTime = DateTime.Now;
+        DateTime startTime = DateTime.Now;
         for (int i = 0; i < iterations; i++)
         {
-            var visibility = i % 2 == 0 ? Visibility.Visible : Visibility.Collapsed;
-            converter.ConvertBack(visibility, typeof(bool), null!, CultureInfo.InvariantCulture);
+            Visibility visibility = i % 2 == 0 ? Visibility.Visible : Visibility.Collapsed;
+            _ = converter.ConvertBack(visibility, typeof(bool), null!, CultureInfo.InvariantCulture);
         }
-        var endTime = DateTime.Now;
+        DateTime endTime = DateTime.Now;
 
         // Assert
-        var duration = endTime - startTime;
-        duration.TotalMilliseconds.Should().BeLessThan(1000); // 1秒以内に完了すること
+        TimeSpan duration = endTime - startTime;
+        _ = duration.TotalMilliseconds.Should().BeLessThan(1000); // 1秒以内に完了すること
     }
 
     #endregion

@@ -1,8 +1,7 @@
-using BrowserSelector.Core.Models;
 using BrowserSelector.Core.Enums;
+using BrowserSelector.Core.Models;
 using FluentAssertions;
 using System.Windows.Media;
-using Xunit;
 
 namespace BrowserSelector.UnitTests;
 
@@ -12,27 +11,27 @@ public class CoreModelsTests
     public void AppSettings_DefaultValues_ShouldBeSetCorrectly()
     {
         // Act
-        var settings = new AppSettings();
+        AppSettings settings = new();
 
         // Assert
-        settings.StartupMessage.Should().BeEmpty("スタートアップメッセージは空文字列");
-        settings.EnableLogging.Should().BeTrue("ログは有効");
-        settings.LogLevel.Should().Be("Information", "ログレベルはInformation");
-        settings.CheckForUpdates.Should().BeTrue("更新チェックは有効");
-        settings.UpdateCheckInterval.Should().Be(24, "更新チェック間隔は24時間");
-        settings.Language.Should().Be("en-US", "デフォルト言語は英語");
-        settings.PortableMode.Should().BeFalse("ポータブルモードは無効");
-        settings.CustomProtocol.Should().Be("browserselector", "カスタムプロトコルはbrowserselector");
-        settings.RegisterProtocol.Should().BeTrue("プロトコル登録は有効");
-        settings.CloseAfterUrlRuleMatch.Should().BeTrue("URLルールマッチ後は閉じる");
+        _ = settings.StartupMessage.Should().BeEmpty("スタートアップメッセージは空文字列");
+        _ = settings.EnableLogging.Should().BeTrue("ログは有効");
+        _ = settings.LogLevel.Should().Be("Information", "ログレベルはInformation");
+        _ = settings.CheckForUpdates.Should().BeTrue("更新チェックは有効");
+        _ = settings.UpdateCheckInterval.Should().Be(24, "更新チェック間隔は24時間");
+        _ = settings.Language.Should().Be("en-US", "デフォルト言語は英語");
+        _ = settings.PortableMode.Should().BeFalse("ポータブルモードは無効");
+        _ = settings.CustomProtocol.Should().Be("browserselector", "カスタムプロトコルはbrowserselector");
+        _ = settings.RegisterProtocol.Should().BeTrue("プロトコル登録は有効");
+        _ = settings.CloseAfterUrlRuleMatch.Should().BeTrue("URLルールマッチ後は閉じる");
     }
 
     [Fact]
     public void AppSettings_PropertyChanges_ShouldTriggerNotifications()
     {
         // Arrange
-        var settings = new AppSettings();
-        var propertyChangedEvents = new List<string>();
+        AppSettings settings = new();
+        List<string> propertyChangedEvents = [];
 
         settings.PropertyChanged += (sender, e) => propertyChangedEvents.Add(e.PropertyName!);
 
@@ -49,23 +48,23 @@ public class CoreModelsTests
         settings.CloseAfterUrlRuleMatch = false;
 
         // Assert
-        propertyChangedEvents.Should().Contain("StartupMessage");
-        propertyChangedEvents.Should().Contain("EnableLogging");
-        propertyChangedEvents.Should().Contain("LogLevel");
-        propertyChangedEvents.Should().Contain("CheckForUpdates");
-        propertyChangedEvents.Should().Contain("UpdateCheckInterval");
-        propertyChangedEvents.Should().Contain("Language");
-        propertyChangedEvents.Should().Contain("PortableMode");
-        propertyChangedEvents.Should().Contain("CustomProtocol");
-        propertyChangedEvents.Should().Contain("RegisterProtocol");
-        propertyChangedEvents.Should().Contain("CloseAfterUrlRuleMatch");
+        _ = propertyChangedEvents.Should().Contain("StartupMessage");
+        _ = propertyChangedEvents.Should().Contain("EnableLogging");
+        _ = propertyChangedEvents.Should().Contain("LogLevel");
+        _ = propertyChangedEvents.Should().Contain("CheckForUpdates");
+        _ = propertyChangedEvents.Should().Contain("UpdateCheckInterval");
+        _ = propertyChangedEvents.Should().Contain("Language");
+        _ = propertyChangedEvents.Should().Contain("PortableMode");
+        _ = propertyChangedEvents.Should().Contain("CustomProtocol");
+        _ = propertyChangedEvents.Should().Contain("RegisterProtocol");
+        _ = propertyChangedEvents.Should().Contain("CloseAfterUrlRuleMatch");
     }
 
     [Fact]
     public void Browser_WithValidData_ShouldBeValid()
     {
         // Arrange
-        var browser = new Browser
+        Browser browser = new()
         {
             Name = "Test Browser",
             ExecutablePath = @"C:\Program Files\TestBrowser\browser.exe",
@@ -75,47 +74,47 @@ public class CoreModelsTests
         };
 
         // Act & Assert
-        browser.IsValid.Should().BeTrue("有効なデータのブラウザは有効であること");
-        browser.Name.Should().Be("Test Browser");
-        browser.ExecutablePath.Should().Be(@"C:\Program Files\TestBrowser\browser.exe");
-        browser.IconPath.Should().Be(@"C:\Program Files\TestBrowser\icon.ico");
-        browser.IsDefault.Should().BeFalse();
-        browser.Type.Should().Be(BrowserType.Custom);
+        _ = browser.IsValid.Should().BeTrue("有効なデータのブラウザは有効であること");
+        _ = browser.Name.Should().Be("Test Browser");
+        _ = browser.ExecutablePath.Should().Be(@"C:\Program Files\TestBrowser\browser.exe");
+        _ = browser.IconPath.Should().Be(@"C:\Program Files\TestBrowser\icon.ico");
+        _ = browser.IsDefault.Should().BeFalse();
+        _ = browser.Type.Should().Be(BrowserType.Custom);
     }
 
     [Fact]
     public void Browser_WithEmptyName_ShouldNotBeValid()
     {
         // Arrange
-        var browser = new Browser
+        Browser browser = new()
         {
             Name = "",
             ExecutablePath = @"C:\Program Files\TestBrowser\browser.exe"
         };
 
         // Act & Assert
-        browser.IsValid.Should().BeFalse("名前が空のブラウザは無効であること");
+        _ = browser.IsValid.Should().BeFalse("名前が空のブラウザは無効であること");
     }
 
     [Fact]
     public void Browser_WithEmptyExecutablePath_ShouldNotBeValid()
     {
         // Arrange
-        var browser = new Browser
+        Browser browser = new()
         {
             Name = "Test Browser",
             ExecutablePath = ""
         };
 
         // Act & Assert
-        browser.IsValid.Should().BeFalse("実行ファイルパスが空のブラウザは無効であること");
+        _ = browser.IsValid.Should().BeFalse("実行ファイルパスが空のブラウザは無効であること");
     }
 
     [Fact]
     public void Browser_IncrementUseCount_ShouldIncreaseCount()
     {
         // Arrange
-        var browser = new Browser
+        Browser browser = new()
         {
             Name = "Test Browser",
             ExecutablePath = @"C:\Program Files\TestBrowser\browser.exe"
@@ -125,15 +124,15 @@ public class CoreModelsTests
         browser.IncrementUseCount();
 
         // Assert
-        browser.UseCount.Should().Be(1, "使用回数が1増加すること");
-        browser.LastUsed.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(1), "最終使用日時が更新されること");
+        _ = browser.UseCount.Should().Be(1, "使用回数が1増加すること");
+        _ = browser.LastUsed.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(1), "最終使用日時が更新されること");
     }
 
     [Fact]
     public void Browser_Clone_ShouldCreateNewInstance()
     {
         // Arrange
-        var originalBrowser = new Browser
+        Browser originalBrowser = new()
         {
             Name = "Test Browser",
             ExecutablePath = @"C:\Program Files\TestBrowser\browser.exe",
@@ -143,83 +142,83 @@ public class CoreModelsTests
         };
 
         // Act
-        var clonedBrowser = originalBrowser.Clone();
+        Browser clonedBrowser = originalBrowser.Clone();
 
         // Assert
-        clonedBrowser.Should().NotBeSameAs(originalBrowser, "クローンは別のインスタンスであること");
-        clonedBrowser.Id.Should().NotBe(originalBrowser.Id, "IDは異なること");
-        clonedBrowser.Name.Should().Be(originalBrowser.Name);
-        clonedBrowser.ExecutablePath.Should().Be(originalBrowser.ExecutablePath);
-        clonedBrowser.IconPath.Should().Be(originalBrowser.IconPath);
-        clonedBrowser.IsDefault.Should().BeFalse("複製時はデフォルトをfalseにする");
-        clonedBrowser.Type.Should().Be(originalBrowser.Type);
+        _ = clonedBrowser.Should().NotBeSameAs(originalBrowser, "クローンは別のインスタンスであること");
+        _ = clonedBrowser.Id.Should().NotBe(originalBrowser.Id, "IDは異なること");
+        _ = clonedBrowser.Name.Should().Be(originalBrowser.Name);
+        _ = clonedBrowser.ExecutablePath.Should().Be(originalBrowser.ExecutablePath);
+        _ = clonedBrowser.IconPath.Should().Be(originalBrowser.IconPath);
+        _ = clonedBrowser.IsDefault.Should().BeFalse("複製時はデフォルトをfalseにする");
+        _ = clonedBrowser.Type.Should().Be(originalBrowser.Type);
     }
 
     [Fact]
     public void Browser_DisplayName_ShouldReturnCorrectName()
     {
         // Arrange
-        var browser = new Browser
+        Browser browser = new()
         {
             Name = "Test Browser",
             ExecutablePath = @"C:\Program Files\TestBrowser\browser.exe"
         };
 
         // Act & Assert
-        browser.DisplayName.Should().Be("Test Browser", "表示名は名前と同じであること");
+        _ = browser.DisplayName.Should().Be("Test Browser", "表示名は名前と同じであること");
     }
 
     [Fact]
     public void Browser_DisplayName_WithEmptyName_ShouldReturnUnknown()
     {
         // Arrange
-        var browser = new Browser
+        Browser browser = new()
         {
             Name = "",
             ExecutablePath = @"C:\Program Files\TestBrowser\browser.exe"
         };
 
         // Act & Assert
-        browser.DisplayName.Should().Be("Unknown Browser", "名前が空の場合はUnknown Browserを返すこと");
+        _ = browser.DisplayName.Should().Be("Unknown Browser", "名前が空の場合はUnknown Browserを返すこと");
     }
 
     [Fact]
     public void VisualSettings_DefaultValues_ShouldBeSetCorrectly()
     {
         // Act
-        var settings = new VisualSettings();
+        VisualSettings settings = new();
 
         // Assert
-        settings.BackgroundColor.Should().Be(Colors.White, "背景色は白");
-        settings.UseBackgroundGradient.Should().BeFalse("グラデーションは無効");
-        settings.GradientStartColor.Should().Be(Colors.Transparent, "グラデーション開始色は透明");
-        settings.GradientEndColor.Should().Be(Colors.Transparent, "グラデーション終了色は透明");
-        settings.GradientDirection.Should().Be(GradientDirection.Vertical, "グラデーション方向は縦");
-        settings.IconScale.Should().Be(1.0, "アイコンスケールは1.0");
-        settings.ShowFocusIndicator.Should().BeTrue("フォーカス表示は有効");
-        settings.FocusColor.Should().Be(Colors.Blue, "フォーカス色は青");
-        settings.FocusThickness.Should().Be(2.0, "フォーカス線幅は2.0");
-        settings.FocusWidth.Should().Be(100.0, "フォーカス幅は100.0");
-        settings.InitialWindowWidth.Should().Be(800.0, "初期ウィンドウ幅は800.0");
-        settings.InitialWindowHeight.Should().Be(600.0, "初期ウィンドウ高さは600.0");
-        settings.ShowLogo.Should().BeTrue("ロゴ表示は有効");
-        settings.ShowUrlInput.Should().BeTrue("URL入力表示は有効");
-        settings.BrowserButtonWidth.Should().Be(120.0, "ブラウザボタン幅は120.0");
-        settings.BrowserButtonHeight.Should().Be(90.0, "ブラウザボタン高さは90.0");
-        settings.BrowserButtonBackgroundColor.Should().Be(Colors.Transparent, "ブラウザボタン背景色は透明");
-        settings.BrowserButtonForegroundColor.Should().Be(Colors.Black, "ブラウザボタン前景色は黒");
-        settings.BrowserButtonOpacity.Should().Be(1.0, "ブラウザボタン透明度は1.0");
-        settings.BrowserButtonCornerRadius.Should().Be(8.0, "ブラウザボタン角丸は8.0");
-        settings.ShowBrowserName.Should().BeTrue("ブラウザ名表示は有効");
-        settings.BrowserIconSize.Should().Be(32.0, "ブラウザアイコンサイズは32.0");
+        _ = settings.BackgroundColor.Should().Be(Colors.White, "背景色は白");
+        _ = settings.UseBackgroundGradient.Should().BeFalse("グラデーションは無効");
+        _ = settings.GradientStartColor.Should().Be(Colors.Transparent, "グラデーション開始色は透明");
+        _ = settings.GradientEndColor.Should().Be(Colors.Transparent, "グラデーション終了色は透明");
+        _ = settings.GradientDirection.Should().Be(GradientDirection.Vertical, "グラデーション方向は縦");
+        _ = settings.IconScale.Should().Be(1.0, "アイコンスケールは1.0");
+        _ = settings.ShowFocusIndicator.Should().BeTrue("フォーカス表示は有効");
+        _ = settings.FocusColor.Should().Be(Colors.Blue, "フォーカス色は青");
+        _ = settings.FocusThickness.Should().Be(2.0, "フォーカス線幅は2.0");
+        _ = settings.FocusWidth.Should().Be(100.0, "フォーカス幅は100.0");
+        _ = settings.InitialWindowWidth.Should().Be(800.0, "初期ウィンドウ幅は800.0");
+        _ = settings.InitialWindowHeight.Should().Be(600.0, "初期ウィンドウ高さは600.0");
+        _ = settings.ShowLogo.Should().BeTrue("ロゴ表示は有効");
+        _ = settings.ShowUrlInput.Should().BeTrue("URL入力表示は有効");
+        _ = settings.BrowserButtonWidth.Should().Be(120.0, "ブラウザボタン幅は120.0");
+        _ = settings.BrowserButtonHeight.Should().Be(90.0, "ブラウザボタン高さは90.0");
+        _ = settings.BrowserButtonBackgroundColor.Should().Be(Colors.Transparent, "ブラウザボタン背景色は透明");
+        _ = settings.BrowserButtonForegroundColor.Should().Be(Colors.Black, "ブラウザボタン前景色は黒");
+        _ = settings.BrowserButtonOpacity.Should().Be(1.0, "ブラウザボタン透明度は1.0");
+        _ = settings.BrowserButtonCornerRadius.Should().Be(8.0, "ブラウザボタン角丸は8.0");
+        _ = settings.ShowBrowserName.Should().BeTrue("ブラウザ名表示は有効");
+        _ = settings.BrowserIconSize.Should().Be(32.0, "ブラウザアイコンサイズは32.0");
     }
 
     [Fact]
     public void VisualSettings_PropertyChanges_ShouldTriggerNotifications()
     {
         // Arrange
-        var settings = new VisualSettings();
-        var propertyChangedEvents = new List<string>();
+        VisualSettings settings = new();
+        List<string> propertyChangedEvents = [];
 
         settings.PropertyChanged += (sender, e) => propertyChangedEvents.Add(e.PropertyName!);
 
@@ -248,35 +247,35 @@ public class CoreModelsTests
         settings.BrowserIconSize = 48.0;
 
         // Assert
-        propertyChangedEvents.Should().Contain("BackgroundColor");
-        propertyChangedEvents.Should().Contain("UseBackgroundGradient");
-        propertyChangedEvents.Should().Contain("GradientStartColor");
-        propertyChangedEvents.Should().Contain("GradientEndColor");
-        propertyChangedEvents.Should().Contain("GradientDirection");
-        propertyChangedEvents.Should().Contain("IconScale");
-        propertyChangedEvents.Should().Contain("ShowFocusIndicator");
-        propertyChangedEvents.Should().Contain("FocusColor");
-        propertyChangedEvents.Should().Contain("FocusThickness");
-        propertyChangedEvents.Should().Contain("FocusWidth");
-        propertyChangedEvents.Should().Contain("InitialWindowWidth");
-        propertyChangedEvents.Should().Contain("InitialWindowHeight");
-        propertyChangedEvents.Should().Contain("ShowLogo");
-        propertyChangedEvents.Should().Contain("ShowUrlInput");
-        propertyChangedEvents.Should().Contain("BrowserButtonWidth");
-        propertyChangedEvents.Should().Contain("BrowserButtonHeight");
-        propertyChangedEvents.Should().Contain("BrowserButtonBackgroundColor");
-        propertyChangedEvents.Should().Contain("BrowserButtonForegroundColor");
-        propertyChangedEvents.Should().Contain("BrowserButtonOpacity");
-        propertyChangedEvents.Should().Contain("BrowserButtonCornerRadius");
-        propertyChangedEvents.Should().Contain("ShowBrowserName");
-        propertyChangedEvents.Should().Contain("BrowserIconSize");
+        _ = propertyChangedEvents.Should().Contain("BackgroundColor");
+        _ = propertyChangedEvents.Should().Contain("UseBackgroundGradient");
+        _ = propertyChangedEvents.Should().Contain("GradientStartColor");
+        _ = propertyChangedEvents.Should().Contain("GradientEndColor");
+        _ = propertyChangedEvents.Should().Contain("GradientDirection");
+        _ = propertyChangedEvents.Should().Contain("IconScale");
+        _ = propertyChangedEvents.Should().Contain("ShowFocusIndicator");
+        _ = propertyChangedEvents.Should().Contain("FocusColor");
+        _ = propertyChangedEvents.Should().Contain("FocusThickness");
+        _ = propertyChangedEvents.Should().Contain("FocusWidth");
+        _ = propertyChangedEvents.Should().Contain("InitialWindowWidth");
+        _ = propertyChangedEvents.Should().Contain("InitialWindowHeight");
+        _ = propertyChangedEvents.Should().Contain("ShowLogo");
+        _ = propertyChangedEvents.Should().Contain("ShowUrlInput");
+        _ = propertyChangedEvents.Should().Contain("BrowserButtonWidth");
+        _ = propertyChangedEvents.Should().Contain("BrowserButtonHeight");
+        _ = propertyChangedEvents.Should().Contain("BrowserButtonBackgroundColor");
+        _ = propertyChangedEvents.Should().Contain("BrowserButtonForegroundColor");
+        _ = propertyChangedEvents.Should().Contain("BrowserButtonOpacity");
+        _ = propertyChangedEvents.Should().Contain("BrowserButtonCornerRadius");
+        _ = propertyChangedEvents.Should().Contain("ShowBrowserName");
+        _ = propertyChangedEvents.Should().Contain("BrowserIconSize");
     }
 
     [Fact]
     public void UrlRule_WithValidData_ShouldBeValid()
     {
         // Arrange
-        var urlRule = new UrlRule
+        UrlRule urlRule = new()
         {
             Pattern = "*.example.com",
             BrowserName = "Test Browser",
@@ -284,76 +283,76 @@ public class CoreModelsTests
         };
 
         // Act & Assert
-        urlRule.Pattern.Should().Be("*.example.com");
-        urlRule.BrowserName.Should().Be("Test Browser");
-        urlRule.IsEnabled.Should().BeTrue();
-        urlRule.Priority.Should().Be(50, "デフォルト優先度は50");
-        urlRule.Id.Should().NotBe(Guid.Empty, "IDが設定されること");
+        _ = urlRule.Pattern.Should().Be("*.example.com");
+        _ = urlRule.BrowserName.Should().Be("Test Browser");
+        _ = urlRule.IsEnabled.Should().BeTrue();
+        _ = urlRule.Priority.Should().Be(50, "デフォルト優先度は50");
+        _ = urlRule.Id.Should().NotBe(Guid.Empty, "IDが設定されること");
     }
 
     [Fact]
     public void UrlRule_WithEmptyPattern_ShouldNotBeValid()
     {
         // Arrange
-        var urlRule = new UrlRule
+        UrlRule urlRule = new()
         {
             Pattern = "",
             BrowserName = "Test Browser"
         };
 
         // Act & Assert
-        urlRule.Pattern.Should().BeEmpty("パターンが空であること");
+        _ = urlRule.Pattern.Should().BeEmpty("パターンが空であること");
     }
 
     [Fact]
     public void UrlRule_WithEmptyBrowserName_ShouldNotBeValid()
     {
         // Arrange
-        var urlRule = new UrlRule
+        UrlRule urlRule = new()
         {
             Pattern = "*.example.com",
             BrowserName = ""
         };
 
         // Act & Assert
-        urlRule.BrowserName.Should().BeEmpty("ブラウザ名が空であること");
+        _ = urlRule.BrowserName.Should().BeEmpty("ブラウザ名が空であること");
     }
 
     [Fact]
     public void UrlRule_IsMatch_WithValidPattern_ShouldReturnTrue()
     {
         // Arrange
-        var urlRule = new UrlRule
+        UrlRule urlRule = new()
         {
             Pattern = "*.example.com",
             BrowserName = "Test Browser"
         };
 
         // Act & Assert
-        urlRule.IsMatch("https://www.example.com").Should().BeTrue("マッチするURLはtrueを返すこと");
-        urlRule.IsMatch("https://sub.example.com").Should().BeTrue("サブドメインもマッチすること");
+        _ = urlRule.IsMatch("https://www.example.com").Should().BeTrue("マッチするURLはtrueを返すこと");
+        _ = urlRule.IsMatch("https://sub.example.com").Should().BeTrue("サブドメインもマッチすること");
     }
 
     [Fact]
     public void UrlRule_IsMatch_WithInvalidPattern_ShouldReturnFalse()
     {
         // Arrange
-        var urlRule = new UrlRule
+        UrlRule urlRule = new()
         {
             Pattern = "*.example.com",
             BrowserName = "Test Browser"
         };
 
         // Act & Assert
-        urlRule.IsMatch("https://www.different.com").Should().BeFalse("マッチしないURLはfalseを返すこと");
-        urlRule.IsMatch("").Should().BeFalse("空URLはfalseを返すこと");
+        _ = urlRule.IsMatch("https://www.different.com").Should().BeFalse("マッチしないURLはfalseを返すこと");
+        _ = urlRule.IsMatch("").Should().BeFalse("空URLはfalseを返すこと");
     }
 
     [Fact]
     public void UrlRule_DisplayName_ShouldReturnCorrectFormat()
     {
         // Arrange
-        var urlRule = new UrlRule
+        UrlRule urlRule = new()
         {
             Pattern = "*.example.com",
             BrowserName = "Test Browser",
@@ -361,14 +360,14 @@ public class CoreModelsTests
         };
 
         // Act & Assert
-        urlRule.DisplayName.Should().Be("*.example.com → Test Browser (優先度: 75)", "表示名が正しい形式であること");
+        _ = urlRule.DisplayName.Should().Be("*.example.com → Test Browser (優先度: 75)", "表示名が正しい形式であること");
     }
 
     [Fact]
     public void UrlRule_GetDetails_ShouldReturnDetailedInfo()
     {
         // Arrange
-        var urlRule = new UrlRule
+        UrlRule urlRule = new()
         {
             Pattern = "*.example.com",
             BrowserName = "Test Browser",
@@ -378,13 +377,13 @@ public class CoreModelsTests
         };
 
         // Act
-        var details = urlRule.GetDetails();
+        string details = urlRule.GetDetails();
 
         // Assert
-        details.Should().Contain("*.example.com", "パターンが含まれること");
-        details.Should().Contain("Test Browser", "ブラウザ名が含まれること");
-        details.Should().Contain("75", "優先度が含まれること");
-        details.Should().Contain("有効", "状態が含まれること");
-        details.Should().Contain("Test description", "説明が含まれること");
+        _ = details.Should().Contain("*.example.com", "パターンが含まれること");
+        _ = details.Should().Contain("Test Browser", "ブラウザ名が含まれること");
+        _ = details.Should().Contain("75", "優先度が含まれること");
+        _ = details.Should().Contain("有効", "状態が含まれること");
+        _ = details.Should().Contain("Test description", "説明が含まれること");
     }
 }

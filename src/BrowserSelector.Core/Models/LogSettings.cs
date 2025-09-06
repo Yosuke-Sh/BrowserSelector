@@ -80,7 +80,7 @@ public partial class LogSettings : ObservableObject
     /// </summary>
     public static string GetDefaultLogFolder()
     {
-        var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
         return Path.Combine(appDataPath, "BrowserSelector", "Logs");
     }
 
@@ -94,7 +94,7 @@ public partial class LogSettings : ObservableObject
             LogOutputFolder = GetDefaultLogFolder();
         }
 
-        var fileName = $"{LogFilePrefix}_{DateTime.Now:yyyyMMdd}.{LogFileSuffix}";
+        string fileName = $"{LogFilePrefix}_{DateTime.Now:yyyyMMdd}.{LogFileSuffix}";
         return Path.Combine(LogOutputFolder, fileName);
     }
 }

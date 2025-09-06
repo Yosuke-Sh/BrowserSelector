@@ -1,9 +1,9 @@
-using BrowserSelector.Infrastructure.Localization;
-using BrowserSelector.Core.Services;
 using BrowserSelector.Core.Models;
+using BrowserSelector.Core.Services;
+using BrowserSelector.Infrastructure.Localization;
 using FluentAssertions;
-using System.Globalization;
 using Moq;
+using System.Globalization;
 
 namespace BrowserSelector.UnitTests;
 
@@ -13,111 +13,111 @@ public class LocalizationServiceTests
     public void LocalizationService_GetString_ShouldReturnLocalizedString()
     {
         // Arrange
-        var mockCustomLanguageService = new Mock<ICustomLanguageService>();
-        mockCustomLanguageService.Setup(x => x.GetAvailableLanguagesAsync())
-            .ReturnsAsync(new List<LanguageInfo>
-            {
+        Mock<ICustomLanguageService> mockCustomLanguageService = new();
+        _ = mockCustomLanguageService.Setup(x => x.GetAvailableLanguagesAsync())
+            .ReturnsAsync(
+            [
                 new LanguageInfo("en-US", "English"),
                 new LanguageInfo("ja-JP", "日本語")
-            });
-        
-        var service = new LocalizationService(mockCustomLanguageService.Object);
+            ]);
+
+        LocalizationService service = new(mockCustomLanguageService.Object);
 
         // Act
-        var result = service.GetString("Common.OK");
+        string result = service.GetString("Common.OK");
 
         // Assert
-        result.Should().Be("OK");
+        _ = result.Should().Be("OK");
     }
 
     [Fact]
     public void LocalizationService_GetStringWithArgs_ShouldFormatString()
     {
         // Arrange
-        var mockCustomLanguageService = new Mock<ICustomLanguageService>();
-        mockCustomLanguageService.Setup(x => x.GetAvailableLanguagesAsync())
-            .ReturnsAsync(new List<LanguageInfo>
-            {
+        Mock<ICustomLanguageService> mockCustomLanguageService = new();
+        _ = mockCustomLanguageService.Setup(x => x.GetAvailableLanguagesAsync())
+            .ReturnsAsync(
+            [
                 new LanguageInfo("en-US", "English"),
                 new LanguageInfo("ja-JP", "日本語")
-            });
-        
-        var service = new LocalizationService(mockCustomLanguageService.Object);
+            ]);
+
+        LocalizationService service = new(mockCustomLanguageService.Object);
 
         // Act
-        var result = service.GetString("Common.Save", "test");
+        string result = service.GetString("Common.Save", "test");
 
         // Assert
-        result.Should().Be("Save");
+        _ = result.Should().Be("Save");
     }
 
     [Fact]
     public async Task LocalizationService_SetLanguage_ShouldChangeCulture()
     {
         // Arrange
-        var mockCustomLanguageService = new Mock<ICustomLanguageService>();
-        mockCustomLanguageService.Setup(x => x.GetAvailableLanguagesAsync())
-            .ReturnsAsync(new List<LanguageInfo>
-            {
+        Mock<ICustomLanguageService> mockCustomLanguageService = new();
+        _ = mockCustomLanguageService.Setup(x => x.GetAvailableLanguagesAsync())
+            .ReturnsAsync(
+            [
                 new LanguageInfo("en-US", "English"),
                 new LanguageInfo("ja-JP", "日本語")
-            });
-        
-        var service = new LocalizationService(mockCustomLanguageService.Object);
-        var japaneseCulture = new CultureInfo("ja-JP"); // 異なる言語を設定
-        var languageChanged = false;
+            ]);
+
+        LocalizationService service = new(mockCustomLanguageService.Object);
+        CultureInfo japaneseCulture = new("ja-JP"); // 異なる言語を設定
+        bool languageChanged = false;
         service.LanguageChanged += (sender, e) => languageChanged = true;
 
         // Act
         await service.SetLanguage(japaneseCulture);
 
         // Assert
-        service.CurrentCulture.Should().Be(japaneseCulture);
-        languageChanged.Should().BeTrue();
+        _ = service.CurrentCulture.Should().Be(japaneseCulture);
+        _ = languageChanged.Should().BeTrue();
     }
 
     [Fact]
     public void LocalizationService_SupportedLanguages_ShouldContainExpectedLanguages()
     {
         // Arrange
-        var mockCustomLanguageService = new Mock<ICustomLanguageService>();
-        mockCustomLanguageService.Setup(x => x.GetAvailableLanguagesAsync())
-            .ReturnsAsync(new List<LanguageInfo>
-            {
+        Mock<ICustomLanguageService> mockCustomLanguageService = new();
+        _ = mockCustomLanguageService.Setup(x => x.GetAvailableLanguagesAsync())
+            .ReturnsAsync(
+            [
                 new LanguageInfo("en-US", "English"),
                 new LanguageInfo("ja-JP", "日本語")
-            });
-        
-        var service = new LocalizationService(mockCustomLanguageService.Object);
+            ]);
+
+        LocalizationService service = new(mockCustomLanguageService.Object);
 
         // Act
-        var supportedLanguages = service.SupportedLanguages.ToList();
+        List<CultureInfo> supportedLanguages = service.SupportedLanguages.ToList();
 
         // Assert
-        supportedLanguages.Should().HaveCount(2);
-        supportedLanguages.Should().Contain(l => l.Name == "ja-JP");
-        supportedLanguages.Should().Contain(l => l.Name == "en-US");
+        _ = supportedLanguages.Should().HaveCount(2);
+        _ = supportedLanguages.Should().Contain(l => l.Name == "ja-JP");
+        _ = supportedLanguages.Should().Contain(l => l.Name == "en-US");
     }
 
     [Fact]
     public void LocalizationService_GetStringWithUnknownKey_ShouldReturnKey()
     {
         // Arrange
-        var mockCustomLanguageService = new Mock<ICustomLanguageService>();
-        mockCustomLanguageService.Setup(x => x.GetAvailableLanguagesAsync())
-            .ReturnsAsync(new List<LanguageInfo>
-            {
+        Mock<ICustomLanguageService> mockCustomLanguageService = new();
+        _ = mockCustomLanguageService.Setup(x => x.GetAvailableLanguagesAsync())
+            .ReturnsAsync(
+            [
                 new LanguageInfo("en-US", "English"),
                 new LanguageInfo("ja-JP", "日本語")
-            });
-        
-        var service = new LocalizationService(mockCustomLanguageService.Object);
-        var unknownKey = "Unknown.Key";
+            ]);
+
+        LocalizationService service = new(mockCustomLanguageService.Object);
+        string unknownKey = "Unknown.Key";
 
         // Act
-        var result = service.GetString(unknownKey);
+        string result = service.GetString(unknownKey);
 
         // Assert
-        result.Should().Be(unknownKey);
+        _ = result.Should().Be(unknownKey);
     }
 }

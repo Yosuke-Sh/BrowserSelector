@@ -16,7 +16,7 @@ public partial class LanguageManagementViewModel : ObservableObject
     private readonly ILogService? _logService;
 
     [ObservableProperty]
-    private ObservableCollection<LanguageInfo> _availableLanguages = new();
+    private ObservableCollection<LanguageInfo> _availableLanguages = [];
 
     [ObservableProperty]
     private LanguageInfo? _selectedLanguage;
@@ -28,7 +28,7 @@ public partial class LanguageManagementViewModel : ObservableObject
     private string _newLanguageName = string.Empty;
 
     [ObservableProperty]
-    private ObservableCollection<LanguageCodeInfo> _availableLanguageCodes = new();
+    private ObservableCollection<LanguageCodeInfo> _availableLanguageCodes = [];
 
     [ObservableProperty]
     private LanguageCodeInfo? _selectedLanguageCode;
@@ -61,9 +61,9 @@ public partial class LanguageManagementViewModel : ObservableObject
     private void InitializeLanguageCodes()
     {
         AvailableLanguageCodes.Clear();
-        
+
         // 主要な言語コードを追加
-        var languageCodes = new[]
+        LanguageCodeInfo[] languageCodes = new[]
         {
             new LanguageCodeInfo("zh-CN", "Chinese (Simplified)", "中文 (简体)"),
             new LanguageCodeInfo("zh-TW", "Chinese (Traditional)", "中文 (繁體)"),
@@ -156,7 +156,7 @@ public partial class LanguageManagementViewModel : ObservableObject
             new LanguageCodeInfo("nso-ZA", "Northern Sotho", "Sesotho sa Leboa")
         };
 
-        foreach (var lang in languageCodes)
+        foreach (LanguageCodeInfo? lang in languageCodes)
         {
             AvailableLanguageCodes.Add(lang);
         }
@@ -188,9 +188,9 @@ public partial class LanguageManagementViewModel : ObservableObject
         try
         {
             AvailableLanguages.Clear();
-            var languages = await _customLanguageService.GetAvailableLanguagesAsync();
-            
-            foreach (var language in languages)
+            IEnumerable<Core.Models.LanguageInfo> languages = await _customLanguageService.GetAvailableLanguagesAsync();
+
+            foreach (Core.Models.LanguageInfo language in languages)
             {
                 AvailableLanguages.Add(new LanguageInfo(language.CultureCode, language.DisplayName));
             }
@@ -225,7 +225,7 @@ public partial class LanguageManagementViewModel : ObservableObject
             // カルチャーコードの検証
             try
             {
-                var culture = new CultureInfo(NewLanguageCode);
+                CultureInfo culture = new(NewLanguageCode);
             }
             catch
             {
@@ -233,8 +233,8 @@ public partial class LanguageManagementViewModel : ObservableObject
                 return;
             }
 
-            var success = await _customLanguageService.GenerateLanguageTemplateAsync(NewLanguageCode, NewLanguageName);
-            
+            bool success = await _customLanguageService.GenerateLanguageTemplateAsync(NewLanguageCode, NewLanguageName);
+
             if (success)
             {
                 StatusMessage = $"言語テンプレートを生成しました: {NewLanguageName} ({NewLanguageCode})";
@@ -272,7 +272,7 @@ public partial class LanguageManagementViewModel : ObservableObject
         }
 
         // デフォルト言語は削除不可
-        if (SelectedLanguage.CultureCode == "en-US" || SelectedLanguage.CultureCode == "ja-JP")
+        if (SelectedLanguage.CultureCode is "en-US" or "ja-JP")
         {
             StatusMessage = "デフォルト言語は削除できません";
             return;
@@ -280,8 +280,8 @@ public partial class LanguageManagementViewModel : ObservableObject
 
         try
         {
-            var success = await _customLanguageService.RemoveCustomLanguageAsync(SelectedLanguage.CultureCode);
-            
+            bool success = await _customLanguageService.RemoveCustomLanguageAsync(SelectedLanguage.CultureCode);
+
             if (success)
             {
                 StatusMessage = $"言語を削除しました: {SelectedLanguage.DisplayName}";
@@ -308,14 +308,14 @@ public partial class LanguageManagementViewModel : ObservableObject
     {
         try
         {
-            var folderPath = _customLanguageService.GetCustomLanguageFolder();
-            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            string folderPath = _customLanguageService.GetCustomLanguageFolder();
+            _ = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
             {
                 FileName = folderPath,
                 UseShellExecute = true,
                 Verb = "open"
             });
-            
+
             StatusMessage = $"言語フォルダを開きました: {folderPath}";
             _logService?.LogDebug($"言語フォルダを開きました: {folderPath}", "LanguageManagementViewModel");
         }
@@ -340,25 +340,18 @@ public partial class LanguageManagementViewModel : ObservableObject
 
         try
         {
-            var fileName = $"{SelectedLanguage.CultureCode}.json";
-            var filePath = System.IO.Path.Combine(_customLanguageService.GetCustomLanguageFolder(), fileName);
-            
+            string fileName = $"{SelectedLanguage.CultureCode}.json";
+            string filePath = System.IO.Path.Combine(_customLanguageService.GetCustomLanguageFolder(), fileName);
+
             if (!System.IO.File.Exists(filePath))
             {
                 StatusMessage = "言語ファイルが見つかりません";
                 return;
             }
 
-            var isValid = await _customLanguageService.ValidateLanguageFileAsync(filePath);
-            
-            if (isValid)
-            {
-                StatusMessage = $"言語ファイルは有効です: {SelectedLanguage.DisplayName}";
-            }
-            else
-            {
-                StatusMessage = $"言語ファイルに問題があります: {SelectedLanguage.DisplayName}";
-            }
+            bool isValid = await _customLanguageService.ValidateLanguageFileAsync(filePath);
+
+            StatusMessage = isValid ? $"言語ファイルは有効です: {SelectedLanguage.DisplayName}" : $"言語ファイルに問題があります: {SelectedLanguage.DisplayName}";
         }
         catch (Exception ex)
         {

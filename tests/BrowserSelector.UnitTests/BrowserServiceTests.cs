@@ -23,8 +23,8 @@ public class BrowserServiceTests
     public async Task DetectBrowsersAsync_WithValidBrowsers_ShouldReturnBrowsers()
     {
         // Arrange
-        var expectedBrowsers = new List<Browser>
-        {
+        List<Browser> expectedBrowsers =
+        [
             new Browser
             {
                 Name = "Google Chrome",
@@ -39,143 +39,143 @@ public class BrowserServiceTests
                 Type = BrowserType.Firefox,
                 DisplayOrder = 2
             }
-        };
+        ];
 
-        _mockRegistryService
+        _ = _mockRegistryService
             .Setup(x => x.DetectBrowsersFromRegistryAsync())
             .ReturnsAsync(expectedBrowsers);
 
         // Act
-        var result = await _browserService.DetectBrowsersAsync();
+        IEnumerable<Browser> result = await _browserService.DetectBrowsersAsync();
 
         // Assert
-        result.Should().HaveCount(2);
-        result.Should().BeEquivalentTo(expectedBrowsers, options => options.Excluding(b => b.Id));
+        _ = result.Should().HaveCount(2);
+        _ = result.Should().BeEquivalentTo(expectedBrowsers, options => options.Excluding(b => b.Id));
     }
 
     [Fact]
     public async Task DetectBrowsersAsync_WithNoBrowsers_ShouldReturnEmpty()
     {
         // Arrange
-        _mockRegistryService
+        _ = _mockRegistryService
             .Setup(x => x.DetectBrowsersFromRegistryAsync())
-            .ReturnsAsync(new List<Browser>());
+            .ReturnsAsync([]);
 
         // Act
-        var result = await _browserService.DetectBrowsersAsync();
+        IEnumerable<Browser> result = await _browserService.DetectBrowsersAsync();
 
         // Assert
-        result.Should().BeEmpty();
+        _ = result.Should().BeEmpty();
     }
 
     [Fact]
     public async Task DetectBrowsersAsync_WithException_ShouldReturnEmpty()
     {
         // Arrange
-        _mockRegistryService
+        _ = _mockRegistryService
             .Setup(x => x.DetectBrowsersFromRegistryAsync())
             .ThrowsAsync(new Exception("Test exception"));
 
         // Act
-        var result = await _browserService.DetectBrowsersAsync();
+        IEnumerable<Browser> result = await _browserService.DetectBrowsersAsync();
 
         // Assert
-        result.Should().BeEmpty();
+        _ = result.Should().BeEmpty();
     }
 
     [Fact]
     public async Task AddBrowserAsync_WithValidBrowser_ShouldReturnTrue()
     {
         // Arrange
-        var browser = new Browser
+        Browser browser = new()
         {
             Name = "Test Browser",
             ExecutablePath = @"C:\Test\browser.exe"
         };
 
-        _mockRegistryService
+        _ = _mockRegistryService
             .Setup(x => x.DetectBrowsersFromRegistryAsync())
-            .ReturnsAsync(new List<Browser>());
+            .ReturnsAsync([]);
 
         // Act
-        var result = await _browserService.AddBrowserAsync(browser);
+        bool result = await _browserService.AddBrowserAsync(browser);
 
         // Assert
-        result.Should().BeTrue();
-        browser.Type.Should().Be(BrowserType.Custom);
+        _ = result.Should().BeTrue();
+        _ = browser.Type.Should().Be(BrowserType.Custom);
     }
 
     [Fact]
     public async Task AddBrowserAsync_WithInvalidBrowser_ShouldReturnFalse()
     {
         // Arrange
-        var browser = new Browser
+        Browser browser = new()
         {
             Name = "",
             ExecutablePath = ""
         };
 
         // Act
-        var result = await _browserService.AddBrowserAsync(browser);
+        bool result = await _browserService.AddBrowserAsync(browser);
 
         // Assert
-        result.Should().BeFalse();
+        _ = result.Should().BeFalse();
     }
 
     [Fact]
     public async Task RemoveBrowserAsync_WithCustomBrowser_ShouldReturnTrue()
     {
         // Arrange
-        var browser = new Browser
+        Browser browser = new()
         {
             Name = "Test Browser",
             ExecutablePath = @"C:\Test\browser.exe",
             Type = BrowserType.Custom
         };
 
-        _mockRegistryService
+        _ = _mockRegistryService
             .Setup(x => x.DetectBrowsersFromRegistryAsync())
-            .ReturnsAsync(new List<Browser>());
+            .ReturnsAsync([]);
 
-        await _browserService.AddBrowserAsync(browser);
+        _ = await _browserService.AddBrowserAsync(browser);
 
         // Act
-        var result = await _browserService.RemoveBrowserAsync(browser.Id);
+        bool result = await _browserService.RemoveBrowserAsync(browser.Id);
 
         // Assert
-        result.Should().BeTrue();
+        _ = result.Should().BeTrue();
     }
 
     [Fact]
     public async Task RemoveBrowserAsync_WithSystemBrowser_ShouldReturnFalse()
     {
         // Arrange
-        var browser = new Browser
+        Browser browser = new()
         {
             Name = "Google Chrome",
             ExecutablePath = @"C:\Program Files\Google\Chrome\Application\chrome.exe",
             Type = BrowserType.Chrome
         };
 
-        _mockRegistryService
+        _ = _mockRegistryService
             .Setup(x => x.DetectBrowsersFromRegistryAsync())
-            .ReturnsAsync(new List<Browser> { browser });
+            .ReturnsAsync([browser]);
 
-        await _browserService.DetectBrowsersAsync();
+        _ = await _browserService.DetectBrowsersAsync();
 
         // Act
-        var result = await _browserService.RemoveBrowserAsync(browser.Id);
+        bool result = await _browserService.RemoveBrowserAsync(browser.Id);
 
         // Assert - 現在の実装ではシステムブラウザも削除可能
-        result.Should().BeTrue();
+        _ = result.Should().BeTrue();
     }
 
     [Fact]
     public async Task GetAllBrowsersAsync_ShouldReturnOrderedBrowsers()
     {
         // Arrange
-        var browsers = new List<Browser>
-        {
+        List<Browser> browsers =
+        [
             new Browser
             {
                 Name = "Firefox",
@@ -188,20 +188,20 @@ public class BrowserServiceTests
                 ExecutablePath = @"C:\Chrome\chrome.exe",
                 DisplayOrder = 1
             }
-        };
+        ];
 
-        _mockRegistryService
+        _ = _mockRegistryService
             .Setup(x => x.DetectBrowsersFromRegistryAsync())
             .ReturnsAsync(browsers);
 
         // Act - まずブラウザを検出してから取得
-        await _browserService.DetectBrowsersAsync();
-        var result = await _browserService.GetAllBrowsersAsync();
+        _ = await _browserService.DetectBrowsersAsync();
+        IEnumerable<Browser> result = await _browserService.GetAllBrowsersAsync();
 
         // Assert
-        result.Should().HaveCount(2);
-        result.First().Name.Should().Be("Chrome");
-        result.Last().Name.Should().Be("Firefox");
+        _ = result.Should().HaveCount(2);
+        _ = result.First().Name.Should().Be("Chrome");
+        _ = result.Last().Name.Should().Be("Firefox");
     }
 }
 

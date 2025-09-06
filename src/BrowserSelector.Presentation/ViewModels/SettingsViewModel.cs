@@ -7,8 +7,6 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Win32;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
-using System.Text.Json;
 using System.Windows;
 using System.Windows.Media;
 
@@ -39,10 +37,7 @@ public partial class SettingsViewModel : ObservableObject
     private readonly ISettingsService _settingsService;
     private readonly IBrowserService _browserService;
     private readonly ILocalizationService _localizationService;
-    private readonly ICustomLanguageService _customLanguageService;
     private readonly IUrlRuleService _urlRuleService;
-    private readonly ILogService _logService;
-
     [ObservableProperty]
     private AppSettings _appSettings = new();
 
@@ -50,10 +45,10 @@ public partial class SettingsViewModel : ObservableObject
     private VisualSettings _visualSettings = new();
 
     [ObservableProperty]
-    private ObservableCollection<Browser> _detectedBrowsers = new();
+    private ObservableCollection<Browser> _detectedBrowsers = [];
 
     [ObservableProperty]
-    private ObservableCollection<LanguageInfo> _availableLanguages = new();
+    private ObservableCollection<LanguageInfo> _availableLanguages = [];
 
     [ObservableProperty]
     private LanguageInfo? _selectedLanguage;
@@ -64,21 +59,21 @@ public partial class SettingsViewModel : ObservableObject
         {
             // 言語設定を更新
             AppSettings.Language = value.CultureCode;
-            
+
             // ローカライゼーションサービスに言語変更を通知（非同期で実行）
             var culture = new System.Globalization.CultureInfo(value.CultureCode);
-            _ = Task.Run(async () => 
+            _ = Task.Run(async () =>
             {
                 await _localizationService.SetLanguage(culture);
-                await _settingsService.SaveAppSettingsAsync(AppSettings);
+                _ = await _settingsService.SaveAppSettingsAsync(AppSettings);
             });
-            
-            LocalizedLogHelper.LogLanguageChanged(_logService, "SettingsViewModel", value.CultureCode);
+
+            LocalizedLogHelper.LogLanguageChanged(LogService, "SettingsViewModel", value.CultureCode);
         }
     }
 
     [ObservableProperty]
-    private ObservableCollection<LogLevelInfo> _availableLogLevels = new();
+    private ObservableCollection<LogLevelInfo> _availableLogLevels = [];
 
     [ObservableProperty]
     private LogLevelInfo? _selectedLogLevel;
@@ -105,7 +100,7 @@ public partial class SettingsViewModel : ObservableObject
 
     // URLルール関連
     [ObservableProperty]
-    private ObservableCollection<UrlRule> _urlRules = new();
+    private ObservableCollection<UrlRule> _urlRules = [];
 
     [ObservableProperty]
     private string _testUrl = string.Empty;
@@ -139,9 +134,9 @@ public partial class SettingsViewModel : ObservableObject
         _settingsService = settingsService;
         _browserService = browserService;
         _localizationService = localizationService;
-        _customLanguageService = customLanguageService;
+        CustomLanguageService = customLanguageService;
         _urlRuleService = urlRuleService;
-        _logService = logService;
+        LogService = logService;
 
 
 
@@ -155,78 +150,78 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
-            _logService?.LogDebug("SettingsViewModel初期化開始", "SettingsViewModel");
+            LogService?.LogDebug("SettingsViewModel初期化開始", "SettingsViewModel");
 
             // 設定を読み込み
             AppSettings = await _settingsService.LoadAppSettingsAsync();
-            _logService?.LogDebug($"AppSettings読み込み完了: Language={AppSettings.Language}", "SettingsViewModel");
+            LogService?.LogDebug($"AppSettings読み込み完了: Language={AppSettings.Language}", "SettingsViewModel");
 
             VisualSettings = await _settingsService.LoadVisualSettingsAsync();
 
             // グラデーション設定の初期化（デフォルト値の設定）
-            _logService?.LogDebug($"初期化前のGradientDirection: {VisualSettings.GradientDirection}", "SettingsViewModel");
+            LogService?.LogDebug($"初期化前のGradientDirection: {VisualSettings.GradientDirection}", "SettingsViewModel");
 
             if (VisualSettings.UseBackgroundGradient)
             {
-                _logService?.LogDebug("グラデーションが有効です。初期値を設定します。", "SettingsViewModel");
+                LogService?.LogDebug("グラデーションが有効です。初期値を設定します。", "SettingsViewModel");
 
                 if (VisualSettings.GradientStartColor == Colors.Transparent)
                 {
                     VisualSettings.GradientStartColor = Colors.White;
-                    _logService?.LogDebug("グラデーション開始色をWhiteに設定", "SettingsViewModel");
+                    LogService?.LogDebug("グラデーション開始色をWhiteに設定", "SettingsViewModel");
                 }
                 if (VisualSettings.GradientEndColor == Colors.Transparent)
                 {
                     VisualSettings.GradientEndColor = Colors.LightGray;
-                    _logService?.LogDebug("グラデーション終了色をLightGrayに設定", "SettingsViewModel");
+                    LogService?.LogDebug("グラデーション終了色をLightGrayに設定", "SettingsViewModel");
                 }
                 // グラデーション方向の初期値を確実に設定
                 if (VisualSettings.GradientDirection == 0)
                 {
                     VisualSettings.GradientDirection = BrowserSelector.Core.Enums.GradientDirection.Vertical;
-                    _logService?.LogDebug("グラデーション方向をVerticalに設定（初期値0から変更）", "SettingsViewModel");
+                    LogService?.LogDebug("グラデーション方向をVerticalに設定（初期値0から変更）", "SettingsViewModel");
                 }
                 else
                 {
-                    _logService?.LogDebug($"グラデーション方向は既に設定済み: {VisualSettings.GradientDirection}", "SettingsViewModel");
+                    LogService?.LogDebug($"グラデーション方向は既に設定済み: {VisualSettings.GradientDirection}", "SettingsViewModel");
                 }
             }
             else
             {
-                _logService?.LogDebug("グラデーションは無効です", "SettingsViewModel");
+                LogService?.LogDebug("グラデーションは無効です", "SettingsViewModel");
             }
 
-            _logService?.LogDebug($"VisualSettings読み込み完了: BackgroundColor={VisualSettings.BackgroundColor}, UseBackgroundGradient={VisualSettings.UseBackgroundGradient}, GradientDirection={VisualSettings.GradientDirection}", "SettingsViewModel");
+            LogService?.LogDebug($"VisualSettings読み込み完了: BackgroundColor={VisualSettings.BackgroundColor}, UseBackgroundGradient={VisualSettings.UseBackgroundGradient}, GradientDirection={VisualSettings.GradientDirection}", "SettingsViewModel");
 
             // 言語リストを初期化
             InitializeLanguages();
-            _logService?.LogDebug("言語リスト初期化完了", "SettingsViewModel");
+            LogService?.LogDebug("言語リスト初期化完了", "SettingsViewModel");
 
             // ブラウザリストを更新
             await RefreshBrowsersAsync();
-            _logService?.LogDebug("ブラウザリスト更新完了", "SettingsViewModel");
+            LogService?.LogDebug("ブラウザリスト更新完了", "SettingsViewModel");
 
             // URLルールリストを更新
             await RefreshUrlRulesAsync();
-            _logService?.LogDebug("URLルールリスト更新完了", "SettingsViewModel");
+            LogService?.LogDebug("URLルールリスト更新完了", "SettingsViewModel");
 
             // ログレベルの初期化（先に実行）
             InitializeLogLevels();
-            _logService?.LogDebug("ログレベル初期化完了", "SettingsViewModel");
+            LogService?.LogDebug("ログレベル初期化完了", "SettingsViewModel");
 
             // ログ設定の読み込み
             await LoadLogSettingsAsync();
-            _logService?.LogDebug("ログ設定読み込み完了", "SettingsViewModel");
+            LogService?.LogDebug("ログ設定読み込み完了", "SettingsViewModel");
 
             // プロパティ変更イベントを監視
             PropertyChanged += OnPropertyChanged;
-            _logService?.LogDebug("プロパティ変更イベント監視開始", "SettingsViewModel");
+            LogService?.LogDebug("プロパティ変更イベント監視開始", "SettingsViewModel");
 
-            _logService?.LogDebug("SettingsViewModel初期化完了", "SettingsViewModel");
+            LogService?.LogDebug("SettingsViewModel初期化完了", "SettingsViewModel");
         }
         catch (Exception ex)
         {
-            _logService?.LogError($"設定画面の初期化エラー: {ex.Message}", "SettingsViewModel", ex);
+            LogService?.LogError($"設定画面の初期化エラー: {ex.Message}", "SettingsViewModel", ex);
         }
     }
 
@@ -238,11 +233,11 @@ public partial class SettingsViewModel : ObservableObject
         try
         {
             AvailableLanguages.Clear();
-            
+
             // カスタム言語サービスから利用可能な言語を取得（ローカライズ不要の表示名）
-            var availableLanguages = await _customLanguageService.GetAvailableLanguagesAsync();
-            
-            foreach (var languageInfo in availableLanguages)
+            IEnumerable<Core.Models.LanguageInfo> availableLanguages = await CustomLanguageService.GetAvailableLanguagesAsync();
+
+            foreach (Core.Models.LanguageInfo languageInfo in availableLanguages)
             {
                 AvailableLanguages.Add(new LanguageInfo(languageInfo.CultureCode, languageInfo.DisplayName));
             }
@@ -250,13 +245,13 @@ public partial class SettingsViewModel : ObservableObject
             // 現在の言語を選択
             SelectedLanguage = AvailableLanguages.FirstOrDefault(l => l.CultureCode == AppSettings.Language)
                               ?? AvailableLanguages.First();
-            
-            _logService?.LogDebug($"言語リスト初期化完了: {AvailableLanguages.Count}個の言語", "SettingsViewModel");
+
+            LogService?.LogDebug($"言語リスト初期化完了: {AvailableLanguages.Count}個の言語", "SettingsViewModel");
         }
         catch (Exception ex)
         {
-            _logService?.LogError($"言語リストの初期化に失敗しました: {ex.Message}", "SettingsViewModel", ex);
-            
+            LogService?.LogError($"言語リストの初期化に失敗しました: {ex.Message}", "SettingsViewModel", ex);
+
             // フォールバック: デフォルト言語のみ
             AvailableLanguages.Clear();
             AvailableLanguages.Add(new LanguageInfo("en-US", "English"));
@@ -279,7 +274,7 @@ public partial class SettingsViewModel : ObservableObject
     /// </summary>
     public void RefreshLanguages()
     {
-        _ = Task.Run(async () => await InitializeLanguagesAsync());
+        _ = Task.Run(InitializeLanguagesAsync);
     }
 
     /// <summary>
@@ -290,11 +285,11 @@ public partial class SettingsViewModel : ObservableObject
         try
         {
             AvailableLanguages.Clear();
-            
+
             // カスタム言語サービスから利用可能な言語を取得（ローカライズ不要の表示名）
-            var availableLanguages = await _customLanguageService.GetAvailableLanguagesAsync();
-            
-            foreach (var languageInfo in availableLanguages)
+            IEnumerable<Core.Models.LanguageInfo> availableLanguages = await CustomLanguageService.GetAvailableLanguagesAsync();
+
+            foreach (Core.Models.LanguageInfo languageInfo in availableLanguages)
             {
                 AvailableLanguages.Add(new LanguageInfo(languageInfo.CultureCode, languageInfo.DisplayName));
             }
@@ -302,13 +297,13 @@ public partial class SettingsViewModel : ObservableObject
             // 現在の言語を選択
             SelectedLanguage = AvailableLanguages.FirstOrDefault(l => l.CultureCode == AppSettings.Language)
                               ?? AvailableLanguages.First();
-            
-            _logService?.LogDebug($"言語リスト初期化完了: {AvailableLanguages.Count}個の言語", "SettingsViewModel");
+
+            LogService?.LogDebug($"言語リスト初期化完了: {AvailableLanguages.Count}個の言語", "SettingsViewModel");
         }
         catch (Exception ex)
         {
-            _logService?.LogError($"言語リストの初期化に失敗しました: {ex.Message}", "SettingsViewModel", ex);
-            
+            LogService?.LogError($"言語リストの初期化に失敗しました: {ex.Message}", "SettingsViewModel", ex);
+
             // フォールバック: デフォルト言語のみ
             AvailableLanguages.Clear();
             AvailableLanguages.Add(new LanguageInfo("en-US", "English"));
@@ -321,12 +316,12 @@ public partial class SettingsViewModel : ObservableObject
     /// <summary>
     /// カスタム言語サービス（外部からアクセス可能）
     /// </summary>
-    public ICustomLanguageService CustomLanguageService => _customLanguageService;
+    public ICustomLanguageService CustomLanguageService { get; }
 
     /// <summary>
     /// ログサービス（外部からアクセス可能）
     /// </summary>
-    public ILogService LogService => _logService;
+    public ILogService LogService { get; }
 
     /// <summary>
     /// ブラウザリストを更新
@@ -335,9 +330,9 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
-            var browsers = await _browserService.GetAllBrowsersAsync();
+            IEnumerable<Browser> browsers = await _browserService.GetAllBrowsersAsync();
             DetectedBrowsers.Clear();
-            foreach (var browser in browsers)
+            foreach (Browser browser in browsers)
             {
                 DetectedBrowsers.Add(browser);
             }
@@ -354,9 +349,9 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
-            var rules = await _urlRuleService.GetAllRulesAsync();
+            IEnumerable<UrlRule> rules = await _urlRuleService.GetAllRulesAsync();
             UrlRules.Clear();
-            foreach (var rule in rules)
+            foreach (UrlRule rule in rules)
             {
                 UrlRules.Add(rule);
             }
@@ -377,10 +372,10 @@ public partial class SettingsViewModel : ObservableObject
             LogSettings = await _settingsService.LoadLogSettingsAsync();
 
             // 現在のログファイルパスを設定
-            CurrentLogFilePath = _logService.GetLogFilePath();
+            CurrentLogFilePath = LogService.GetLogFilePath();
 
             // ログサービスの設定を更新
-            _logService.UpdateSettings(LogSettings);
+            LogService.UpdateSettings(LogSettings);
 
             // 選択されたログレベルを設定
             SelectedLogLevel = AvailableLogLevels.FirstOrDefault(l => l.LogLevel == LogSettings.LogLevel);
@@ -413,10 +408,10 @@ public partial class SettingsViewModel : ObservableObject
             LogSettings.LogFileSuffix = "log";
 
             // 現在のログファイルパスを設定
-            CurrentLogFilePath = _logService.GetLogFilePath();
+            CurrentLogFilePath = LogService.GetLogFilePath();
 
             // ログサービスの設定を更新
-            _logService.UpdateSettings(LogSettings);
+            LogService.UpdateSettings(LogSettings);
 
             // 選択されたログレベルを設定
             SelectedLogLevel = AvailableLogLevels.FirstOrDefault(l => l.LogLevel == LogSettings.LogLevel);
@@ -450,44 +445,44 @@ public partial class SettingsViewModel : ObservableObject
     private async void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         // リアルタイムプレビューの更新
-        if (e.PropertyName == nameof(VisualSettings) ||
-            e.PropertyName == "VisualSettings.BackgroundColor" ||
-            e.PropertyName == "VisualSettings.UseBackgroundGradient" ||
-            e.PropertyName == "VisualSettings.GradientStartColor" ||
-            e.PropertyName == "VisualSettings.GradientEndColor" ||
-            e.PropertyName == "VisualSettings.GradientDirection")
+        if (e.PropertyName is (nameof(VisualSettings)) or
+            "VisualSettings.BackgroundColor" or
+            "VisualSettings.UseBackgroundGradient" or
+            "VisualSettings.GradientStartColor" or
+            "VisualSettings.GradientEndColor" or
+            "VisualSettings.GradientDirection")
         {
-            _logService?.LogDebug($"視覚設定プロパティ変更検知: {e.PropertyName}", "SettingsViewModel");
+            LogService?.LogDebug($"視覚設定プロパティ変更検知: {e.PropertyName}", "SettingsViewModel");
 
             // グラデーション方向の変更を詳細にログ出力
             if (e.PropertyName == "VisualSettings.GradientDirection")
             {
-                _logService?.LogDebug($"グラデーション方向が変更されました: {VisualSettings.GradientDirection}", "SettingsViewModel");
+                LogService?.LogDebug($"グラデーション方向が変更されました: {VisualSettings.GradientDirection}", "SettingsViewModel");
             }
 
             // グラデーションチェックボックスが有効になった時のデフォルト値設定
             if (e.PropertyName == "VisualSettings.UseBackgroundGradient" && VisualSettings.UseBackgroundGradient)
             {
-                _logService?.LogDebug("グラデーションチェックボックスが有効になりました。デフォルト値を設定します。", "SettingsViewModel");
+                LogService?.LogDebug("グラデーションチェックボックスが有効になりました。デフォルト値を設定します。", "SettingsViewModel");
 
                 if (VisualSettings.GradientStartColor == Colors.Transparent)
                 {
                     VisualSettings.GradientStartColor = Colors.White;
-                    _logService?.LogDebug("グラデーション開始色をWhiteに設定", "SettingsViewModel");
+                    LogService?.LogDebug("グラデーション開始色をWhiteに設定", "SettingsViewModel");
                 }
                 if (VisualSettings.GradientEndColor == Colors.Transparent)
                 {
                     VisualSettings.GradientEndColor = Colors.LightGray;
-                    _logService?.LogDebug("グラデーション終了色をLightGrayに設定", "SettingsViewModel");
+                    LogService?.LogDebug("グラデーション終了色をLightGrayに設定", "SettingsViewModel");
                 }
                 if (VisualSettings.GradientDirection == 0) // デフォルト値
                 {
                     VisualSettings.GradientDirection = BrowserSelector.Core.Enums.GradientDirection.Vertical;
-                    _logService?.LogDebug("グラデーション方向をVerticalに設定", "SettingsViewModel");
+                    LogService?.LogDebug("グラデーション方向をVerticalに設定", "SettingsViewModel");
                 }
                 else
                 {
-                    _logService?.LogDebug($"グラデーション方向は既に設定済み: {VisualSettings.GradientDirection}", "SettingsViewModel");
+                    LogService?.LogDebug($"グラデーション方向は既に設定済み: {VisualSettings.GradientDirection}", "SettingsViewModel");
                 }
             }
 
@@ -505,8 +500,8 @@ public partial class SettingsViewModel : ObservableObject
         if (e.PropertyName == nameof(SelectedLogLevel) && SelectedLogLevel != null)
         {
             LogSettings.LogLevel = SelectedLogLevel.LogLevel;
-            _logService?.UpdateSettings(LogSettings);
-            _logService?.LogInformation($"ログレベルが変更されました: {SelectedLogLevel.DisplayName}", "SettingsViewModel");
+            LogService?.UpdateSettings(LogSettings);
+            LogService?.LogInformation($"ログレベルが変更されました: {SelectedLogLevel.DisplayName}", "SettingsViewModel");
         }
     }
 
@@ -517,31 +512,31 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
-            _logService?.LogDebug("UpdateVisualSettingsAsync開始", "SettingsViewModel");
-            _logService?.LogDebug($"保存対象: UseBackgroundGradient={VisualSettings.UseBackgroundGradient}, GradientDirection={VisualSettings.GradientDirection}, StartColor={VisualSettings.GradientStartColor}, EndColor={VisualSettings.GradientEndColor}", "SettingsViewModel");
+            LogService?.LogDebug("UpdateVisualSettingsAsync開始", "SettingsViewModel");
+            LogService?.LogDebug($"保存対象: UseBackgroundGradient={VisualSettings.UseBackgroundGradient}, GradientDirection={VisualSettings.GradientDirection}, StartColor={VisualSettings.GradientStartColor}, EndColor={VisualSettings.GradientEndColor}", "SettingsViewModel");
 
             // グラデーション方向の詳細ログ
             if (VisualSettings.UseBackgroundGradient)
             {
-                _logService?.LogDebug($"グラデーション設定詳細: 方向={VisualSettings.GradientDirection} (値={Convert.ToInt32(VisualSettings.GradientDirection)})", "SettingsViewModel");
+                LogService?.LogDebug($"グラデーション設定詳細: 方向={VisualSettings.GradientDirection} (値={Convert.ToInt32(VisualSettings.GradientDirection)})", "SettingsViewModel");
             }
 
-            var result = await _settingsService.SaveVisualSettingsAsync(VisualSettings);
-            _logService?.LogDebug($"設定保存結果: {result}", "SettingsViewModel");
+            bool result = await _settingsService.SaveVisualSettingsAsync(VisualSettings);
+            LogService?.LogDebug($"設定保存結果: {result}", "SettingsViewModel");
 
             if (result)
             {
                 ApplyVisualToActiveWindow(VisualSettings);
-                _logService?.LogDebug("視覚設定の適用完了", "SettingsViewModel");
+                LogService?.LogDebug("視覚設定の適用完了", "SettingsViewModel");
             }
             else
             {
-                _logService?.LogWarning("設定の保存に失敗しました", "SettingsViewModel");
+                LogService?.LogWarning("設定の保存に失敗しました", "SettingsViewModel");
             }
         }
         catch (Exception ex)
         {
-            _logService?.LogError($"視覚設定更新エラー: {ex.Message}", "SettingsViewModel", ex);
+            LogService?.LogError($"視覚設定更新エラー: {ex.Message}", "SettingsViewModel", ex);
         }
     }
 
@@ -554,29 +549,29 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
-            _logService?.LogDebug("ApplyVisualToActiveWindow開始", "SettingsViewModel");
-            _logService?.LogDebug($"受領値: BackgroundColor={settings.BackgroundColor}", "SettingsViewModel");
+            LogService?.LogDebug("ApplyVisualToActiveWindow開始", "SettingsViewModel");
+            LogService?.LogDebug($"受領値: BackgroundColor={settings.BackgroundColor}", "SettingsViewModel");
 
-            var window = Application.Current?.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive)
+            Window? window = Application.Current?.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive)
                          ?? Application.Current?.MainWindow;
             if (window == null)
             {
-                _logService?.LogDebug("適用対象のウィンドウが見つかりません", "SettingsViewModel");
+                LogService?.LogDebug("適用対象のウィンドウが見つかりません", "SettingsViewModel");
                 return;
             }
 
-            _logService?.LogDebug($"適用対象ウィンドウ: {window.GetType().Name}, Title={window.Title}", "SettingsViewModel");
+            LogService?.LogDebug($"適用対象ウィンドウ: {window.GetType().Name}, Title={window.Title}", "SettingsViewModel");
 
             // 適用前の値を記録
-            var beforeBackground = window.Background;
-            _logService?.LogDebug($"適用前の背景: {beforeBackground}", "SettingsViewModel");
+            Brush beforeBackground = window.Background;
+            LogService?.LogDebug($"適用前の背景: {beforeBackground}", "SettingsViewModel");
 
 
 
             // 背景色 / グラデーション
             if (settings.UseBackgroundGradient)
             {
-                _logService?.LogDebug($"グラデーション設定開始: 方向={settings.GradientDirection}, 開始色={settings.GradientStartColor}, 終了色={settings.GradientEndColor}", "SettingsViewModel");
+                LogService?.LogDebug($"グラデーション設定開始: 方向={settings.GradientDirection}, 開始色={settings.GradientStartColor}, 終了色={settings.GradientEndColor}", "SettingsViewModel");
 
                 // グラデーション方向に応じてStartPointとEndPointを設定
                 System.Windows.Point startPoint, endPoint;
@@ -585,51 +580,51 @@ public partial class SettingsViewModel : ObservableObject
                     case BrowserSelector.Core.Enums.GradientDirection.Horizontal:
                         startPoint = new System.Windows.Point(0, 0);
                         endPoint = new System.Windows.Point(1, 0);
-                        _logService?.LogDebug("水平方向グラデーションを設定", "SettingsViewModel");
+                        LogService?.LogDebug("水平方向グラデーションを設定", "SettingsViewModel");
                         break;
                     case BrowserSelector.Core.Enums.GradientDirection.Diagonal:
                         startPoint = new System.Windows.Point(0, 0);
                         endPoint = new System.Windows.Point(1, 1);
-                        _logService?.LogDebug("斜め方向グラデーションを設定", "SettingsViewModel");
+                        LogService?.LogDebug("斜め方向グラデーションを設定", "SettingsViewModel");
                         break;
                     default: // Vertical
                         startPoint = new System.Windows.Point(0, 0);
                         endPoint = new System.Windows.Point(0, 1);
-                        _logService?.LogDebug("垂直方向グラデーションを設定", "SettingsViewModel");
+                        LogService?.LogDebug("垂直方向グラデーションを設定", "SettingsViewModel");
                         break;
                 }
 
-                var gradientBrush = new LinearGradientBrush
+                LinearGradientBrush gradientBrush = new()
                 {
                     StartPoint = startPoint,
                     EndPoint = endPoint,
-                    GradientStops = new GradientStopCollection
-                    {
+                    GradientStops =
+                    [
                         new GradientStop(settings.GradientStartColor, 0),
                         new GradientStop(settings.GradientEndColor, 1)
-                    }
+                    ]
                 };
 
                 window.Background = gradientBrush;
-                _logService?.LogDebug($"背景グラデーション設定完了: 方向={settings.GradientDirection}, 開始色={settings.GradientStartColor}, 終了色={settings.GradientEndColor}, 適用後={window.Background}", "SettingsViewModel");
+                LogService?.LogDebug($"背景グラデーション設定完了: 方向={settings.GradientDirection}, 開始色={settings.GradientStartColor}, 終了色={settings.GradientEndColor}, 適用後={window.Background}", "SettingsViewModel");
             }
             else
             {
-                _logService?.LogDebug($"背景色設定開始: 設定値={settings.BackgroundColor}", "SettingsViewModel");
+                LogService?.LogDebug($"背景色設定開始: 設定値={settings.BackgroundColor}", "SettingsViewModel");
 
-                var newBrush = new SolidColorBrush(settings.BackgroundColor);
+                SolidColorBrush newBrush = new(settings.BackgroundColor);
                 window.Background = newBrush;
 
-                _logService?.LogDebug($"背景色設定完了: 設定値={settings.BackgroundColor}, 適用後={window.Background}", "SettingsViewModel");
+                LogService?.LogDebug($"背景色設定完了: 設定値={settings.BackgroundColor}, 適用後={window.Background}", "SettingsViewModel");
             }
 
 
 
-            _logService?.LogDebug("ApplyVisualToActiveWindow完了", "SettingsViewModel");
+            LogService?.LogDebug("ApplyVisualToActiveWindow完了", "SettingsViewModel");
         }
         catch (Exception ex)
         {
-            _logService?.LogError($"視覚設定即時適用エラー: {ex.Message}", "SettingsViewModel", ex);
+            LogService?.LogError($"視覚設定即時適用エラー: {ex.Message}", "SettingsViewModel", ex);
         }
     }
 
@@ -643,25 +638,25 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
-            _logService?.LogInformation("ブラウザ再検出開始", "SettingsViewModel");
+            LogService?.LogInformation("ブラウザ再検出開始", "SettingsViewModel");
 
             // 明示的にブラウザ検出を実行
-            var browsers = await _browserService.DetectBrowsersAsync();
+            IEnumerable<Browser> browsers = await _browserService.DetectBrowsersAsync();
             DetectedBrowsers.Clear();
-            foreach (var browser in browsers)
+            foreach (Browser browser in browsers)
             {
                 DetectedBrowsers.Add(browser);
             }
 
-            _logService?.LogInformation($"ブラウザ再検出完了: {browsers.Count()}個のブラウザを検出", "SettingsViewModel");
-            
-            LocalizedMessageBox.Show($"ブラウザ {browsers.Count()} 個を検出しました。", "完了");
+            LogService?.LogInformation($"ブラウザ再検出完了: {browsers.Count()}個のブラウザを検出", "SettingsViewModel");
+
+            _ = LocalizedMessageBox.Show($"ブラウザ {browsers.Count()} 個を検出しました。", "完了");
         }
         catch (Exception ex)
         {
-            _logService?.LogError($"ブラウザ再検出エラー: {ex.Message}", "SettingsViewModel", ex);
-            
-            LocalizedMessageBox.ShowError($"ブラウザの再検出中にエラーが発生しました: {ex.Message}");
+            LogService?.LogError($"ブラウザ再検出エラー: {ex.Message}", "SettingsViewModel", ex);
+
+            _ = LocalizedMessageBox.ShowError($"ブラウザの再検出中にエラーが発生しました: {ex.Message}");
         }
     }
 
@@ -673,32 +668,32 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
-            _logService?.LogInformation("ブラウザ追加開始", "SettingsViewModel");
+            LogService?.LogInformation("ブラウザ追加開始", "SettingsViewModel");
 
-            var dialog = new Views.BrowserEditDialog(null, false, _logService);
+            Views.BrowserEditDialog dialog = new(null, false, LogService);
             if (dialog.ShowDialog() == true)
             {
-                var newBrowser = dialog.Browser;
+                Browser newBrowser = dialog.Browser;
                 newBrowser.DisplayOrder = DetectedBrowsers.Count + 1;
 
-                var result = await _browserService.AddBrowserAsync(newBrowser);
+                bool result = await _browserService.AddBrowserAsync(newBrowser);
                 if (result)
                 {
                     await RefreshBrowsersAsync();
-                    _logService?.LogInformation("ブラウザ追加完了", "SettingsViewModel");
-                    LocalizedMessageBox.Show("ブラウザを追加しました。", "完了");
+                    LogService?.LogInformation("ブラウザ追加完了", "SettingsViewModel");
+                    _ = LocalizedMessageBox.Show("ブラウザを追加しました。", "完了");
                 }
                 else
                 {
-                    _logService?.LogWarning("ブラウザ追加失敗", "SettingsViewModel");
-                    LocalizedMessageBox.ShowError("ブラウザの追加に失敗しました。");
+                    LogService?.LogWarning("ブラウザ追加失敗", "SettingsViewModel");
+                    _ = LocalizedMessageBox.ShowError("ブラウザの追加に失敗しました。");
                 }
             }
         }
         catch (Exception ex)
         {
-            _logService?.LogError($"ブラウザ追加エラー: {ex.Message}", "SettingsViewModel", ex);
-            LocalizedMessageBox.ShowError($"ブラウザの追加中にエラーが発生しました: {ex.Message}");
+            LogService?.LogError($"ブラウザ追加エラー: {ex.Message}", "SettingsViewModel", ex);
+            _ = LocalizedMessageBox.ShowError($"ブラウザの追加中にエラーが発生しました: {ex.Message}");
         }
     }
 
@@ -719,30 +714,30 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
-            _logService?.LogInformation("URLルール追加開始", "SettingsViewModel");
+            LogService?.LogInformation("URLルール追加開始", "SettingsViewModel");
 
-            var dialog = new Views.UrlRuleEditDialog(_browserService, _logService!);
+            Views.UrlRuleEditDialog dialog = new(_browserService, LogService!);
             if (dialog.ShowDialog() == true)
             {
-                var newRule = dialog.UrlRule;
-                var result = await _urlRuleService.AddRuleAsync(newRule);
+                UrlRule newRule = dialog.UrlRule;
+                bool result = await _urlRuleService.AddRuleAsync(newRule);
                 if (result)
                 {
                     await RefreshUrlRulesAsync();
-                    _logService?.LogInformation("URLルール追加完了", "SettingsViewModel");
-                    MessageBox.Show("URLルールを追加しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
+                    LogService?.LogInformation("URLルール追加完了", "SettingsViewModel");
+                    _ = MessageBox.Show("URLルールを追加しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
-                    _logService?.LogWarning("URLルール追加失敗", "SettingsViewModel");
-                    MessageBox.Show("URLルールの追加に失敗しました。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                    LogService?.LogWarning("URLルール追加失敗", "SettingsViewModel");
+                    _ = MessageBox.Show("URLルールの追加に失敗しました。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
         catch (Exception ex)
         {
-            _logService?.LogError($"URLルール追加エラー: {ex.Message}", "SettingsViewModel", ex);
-            MessageBox.Show($"URLルールの追加中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+            LogService?.LogError($"URLルール追加エラー: {ex.Message}", "SettingsViewModel", ex);
+            _ = MessageBox.Show($"URLルールの追加中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -754,30 +749,30 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
-            _logService?.LogInformation($"URLルール編集開始: {rule.Pattern}", "SettingsViewModel");
+            LogService?.LogInformation($"URLルール編集開始: {rule.Pattern}", "SettingsViewModel");
 
-            var dialog = new Views.UrlRuleEditDialog(rule, _browserService, _logService!);
+            Views.UrlRuleEditDialog dialog = new(rule, _browserService, LogService!);
             if (dialog.ShowDialog() == true)
             {
-                var updatedRule = dialog.UrlRule;
-                var result = await _urlRuleService.UpdateRuleAsync(updatedRule);
+                UrlRule updatedRule = dialog.UrlRule;
+                bool result = await _urlRuleService.UpdateRuleAsync(updatedRule);
                 if (result)
                 {
                     await RefreshUrlRulesAsync();
-                    _logService?.LogInformation("URLルール編集完了", "SettingsViewModel");
-                    MessageBox.Show("URLルールを更新しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
+                    LogService?.LogInformation("URLルール編集完了", "SettingsViewModel");
+                    _ = MessageBox.Show("URLルールを更新しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
-                    _logService?.LogWarning("URLルール編集失敗", "SettingsViewModel");
-                    MessageBox.Show("URLルールの更新に失敗しました。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                    LogService?.LogWarning("URLルール編集失敗", "SettingsViewModel");
+                    _ = MessageBox.Show("URLルールの更新に失敗しました。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
         catch (Exception ex)
         {
-            _logService?.LogError($"URLルール編集エラー: {ex.Message}", "SettingsViewModel", ex);
-            MessageBox.Show($"URLルールの編集中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+            LogService?.LogError($"URLルール編集エラー: {ex.Message}", "SettingsViewModel", ex);
+            _ = MessageBox.Show($"URLルールの編集中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -789,9 +784,9 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
-            _logService?.LogInformation($"URLルール削除開始: {rule.Pattern}", "SettingsViewModel");
+            LogService?.LogInformation($"URLルール削除開始: {rule.Pattern}", "SettingsViewModel");
 
-            var result = MessageBox.Show(
+            MessageBoxResult result = MessageBox.Show(
                 $"URLルール「{rule.Pattern}」を削除しますか？",
                 "削除確認",
                 MessageBoxButton.YesNo,
@@ -799,24 +794,24 @@ public partial class SettingsViewModel : ObservableObject
 
             if (result == MessageBoxResult.Yes)
             {
-                var deleteResult = await _urlRuleService.DeleteRuleAsync(rule.Id);
+                bool deleteResult = await _urlRuleService.DeleteRuleAsync(rule.Id);
                 if (deleteResult)
                 {
                     await RefreshUrlRulesAsync();
-                    _logService?.LogInformation("URLルール削除完了", "SettingsViewModel");
-                    MessageBox.Show("URLルールを削除しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
+                    LogService?.LogInformation("URLルール削除完了", "SettingsViewModel");
+                    _ = MessageBox.Show("URLルールを削除しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
-                    _logService?.LogWarning("URLルール削除失敗", "SettingsViewModel");
-                    MessageBox.Show("URLルールの削除に失敗しました。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                    LogService?.LogWarning("URLルール削除失敗", "SettingsViewModel");
+                    _ = MessageBox.Show("URLルールの削除に失敗しました。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
         catch (Exception ex)
         {
-            _logService?.LogError($"URLルール削除エラー: {ex.Message}", "SettingsViewModel", ex);
-            MessageBox.Show($"URLルールの削除中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+            LogService?.LogError($"URLルール削除エラー: {ex.Message}", "SettingsViewModel", ex);
+            _ = MessageBox.Show($"URLルールの削除中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -835,7 +830,7 @@ public partial class SettingsViewModel : ObservableObject
 
         try
         {
-            var matchingBrowser = await _urlRuleService.FindMatchingBrowserAsync(TestUrl, DetectedBrowsers);
+            Browser? matchingBrowser = await _urlRuleService.FindMatchingBrowserAsync(TestUrl, DetectedBrowsers);
             if (matchingBrowser != null)
             {
                 TestResult = LocalizedLogHelper.GetString("Settings.UrlRules.MatchFound", matchingBrowser.Name);
@@ -862,10 +857,10 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private void SelectBackgroundColor()
     {
-        var colorDialog = new System.Windows.Forms.ColorDialog();
+        System.Windows.Forms.ColorDialog colorDialog = new();
         if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
         {
-            var color = Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
+            Color color = Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
             VisualSettings.BackgroundColor = color;
         }
     }
@@ -876,10 +871,10 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private void SelectGradientStartColor()
     {
-        var colorDialog = new System.Windows.Forms.ColorDialog();
+        System.Windows.Forms.ColorDialog colorDialog = new();
         if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
         {
-            var color = Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
+            Color color = Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
             VisualSettings.GradientStartColor = color;
         }
     }
@@ -890,10 +885,10 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private void SelectGradientEndColor()
     {
-        var colorDialog = new System.Windows.Forms.ColorDialog();
+        System.Windows.Forms.ColorDialog colorDialog = new();
         if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
         {
-            var color = Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
+            Color color = Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
             VisualSettings.GradientEndColor = color;
         }
     }
@@ -906,10 +901,10 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private void SelectFocusColor()
     {
-        var colorDialog = new System.Windows.Forms.ColorDialog();
+        System.Windows.Forms.ColorDialog colorDialog = new();
         if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
         {
-            var color = Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
+            Color color = Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
             FocusColor = color;
         }
     }
@@ -920,10 +915,10 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private void SelectBrowserButtonBackgroundColor()
     {
-        var colorDialog = new System.Windows.Forms.ColorDialog();
+        System.Windows.Forms.ColorDialog colorDialog = new();
         if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
         {
-            var color = Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
+            Color color = Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
             VisualSettings.BrowserButtonBackgroundColor = color;
         }
     }
@@ -934,10 +929,10 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private void SelectBrowserButtonForegroundColor()
     {
-        var colorDialog = new System.Windows.Forms.ColorDialog();
+        System.Windows.Forms.ColorDialog colorDialog = new();
         if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
         {
-            var color = Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
+            Color color = Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
             VisualSettings.BrowserButtonForegroundColor = color;
         }
     }
@@ -950,7 +945,7 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
-            var result = await _settingsService.ResetSettingsAsync();
+            bool result = await _settingsService.ResetSettingsAsync();
             if (result)
             {
                 // 設定を再読み込み
@@ -972,9 +967,9 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
-            _logService?.LogInformation("設定インポート開始", "SettingsViewModel");
+            LogService?.LogInformation("設定インポート開始", "SettingsViewModel");
 
-            var openFileDialog = new OpenFileDialog
+            OpenFileDialog openFileDialog = new()
             {
                 Filter = "ZIP files (*.zip)|*.zip|JSON files (*.json)|*.json|All files (*.*)|*.*",
                 Title = "設定ファイル群を選択"
@@ -982,29 +977,29 @@ public partial class SettingsViewModel : ObservableObject
 
             if (openFileDialog.ShowDialog() == true)
             {
-                var result = await _settingsService.ImportSettingsAsync(openFileDialog.FileName);
+                bool result = await _settingsService.ImportSettingsAsync(openFileDialog.FileName);
                 if (result)
                 {
-                    _logService?.LogInformation($"設定インポート完了: {openFileDialog.FileName}", "SettingsViewModel");
-                    
+                    LogService?.LogInformation($"設定インポート完了: {openFileDialog.FileName}", "SettingsViewModel");
+
                     // 設定を再読み込み
                     AppSettings = await _settingsService.LoadAppSettingsAsync();
                     VisualSettings = await _settingsService.LoadVisualSettingsAsync();
                     await InitializeLanguagesAsync();
-                    
-                    LocalizedMessageBox.Show("設定ファイル群をインポートしました。", "完了");
+
+                    _ = LocalizedMessageBox.Show("設定ファイル群をインポートしました。", "完了");
                 }
                 else
                 {
-                    _logService?.LogWarning("設定インポート失敗", "SettingsViewModel");
-                    LocalizedMessageBox.ShowError("設定のインポートに失敗しました。");
+                    LogService?.LogWarning("設定インポート失敗", "SettingsViewModel");
+                    _ = LocalizedMessageBox.ShowError("設定のインポートに失敗しました。");
                 }
             }
         }
         catch (Exception ex)
         {
-            _logService?.LogError($"設定インポートエラー: {ex.Message}", "SettingsViewModel", ex);
-            LocalizedMessageBox.ShowError($"設定のインポート中にエラーが発生しました: {ex.Message}");
+            LogService?.LogError($"設定インポートエラー: {ex.Message}", "SettingsViewModel", ex);
+            _ = LocalizedMessageBox.ShowError($"設定のインポート中にエラーが発生しました: {ex.Message}");
         }
     }
 
@@ -1016,9 +1011,9 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
-            _logService?.LogInformation("設定エクスポート開始", "SettingsViewModel");
+            LogService?.LogInformation("設定エクスポート開始", "SettingsViewModel");
 
-            var saveFileDialog = new SaveFileDialog
+            SaveFileDialog saveFileDialog = new()
             {
                 Filter = "ZIP files (*.zip)|*.zip|JSON files (*.json)|*.json|All files (*.*)|*.*",
                 Title = "設定ファイル群を保存",
@@ -1027,23 +1022,23 @@ public partial class SettingsViewModel : ObservableObject
 
             if (saveFileDialog.ShowDialog() == true)
             {
-                var result = await _settingsService.ExportSettingsAsync(saveFileDialog.FileName);
+                bool result = await _settingsService.ExportSettingsAsync(saveFileDialog.FileName);
                 if (result)
                 {
-                    _logService?.LogInformation($"設定エクスポート完了: {saveFileDialog.FileName}", "SettingsViewModel");
-                    LocalizedMessageBox.Show("設定ファイル群をエクスポートしました。", "完了");
+                    LogService?.LogInformation($"設定エクスポート完了: {saveFileDialog.FileName}", "SettingsViewModel");
+                    _ = LocalizedMessageBox.Show("設定ファイル群をエクスポートしました。", "完了");
                 }
                 else
                 {
-                    _logService?.LogWarning("設定エクスポート失敗", "SettingsViewModel");
-                    LocalizedMessageBox.ShowError("設定のエクスポートに失敗しました。");
+                    LogService?.LogWarning("設定エクスポート失敗", "SettingsViewModel");
+                    _ = LocalizedMessageBox.ShowError("設定のエクスポートに失敗しました。");
                 }
             }
         }
         catch (Exception ex)
         {
-            _logService?.LogError($"設定エクスポートエラー: {ex.Message}", "SettingsViewModel", ex);
-            LocalizedMessageBox.ShowError($"設定のエクスポート中にエラーが発生しました: {ex.Message}");
+            LogService?.LogError($"設定エクスポートエラー: {ex.Message}", "SettingsViewModel", ex);
+            _ = LocalizedMessageBox.ShowError($"設定のエクスポート中にエラーが発生しました: {ex.Message}");
         }
     }
 
@@ -1053,7 +1048,7 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private async Task SaveSettings()
     {
-        _logService?.LogDebug("SaveSettingsコマンド実行開始", "SettingsViewModel");
+        LogService?.LogDebug("SaveSettingsコマンド実行開始", "SettingsViewModel");
         await SaveSettingsInternal();
     }
 
@@ -1061,24 +1056,24 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
-            _logService?.LogDebug("SaveSettings開始", "SettingsViewModel");
-            _logService?.LogDebug($"保存対象VisualSettings: BackgroundColor={VisualSettings.BackgroundColor}", "SettingsViewModel");
+            LogService?.LogDebug("SaveSettings開始", "SettingsViewModel");
+            LogService?.LogDebug($"保存対象VisualSettings: BackgroundColor={VisualSettings.BackgroundColor}", "SettingsViewModel");
 
             // アプリケーション設定を保存
-            var appSettingsResult = await _settingsService.SaveAppSettingsAsync(AppSettings);
-            _logService?.LogDebug($"AppSettings保存結果: {appSettingsResult}", "SettingsViewModel");
+            bool appSettingsResult = await _settingsService.SaveAppSettingsAsync(AppSettings);
+            LogService?.LogDebug($"AppSettings保存結果: {appSettingsResult}", "SettingsViewModel");
 
             // 視覚設定を保存
-            var visualSettingsResult = await _settingsService.SaveVisualSettingsAsync(VisualSettings);
-            _logService?.LogDebug($"VisualSettings保存結果: {visualSettingsResult}", "SettingsViewModel");
+            bool visualSettingsResult = await _settingsService.SaveVisualSettingsAsync(VisualSettings);
+            LogService?.LogDebug($"VisualSettings保存結果: {visualSettingsResult}", "SettingsViewModel");
 
             // ログ設定を保存
-            var logSettingsResult = await _settingsService.SaveLogSettingsAsync(LogSettings);
-            _logService?.LogDebug($"LogSettings保存結果: {logSettingsResult}", "SettingsViewModel");
+            bool logSettingsResult = await _settingsService.SaveLogSettingsAsync(LogSettings);
+            LogService?.LogDebug($"LogSettings保存結果: {logSettingsResult}", "SettingsViewModel");
 
             if (appSettingsResult && visualSettingsResult && logSettingsResult)
             {
-                _logService?.LogDebug("設定保存成功、メイン画面への反映開始", "SettingsViewModel");
+                LogService?.LogDebug("設定保存成功、メイン画面への反映開始", "SettingsViewModel");
 
                 // 設定変更通知を送信
                 SettingsChanged?.Invoke(this, new SettingsChangedEventArgs("VisualSettings", null, VisualSettings));
@@ -1086,26 +1081,26 @@ public partial class SettingsViewModel : ObservableObject
                 // メイン画面へ反映
                 ApplyVisualToActiveWindow(VisualSettings);
 
-                _logService?.LogDebug("メイン画面への反映完了", "SettingsViewModel");
+                LogService?.LogDebug("メイン画面への反映完了", "SettingsViewModel");
 
                 // 成功時はウィンドウを閉じる
                 if (Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.DataContext == this) is Window window)
                 {
-                    _logService?.LogDebug($"設定ウィンドウを閉じる: {window.GetType().Name}", "SettingsViewModel");
+                    LogService?.LogDebug($"設定ウィンドウを閉じる: {window.GetType().Name}", "SettingsViewModel");
                     window.DialogResult = true;
                     window.Close();
                 }
             }
             else
             {
-                _logService?.LogWarning($"設定保存に失敗: AppSettings={appSettingsResult}, VisualSettings={visualSettingsResult}", "SettingsViewModel");
+                LogService?.LogWarning($"設定保存に失敗: AppSettings={appSettingsResult}, VisualSettings={visualSettingsResult}", "SettingsViewModel");
             }
 
-            _logService?.LogDebug("SaveSettings完了", "SettingsViewModel");
+            LogService?.LogDebug("SaveSettings完了", "SettingsViewModel");
         }
         catch (Exception ex)
         {
-            _logService?.LogError($"設定保存エラー: {ex.Message}", "SettingsViewModel", ex);
+            LogService?.LogError($"設定保存エラー: {ex.Message}", "SettingsViewModel", ex);
         }
     }
 
@@ -1133,7 +1128,7 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
-            var folderDialog = new System.Windows.Forms.FolderBrowserDialog
+            System.Windows.Forms.FolderBrowserDialog folderDialog = new()
             {
                 Description = "ログ出力フォルダを選択してください",
                 SelectedPath = LogSettings.LogOutputFolder
@@ -1142,8 +1137,8 @@ public partial class SettingsViewModel : ObservableObject
             if (folderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 LogSettings.LogOutputFolder = folderDialog.SelectedPath;
-                CurrentLogFilePath = _logService.GetLogFilePath();
-                _logService.UpdateSettings(LogSettings);
+                CurrentLogFilePath = LogService.GetLogFilePath();
+                LogService.UpdateSettings(LogSettings);
             }
         }
         catch (Exception)
@@ -1159,9 +1154,9 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
-            var logContent = _logService.GetLogContent();
-            var logWindow = new Views.LogViewerWindow(logContent);
-            logWindow.ShowDialog();
+            string logContent = LogService.GetLogContent();
+            Views.LogViewerWindow logWindow = new(logContent);
+            _ = logWindow.ShowDialog();
         }
         catch (Exception)
         {
@@ -1176,13 +1171,13 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
-            var result = LocalizedMessageBox.ShowLogClearConfirm();
+            MessageBoxResult result = LocalizedMessageBox.ShowLogClearConfirm();
 
             if (result == MessageBoxResult.Yes)
             {
-                _logService.ClearLogs();
-                CurrentLogFilePath = _logService.GetLogFilePath();
-                LocalizedMessageBox.ShowLogClearComplete();
+                LogService.ClearLogs();
+                CurrentLogFilePath = LogService.GetLogFilePath();
+                _ = LocalizedMessageBox.ShowLogClearComplete();
             }
         }
         catch (Exception)
@@ -1198,12 +1193,12 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
-            var result = LocalizedMessageBox.ShowOldLogDeleteConfirm();
+            MessageBoxResult result = LocalizedMessageBox.ShowOldLogDeleteConfirm();
 
             if (result == MessageBoxResult.Yes)
             {
-                _logService.CleanupOldLogs();
-                LocalizedMessageBox.ShowOldLogDeleteComplete();
+                LogService.CleanupOldLogs();
+                _ = LocalizedMessageBox.ShowOldLogDeleteComplete();
             }
         }
         catch (Exception)
@@ -1223,20 +1218,20 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
-            var targetBrowser = browser ?? SelectedBrowser;
+            Browser? targetBrowser = browser ?? SelectedBrowser;
             if (targetBrowser == null)
             {
-                MessageBox.Show("編集するブラウザを選択してください。", "警告", MessageBoxButton.OK, MessageBoxImage.Warning);
+                _ = MessageBox.Show("編集するブラウザを選択してください。", "警告", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            _logService?.LogInformation($"ブラウザ編集開始: {targetBrowser.Name}", "SettingsViewModel");
+            LogService?.LogInformation($"ブラウザ編集開始: {targetBrowser.Name}", "SettingsViewModel");
 
             // システムで検出されたブラウザは、順序・アイコン・パラメーターのみ編集可能
             if (targetBrowser.Type != BrowserType.Custom)
             {
                 // システムブラウザの場合は、編集可能な項目を制限
-                var limitedBrowser = new Browser
+                Browser limitedBrowser = new()
                 {
                     Id = targetBrowser.Id,
                     Name = targetBrowser.Name,
@@ -1249,10 +1244,10 @@ public partial class SettingsViewModel : ObservableObject
                     IsDefault = targetBrowser.IsDefault
                 };
 
-                var systemBrowserDialog = new Views.BrowserEditDialog(limitedBrowser, true, _logService); // システムブラウザフラグ
+                Views.BrowserEditDialog systemBrowserDialog = new(limitedBrowser, true, LogService); // システムブラウザフラグ
                 if (systemBrowserDialog.ShowDialog() == true)
                 {
-                    var updatedBrowser = systemBrowserDialog.Browser;
+                    Browser updatedBrowser = systemBrowserDialog.Browser;
 
                     // システムブラウザの場合は、編集可能な項目のみ更新
                     targetBrowser.DisplayOrder = updatedBrowser.DisplayOrder;
@@ -1260,45 +1255,45 @@ public partial class SettingsViewModel : ObservableObject
                     targetBrowser.Arguments = updatedBrowser.Arguments;
                     targetBrowser.IsEnabled = updatedBrowser.IsEnabled;
 
-                    var result = await _browserService.UpdateBrowserAsync(targetBrowser);
+                    bool result = await _browserService.UpdateBrowserAsync(targetBrowser);
                     if (result)
                     {
                         await RefreshBrowsersAsync();
-                        _logService?.LogInformation($"システムブラウザ編集完了: {updatedBrowser.Name}", "SettingsViewModel");
-                        MessageBox.Show("ブラウザ設定を更新しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
+                        LogService?.LogInformation($"システムブラウザ編集完了: {updatedBrowser.Name}", "SettingsViewModel");
+                        _ = MessageBox.Show("ブラウザ設定を更新しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                     else
                     {
-                        _logService?.LogWarning("システムブラウザ更新失敗", "SettingsViewModel");
-                        MessageBox.Show("ブラウザ設定の更新に失敗しました。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                        LogService?.LogWarning("システムブラウザ更新失敗", "SettingsViewModel");
+                        _ = MessageBox.Show("ブラウザ設定の更新に失敗しました。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
                 return;
             }
 
-            var dialog = new Views.BrowserEditDialog(targetBrowser, false, _logService);
+            Views.BrowserEditDialog dialog = new(targetBrowser, false, LogService);
             if (dialog.ShowDialog() == true)
             {
-                var updatedBrowser = dialog.Browser;
+                Browser updatedBrowser = dialog.Browser;
 
-                var result = await _browserService.UpdateBrowserAsync(updatedBrowser);
+                bool result = await _browserService.UpdateBrowserAsync(updatedBrowser);
                 if (result)
                 {
                     await RefreshBrowsersAsync();
-                    _logService?.LogInformation($"ブラウザ編集完了: {updatedBrowser.Name}", "SettingsViewModel");
-                    MessageBox.Show("ブラウザを更新しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
+                    LogService?.LogInformation($"ブラウザ編集完了: {updatedBrowser.Name}", "SettingsViewModel");
+                    _ = MessageBox.Show("ブラウザを更新しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
-                    _logService?.LogWarning("ブラウザ更新失敗", "SettingsViewModel");
-                    MessageBox.Show("ブラウザの更新に失敗しました。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                    LogService?.LogWarning("ブラウザ更新失敗", "SettingsViewModel");
+                    _ = MessageBox.Show("ブラウザの更新に失敗しました。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
         catch (Exception ex)
         {
-            _logService?.LogError($"ブラウザ編集エラー: {ex.Message}", "SettingsViewModel", ex);
-            MessageBox.Show($"ブラウザの編集中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+            LogService?.LogError($"ブラウザ編集エラー: {ex.Message}", "SettingsViewModel", ex);
+            _ = MessageBox.Show($"ブラウザの編集中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -1310,14 +1305,14 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
-            var targetBrowser = browser ?? SelectedBrowser;
+            Browser? targetBrowser = browser ?? SelectedBrowser;
             if (targetBrowser == null)
             {
-                MessageBox.Show("削除するブラウザを選択してください。", "警告", MessageBoxButton.OK, MessageBoxImage.Warning);
+                _ = MessageBox.Show("削除するブラウザを選択してください。", "警告", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            _logService?.LogInformation($"ブラウザ削除開始: {targetBrowser.Name}", "SettingsViewModel");
+            LogService?.LogInformation($"ブラウザ削除開始: {targetBrowser.Name}", "SettingsViewModel");
 
             // システム検出ブラウザも削除可能にする
             // if (targetBrowser.Type != BrowserType.Custom)
@@ -1326,12 +1321,12 @@ public partial class SettingsViewModel : ObservableObject
             //     return;
             // }
 
-            var result = MessageBox.Show($"ブラウザ「{targetBrowser.Name}」を削除しますか？", "確認",
+            MessageBoxResult result = MessageBox.Show($"ブラウザ「{targetBrowser.Name}」を削除しますか？", "確認",
                                        MessageBoxButton.YesNo, MessageBoxImage.Question);
 
             if (result == MessageBoxResult.Yes)
             {
-                var deleteResult = await _browserService.RemoveBrowserAsync(targetBrowser.Id);
+                bool deleteResult = await _browserService.RemoveBrowserAsync(targetBrowser.Id);
                 if (deleteResult)
                 {
                     await RefreshBrowsersAsync();
@@ -1339,20 +1334,20 @@ public partial class SettingsViewModel : ObservableObject
                     {
                         SelectedBrowser = null;
                     }
-                    _logService?.LogInformation($"ブラウザ削除完了: {targetBrowser.Name}", "SettingsViewModel");
-                    MessageBox.Show("ブラウザを削除しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
+                    LogService?.LogInformation($"ブラウザ削除完了: {targetBrowser.Name}", "SettingsViewModel");
+                    _ = MessageBox.Show("ブラウザを削除しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
-                    _logService?.LogWarning("ブラウザ削除失敗", "SettingsViewModel");
-                    MessageBox.Show("ブラウザの削除に失敗しました。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                    LogService?.LogWarning("ブラウザ削除失敗", "SettingsViewModel");
+                    _ = MessageBox.Show("ブラウザの削除に失敗しました。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
         catch (Exception ex)
         {
-            _logService?.LogError($"ブラウザ削除エラー: {ex.Message}", "SettingsViewModel", ex);
-            MessageBox.Show($"ブラウザの削除中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+            LogService?.LogError($"ブラウザ削除エラー: {ex.Message}", "SettingsViewModel", ex);
+            _ = MessageBox.Show($"ブラウザの削除中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -1364,29 +1359,27 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
-            var currentIndex = DetectedBrowsers.IndexOf(browser);
+            int currentIndex = DetectedBrowsers.IndexOf(browser);
             if (currentIndex > 0)
             {
-                var previousBrowser = DetectedBrowsers[currentIndex - 1];
+                Browser previousBrowser = DetectedBrowsers[currentIndex - 1];
 
                 // DisplayOrderを交換
-                var tempOrder = browser.DisplayOrder;
-                browser.DisplayOrder = previousBrowser.DisplayOrder;
-                previousBrowser.DisplayOrder = tempOrder;
+                (previousBrowser.DisplayOrder, browser.DisplayOrder) = (browser.DisplayOrder, previousBrowser.DisplayOrder);
 
                 // コレクション内の順序を更新
                 DetectedBrowsers.Move(currentIndex, currentIndex - 1);
 
                 // サービスに保存
-                await _browserService.UpdateBrowserAsync(browser);
-                await _browserService.UpdateBrowserAsync(previousBrowser);
+                _ = await _browserService.UpdateBrowserAsync(browser);
+                _ = await _browserService.UpdateBrowserAsync(previousBrowser);
 
-                _logService?.LogInformation($"ブラウザ順序変更: {browser.Name} を上に移動", "SettingsViewModel");
+                LogService?.LogInformation($"ブラウザ順序変更: {browser.Name} を上に移動", "SettingsViewModel");
             }
         }
         catch (Exception ex)
         {
-            _logService?.LogError($"ブラウザ順序変更エラー: {ex.Message}", "SettingsViewModel", ex);
+            LogService?.LogError($"ブラウザ順序変更エラー: {ex.Message}", "SettingsViewModel", ex);
         }
     }
 
@@ -1398,29 +1391,27 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
-            var currentIndex = DetectedBrowsers.IndexOf(browser);
+            int currentIndex = DetectedBrowsers.IndexOf(browser);
             if (currentIndex < DetectedBrowsers.Count - 1)
             {
-                var nextBrowser = DetectedBrowsers[currentIndex + 1];
+                Browser nextBrowser = DetectedBrowsers[currentIndex + 1];
 
                 // DisplayOrderを交換
-                var tempOrder = browser.DisplayOrder;
-                browser.DisplayOrder = nextBrowser.DisplayOrder;
-                nextBrowser.DisplayOrder = tempOrder;
+                (nextBrowser.DisplayOrder, browser.DisplayOrder) = (browser.DisplayOrder, nextBrowser.DisplayOrder);
 
                 // コレクション内の順序を更新
                 DetectedBrowsers.Move(currentIndex, currentIndex + 1);
 
                 // サービスに保存
-                await _browserService.UpdateBrowserAsync(browser);
-                await _browserService.UpdateBrowserAsync(nextBrowser);
+                _ = await _browserService.UpdateBrowserAsync(browser);
+                _ = await _browserService.UpdateBrowserAsync(nextBrowser);
 
-                _logService?.LogInformation($"ブラウザ順序変更: {browser.Name} を下に移動", "SettingsViewModel");
+                LogService?.LogInformation($"ブラウザ順序変更: {browser.Name} を下に移動", "SettingsViewModel");
             }
         }
         catch (Exception ex)
         {
-            _logService?.LogError($"ブラウザ順序変更エラー: {ex.Message}", "SettingsViewModel", ex);
+            LogService?.LogError($"ブラウザ順序変更エラー: {ex.Message}", "SettingsViewModel", ex);
         }
     }
 

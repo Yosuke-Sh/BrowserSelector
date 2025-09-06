@@ -25,7 +25,7 @@ public class SettingsViewModelTests
         _mockUrlRuleService = new Mock<IUrlRuleService>();
 
         // デフォルトの設定を設定
-        _mockSettingsService
+        _ = _mockSettingsService
             .Setup(x => x.LoadAppSettingsAsync())
             .ReturnsAsync(new AppSettings
             {
@@ -33,7 +33,7 @@ public class SettingsViewModelTests
                 CloseAfterUrlRuleMatch = true
             });
 
-        _mockSettingsService
+        _ = _mockSettingsService
             .Setup(x => x.LoadVisualSettingsAsync())
             .ReturnsAsync(new VisualSettings
             {
@@ -45,13 +45,13 @@ public class SettingsViewModelTests
                 // TODO: 削除されたMessageTextColorプロパティのテストを更新
             });
 
-        _mockBrowserService
+        _ = _mockBrowserService
             .Setup(x => x.GetAllBrowsersAsync())
-            .ReturnsAsync(new List<Browser>());
+            .ReturnsAsync([]);
 
-        _mockUrlRuleService
+        _ = _mockUrlRuleService
             .Setup(x => x.GetAllRulesAsync())
-            .ReturnsAsync(new List<UrlRule>());
+            .ReturnsAsync([]);
 
         _mockLogService = new Mock<ILogService>();
 
@@ -68,114 +68,114 @@ public class SettingsViewModelTests
     public void SettingsViewModel_Constructor_ShouldInitializeCorrectly()
     {
         // Assert
-        _viewModel.Should().NotBeNull();
-        _viewModel.AppSettings.Should().NotBeNull();
-        _viewModel.VisualSettings.Should().NotBeNull();
-        _viewModel.AvailableLanguages.Should().HaveCount(2);
-        _viewModel.AvailableLogLevels.Should().HaveCount(6);
+        _ = _viewModel.Should().NotBeNull();
+        _ = _viewModel.AppSettings.Should().NotBeNull();
+        _ = _viewModel.VisualSettings.Should().NotBeNull();
+        _ = _viewModel.AvailableLanguages.Should().HaveCount(2);
+        _ = _viewModel.AvailableLogLevels.Should().HaveCount(6);
     }
 
     [Fact]
     public void SettingsViewModel_AvailableLanguages_ShouldContainJapaneseAndEnglish()
     {
         // Assert
-        _viewModel.AvailableLanguages.Should().Contain(l => l.CultureCode == "ja-JP" && l.DisplayName == "日本語");
-        _viewModel.AvailableLanguages.Should().Contain(l => l.CultureCode == "en-US" && l.DisplayName == "English");
+        _ = _viewModel.AvailableLanguages.Should().Contain(l => l.CultureCode == "ja-JP" && l.DisplayName == "日本語");
+        _ = _viewModel.AvailableLanguages.Should().Contain(l => l.CultureCode == "en-US" && l.DisplayName == "English");
     }
 
     [Fact]
     public void SettingsViewModel_AvailableLogLevels_ShouldContainAllLogLevels()
     {
         // Assert - ログレベルは英語で表示される
-        _viewModel.AvailableLogLevels.Should().Contain(l => l.DisplayName == "LogLevel.Trace");
-        _viewModel.AvailableLogLevels.Should().Contain(l => l.DisplayName == "LogLevel.Debug");
-        _viewModel.AvailableLogLevels.Should().Contain(l => l.DisplayName == "LogLevel.Information");
-        _viewModel.AvailableLogLevels.Should().Contain(l => l.DisplayName == "LogLevel.Warning");
-        _viewModel.AvailableLogLevels.Should().Contain(l => l.DisplayName == "LogLevel.Error");
-        _viewModel.AvailableLogLevels.Should().Contain(l => l.DisplayName == "LogLevel.Critical");
+        _ = _viewModel.AvailableLogLevels.Should().Contain(l => l.DisplayName == "LogLevel.Trace");
+        _ = _viewModel.AvailableLogLevels.Should().Contain(l => l.DisplayName == "LogLevel.Debug");
+        _ = _viewModel.AvailableLogLevels.Should().Contain(l => l.DisplayName == "LogLevel.Information");
+        _ = _viewModel.AvailableLogLevels.Should().Contain(l => l.DisplayName == "LogLevel.Warning");
+        _ = _viewModel.AvailableLogLevels.Should().Contain(l => l.DisplayName == "LogLevel.Error");
+        _ = _viewModel.AvailableLogLevels.Should().Contain(l => l.DisplayName == "LogLevel.Critical");
     }
 
     [Fact]
     public void SettingsViewModel_SelectedLanguage_ShouldBeSetToEnglishByDefault()
     {
         // Assert - デフォルト言語は英語
-        _viewModel.SelectedLanguage.Should().NotBeNull();
-        _viewModel.SelectedLanguage!.CultureCode.Should().Be("en-US");
+        _ = _viewModel.SelectedLanguage.Should().NotBeNull();
+        _ = _viewModel.SelectedLanguage!.CultureCode.Should().Be("en-US");
     }
 
     [Fact]
     public void SettingsViewModel_RefreshBrowsersCommand_ShouldBeAvailable()
     {
         // Assert
-        _viewModel.RefreshBrowsersCommand.Should().NotBeNull();
+        _ = _viewModel.RefreshBrowsersCommand.Should().NotBeNull();
     }
 
     [Fact]
     public void SettingsViewModel_ResetSettingsCommand_ShouldBeAvailable()
     {
         // Assert
-        _viewModel.ResetSettingsCommand.Should().NotBeNull();
+        _ = _viewModel.ResetSettingsCommand.Should().NotBeNull();
     }
 
     [Fact]
     public void SettingsViewModel_ImportSettingsCommand_ShouldBeAvailable()
     {
         // Assert
-        _viewModel.ImportSettingsCommand.Should().NotBeNull();
+        _ = _viewModel.ImportSettingsCommand.Should().NotBeNull();
     }
 
     [Fact]
     public void SettingsViewModel_ExportSettingsCommand_ShouldBeAvailable()
     {
         // Assert
-        _viewModel.ExportSettingsCommand.Should().NotBeNull();
+        _ = _viewModel.ExportSettingsCommand.Should().NotBeNull();
     }
 
     [Fact]
     public void SettingsViewModel_SaveSettingsCommand_ShouldBeAvailable()
     {
         // Assert
-        _viewModel.SaveSettingsCommand.Should().NotBeNull();
+        _ = _viewModel.SaveSettingsCommand.Should().NotBeNull();
     }
 
     [Fact]
     public void SettingsViewModel_CancelCommand_ShouldBeAvailable()
     {
         // Assert
-        _viewModel.CancelCommand.Should().NotBeNull();
+        _ = _viewModel.CancelCommand.Should().NotBeNull();
     }
 
     [Fact]
     public void SettingsViewModel_DefaultValues_ShouldBeSetCorrectly()
     {
         // Assert
-        _viewModel.VisualSettings.ShowFocusIndicator.Should().BeTrue();
-        _viewModel.VisualSettings.FocusColor.Should().Be(System.Windows.Media.Colors.Blue);
-        _viewModel.VisualSettings.FocusThickness.Should().Be(2.0);
-        _viewModel.VisualSettings.FocusWidth.Should().Be(100.0);
-        _viewModel.VisualSettings.BackgroundColor.Should().Be(System.Windows.Media.Colors.White);
-        _viewModel.VisualSettings.IconScale.Should().Be(1.0);
-        _viewModel.VisualSettings.ShowLogo.Should().BeTrue();
-        _viewModel.VisualSettings.ShowUrlInput.Should().BeTrue();
-        _viewModel.VisualSettings.BrowserButtonWidth.Should().Be(120.0);
-        _viewModel.VisualSettings.BrowserButtonHeight.Should().Be(90.0);
-        _viewModel.VisualSettings.BrowserButtonOpacity.Should().Be(1.0);
-        _viewModel.VisualSettings.BrowserButtonCornerRadius.Should().Be(8.0);
-        _viewModel.VisualSettings.ShowBrowserName.Should().BeTrue();
-        _viewModel.VisualSettings.BrowserIconSize.Should().Be(32.0);
+        _ = _viewModel.VisualSettings.ShowFocusIndicator.Should().BeTrue();
+        _ = _viewModel.VisualSettings.FocusColor.Should().Be(System.Windows.Media.Colors.Blue);
+        _ = _viewModel.VisualSettings.FocusThickness.Should().Be(2.0);
+        _ = _viewModel.VisualSettings.FocusWidth.Should().Be(100.0);
+        _ = _viewModel.VisualSettings.BackgroundColor.Should().Be(System.Windows.Media.Colors.White);
+        _ = _viewModel.VisualSettings.IconScale.Should().Be(1.0);
+        _ = _viewModel.VisualSettings.ShowLogo.Should().BeTrue();
+        _ = _viewModel.VisualSettings.ShowUrlInput.Should().BeTrue();
+        _ = _viewModel.VisualSettings.BrowserButtonWidth.Should().Be(120.0);
+        _ = _viewModel.VisualSettings.BrowserButtonHeight.Should().Be(90.0);
+        _ = _viewModel.VisualSettings.BrowserButtonOpacity.Should().Be(1.0);
+        _ = _viewModel.VisualSettings.BrowserButtonCornerRadius.Should().Be(8.0);
+        _ = _viewModel.VisualSettings.ShowBrowserName.Should().BeTrue();
+        _ = _viewModel.VisualSettings.BrowserIconSize.Should().Be(32.0);
     }
 
     [Fact]
     public async Task SettingsViewModel_RefreshBrowsers_ShouldCallBrowserService()
     {
         // Arrange
-        var testBrowsers = new List<Browser>
-        {
+        List<Browser> testBrowsers =
+        [
             new Browser { Name = "Test Browser 1", Type = BrowserType.Chrome },
             new Browser { Name = "Test Browser 2", Type = BrowserType.Firefox }
-        };
+        ];
 
-        _mockBrowserService
+        _ = _mockBrowserService
             .Setup(x => x.DetectBrowsersAsync())
             .ReturnsAsync(testBrowsers);
 
@@ -184,14 +184,14 @@ public class SettingsViewModelTests
 
         // Assert - RefreshBrowsersはDetectBrowsersAsyncを呼び出す
         _mockBrowserService.Verify(x => x.DetectBrowsersAsync(), Times.Once);
-        _viewModel.DetectedBrowsers.Should().HaveCount(2);
+        _ = _viewModel.DetectedBrowsers.Should().HaveCount(2);
     }
 
     [Fact]
     public async Task SettingsViewModel_ResetSettings_ShouldCallSettingsService()
     {
         // Arrange
-        _mockSettingsService
+        _ = _mockSettingsService
             .Setup(x => x.ResetSettingsAsync())
             .ReturnsAsync(true);
 
@@ -206,11 +206,11 @@ public class SettingsViewModelTests
     public async Task SettingsViewModel_SaveSettings_ShouldCallSettingsService()
     {
         // Arrange
-        _mockSettingsService
+        _ = _mockSettingsService
             .Setup(x => x.SaveAppSettingsAsync(It.IsAny<AppSettings>()))
             .ReturnsAsync(true);
 
-        _mockSettingsService
+        _ = _mockSettingsService
             .Setup(x => x.SaveVisualSettingsAsync(It.IsAny<VisualSettings>()))
             .ReturnsAsync(true);
 

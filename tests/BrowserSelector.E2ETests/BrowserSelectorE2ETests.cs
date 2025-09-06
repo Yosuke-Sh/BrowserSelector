@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using BrowserSelector.Core.Services;
 using BrowserSelector.Infrastructure.Services;
 using BrowserSelector.Infrastructure.SystemIntegration;
@@ -6,6 +5,7 @@ using BrowserSelector.Infrastructure.SystemIntegration;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace BrowserSelector.E2ETests;
 
@@ -21,25 +21,25 @@ public class BrowserSelectorE2ETests
     public void Setup()
     {
         // テスト用の一時ディレクトリを作成
-        var tempDirectory = Path.Combine(Path.GetTempPath(), "BrowserSelectorTest", Guid.NewGuid().ToString());
-        Directory.CreateDirectory(tempDirectory);
+        string tempDirectory = Path.Combine(Path.GetTempPath(), "BrowserSelectorTest", Guid.NewGuid().ToString());
+        _ = Directory.CreateDirectory(tempDirectory);
 
         // サービスコンテナのセットアップ
-        var services = new ServiceCollection();
-        services.AddLogging(builder => 
+        ServiceCollection services = new();
+        _ = services.AddLogging(builder =>
         {
             // テスト実行時のログ出力を最小限に抑制
-            builder.SetMinimumLevel(LogLevel.Error); // エラーレベルのみ出力
+            _ = builder.SetMinimumLevel(LogLevel.Error); // エラーレベルのみ出力
         });
-        services.AddSingleton<IRegistryService, WindowsRegistryService>();
-        services.AddSingleton<IBrowserService, BrowserService>();
-        services.AddSingleton<ISettingsService>(provider => 
+        _ = services.AddSingleton<IRegistryService, WindowsRegistryService>();
+        _ = services.AddSingleton<IBrowserService, BrowserService>();
+        _ = services.AddSingleton<ISettingsService>(provider =>
         {
-            var logService = provider.GetService<ILogService>();
+            ILogService? logService = provider.GetService<ILogService>();
             return new TestSettingsService(logService, tempDirectory);
         });
-        services.AddSingleton<IUrlService, UrlService>();
-        
+        _ = services.AddSingleton<IUrlService, UrlService>();
+
         _serviceProvider = services.BuildServiceProvider();
         _browserService = _serviceProvider.GetRequiredService<IBrowserService>();
         _settingsService = _serviceProvider.GetRequiredService<ISettingsService>();
@@ -54,7 +54,7 @@ public class BrowserSelectorE2ETests
             _appProcess.Kill();
             _appProcess.Dispose();
         }
-        
+
         if (_serviceProvider is IDisposable disposable)
         {
             disposable.Dispose();
@@ -65,8 +65,8 @@ public class BrowserSelectorE2ETests
     public void Application_ShouldStartSuccessfully()
     {
         // Arrange & Act
-        var appPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "src", "BrowserSelector.App", "bin", "Debug", "net8.0-windows", "BrowserSelector.App.exe");
-        
+        string appPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "src", "BrowserSelector.App", "bin", "Debug", "net8.0-windows", "BrowserSelector.App.exe");
+
         if (File.Exists(appPath))
         {
             _appProcess = Process.Start(new ProcessStartInfo
@@ -77,14 +77,14 @@ public class BrowserSelectorE2ETests
             });
 
             // Assert
-            _appProcess.Should().NotBeNull("アプリケーションが起動できること");
-            _appProcess!.HasExited.Should().BeFalse("アプリケーションが正常に実行中であること");
+            _ = _appProcess.Should().NotBeNull("アプリケーションが起動できること");
+            _ = _appProcess!.HasExited.Should().BeFalse("アプリケーションが正常に実行中であること");
         }
         else
         {
             // アプリケーションがビルドされていない場合は、サービスが正常に動作することを確認
-            _browserService.Should().NotBeNull("BrowserServiceが正常に初期化されていること");
-            _settingsService.Should().NotBeNull("SettingsServiceが正常に初期化されていること");
+            _ = _browserService.Should().NotBeNull("BrowserServiceが正常に初期化されていること");
+            _ = _settingsService.Should().NotBeNull("SettingsServiceが正常に初期化されていること");
         }
     }
 
@@ -92,33 +92,33 @@ public class BrowserSelectorE2ETests
     public async Task CompleteWorkflow_OpenURL_ShouldWorkEndToEnd()
     {
         // Arrange
-        var testUrl = "https://www.google.com";
-        
+        string testUrl = "https://www.google.com";
+
         // Act & Assert
         try
         {
             // ブラウザ検出のテスト
-            var browsers = await _browserService!.DetectBrowsersAsync();
-            browsers.Should().NotBeNull("ブラウザ検出が正常に動作すること");
-            
+            IEnumerable<Core.Models.Browser> browsers = await _browserService!.DetectBrowsersAsync();
+            _ = browsers.Should().NotBeNull("ブラウザ検出が正常に動作すること");
+
             // 設定の読み込みテスト
-            var settings = await _settingsService!.LoadAppSettingsAsync();
-            settings.Should().NotBeNull("設定の読み込みが正常に動作すること");
-            
+            Core.Models.AppSettings settings = await _settingsService!.LoadAppSettingsAsync();
+            _ = settings.Should().NotBeNull("設定の読み込みが正常に動作すること");
+
             // URL処理のテスト（実際のブラウザ起動は行わない）
-            var urlService = _serviceProvider!.GetRequiredService<IUrlService>();
-            var normalizedUrl = await urlService.NormalizeUrlAsync(testUrl);
-            var isValid = await urlService.ValidateUrlAsync(testUrl);
-            normalizedUrl.Should().NotBeNullOrEmpty("URL正規化が正常に動作すること");
-            isValid.Should().BeTrue("URL検証が正常に動作すること");
+            IUrlService urlService = _serviceProvider!.GetRequiredService<IUrlService>();
+            string normalizedUrl = await urlService.NormalizeUrlAsync(testUrl);
+            bool isValid = await urlService.ValidateUrlAsync(testUrl);
+            _ = normalizedUrl.Should().NotBeNullOrEmpty("URL正規化が正常に動作すること");
+            _ = isValid.Should().BeTrue("URL検証が正常に動作すること");
         }
         catch (Exception ex)
         {
             // テスト環境では一部の機能が制限される可能性があるため、例外をキャッチしてログ出力
             Console.WriteLine($"E2Eテスト実行中の例外: {ex.Message}");
             // 基本的なサービス初期化は成功していることを確認
-            _browserService.Should().NotBeNull();
-            _settingsService.Should().NotBeNull();
+            _ = _browserService.Should().NotBeNull();
+            _ = _settingsService.Should().NotBeNull();
         }
     }
 
@@ -126,7 +126,7 @@ public class BrowserSelectorE2ETests
     public async Task Settings_ShouldPersistCorrectly()
     {
         // Arrange
-        var testSettings = new BrowserSelector.Core.Models.AppSettings
+        Core.Models.AppSettings testSettings = new()
         {
             Language = "ja-JP",
             CustomProtocol = "browserselector",
@@ -135,38 +135,38 @@ public class BrowserSelectorE2ETests
         };
 
         // Act
-        await _settingsService!.SaveAppSettingsAsync(testSettings);
-        var loadedSettings = await _settingsService.LoadAppSettingsAsync();
+        _ = await _settingsService!.SaveAppSettingsAsync(testSettings);
+        Core.Models.AppSettings loadedSettings = await _settingsService.LoadAppSettingsAsync();
 
         // Assert
-        loadedSettings.Should().NotBeNull("設定の読み込みが成功すること");
+        _ = loadedSettings.Should().NotBeNull("設定の読み込みが成功すること");
         // テスト環境では設定の永続化が期待通りに動作しない可能性があるため、実際の動作に合わせて調整
-        loadedSettings.Language.Should().Be(testSettings.Language, "言語設定が正しく保存・読み込みされること");
-        loadedSettings.CustomProtocol.Should().Be(testSettings.CustomProtocol, "カスタムプロトコルが正しく保存・読み込みされること");
-        loadedSettings.EnableLogging.Should().Be(testSettings.EnableLogging, "ログ有効設定が正しく保存・読み込みされること");
-        loadedSettings.CheckForUpdates.Should().Be(testSettings.CheckForUpdates, "更新チェック設定が正しく保存・読み込みされること");
+        _ = loadedSettings.Language.Should().Be(testSettings.Language, "言語設定が正しく保存・読み込みされること");
+        _ = loadedSettings.CustomProtocol.Should().Be(testSettings.CustomProtocol, "カスタムプロトコルが正しく保存・読み込みされること");
+        _ = loadedSettings.EnableLogging.Should().Be(testSettings.EnableLogging, "ログ有効設定が正しく保存・読み込みされること");
+        _ = loadedSettings.CheckForUpdates.Should().Be(testSettings.CheckForUpdates, "更新チェック設定が正しく保存・読み込みされること");
     }
 
     [Test]
     public async Task BrowserDetection_ShouldWorkCorrectly()
     {
         // Act
-        var browsers = await _browserService!.DetectBrowsersAsync();
+        IEnumerable<Core.Models.Browser> browsers = await _browserService!.DetectBrowsersAsync();
 
         // Assert
-        browsers.Should().NotBeNull("ブラウザ検出が正常に動作すること");
-        
+        _ = browsers.Should().NotBeNull("ブラウザ検出が正常に動作すること");
+
         // 一般的なブラウザが検出されることを確認（テスト環境によって異なる可能性があるため、柔軟に判定）
         if (browsers.Any())
         {
-            browsers.Should().NotBeEmpty("少なくとも1つのブラウザが検出されること");
-            
+            _ = browsers.Should().NotBeEmpty("少なくとも1つのブラウザが検出されること");
+
             // 各ブラウザの基本プロパティが正しく設定されていることを確認
-            foreach (var browser in browsers)
+            foreach (Core.Models.Browser browser in browsers)
             {
-                browser.Name.Should().NotBeNullOrEmpty("ブラウザ名が設定されていること");
-                browser.ExecutablePath.Should().NotBeNullOrEmpty("実行ファイルパスが設定されていること");
-                browser.IsValid.Should().BeTrue("ブラウザが有効であること");
+                _ = browser.Name.Should().NotBeNullOrEmpty("ブラウザ名が設定されていること");
+                _ = browser.ExecutablePath.Should().NotBeNullOrEmpty("実行ファイルパスが設定されていること");
+                _ = browser.IsValid.Should().BeTrue("ブラウザが有効であること");
             }
         }
         else

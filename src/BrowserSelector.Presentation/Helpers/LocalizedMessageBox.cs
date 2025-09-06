@@ -27,8 +27,8 @@ public static class LocalizedMessageBox
         {
             return MessageBoxResult.No; // テスト環境ではデフォルトでNoを返す
         }
-        
-        var localizedTitle = title ?? _localizationService?.GetString("MessageBox.Confirm") ?? "Confirm";
+
+        string localizedTitle = title ?? _localizationService?.GetString("MessageBox.Confirm") ?? "Confirm";
         return MessageBox.Show(message, localizedTitle, MessageBoxButton.YesNo, MessageBoxImage.Question);
     }
 
@@ -41,8 +41,8 @@ public static class LocalizedMessageBox
         {
             return MessageBoxResult.OK; // テスト環境では何も表示せずOKを返す
         }
-        
-        var localizedTitle = title ?? _localizationService?.GetString("MessageBox.Information") ?? "Information";
+
+        string localizedTitle = title ?? _localizationService?.GetString("MessageBox.Information") ?? "Information";
         return MessageBox.Show(message, localizedTitle, MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
@@ -55,8 +55,8 @@ public static class LocalizedMessageBox
         {
             return MessageBoxResult.OK; // テスト環境では何も表示せずOKを返す
         }
-        
-        var localizedTitle = title ?? _localizationService?.GetString("MessageBox.Warning") ?? "Warning";
+
+        string localizedTitle = title ?? _localizationService?.GetString("MessageBox.Warning") ?? "Warning";
         return MessageBox.Show(message, localizedTitle, MessageBoxButton.OK, MessageBoxImage.Warning);
     }
 
@@ -69,8 +69,8 @@ public static class LocalizedMessageBox
         {
             return MessageBoxResult.OK; // テスト環境では何も表示せずOKを返す
         }
-        
-        var localizedTitle = title ?? _localizationService?.GetString("MessageBox.Error") ?? "Error";
+
+        string localizedTitle = title ?? _localizationService?.GetString("MessageBox.Error") ?? "Error";
         return MessageBox.Show(message, localizedTitle, MessageBoxButton.OK, MessageBoxImage.Error);
     }
 
@@ -79,8 +79,8 @@ public static class LocalizedMessageBox
     /// </summary>
     public static MessageBoxResult ShowLogClearConfirm()
     {
-        var message = _localizationService?.GetString("MessageBox.LogClearConfirm") ?? "Do you want to clear the log file?";
-        var title = _localizationService?.GetString("MessageBox.Confirm") ?? "Confirm";
+        string message = _localizationService?.GetString("MessageBox.LogClearConfirm") ?? "Do you want to clear the log file?";
+        string title = _localizationService?.GetString("MessageBox.Confirm") ?? "Confirm";
         return MessageBox.Show(message, title, MessageBoxButton.YesNo, MessageBoxImage.Question);
     }
 
@@ -89,8 +89,8 @@ public static class LocalizedMessageBox
     /// </summary>
     public static MessageBoxResult ShowLogClearComplete()
     {
-        var message = _localizationService?.GetString("MessageBox.LogClearComplete") ?? "Log file has been cleared.";
-        var title = _localizationService?.GetString("MessageBox.Information") ?? "Information";
+        string message = _localizationService?.GetString("MessageBox.LogClearComplete") ?? "Log file has been cleared.";
+        string title = _localizationService?.GetString("MessageBox.Information") ?? "Information";
         return MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
@@ -99,8 +99,8 @@ public static class LocalizedMessageBox
     /// </summary>
     public static MessageBoxResult ShowOldLogDeleteConfirm()
     {
-        var message = _localizationService?.GetString("MessageBox.OldLogDeleteConfirm") ?? "Do you want to delete old log files?";
-        var title = _localizationService?.GetString("MessageBox.Confirm") ?? "Confirm";
+        string message = _localizationService?.GetString("MessageBox.OldLogDeleteConfirm") ?? "Do you want to delete old log files?";
+        string title = _localizationService?.GetString("MessageBox.Confirm") ?? "Confirm";
         return MessageBox.Show(message, title, MessageBoxButton.YesNo, MessageBoxImage.Question);
     }
 
@@ -109,8 +109,8 @@ public static class LocalizedMessageBox
     /// </summary>
     public static MessageBoxResult ShowOldLogDeleteComplete()
     {
-        var message = _localizationService?.GetString("MessageBox.OldLogDeleteComplete") ?? "Old log files have been deleted.";
-        var title = _localizationService?.GetString("MessageBox.Information") ?? "Information";
+        string message = _localizationService?.GetString("MessageBox.OldLogDeleteComplete") ?? "Old log files have been deleted.";
+        string title = _localizationService?.GetString("MessageBox.Information") ?? "Information";
         return MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
@@ -124,7 +124,7 @@ public static class LocalizedMessageBox
             // テスト環境では何も表示せず、デフォルト値を返す
             return button == MessageBoxButton.YesNo ? MessageBoxResult.No : MessageBoxResult.OK;
         }
-        
+
         return MessageBox.Show(message, caption, button, icon);
     }
 
@@ -141,13 +141,13 @@ public static class LocalizedMessageBox
             // 3. アセンブリ名に"Test"が含まれている
             // 4. プロセス名に"test"が含まれている
             // 5. スタックトレースに"xunit"が含まれている
-            var isTest = System.Diagnostics.Debugger.IsAttached ||
+            bool isTest = System.Diagnostics.Debugger.IsAttached ||
                    Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true" ||
                    System.Reflection.Assembly.GetExecutingAssembly().GetName().Name?.Contains("Test") == true ||
                    Environment.GetEnvironmentVariable("TEST_ENVIRONMENT") == "true" ||
                    System.Diagnostics.Process.GetCurrentProcess().ProcessName.ToLower().Contains("test") ||
                    IsRunningInTestFramework();
-            
+
             return isTest;
         }
         catch
@@ -164,18 +164,18 @@ public static class LocalizedMessageBox
     {
         try
         {
-            var stackTrace = new System.Diagnostics.StackTrace();
+            System.Diagnostics.StackTrace stackTrace = new();
             for (int i = 0; i < stackTrace.FrameCount; i++)
             {
-                var frame = stackTrace.GetFrame(i);
-                var method = frame?.GetMethod();
-                var declaringType = method?.DeclaringType;
-                
+                System.Diagnostics.StackFrame? frame = stackTrace.GetFrame(i);
+                System.Reflection.MethodBase? method = frame?.GetMethod();
+                Type? declaringType = method?.DeclaringType;
+
                 if (declaringType != null)
                 {
-                    var typeName = declaringType.FullName ?? "";
-                    var assemblyName = declaringType.Assembly.GetName().Name ?? "";
-                    
+                    string typeName = declaringType.FullName ?? "";
+                    string assemblyName = declaringType.Assembly.GetName().Name ?? "";
+
                     // xUnit、NUnit、MSTestなどのテストフレームワークを検出
                     if (typeName.Contains("xunit") || typeName.Contains("Xunit") ||
                         typeName.Contains("nunit") || typeName.Contains("NUnit") ||

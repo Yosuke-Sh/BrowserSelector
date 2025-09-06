@@ -48,8 +48,8 @@ public partial class BrowserEditDialog : Window
         }
 
         DataContext = Browser;
-        Title = _isNewBrowser ? LocalizedLogHelper.GetString("Dialog.BrowserEdit.AddTitle") : 
-                (_isSystemBrowser ? LocalizedLogHelper.GetString("Dialog.BrowserEdit.SystemTitle") : 
+        Title = _isNewBrowser ? LocalizedLogHelper.GetString("Dialog.BrowserEdit.AddTitle") :
+                (_isSystemBrowser ? LocalizedLogHelper.GetString("Dialog.BrowserEdit.SystemTitle") :
                  LocalizedLogHelper.GetString("Dialog.BrowserEdit.EditTitle"));
 
         // システムブラウザの場合は、編集不可能な項目を無効化
@@ -67,7 +67,7 @@ public partial class BrowserEditDialog : Window
 
     private void BrowseExecutable_Click(object sender, RoutedEventArgs e)
     {
-        var openFileDialog = new OpenFileDialog
+        OpenFileDialog openFileDialog = new()
         {
             Title = "ブラウザの実行ファイルを選択",
             Filter = "実行ファイル (*.exe)|*.exe|すべてのファイル (*.*)|*.*",
@@ -97,7 +97,7 @@ public partial class BrowserEditDialog : Window
 
     private void BrowseIcon_Click(object sender, RoutedEventArgs e)
     {
-        var openFileDialog = new OpenFileDialog
+        OpenFileDialog openFileDialog = new()
         {
             Title = "アイコンファイルを選択",
             Filter = "アイコンファイル (*.ico;*.exe)|*.ico;*.exe|画像ファイル (*.png;*.jpg;*.jpeg;*.bmp)|*.png;*.jpg;*.jpeg;*.bmp|すべてのファイル (*.*)|*.*",
@@ -112,7 +112,7 @@ public partial class BrowserEditDialog : Window
 
     private void SelectIcon_Click(object sender, RoutedEventArgs e)
     {
-        var dialog = new IconSelectionDialog(_logService);
+        IconSelectionDialog dialog = new(_logService);
 
         // 実行ファイルが設定されている場合、そのアイコンを優先表示
         if (!string.IsNullOrEmpty(Browser.ExecutablePath) && File.Exists(Browser.ExecutablePath))
@@ -150,19 +150,19 @@ public partial class BrowserEditDialog : Window
         // バリデーション
         if (string.IsNullOrWhiteSpace(Browser.Name))
         {
-            LocalizedMessageBox.ShowError("Dialog.BrowserEdit.EnterBrowserName", "MessageBox.Error");
+            _ = LocalizedMessageBox.ShowError("Dialog.BrowserEdit.EnterBrowserName", "MessageBox.Error");
             return;
         }
 
         if (string.IsNullOrWhiteSpace(Browser.ExecutablePath))
         {
-            LocalizedMessageBox.ShowError("Dialog.BrowserEdit.SelectExecutableFile", "MessageBox.Error");
+            _ = LocalizedMessageBox.ShowError("Dialog.BrowserEdit.SelectExecutableFile", "MessageBox.Error");
             return;
         }
 
         if (!File.Exists(Browser.ExecutablePath))
         {
-            LocalizedMessageBox.ShowError("Dialog.BrowserEdit.ExecutableFileNotFound", "MessageBox.Error");
+            _ = LocalizedMessageBox.ShowError("Dialog.BrowserEdit.ExecutableFileNotFound", "MessageBox.Error");
             return;
         }
 

@@ -9,7 +9,7 @@ public class BrowserTests
     public void Browser_WithValidData_ShouldBeValid()
     {
         // Arrange
-        var browser = new Browser
+        Browser browser = new()
         {
             Name = "Google Chrome",
             ExecutablePath = @"C:\Program Files\Google\Chrome\Application\chrome.exe",
@@ -17,15 +17,15 @@ public class BrowserTests
         };
 
         // Act & Assert
-        browser.IsValid.Should().BeTrue();
-        browser.DisplayName.Should().Be("Google Chrome");
+        _ = browser.IsValid.Should().BeTrue();
+        _ = browser.DisplayName.Should().Be("Google Chrome");
     }
 
     [Fact]
     public void Browser_WithEmptyName_ShouldNotBeValid()
     {
         // Arrange
-        var browser = new Browser
+        Browser browser = new()
         {
             Name = "",
             ExecutablePath = @"C:\Program Files\Google\Chrome\Application\chrome.exe",
@@ -33,15 +33,15 @@ public class BrowserTests
         };
 
         // Act & Assert
-        browser.IsValid.Should().BeFalse();
-        browser.DisplayName.Should().Be("Unknown Browser");
+        _ = browser.IsValid.Should().BeFalse();
+        _ = browser.DisplayName.Should().Be("Unknown Browser");
     }
 
     [Fact]
     public void Browser_WithEmptyExecutablePath_ShouldNotBeValid()
     {
         // Arrange
-        var browser = new Browser
+        Browser browser = new()
         {
             Name = "Google Chrome",
             ExecutablePath = "",
@@ -49,34 +49,34 @@ public class BrowserTests
         };
 
         // Act & Assert
-        browser.IsValid.Should().BeFalse();
+        _ = browser.IsValid.Should().BeFalse();
     }
 
     [Fact]
     public void Browser_IncrementUseCount_ShouldIncreaseCount()
     {
         // Arrange
-        var browser = new Browser
+        Browser browser = new()
         {
             Name = "Google Chrome",
             ExecutablePath = @"C:\Program Files\Google\Chrome\Application\chrome.exe",
             Type = BrowserType.Chrome
         };
 
-        var initialCount = browser.UseCount;
+        int initialCount = browser.UseCount;
 
         // Act
         browser.IncrementUseCount();
 
         // Assert
-        browser.UseCount.Should().Be(initialCount + 1);
+        _ = browser.UseCount.Should().Be(initialCount + 1);
     }
 
     [Fact]
     public void Browser_Clone_ShouldCreateNewInstance()
     {
         // Arrange
-        var original = new Browser
+        Browser original = new()
         {
             Name = "Google Chrome",
             ExecutablePath = @"C:\Program Files\Google\Chrome\Application\chrome.exe",
@@ -84,13 +84,13 @@ public class BrowserTests
         };
 
         // Act
-        var cloned = original.Clone();
+        Browser cloned = original.Clone();
 
         // Assert
-        cloned.Should().NotBeSameAs(original);
-        cloned.Name.Should().Be(original.Name);
-        cloned.ExecutablePath.Should().Be(original.ExecutablePath);
-        cloned.Type.Should().Be(original.Type);
-        cloned.Id.Should().NotBe(original.Id);
+        _ = cloned.Should().NotBeSameAs(original);
+        _ = cloned.Name.Should().Be(original.Name);
+        _ = cloned.ExecutablePath.Should().Be(original.ExecutablePath);
+        _ = cloned.Type.Should().Be(original.Type);
+        _ = cloned.Id.Should().NotBe(original.Id);
     }
 }

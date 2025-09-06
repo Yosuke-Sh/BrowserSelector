@@ -1,7 +1,5 @@
-using BrowserSelector.Core.Models;
 using BrowserSelector.Infrastructure.Services;
 using FluentAssertions;
-using System.IO;
 using System.IO.Compression;
 
 namespace BrowserSelector.UnitTests;
@@ -14,14 +12,14 @@ public class SettingsServiceTests
     public SettingsServiceTests()
     {
         _testDirectory = Path.Combine(Path.GetTempPath(), "BrowserSelectorTests", Guid.NewGuid().ToString());
-        Directory.CreateDirectory(_testDirectory);
-        
+        _ = Directory.CreateDirectory(_testDirectory);
+
         // テスト用のSettingsServiceを作成（ポータブルモードをシミュレート）
-        var executablePath = Path.Combine(_testDirectory, "BrowserSelector.exe");
+        string executablePath = Path.Combine(_testDirectory, "BrowserSelector.exe");
         File.WriteAllText(executablePath, "test");
-        var portableMarkerPath = Path.Combine(_testDirectory, "portable.txt");
+        string portableMarkerPath = Path.Combine(_testDirectory, "portable.txt");
         File.WriteAllText(portableMarkerPath, "portable");
-        
+
         _settingsService = new SettingsService();
     }
 
@@ -29,17 +27,17 @@ public class SettingsServiceTests
     public async Task ExportSettingsAsync_ShouldCreateZipFile()
     {
         // Arrange
-        var zipFilePath = Path.Combine(_testDirectory, "test_settings.zip");
-        
+        string zipFilePath = Path.Combine(_testDirectory, "test_settings.zip");
+
         // テスト用の設定ファイルを作成
-        var appSettingsPath = Path.Combine(_testDirectory, "appsettings.json");
-        var visualSettingsPath = Path.Combine(_testDirectory, "visualsettings.json");
-        var logSettingsPath = Path.Combine(_testDirectory, "logsettings.json");
-        var urlRulesPath = Path.Combine(_testDirectory, "urlrules.json");
-        var languagesPath = Path.Combine(_testDirectory, "Languages");
-        
-        Directory.CreateDirectory(languagesPath);
-        
+        string appSettingsPath = Path.Combine(_testDirectory, "appsettings.json");
+        string visualSettingsPath = Path.Combine(_testDirectory, "visualsettings.json");
+        string logSettingsPath = Path.Combine(_testDirectory, "logsettings.json");
+        string urlRulesPath = Path.Combine(_testDirectory, "urlrules.json");
+        string languagesPath = Path.Combine(_testDirectory, "Languages");
+
+        _ = Directory.CreateDirectory(languagesPath);
+
         await File.WriteAllTextAsync(appSettingsPath, "{}");
         await File.WriteAllTextAsync(visualSettingsPath, "{}");
         await File.WriteAllTextAsync(logSettingsPath, "{}");
@@ -48,60 +46,60 @@ public class SettingsServiceTests
         await File.WriteAllTextAsync(Path.Combine(languagesPath, "ja-JP.json"), "{}");
 
         // Act
-        var result = await _settingsService.ExportSettingsAsync(zipFilePath);
+        bool result = await _settingsService.ExportSettingsAsync(zipFilePath);
 
         // Assert
-        result.Should().BeTrue();
-        File.Exists(zipFilePath).Should().BeTrue();
-        
+        _ = result.Should().BeTrue();
+        _ = File.Exists(zipFilePath).Should().BeTrue();
+
         // ZIPファイルの内容を確認
-        using var archive = ZipFile.OpenRead(zipFilePath);
-        archive.Entries.Should().Contain(e => e.Name == "appsettings.json");
-        archive.Entries.Should().Contain(e => e.Name == "visualsettings.json");
-        archive.Entries.Should().Contain(e => e.Name == "logsettings.json");
-        archive.Entries.Should().Contain(e => e.Name == "urlrules.json");
-        archive.Entries.Should().Contain(e => e.FullName == "Languages\\en-US.json");
-        archive.Entries.Should().Contain(e => e.FullName == "Languages\\ja-JP.json");
-        archive.Entries.Should().Contain(e => e.Name == "export-info.json");
+        using ZipArchive archive = ZipFile.OpenRead(zipFilePath);
+        _ = archive.Entries.Should().Contain(e => e.Name == "appsettings.json");
+        _ = archive.Entries.Should().Contain(e => e.Name == "visualsettings.json");
+        _ = archive.Entries.Should().Contain(e => e.Name == "logsettings.json");
+        _ = archive.Entries.Should().Contain(e => e.Name == "urlrules.json");
+        _ = archive.Entries.Should().Contain(e => e.FullName == "Languages\\en-US.json");
+        _ = archive.Entries.Should().Contain(e => e.FullName == "Languages\\ja-JP.json");
+        _ = archive.Entries.Should().Contain(e => e.Name == "export-info.json");
     }
 
     [Fact]
     public async Task ImportSettingsAsync_WithZipFile_ShouldExtractFiles()
     {
         // Arrange
-        var zipFilePath = Path.Combine(_testDirectory, "test_import.zip");
-        var targetDirectory = Path.Combine(_testDirectory, "import_target");
-        Directory.CreateDirectory(targetDirectory);
-        
+        string zipFilePath = Path.Combine(_testDirectory, "test_import.zip");
+        string targetDirectory = Path.Combine(_testDirectory, "import_target");
+        _ = Directory.CreateDirectory(targetDirectory);
+
         // テスト用のZIPファイルを作成
-        using (var archive = ZipFile.Open(zipFilePath, ZipArchiveMode.Create))
+        using (ZipArchive archive = ZipFile.Open(zipFilePath, ZipArchiveMode.Create))
         {
-            var appSettingsEntry = archive.CreateEntry("appsettings.json");
-            using (var writer = new StreamWriter(appSettingsEntry.Open()))
+            ZipArchiveEntry appSettingsEntry = archive.CreateEntry("appsettings.json");
+            using (StreamWriter writer = new(appSettingsEntry.Open()))
             {
                 await writer.WriteAsync("{\"Language\":\"ja-JP\"}");
             }
-            
-            var visualSettingsEntry = archive.CreateEntry("visualsettings.json");
-            using (var writer = new StreamWriter(visualSettingsEntry.Open()))
+
+            ZipArchiveEntry visualSettingsEntry = archive.CreateEntry("visualsettings.json");
+            using (StreamWriter writer = new(visualSettingsEntry.Open()))
             {
                 await writer.WriteAsync("{\"BackgroundColor\":\"#FF0000\"}");
             }
         }
 
         // Act
-        var result = await _settingsService.ImportSettingsAsync(zipFilePath);
+        bool result = await _settingsService.ImportSettingsAsync(zipFilePath);
 
         // Assert
-        result.Should().BeTrue();
+        _ = result.Should().BeTrue();
     }
 
     [Fact]
     public async Task ImportSettingsAsync_WithJsonFile_ShouldImportSettings()
     {
         // Arrange
-        var jsonFilePath = Path.Combine(_testDirectory, "test_settings.json");
-        var jsonContent = """
+        string jsonFilePath = Path.Combine(_testDirectory, "test_settings.json");
+        string jsonContent = """
         {
             "Language": "ja-JP",
             "EnableLogging": true,
@@ -111,23 +109,23 @@ public class SettingsServiceTests
         await File.WriteAllTextAsync(jsonFilePath, jsonContent);
 
         // Act
-        var result = await _settingsService.ImportSettingsAsync(jsonFilePath);
+        bool result = await _settingsService.ImportSettingsAsync(jsonFilePath);
 
         // Assert
-        result.Should().BeTrue();
+        _ = result.Should().BeTrue();
     }
 
     [Fact]
     public async Task ImportSettingsAsync_WithNonExistentFile_ShouldReturnFalse()
     {
         // Arrange
-        var nonExistentPath = Path.Combine(_testDirectory, "non_existent.zip");
+        string nonExistentPath = Path.Combine(_testDirectory, "non_existent.zip");
 
         // Act
-        var result = await _settingsService.ImportSettingsAsync(nonExistentPath);
+        bool result = await _settingsService.ImportSettingsAsync(nonExistentPath);
 
         // Assert
-        result.Should().BeFalse();
+        _ = result.Should().BeFalse();
     }
 
     private void Dispose()

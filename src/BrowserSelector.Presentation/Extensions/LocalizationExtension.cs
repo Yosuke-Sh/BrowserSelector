@@ -1,7 +1,5 @@
-using System;
-using System.Globalization;
-using System.Windows.Markup;
 using BrowserSelector.Core.Services;
+using System.Windows.Markup;
 
 namespace BrowserSelector.Presentation.Extensions;
 
@@ -34,23 +32,22 @@ public class LocalizationExtension : MarkupExtension
     public override object ProvideValue(IServiceProvider serviceProvider)
     {
         if (string.IsNullOrEmpty(Key))
+        {
             return string.Empty;
+        }
 
         // サービスはApp.xaml.csで設定される
 
         if (_localizationService == null)
+        {
             return Key;
+        }
 
         try
         {
-            if (Parameters != null && Parameters.Length > 0)
-            {
-                return _localizationService.GetString(Key, Parameters);
-            }
-            else
-            {
-                return _localizationService.GetString(Key);
-            }
+            return Parameters != null && Parameters.Length > 0
+                ? _localizationService.GetString(Key, Parameters)
+                : _localizationService.GetString(Key);
         }
         catch
         {

@@ -12,13 +12,13 @@ public class Program
     {
         try
         {
-            var app = new App();
+            App app = new();
             app.InitializeComponent();
-            app.Run();
+            _ = app.Run();
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"アプリケーションの起動に失敗しました: {ex.Message}",
+            _ = MessageBox.Show($"アプリケーションの起動に失敗しました: {ex.Message}",
                           "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }

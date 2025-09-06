@@ -18,7 +18,7 @@ public class CustomLanguageFile
     /// <summary>
     /// リソース辞書（キー: リソースキー, 値: 翻訳文字列）
     /// </summary>
-    public Dictionary<string, string> Resources { get; set; } = new();
+    public Dictionary<string, string> Resources { get; set; } = [];
 
     /// <summary>
     /// ファイルの作成日時

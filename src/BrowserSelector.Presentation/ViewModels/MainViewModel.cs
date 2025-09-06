@@ -22,7 +22,7 @@ public partial class MainViewModel : ObservableObject
     private readonly ILogService _logService = null!;
 
     [ObservableProperty]
-    private ObservableCollection<Browser> _browsers = new();
+    private ObservableCollection<Browser> _browsers = [];
 
     [ObservableProperty]
     private Browser? _selectedBrowser;
@@ -93,8 +93,8 @@ public partial class MainViewModel : ObservableObject
         try
         {
             // 最小・最大サイズの制限
-            var width = Math.Max(400, Math.Min(2000, visualSettings.InitialWindowWidth));
-            var height = Math.Max(300, Math.Min(1500, visualSettings.InitialWindowHeight));
+            double width = Math.Max(400, Math.Min(2000, visualSettings.InitialWindowWidth));
+            double height = Math.Max(300, Math.Min(1500, visualSettings.InitialWindowHeight));
 
             // ウィンドウサイズを変更
             mainWindow.Width = width;
@@ -224,11 +224,11 @@ public partial class MainViewModel : ObservableObject
         try
         {
             // 既存のブラウザデータがある場合は読み込みのみ
-            var existingBrowsers = await _browserService.GetAllBrowsersAsync();
+            IEnumerable<Browser> existingBrowsers = await _browserService.GetAllBrowsersAsync();
             if (existingBrowsers.Any())
             {
                 Browsers.Clear();
-                foreach (var browser in existingBrowsers.Where(b => b.IsEnabled))
+                foreach (Browser? browser in existingBrowsers.Where(b => b.IsEnabled))
                 {
                     Browsers.Add(browser);
                 }
@@ -240,17 +240,17 @@ public partial class MainViewModel : ObservableObject
             IsLoading = true;
             StatusMessage = LocalizedLogHelper.GetString("MainWindow.DetectingBrowsers");
 
-            var browsers = await _browserService.DetectBrowsersAsync();
+            IEnumerable<Browser> browsers = await _browserService.DetectBrowsersAsync();
 
             Browsers.Clear();
-            foreach (var browser in browsers.Where(b => b.IsEnabled))
+            foreach (Browser? browser in browsers.Where(b => b.IsEnabled))
             {
                 Browsers.Add(browser);
             }
 
             // ログ出力
             _logService?.LogDebug($"検出されたブラウザ数: {browsers.Count()}", "MainViewModel");
-            foreach (var browser in browsers)
+            foreach (Browser browser in browsers)
             {
                 _logService?.LogDebug($"ブラウザ: {browser.Name}, ID: {browser.Id}, 有効: {browser.IsEnabled}, パス: {browser.ExecutablePath}, タイプ: {browser.Type}", "MainViewModel");
             }
@@ -274,7 +274,9 @@ public partial class MainViewModel : ObservableObject
     private async Task LaunchBrowserAsync(Browser? browser)
     {
         if (browser == null || string.IsNullOrWhiteSpace(Url))
+        {
             return;
+        }
 
         try
         {
@@ -285,7 +287,7 @@ public partial class MainViewModel : ObservableObject
 
             StatusMessage = $"ブラウザ {browser.Name} を起動中...";
 
-            var success = await _browserService.LaunchBrowserAsync(browser, Url);
+            bool success = await _browserService.LaunchBrowserAsync(browser, Url);
 
             if (success)
             {
@@ -295,7 +297,7 @@ public partial class MainViewModel : ObservableObject
                 _logService?.LogInformation($"ブラウザ起動成功: {browser.Name}", "MainViewModel");
 
                 // ブラウザ起動後のアプリ終了設定が有効な場合
-                var appSettings = await _settingsService.LoadAppSettingsAsync();
+                AppSettings appSettings = await _settingsService.LoadAppSettingsAsync();
                 if (appSettings.CloseAfterUrlRuleMatch)
                 {
                     _logService?.LogInformation("ブラウザ起動後のアプリ終了", "MainViewModel");
@@ -335,13 +337,13 @@ public partial class MainViewModel : ObservableObject
         try
         {
             // 設定画面を開く
-            var settingsViewModel = new SettingsViewModel(_settingsService, _browserService, _localizationService, _customLanguageService, _urlRuleService, _logService);
-            var settingsWindow = new Views.SettingsWindow(settingsViewModel);
+            SettingsViewModel settingsViewModel = new(_settingsService, _browserService, _localizationService, _customLanguageService, _urlRuleService, _logService);
+            Views.SettingsWindow settingsWindow = new(settingsViewModel);
 
             // 設定変更通知のイベントハンドラーを登録
             settingsViewModel.SettingsChanged += OnSettingsChanged;
 
-            var result = settingsWindow.ShowDialog();
+            bool? result = settingsWindow.ShowDialog();
 
             // イベントハンドラーを解除
             settingsViewModel.SettingsChanged -= OnSettingsChanged;
@@ -363,7 +365,7 @@ public partial class MainViewModel : ObservableObject
         catch (Exception ex)
         {
             _logService?.LogError($"設定画面を開くエラー: {ex.Message}", "MainViewModel", ex);
-            MessageBox.Show($"設定画面を開けませんでした: {ex.Message}", "エラー",
+            _ = MessageBox.Show($"設定画面を開けませんでした: {ex.Message}", "エラー",
                           MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
@@ -377,7 +379,7 @@ public partial class MainViewModel : ObservableObject
         {
             _logService?.LogDebug("視覚設定の再読み込み開始", "MainViewModel");
 
-            var visualSettings = await _settingsService.LoadVisualSettingsAsync();
+            VisualSettings visualSettings = await _settingsService.LoadVisualSettingsAsync();
             _logService?.LogDebug($"視覚設定読み込み完了: BackgroundColor={visualSettings.BackgroundColor}", "MainViewModel");
 
             // メイン画面に視覚設定を適用
@@ -410,11 +412,11 @@ public partial class MainViewModel : ObservableObject
                     {
                         StartPoint = startPoint,
                         EndPoint = endPoint,
-                        GradientStops = new System.Windows.Media.GradientStopCollection
-                        {
+                        GradientStops =
+                        [
                             new System.Windows.Media.GradientStop(visualSettings.GradientStartColor, 0),
                             new System.Windows.Media.GradientStop(visualSettings.GradientEndColor, 1)
-                        }
+                        ]
                     };
                 }
                 else
@@ -479,7 +481,7 @@ public partial class MainViewModel : ObservableObject
         {
             _logService?.LogInformation($"URLルール適用開始: {url}", "MainViewModel");
 
-            var matchingBrowser = await _urlRuleService.FindMatchingBrowserAsync(url, Browsers);
+            Browser? matchingBrowser = await _urlRuleService.FindMatchingBrowserAsync(url, Browsers);
             if (matchingBrowser != null)
             {
                 SelectedBrowser = matchingBrowser;
@@ -524,13 +526,8 @@ public partial class MainViewModel : ObservableObject
     /// </summary>
     private void UpdateTitleMessage()
     {
-        if (string.IsNullOrWhiteSpace(Url))
-        {
-            TitleMessage = LocalizedLogHelper.GetString("MainWindow.TitleMessage");
-        }
-        else
-        {
-            TitleMessage = LocalizedLogHelper.GetString("MainWindow.SelectBrowser");
-        }
+        TitleMessage = string.IsNullOrWhiteSpace(Url)
+            ? LocalizedLogHelper.GetString("MainWindow.TitleMessage")
+            : LocalizedLogHelper.GetString("MainWindow.SelectBrowser");
     }
 }

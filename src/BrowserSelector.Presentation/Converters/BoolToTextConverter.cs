@@ -10,11 +10,7 @@ public class BoolToTextConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (value is bool boolValue)
-        {
-            return boolValue ? "有効" : "無効";
-        }
-        return "不明";
+        return value is bool boolValue ? boolValue ? "有効" : "無効" : "不明";
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

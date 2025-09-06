@@ -12,7 +12,7 @@ public partial class LanguageManagementDialog : Window
     {
         InitializeComponent();
         DataContext = viewModel;
-        
+
         // 初期化
         Loaded += async (s, e) => await viewModel.InitializeAsync();
     }

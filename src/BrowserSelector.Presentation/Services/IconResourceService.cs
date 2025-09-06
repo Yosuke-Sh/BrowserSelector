@@ -14,7 +14,7 @@ public class IconResourceService
 
     public IconResourceService()
     {
-        var assembly = Assembly.GetExecutingAssembly();
+        Assembly assembly = Assembly.GetExecutingAssembly();
         _resourcePath = Path.GetDirectoryName(assembly.Location) ?? "";
         _imagesPath = Path.Combine(_resourcePath, "Resources", "Images");
     }
@@ -28,8 +28,8 @@ public class IconResourceService
     {
         try
         {
-            var fileName = $"{iconName}.png";
-            var filePath = Path.Combine(_imagesPath, fileName);
+            string fileName = $"{iconName}.png";
+            string filePath = Path.Combine(_imagesPath, fileName);
 
             // 既に存在する場合は何もしない
             if (File.Exists(filePath))
@@ -40,15 +40,15 @@ public class IconResourceService
             // ディレクトリが存在しない場合は作成
             if (!Directory.Exists(_imagesPath))
             {
-                Directory.CreateDirectory(_imagesPath);
+                _ = Directory.CreateDirectory(_imagesPath);
             }
 
             // デフォルトアイコンを作成（32x32の透明PNG）
-            var defaultIcon = CreateDefaultIcon(32, 32);
+            BitmapSource defaultIcon = CreateDefaultIcon(32, 32);
 
             // PNGファイルとして保存
-            using var fileStream = new FileStream(filePath, FileMode.Create);
-            var encoder = new PngBitmapEncoder();
+            using FileStream fileStream = new(filePath, FileMode.Create);
+            PngBitmapEncoder encoder = new();
             encoder.Frames.Add(BitmapFrame.Create(defaultIcon));
             encoder.Save(fileStream);
 
@@ -67,8 +67,8 @@ public class IconResourceService
     /// <returns>存在する場合はtrue</returns>
     public bool IconExists(string iconName)
     {
-        var fileName = $"{iconName}.png";
-        var filePath = Path.Combine(_imagesPath, fileName);
+        string fileName = $"{iconName}.png";
+        string filePath = Path.Combine(_imagesPath, fileName);
         return File.Exists(filePath);
     }
 
@@ -79,13 +79,13 @@ public class IconResourceService
     /// <returns>作成されたファイル数の配列</returns>
     public int CreateMissingIcons(string[] iconNames)
     {
-        var createdCount = 0;
+        int createdCount = 0;
 
-        foreach (var iconName in iconNames)
+        foreach (string iconName in iconNames)
         {
             if (!IconExists(iconName))
             {
-                var createdPath = CreateMissingIcon(iconName);
+                string createdPath = CreateMissingIcon(iconName);
                 if (!string.IsNullOrEmpty(createdPath))
                 {
                     createdCount++;
@@ -105,10 +105,10 @@ public class IconResourceService
     private BitmapSource CreateDefaultIcon(int width, int height)
     {
         // 透明な32x32のビットマップを作成
-        var pixelFormat = System.Windows.Media.PixelFormats.Bgra32;
-        var bytesPerPixel = pixelFormat.BitsPerPixel / 8;
-        var stride = width * bytesPerPixel;
-        var pixels = new byte[height * stride];
+        System.Windows.Media.PixelFormat pixelFormat = System.Windows.Media.PixelFormats.Bgra32;
+        int bytesPerPixel = pixelFormat.BitsPerPixel / 8;
+        int stride = width * bytesPerPixel;
+        byte[] pixels = new byte[height * stride];
 
         // 透明なピクセルで初期化
         for (int i = 0; i < pixels.Length; i += bytesPerPixel)
@@ -128,7 +128,7 @@ public class IconResourceService
     /// <returns>不足しているアイコン名の配列</returns>
     public string[] GetMissingIcons()
     {
-        var requiredIcons = new[]
+        string[] requiredIcons = new[]
         {
             "Icon_Rules",
             "Icon_Cleanup",
@@ -137,9 +137,9 @@ public class IconResourceService
             "Icon_Log"
         };
 
-        var missingIcons = new List<string>();
+        List<string> missingIcons = [];
 
-        foreach (var iconName in requiredIcons)
+        foreach (string? iconName in requiredIcons)
         {
             if (!IconExists(iconName))
             {

@@ -3,3 +3,4 @@ obj
 .vs
 coverage
 TestResults
+coverage-integrated

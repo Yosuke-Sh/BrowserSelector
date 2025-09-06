@@ -32,8 +32,8 @@ public class UpdateService : IUpdateService
     {
         try
         {
-            var response = await _httpClient.GetStringAsync(_updateCheckUrl);
-            var updateInfo = JsonSerializer.Deserialize<UpdateInfo>(response);
+            string response = await _httpClient.GetStringAsync(_updateCheckUrl);
+            UpdateInfo? updateInfo = JsonSerializer.Deserialize<UpdateInfo>(response);
 
             if (updateInfo != null && IsNewerVersion(updateInfo.Version))
             {
@@ -56,17 +56,17 @@ public class UpdateService : IUpdateService
     {
         try
         {
-            var tempPath = Path.GetTempFileName();
-            var response = await _httpClient.GetAsync(updateInfo.DownloadUrl, HttpCompletionOption.ResponseHeadersRead);
-            response.EnsureSuccessStatusCode();
+            string tempPath = Path.GetTempFileName();
+            HttpResponseMessage response = await _httpClient.GetAsync(updateInfo.DownloadUrl, HttpCompletionOption.ResponseHeadersRead);
+            _ = response.EnsureSuccessStatusCode();
 
-            var totalBytes = response.Content.Headers.ContentLength ?? 0;
-            var downloadedBytes = 0L;
+            long totalBytes = response.Content.Headers.ContentLength ?? 0;
+            long downloadedBytes = 0L;
 
-            using var contentStream = await response.Content.ReadAsStreamAsync();
-            using var fileStream = new FileStream(tempPath, FileMode.Create, FileAccess.Write, FileShare.None);
+            using Stream contentStream = await response.Content.ReadAsStreamAsync();
+            using FileStream fileStream = new(tempPath, FileMode.Create, FileAccess.Write, FileShare.None);
 
-            var buffer = new byte[8192];
+            byte[] buffer = new byte[8192];
             int bytesRead;
 
             while ((bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
@@ -76,7 +76,7 @@ public class UpdateService : IUpdateService
 
                 if (totalBytes > 0 && progress != null)
                 {
-                    var percentage = (int)((downloadedBytes * 100) / totalBytes);
+                    int percentage = (int)(downloadedBytes * 100 / totalBytes);
                     progress.Report(percentage);
                 }
             }
@@ -103,7 +103,7 @@ public class UpdateService : IUpdateService
             }
 
             // インストーラーを起動
-            var process = new System.Diagnostics.Process
+            System.Diagnostics.Process process = new()
             {
                 StartInfo = new System.Diagnostics.ProcessStartInfo
                 {
@@ -113,7 +113,7 @@ public class UpdateService : IUpdateService
                 }
             };
 
-            var result = process.Start();
+            bool result = process.Start();
             if (result)
             {
                 // アプリケーションを終了
@@ -137,11 +137,11 @@ public class UpdateService : IUpdateService
         try
         {
             // バックアップファイルから復元
-            var backupPath = GetBackupPath();
+            string backupPath = GetBackupPath();
             if (File.Exists(backupPath))
             {
-                var currentExePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
-                var tempPath = Path.GetTempFileName();
+                string currentExePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+                string tempPath = Path.GetTempFileName();
 
                 // 現在のファイルをバックアップ
                 File.Copy(currentExePath, tempPath, true);
@@ -150,7 +150,7 @@ public class UpdateService : IUpdateService
                 File.Copy(backupPath, currentExePath, true);
 
                 // アプリケーションを再起動
-                var process = new System.Diagnostics.Process
+                System.Diagnostics.Process process = new()
                 {
                     StartInfo = new System.Diagnostics.ProcessStartInfo
                     {
@@ -159,7 +159,7 @@ public class UpdateService : IUpdateService
                     }
                 };
 
-                var result = process.Start();
+                bool result = process.Start();
                 if (result)
                 {
                     await Task.Delay(1000);
@@ -182,8 +182,8 @@ public class UpdateService : IUpdateService
     {
         try
         {
-            var currentExePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
-            var backupPath = GetBackupPath();
+            string currentExePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            string backupPath = GetBackupPath();
 
             if (File.Exists(currentExePath))
             {
@@ -203,8 +203,8 @@ public class UpdateService : IUpdateService
     {
         try
         {
-            var current = new Version(_currentVersion);
-            var newer = new Version(newVersion);
+            Version current = new(_currentVersion);
+            Version newer = new(newVersion);
             return newer > current;
         }
         catch
@@ -215,9 +215,9 @@ public class UpdateService : IUpdateService
 
     private string GetBackupPath()
     {
-        var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-        var backupDir = Path.Combine(appDataPath, "BrowserSelector", "Backup");
-        Directory.CreateDirectory(backupDir);
+        string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        string backupDir = Path.Combine(appDataPath, "BrowserSelector", "Backup");
+        _ = Directory.CreateDirectory(backupDir);
         return Path.Combine(backupDir, "BrowserSelector.exe.backup");
     }
 

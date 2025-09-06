@@ -76,14 +76,7 @@ public static class LocalizedFormatHelper
     /// </summary>
     public static string FormatCurrency(decimal value, string? currencyCode = null)
     {
-        if (string.IsNullOrEmpty(currencyCode))
-        {
-            return value.ToString("C", CurrentCulture);
-        }
-        else
-        {
-            return value.ToString($"C", CurrentCulture);
-        }
+        return string.IsNullOrEmpty(currencyCode) ? value.ToString("C", CurrentCulture) : value.ToString($"C", CurrentCulture);
     }
 
     /// <summary>
@@ -97,7 +90,7 @@ public static class LocalizedFormatHelper
         while (len >= 1024 && order < sizes.Length - 1)
         {
             order++;
-            len = len / 1024;
+            len /= 1024;
         }
 
         return $"{FormatNumber(len, "F2")} {sizes[order]}";
@@ -108,21 +101,12 @@ public static class LocalizedFormatHelper
     /// </summary>
     public static string FormatDuration(TimeSpan duration)
     {
-        if (duration.TotalDays >= 1)
-        {
-            return $"{FormatNumber((int)duration.TotalDays)} days, {FormatNumber(duration.Hours)} hours";
-        }
-        else if (duration.TotalHours >= 1)
-        {
-            return $"{FormatNumber((int)duration.TotalHours)} hours, {FormatNumber(duration.Minutes)} minutes";
-        }
-        else if (duration.TotalMinutes >= 1)
-        {
-            return $"{FormatNumber((int)duration.TotalMinutes)} minutes, {FormatNumber(duration.Seconds)} seconds";
-        }
-        else
-        {
-            return $"{FormatNumber(duration.TotalSeconds, "F1")} seconds";
-        }
+        return duration.TotalDays >= 1
+            ? $"{FormatNumber((int)duration.TotalDays)} days, {FormatNumber(duration.Hours)} hours"
+            : duration.TotalHours >= 1
+                ? $"{FormatNumber((int)duration.TotalHours)} hours, {FormatNumber(duration.Minutes)} minutes"
+                : duration.TotalMinutes >= 1
+                            ? $"{FormatNumber((int)duration.TotalMinutes)} minutes, {FormatNumber(duration.Seconds)} seconds"
+                            : $"{FormatNumber(duration.TotalSeconds, "F1")} seconds";
     }
 }

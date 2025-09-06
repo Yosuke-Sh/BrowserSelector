@@ -114,7 +114,7 @@ public class LogService : ILogService
 
         try
         {
-            var logMessage = FormatDetailedLogMessage(level, message, category, eventId, requestTarget, userInfo, processTarget, processAction, processResult, exception);
+            string logMessage = FormatDetailedLogMessage(level, message, category, eventId, requestTarget, userInfo, processTarget, processAction, processResult, exception);
 
             // コンソール出力
             if (_settings.EnableConsoleLogging)
@@ -141,13 +141,13 @@ public class LogService : ILogService
     {
         try
         {
-            var settingsDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BrowserSelector");
-            var logSettingsPath = Path.Combine(settingsDirectory, "logsettings.json");
+            string settingsDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BrowserSelector");
+            string logSettingsPath = Path.Combine(settingsDirectory, "logsettings.json");
 
             if (File.Exists(logSettingsPath))
             {
-                var json = File.ReadAllText(logSettingsPath);
-                var loadedSettings = System.Text.Json.JsonSerializer.Deserialize<LogSettings>(json);
+                string json = File.ReadAllText(logSettingsPath);
+                LogSettings? loadedSettings = System.Text.Json.JsonSerializer.Deserialize<LogSettings>(json);
                 if (loadedSettings != null)
                 {
                     _settings = loadedSettings;
@@ -184,7 +184,7 @@ public class LogService : ILogService
     {
         try
         {
-            var logFilePath = _settings.GetLogFilePath();
+            string logFilePath = _settings.GetLogFilePath();
             if (File.Exists(logFilePath))
             {
                 File.Delete(logFilePath);
@@ -205,14 +205,16 @@ public class LogService : ILogService
         try
         {
             if (!Directory.Exists(_settings.LogOutputFolder))
-                return;
-
-            var cutoffDate = DateTime.Now.AddDays(-_settings.LogRetentionDays);
-            var logFiles = Directory.GetFiles(_settings.LogOutputFolder, $"{_settings.LogFilePrefix}_*.{_settings.LogFileSuffix}");
-
-            foreach (var logFile in logFiles)
             {
-                var fileInfo = new FileInfo(logFile);
+                return;
+            }
+
+            DateTime cutoffDate = DateTime.Now.AddDays(-_settings.LogRetentionDays);
+            string[] logFiles = Directory.GetFiles(_settings.LogOutputFolder, $"{_settings.LogFilePrefix}_*.{_settings.LogFileSuffix}");
+
+            foreach (string logFile in logFiles)
+            {
+                FileInfo fileInfo = new(logFile);
                 if (fileInfo.CreationTime < cutoffDate)
                 {
                     File.Delete(logFile);
@@ -233,12 +235,14 @@ public class LogService : ILogService
     {
         try
         {
-            var logFilePath = _settings.GetLogFilePath();
+            string logFilePath = _settings.GetLogFilePath();
             if (!File.Exists(logFilePath))
+            {
                 return "ログファイルが存在しません。";
+            }
 
-            var lines = File.ReadAllLines(logFilePath);
-            var recentLines = lines.TakeLast(maxLines).ToArray();
+            string[] lines = File.ReadAllLines(logFilePath);
+            string[] recentLines = lines.TakeLast(maxLines).ToArray();
 
             return string.Join(Environment.NewLine, recentLines);
         }
@@ -272,18 +276,18 @@ public class LogService : ILogService
                                           string? processTarget, string? processAction, string? processResult,
                                           Exception? exception)
     {
-        var timestamp = DateTime.Now.ToString(_settings.TimestampFormat);
-        var levelText = GetLogLevelShortName(level);
-        var categoryText = string.IsNullOrEmpty(category) ? "General" : category;
-        var eventIdText = string.IsNullOrEmpty(eventId) ? GetNextEventId() : eventId;
+        string timestamp = DateTime.Now.ToString(_settings.TimestampFormat);
+        string levelText = GetLogLevelShortName(level);
+        string categoryText = string.IsNullOrEmpty(category) ? "General" : category;
+        string eventIdText = string.IsNullOrEmpty(eventId) ? GetNextEventId() : eventId;
         // 空値は出力しない（N/Aは使わない）
-        var requestTargetText = string.IsNullOrWhiteSpace(requestTarget) ? string.Empty : requestTarget;
-        var userInfoText = string.IsNullOrWhiteSpace(userInfo) ? string.Empty : userInfo;
-        var processTargetText = string.IsNullOrWhiteSpace(processTarget) ? string.Empty : processTarget;
-        var processActionText = string.IsNullOrWhiteSpace(processAction) ? string.Empty : processAction;
-        var processResultText = string.IsNullOrWhiteSpace(processResult) ? string.Empty : processResult;
+        string requestTargetText = string.IsNullOrWhiteSpace(requestTarget) ? string.Empty : requestTarget;
+        string userInfoText = string.IsNullOrWhiteSpace(userInfo) ? string.Empty : userInfo;
+        string processTargetText = string.IsNullOrWhiteSpace(processTarget) ? string.Empty : processTarget;
+        string processActionText = string.IsNullOrWhiteSpace(processAction) ? string.Empty : processAction;
+        string processResultText = string.IsNullOrWhiteSpace(processResult) ? string.Empty : processResult;
 
-        var logMessage = _settings.LogMessageTemplate
+        string logMessage = _settings.LogMessageTemplate
             .Replace("{Timestamp}", timestamp)
             .Replace("{Level}", levelText)
             .Replace("{EventId}", eventIdText)
@@ -339,7 +343,7 @@ public class LogService : ILogService
     /// </summary>
     private void WriteToConsole(LogLevel level, string message)
     {
-        var originalColor = Console.ForegroundColor;
+        ConsoleColor originalColor = Console.ForegroundColor;
 
         try
         {
@@ -369,8 +373,8 @@ public class LogService : ILogService
     {
         try
         {
-            var logFilePath = _settings.GetLogFilePath();
-            var logMessage = message + Environment.NewLine;
+            string logFilePath = _settings.GetLogFilePath();
+            string logMessage = message + Environment.NewLine;
 
             // ファイルサイズチェック
             CheckAndRotateLogFile(logFilePath);
@@ -392,14 +396,16 @@ public class LogService : ILogService
         try
         {
             if (!File.Exists(logFilePath))
+            {
                 return;
+            }
 
-            var fileInfo = new FileInfo(logFilePath);
-            var maxSizeBytes = _settings.MaxLogFileSize * 1024 * 1024; // MB to bytes
+            FileInfo fileInfo = new(logFilePath);
+            int maxSizeBytes = _settings.MaxLogFileSize * 1024 * 1024; // MB to bytes
 
             if (fileInfo.Length > maxSizeBytes)
             {
-                var backupPath = logFilePath.Replace($".{_settings.LogFileSuffix}",
+                string backupPath = logFilePath.Replace($".{_settings.LogFileSuffix}",
                     $"_{DateTime.Now:yyyyMMdd_HHmmss}.{_settings.LogFileSuffix}");
 
                 File.Move(logFilePath, backupPath);
@@ -421,7 +427,7 @@ public class LogService : ILogService
         {
             if (!Directory.Exists(_settings.LogOutputFolder))
             {
-                Directory.CreateDirectory(_settings.LogOutputFolder);
+                _ = Directory.CreateDirectory(_settings.LogOutputFolder);
             }
         }
         catch (Exception)

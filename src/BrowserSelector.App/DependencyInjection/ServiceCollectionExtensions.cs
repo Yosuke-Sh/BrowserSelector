@@ -13,31 +13,31 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddBrowserSelectorServices(this IServiceCollection services)
     {
         // Core Services
-        services.AddScoped<IBrowserService, BrowserService>();
-        services.AddScoped<ISettingsService>(provider => 
+        _ = services.AddScoped<IBrowserService, BrowserService>();
+        _ = services.AddScoped<ISettingsService>(provider =>
             new SettingsService(provider.GetRequiredService<ILogService>()));
-        services.AddScoped<ICustomLanguageService>(provider => 
+        _ = services.AddScoped<ICustomLanguageService>(provider =>
             new CustomLanguageService(provider.GetRequiredService<ILogService>()));
-        services.AddScoped<ILocalizationService>(provider => 
+        _ = services.AddScoped<ILocalizationService>(provider =>
             new LocalizationService(provider.GetRequiredService<ICustomLanguageService>(), provider.GetRequiredService<ILogService>()));
-        services.AddScoped<IUrlService>(provider => 
+        _ = services.AddScoped<IUrlService>(provider =>
             new UrlService(provider.GetRequiredService<ISettingsService>(), provider.GetRequiredService<ILogService>()));
-        services.AddScoped<IUrlRuleService>(provider => 
+        _ = services.AddScoped<IUrlRuleService>(provider =>
             new UrlRuleService(provider.GetRequiredService<ILogService>()));
 
         // Infrastructure Services
-        services.AddSingleton<ILogService, BrowserSelector.Infrastructure.Logging.LogService>();
-        services.AddScoped<IRegistryService>(provider => 
+        _ = services.AddSingleton<ILogService, BrowserSelector.Infrastructure.Logging.LogService>();
+        _ = services.AddScoped<IRegistryService>(provider =>
             new WindowsRegistryService(provider.GetRequiredService<ILogService>()));
-        services.AddScoped<ISystemTrayService, SystemTrayService>();
-        services.AddScoped<IProtocolHandler, ProtocolHandler>();
-        services.AddScoped<IUpdateService>(provider =>
+        _ = services.AddScoped<ISystemTrayService, SystemTrayService>();
+        _ = services.AddScoped<IProtocolHandler, ProtocolHandler>();
+        _ = services.AddScoped<IUpdateService>(provider =>
             new UpdateService("https://api.github.com/repos/your-repo/releases/latest", "1.0.0"));
 
         // Presentation Services
-        services.AddTransient<MainViewModel>();
-        services.AddTransient<SettingsViewModel>();
-        services.AddTransient<LanguageManagementViewModel>();
+        _ = services.AddTransient<MainViewModel>();
+        _ = services.AddTransient<SettingsViewModel>();
+        _ = services.AddTransient<LanguageManagementViewModel>();
 
         return services;
     }

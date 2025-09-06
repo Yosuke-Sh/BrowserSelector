@@ -27,7 +27,7 @@ public class SystemTrayService : ISystemTrayService, IDisposable
             DisposeNotifyIcon();
 
             // アイコンを作成
-            var icon = LoadIcon(iconPath);
+            Icon icon = LoadIcon(iconPath);
             _notifyIcon = new NotifyIcon
             {
                 Icon = icon,
@@ -75,10 +75,7 @@ public class SystemTrayService : ISystemTrayService, IDisposable
     /// </summary>
     public void ShowBalloonTip(string title, string text, System.Windows.Forms.ToolTipIcon icon = System.Windows.Forms.ToolTipIcon.Info, int timeout = 3000)
     {
-        if (_notifyIcon != null)
-        {
-            _notifyIcon.ShowBalloonTip(timeout, title, text, icon);
-        }
+        _notifyIcon?.ShowBalloonTip(timeout, title, text, icon);
     }
 
     /// <summary>
@@ -98,19 +95,19 @@ public class SystemTrayService : ISystemTrayService, IDisposable
         _contextMenu = new ContextMenuStrip();
 
         // デフォルトメニューアイテム
-        var showItem = new ToolStripMenuItem("表示(&S)");
+        ToolStripMenuItem showItem = new("表示(&S)");
         showItem.Click += (s, e) => OnSystemTrayAction(SystemTrayActionType.Show);
-        _contextMenu.Items.Add(showItem);
+        _ = _contextMenu.Items.Add(showItem);
 
-        var settingsItem = new ToolStripMenuItem("設定(&O)");
+        ToolStripMenuItem settingsItem = new("設定(&O)");
         settingsItem.Click += (s, e) => OnSystemTrayAction(SystemTrayActionType.Settings);
-        _contextMenu.Items.Add(settingsItem);
+        _ = _contextMenu.Items.Add(settingsItem);
 
-        _contextMenu.Items.Add(new ToolStripSeparator());
+        _ = _contextMenu.Items.Add(new ToolStripSeparator());
 
-        var exitItem = new ToolStripMenuItem("終了(&X)");
+        ToolStripMenuItem exitItem = new("終了(&X)");
         exitItem.Click += (s, e) => OnSystemTrayAction(SystemTrayActionType.Exit);
-        _contextMenu.Items.Add(exitItem);
+        _ = _contextMenu.Items.Add(exitItem);
 
         if (_notifyIcon != null)
         {
@@ -120,15 +117,15 @@ public class SystemTrayService : ISystemTrayService, IDisposable
 
     private void CreateMenuItems(ToolStripItemCollection items, SystemTrayMenuItems menuItems)
     {
-        foreach (var item in menuItems.Items)
+        foreach (SystemTrayMenuItem item in menuItems.Items)
         {
             if (item.IsSeparator)
             {
-                items.Add(new ToolStripSeparator());
+                _ = items.Add(new ToolStripSeparator());
             }
             else
             {
-                var menuItem = new ToolStripMenuItem(item.Text)
+                ToolStripMenuItem menuItem = new(item.Text)
                 {
                     Enabled = item.IsEnabled,
                     Visible = item.IsVisible
@@ -144,7 +141,7 @@ public class SystemTrayService : ISystemTrayService, IDisposable
                     CreateMenuItems(menuItem.DropDownItems, item.SubItems);
                 }
 
-                items.Add(menuItem);
+                _ = items.Add(menuItem);
             }
         }
     }

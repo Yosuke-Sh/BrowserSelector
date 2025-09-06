@@ -9,22 +9,22 @@ public class AppSettingsTests
     public void AppSettings_DefaultValues_ShouldBeSetCorrectly()
     {
         // Arrange & Act
-        var settings = new AppSettings();
+        AppSettings settings = new();
 
         // Assert
-        settings.EnableLogging.Should().BeTrue();
-        settings.Language.Should().Be("en-US"); // デフォルト言語を英語に変更
-        settings.PortableMode.Should().BeFalse();
-        settings.CustomProtocol.Should().Be("browserselector");
-        settings.CloseAfterUrlRuleMatch.Should().BeTrue();
+        _ = settings.EnableLogging.Should().BeTrue();
+        _ = settings.Language.Should().Be("en-US"); // デフォルト言語を英語に変更
+        _ = settings.PortableMode.Should().BeFalse();
+        _ = settings.CustomProtocol.Should().Be("browserselector");
+        _ = settings.CloseAfterUrlRuleMatch.Should().BeTrue();
     }
 
     [Fact]
     public void AppSettings_PropertyChanges_ShouldTriggerNotifications()
     {
         // Arrange
-        var settings = new AppSettings();
-        var propertyChangedCount = 0;
+        AppSettings settings = new();
+        int propertyChangedCount = 0;
         settings.PropertyChanged += (sender, e) => propertyChangedCount++;
 
         // Act
@@ -40,6 +40,6 @@ public class AppSettingsTests
         settings.CloseAfterUrlRuleMatch = false;
 
         // Assert
-        propertyChangedCount.Should().Be(10); // 全プロパティを変更
+        _ = propertyChangedCount.Should().Be(10); // 全プロパティを変更
     }
 }

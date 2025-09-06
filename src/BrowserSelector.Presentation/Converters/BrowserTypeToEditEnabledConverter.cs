@@ -11,7 +11,7 @@ public class BrowserTypeToEditEnabledConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (value is BrowserType browserType)
+        if (value is BrowserType)
         {
             // すべてのブラウザを編集可能にする
             return true;

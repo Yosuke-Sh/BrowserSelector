@@ -10,20 +10,20 @@ public class VisualSettingsTests
     public void VisualSettings_DefaultValues_ShouldBeSetCorrectly()
     {
         // Arrange & Act
-        var settings = new VisualSettings();
+        VisualSettings settings = new();
 
         // Assert
-        settings.BackgroundColor.Should().Be(Colors.White);
-        settings.FocusColor.Should().Be(Colors.Blue);
-        settings.FocusWidth.Should().Be(100.0);
+        _ = settings.BackgroundColor.Should().Be(Colors.White);
+        _ = settings.FocusColor.Should().Be(Colors.Blue);
+        _ = settings.FocusWidth.Should().Be(100.0);
     }
 
     [Fact]
     public void VisualSettings_PropertyChanges_ShouldTriggerNotifications()
     {
         // Arrange
-        var settings = new VisualSettings();
-        var propertyChangedCount = 0;
+        VisualSettings settings = new();
+        int propertyChangedCount = 0;
         settings.PropertyChanged += (sender, e) => propertyChangedCount++;
 
         // Act
@@ -32,24 +32,25 @@ public class VisualSettingsTests
         settings.FocusWidth = 150.0;
 
         // Assert
-        propertyChangedCount.Should().Be(3);
+        _ = propertyChangedCount.Should().Be(3);
     }
 
     [Fact]
     public void VisualSettings_BackgroundColor_ShouldAcceptValidValues()
     {
         // Arrange
-        var settings = new VisualSettings();
-
-        // Act & Assert
-        settings.BackgroundColor = Colors.White;
-        settings.BackgroundColor.Should().Be(Colors.White);
+        VisualSettings settings = new()
+        {
+            // Act & Assert
+            BackgroundColor = Colors.White
+        };
+        _ = settings.BackgroundColor.Should().Be(Colors.White);
 
         settings.BackgroundColor = Colors.Black;
-        settings.BackgroundColor.Should().Be(Colors.Black);
+        _ = settings.BackgroundColor.Should().Be(Colors.Black);
 
         settings.BackgroundColor = Colors.Red;
-        settings.BackgroundColor.Should().Be(Colors.Red);
+        _ = settings.BackgroundColor.Should().Be(Colors.Red);
     }
 
     [Theory]
@@ -59,12 +60,13 @@ public class VisualSettingsTests
     public void VisualSettings_FocusWidth_ShouldAcceptValidValues(double focusWidth)
     {
         // Arrange
-        var settings = new VisualSettings();
-
-        // Act
-        settings.FocusWidth = focusWidth;
+        VisualSettings settings = new()
+        {
+            // Act
+            FocusWidth = focusWidth
+        };
 
         // Assert
-        settings.FocusWidth.Should().Be(focusWidth);
+        _ = settings.FocusWidth.Should().Be(focusWidth);
     }
 }

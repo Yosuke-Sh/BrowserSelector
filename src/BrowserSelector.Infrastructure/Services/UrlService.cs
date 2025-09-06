@@ -16,8 +16,10 @@ public class UrlService : IUrlService
     {
         _settingsService = settingsService;
         _logService = logService;
-        _httpClient = new HttpClient();
-        _httpClient.Timeout = TimeSpan.FromSeconds(10);
+        _httpClient = new HttpClient
+        {
+            Timeout = TimeSpan.FromSeconds(10)
+        };
     }
 
     public Task<string> NormalizeUrlAsync(string url)
@@ -32,7 +34,7 @@ public class UrlService : IUrlService
             }
 
             // URLの正規化
-            var originalUrl = url;
+            string originalUrl = url;
             url = url.Trim();
 
             // プロトコルを追加
@@ -61,14 +63,14 @@ public class UrlService : IUrlService
             }
 
             // 基本的なURL形式チェック
-            if (!Uri.TryCreate(url, UriKind.Absolute, out var uri))
+            if (!Uri.TryCreate(url, UriKind.Absolute, out Uri? uri))
             {
                 _logService?.LogWarning($"URL検証失敗: 無効なURL形式 '{url}'", "UrlService");
                 return Task.FromResult(false);
             }
 
             // サポートされているプロトコルかチェック
-            var isValid = uri.Scheme == Uri.UriSchemeHttp ||
+            bool isValid = uri.Scheme == Uri.UriSchemeHttp ||
                          uri.Scheme == Uri.UriSchemeHttps ||
                          uri.Scheme == Uri.UriSchemeFtp;
 
@@ -95,17 +97,14 @@ public class UrlService : IUrlService
         try
         {
             if (string.IsNullOrWhiteSpace(url))
+            {
                 return string.Empty;
+            }
 
             // プロトコルを追加（必要に応じて）
             url = AddProtocolIfNeeded(url);
 
-            if (Uri.TryCreate(url, UriKind.Absolute, out var uri))
-            {
-                return uri.Host;
-            }
-
-            return string.Empty;
+            return Uri.TryCreate(url, UriKind.Absolute, out Uri? uri) ? uri.Host : string.Empty;
         }
         catch
         {
@@ -116,7 +115,9 @@ public class UrlService : IUrlService
     public string AddProtocolIfNeeded(string url)
     {
         if (string.IsNullOrWhiteSpace(url))
+        {
             return url;
+        }
 
         url = url.Trim();
 

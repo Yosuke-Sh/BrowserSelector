@@ -29,8 +29,8 @@ public partial class SettingsWindow : Window
     {
         if (sender is ComboBox comboBox && DataContext is SettingsViewModel viewModel)
         {
-            var selectedIndex = comboBox.SelectedIndex;
-            var newDirection = (GradientDirection)selectedIndex;
+            int selectedIndex = comboBox.SelectedIndex;
+            GradientDirection newDirection = (GradientDirection)selectedIndex;
 
             // ViewModelのプロパティを更新
             viewModel.VisualSettings.GradientDirection = newDirection;
@@ -51,24 +51,24 @@ public partial class SettingsWindow : Window
             if (DataContext is SettingsViewModel settingsViewModel)
             {
                 // 言語管理ダイアログを表示
-                var languageManagementViewModel = new LanguageManagementViewModel(
-                    settingsViewModel.CustomLanguageService, 
+                LanguageManagementViewModel languageManagementViewModel = new(
+                    settingsViewModel.CustomLanguageService,
                     settingsViewModel.LogService);
-                
-                var dialog = new LanguageManagementDialog(languageManagementViewModel)
+
+                LanguageManagementDialog dialog = new(languageManagementViewModel)
                 {
                     Owner = this
                 };
-                
-                dialog.ShowDialog();
-                
+
+                _ = dialog.ShowDialog();
+
                 // ダイアログを閉じた後、言語一覧を更新
                 settingsViewModel.RefreshLanguages();
             }
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"言語管理ダイアログの表示に失敗しました: {ex.Message}", "エラー", 
+            _ = MessageBox.Show($"言語管理ダイアログの表示に失敗しました: {ex.Message}", "エラー",
                 MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }

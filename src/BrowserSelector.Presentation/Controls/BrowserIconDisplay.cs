@@ -109,13 +109,13 @@ public class BrowserIconDisplay : Control
             // アイコンファイルから読み込み
             if (!string.IsNullOrEmpty(Browser.IconPath) && System.IO.File.Exists(Browser.IconPath))
             {
-                var iconFromFile = LoadIconFromFile(Browser.IconPath);
+                ImageSource? iconFromFile = LoadIconFromFile(Browser.IconPath);
                 IconSource = iconFromFile ?? GetDefaultIcon();
             }
             // 実行ファイルからアイコンを抽出
             else if (!string.IsNullOrEmpty(Browser.ExecutablePath) && System.IO.File.Exists(Browser.ExecutablePath))
             {
-                var iconFromExe = await LoadIconFromExecutableAsync(Browser.ExecutablePath);
+                ImageSource? iconFromExe = await LoadIconFromExecutableAsync(Browser.ExecutablePath);
                 IconSource = iconFromExe ?? GetDefaultIcon();
             }
             // デフォルトアイコンを使用
@@ -141,7 +141,7 @@ public class BrowserIconDisplay : Control
     {
         try
         {
-            var bitmap = new BitmapImage();
+            BitmapImage bitmap = new();
             bitmap.BeginInit();
             bitmap.CacheOption = BitmapCacheOption.OnLoad;
             bitmap.UriSource = new Uri(filePath);
@@ -164,14 +164,14 @@ public class BrowserIconDisplay : Control
             try
             {
                 // Windows APIを使用してアイコンを抽出
-                var icon = System.Drawing.Icon.ExtractAssociatedIcon(executablePath);
+                System.Drawing.Icon? icon = System.Drawing.Icon.ExtractAssociatedIcon(executablePath);
                 if (icon != null)
                 {
-                    using var stream = new System.IO.MemoryStream();
+                    using System.IO.MemoryStream stream = new();
                     icon.Save(stream);
                     stream.Position = 0;
 
-                    var bitmap = new BitmapImage();
+                    BitmapImage bitmap = new();
                     bitmap.BeginInit();
                     bitmap.CacheOption = BitmapCacheOption.OnLoad;
                     bitmap.StreamSource = stream;
@@ -199,7 +199,7 @@ public class BrowserIconDisplay : Control
         {
             // デフォルトのブラウザアイコンを返す
             // 実際の実装では、アプリケーションリソースからアイコンを読み込み
-            var bitmap = new BitmapImage();
+            BitmapImage bitmap = new();
             bitmap.BeginInit();
             bitmap.CacheOption = BitmapCacheOption.OnLoad;
             bitmap.UriSource = new Uri("pack://application:,,,/BrowserSelector.Presentation;component/Resources/Images/default-browser.png");
@@ -240,7 +240,7 @@ public class BrowserIconDisplay : Control
     {
         if (!string.IsNullOrEmpty(iconPath) && System.IO.File.Exists(iconPath))
         {
-            var icon = LoadIconFromFile(iconPath);
+            ImageSource? icon = LoadIconFromFile(iconPath);
             IconSource = icon ?? GetDefaultIcon();
         }
     }

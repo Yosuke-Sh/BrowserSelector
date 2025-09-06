@@ -46,11 +46,7 @@ public class LanguageInfo
     /// </summary>
     public override bool Equals(object? obj)
     {
-        if (obj is LanguageInfo other)
-        {
-            return CultureCode == other.CultureCode;
-        }
-        return false;
+        return obj is LanguageInfo other && CultureCode == other.CultureCode;
     }
 
     /// <summary>

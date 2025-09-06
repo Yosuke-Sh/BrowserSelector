@@ -1,8 +1,8 @@
 using BrowserSelector.Core.Models;
 using BrowserSelector.Core.Services;
-using System.Text.Json;
-using System.Resources;
 using System.Globalization;
+using System.Resources;
+using System.Text.Json;
 
 namespace BrowserSelector.Infrastructure.Services;
 
@@ -17,43 +17,43 @@ public class CustomLanguageService : ICustomLanguageService
     public CustomLanguageService(ILogService? logService = null)
     {
         _logService = logService;
-        
+
         // カスタム言語フォルダのパスを設定
-        var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-        var appFolder = System.IO.Path.Combine(appDataPath, "BrowserSelector");
+        string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        string appFolder = System.IO.Path.Combine(appDataPath, "BrowserSelector");
         _customLanguageFolder = System.IO.Path.Combine(appFolder, "Languages");
-        
+
         // フォルダが存在しない場合は作成
         if (!System.IO.Directory.Exists(_customLanguageFolder))
         {
-            System.IO.Directory.CreateDirectory(_customLanguageFolder);
+            _ = System.IO.Directory.CreateDirectory(_customLanguageFolder);
             _logService?.LogDebug($"カスタム言語フォルダを作成しました: {_customLanguageFolder}", "CustomLanguageService");
         }
-        
+
         // 初期起動時にデフォルト言語ファイルを配置
-        _ = Task.Run(async () => await EnsureDefaultLanguageFilesAsync());
+        _ = Task.Run(EnsureDefaultLanguageFilesAsync);
     }
 
     public async Task<IEnumerable<LanguageInfo>> GetAvailableLanguagesAsync()
     {
-        var languages = new List<LanguageInfo>();
-        
+        List<LanguageInfo> languages = [];
+
         try
         {
             // 言語ファイルから読み込み（デフォルト言語も含む）
             if (System.IO.Directory.Exists(_customLanguageFolder))
             {
-                var languageFiles = System.IO.Directory.GetFiles(_customLanguageFolder, "*.json");
-                
-                foreach (var filePath in languageFiles)
+                string[] languageFiles = System.IO.Directory.GetFiles(_customLanguageFolder, "*.json");
+
+                foreach (string filePath in languageFiles)
                 {
                     try
                     {
-                        var languageFile = await LoadLanguageFileAsync(filePath);
+                        CustomLanguageFile? languageFile = await LoadLanguageFileAsync(filePath);
                         if (languageFile != null)
                         {
                             // 表示名はローカライズ不要（英語はEnglish、日本語は日本語）
-                            var displayName = GetLocalizedDisplayName(languageFile.CultureCode, languageFile.DisplayName);
+                            string displayName = GetLocalizedDisplayName(languageFile.CultureCode, languageFile.DisplayName);
                             languages.Add(new LanguageInfo(languageFile.CultureCode, displayName));
                         }
                     }
@@ -63,7 +63,7 @@ public class CustomLanguageService : ICustomLanguageService
                     }
                 }
             }
-            
+
             // 言語ファイルが存在しない場合はデフォルト言語を追加
             if (languages.Count == 0)
             {
@@ -99,18 +99,18 @@ public class CustomLanguageService : ICustomLanguageService
             }
 
             // 言語ファイルを読み込み
-            var languageFile = await LoadLanguageFileAsync(languageFilePath);
+            CustomLanguageFile? languageFile = await LoadLanguageFileAsync(languageFilePath);
             if (languageFile == null)
             {
                 return false;
             }
 
             // カスタム言語フォルダにコピー
-            var fileName = $"{languageFile.CultureCode}.json";
-            var targetPath = System.IO.Path.Combine(_customLanguageFolder, fileName);
-            
+            string fileName = $"{languageFile.CultureCode}.json";
+            string targetPath = System.IO.Path.Combine(_customLanguageFolder, fileName);
+
             System.IO.File.Copy(languageFilePath, targetPath, true);
-            
+
             _logService?.LogInformation($"カスタム言語ファイルを追加しました: {languageFile.CultureCode} - {languageFile.DisplayName}", "CustomLanguageService");
             return true;
         }
@@ -125,9 +125,9 @@ public class CustomLanguageService : ICustomLanguageService
     {
         try
         {
-            var fileName = $"{cultureCode}.json";
-            var filePath = System.IO.Path.Combine(_customLanguageFolder, fileName);
-            
+            string fileName = $"{cultureCode}.json";
+            string filePath = System.IO.Path.Combine(_customLanguageFolder, fileName);
+
             if (!System.IO.File.Exists(filePath))
             {
                 _logService?.LogWarning($"削除対象の言語ファイルが存在しません: {filePath}", "CustomLanguageService");
@@ -149,7 +149,7 @@ public class CustomLanguageService : ICustomLanguageService
     {
         try
         {
-            var languageFile = await LoadLanguageFileAsync(languageFilePath);
+            CustomLanguageFile? languageFile = await LoadLanguageFileAsync(languageFilePath);
             if (languageFile == null)
             {
                 return false;
@@ -177,7 +177,7 @@ public class CustomLanguageService : ICustomLanguageService
             // カルチャーコードの形式検証
             try
             {
-                var culture = new System.Globalization.CultureInfo(languageFile.CultureCode);
+                CultureInfo culture = new(languageFile.CultureCode);
             }
             catch
             {
@@ -204,16 +204,16 @@ public class CustomLanguageService : ICustomLanguageService
     {
         try
         {
-            var fileName = $"{cultureCode}.json";
-            var filePath = System.IO.Path.Combine(_customLanguageFolder, fileName);
-            
+            string fileName = $"{cultureCode}.json";
+            string filePath = System.IO.Path.Combine(_customLanguageFolder, fileName);
+
             if (!System.IO.File.Exists(filePath))
             {
                 _logService?.LogDebug($"カスタム言語ファイルが存在しません: {filePath}", "CustomLanguageService");
                 return null;
             }
 
-            var languageFile = await LoadLanguageFileAsync(filePath);
+            CustomLanguageFile? languageFile = await LoadLanguageFileAsync(filePath);
             return languageFile?.Resources;
         }
         catch (Exception ex)
@@ -227,7 +227,7 @@ public class CustomLanguageService : ICustomLanguageService
     {
         try
         {
-            var languageFile = new CustomLanguageFile
+            CustomLanguageFile languageFile = new()
             {
                 CultureCode = cultureCode,
                 DisplayName = displayName,
@@ -235,17 +235,17 @@ public class CustomLanguageService : ICustomLanguageService
                 UpdatedAt = DateTime.Now
             };
 
-            var fileName = $"{cultureCode}.json";
-            var filePath = System.IO.Path.Combine(_customLanguageFolder, fileName);
-            
-            var json = JsonSerializer.Serialize(languageFile, new JsonSerializerOptions 
-            { 
+            string fileName = $"{cultureCode}.json";
+            string filePath = System.IO.Path.Combine(_customLanguageFolder, fileName);
+
+            string json = JsonSerializer.Serialize(languageFile, new JsonSerializerOptions
+            {
                 WriteIndented = true,
                 Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
             });
-            
+
             await System.IO.File.WriteAllTextAsync(filePath, json);
-            
+
             _logService?.LogInformation($"カスタム言語ファイルを保存しました: {cultureCode} - {displayName}", "CustomLanguageService");
             return true;
         }
@@ -261,19 +261,19 @@ public class CustomLanguageService : ICustomLanguageService
         try
         {
             // 既存のリソースキーを取得
-            var resourceKeys = await GetAvailableResourceKeysAsync();
-            
+            IEnumerable<string> resourceKeys = await GetAvailableResourceKeysAsync();
+
             // テンプレート用のリソース辞書を作成（英語のデフォルト値を埋め込み）
-            var templateResources = new Dictionary<string, string>();
-            
+            Dictionary<string, string> templateResources = [];
+
             // 英語リソースを取得してデフォルト値として使用
-            var englishResourceManager = new ResourceManager("BrowserSelector.Infrastructure.Localization.Resources", typeof(CustomLanguageService).Assembly);
-            var englishCulture = new CultureInfo("en-US");
-            
-            foreach (var key in resourceKeys)
+            ResourceManager englishResourceManager = new("BrowserSelector.Infrastructure.Localization.Resources", typeof(CustomLanguageService).Assembly);
+            CultureInfo englishCulture = new("en-US");
+
+            foreach (string key in resourceKeys)
             {
                 // 英語のデフォルト値を取得
-                var englishValue = englishResourceManager.GetString(key, englishCulture);
+                string? englishValue = englishResourceManager.GetString(key, englishCulture);
                 if (!string.IsNullOrEmpty(englishValue))
                 {
                     templateResources[key] = englishValue; // 英語のデフォルト値を埋め込み
@@ -285,7 +285,7 @@ public class CustomLanguageService : ICustomLanguageService
             }
 
             // テンプレートファイルを作成
-            var languageFile = new CustomLanguageFile
+            CustomLanguageFile languageFile = new()
             {
                 CultureCode = cultureCode,
                 DisplayName = displayName,
@@ -297,17 +297,17 @@ public class CustomLanguageService : ICustomLanguageService
                 Author = "User Generated"
             };
 
-            var fileName = $"{cultureCode}.json";
-            var filePath = System.IO.Path.Combine(_customLanguageFolder, fileName);
-            
-            var json = JsonSerializer.Serialize(languageFile, new JsonSerializerOptions 
-            { 
+            string fileName = $"{cultureCode}.json";
+            string filePath = System.IO.Path.Combine(_customLanguageFolder, fileName);
+
+            string json = JsonSerializer.Serialize(languageFile, new JsonSerializerOptions
+            {
                 WriteIndented = true,
                 Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
             });
-            
+
             await System.IO.File.WriteAllTextAsync(filePath, json);
-            
+
             _logService?.LogInformation($"言語ファイルテンプレートを生成しました: {cultureCode} - {displayName}", "CustomLanguageService");
             return true;
         }
@@ -323,16 +323,16 @@ public class CustomLanguageService : ICustomLanguageService
         try
         {
             // デフォルトの英語リソースからキーを取得
-            var resourceManager = new System.Resources.ResourceManager("BrowserSelector.Infrastructure.Localization.Resources", typeof(CustomLanguageService).Assembly);
-            var englishCulture = new System.Globalization.CultureInfo("en-US");
-            
-            var resourceKeys = new List<string>();
-            
+            ResourceManager resourceManager = new("BrowserSelector.Infrastructure.Localization.Resources", typeof(CustomLanguageService).Assembly);
+            CultureInfo englishCulture = new("en-US");
+
+            List<string> resourceKeys = [];
+
             // リソースファイルからキーを抽出（リフレクションを使用）
-            var resourceSet = resourceManager.GetResourceSet(englishCulture, true, true);
+            ResourceSet? resourceSet = resourceManager.GetResourceSet(englishCulture, true, true);
             if (resourceSet != null)
             {
-                var enumerator = resourceSet.GetEnumerator();
+                System.Collections.IDictionaryEnumerator enumerator = resourceSet.GetEnumerator();
                 while (enumerator.MoveNext())
                 {
                     if (enumerator.Key is string key)
@@ -348,7 +348,7 @@ public class CustomLanguageService : ICustomLanguageService
         catch (Exception ex)
         {
             _logService?.LogError($"リソースキーの取得に失敗しました: {ex.Message}", "CustomLanguageService", ex);
-            return Task.FromResult<IEnumerable<string>>(new List<string>());
+            return Task.FromResult<IEnumerable<string>>([]);
         }
     }
 
@@ -376,16 +376,16 @@ public class CustomLanguageService : ICustomLanguageService
     {
         try
         {
-            var assembly = System.Reflection.Assembly.GetExecutingAssembly();
-            var defaultLanguages = new[] { "en-US", "ja-JP" };
-            
+            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            string[] defaultLanguages = new[] { "en-US", "ja-JP" };
+
             // 並列処理で高速化
-            var tasks = defaultLanguages.Select(async cultureCode =>
+            IEnumerable<Task> tasks = defaultLanguages.Select(async cultureCode =>
             {
                 try
                 {
-                    var targetPath = System.IO.Path.Combine(_customLanguageFolder, $"{cultureCode}.json");
-                    
+                    string targetPath = System.IO.Path.Combine(_customLanguageFolder, $"{cultureCode}.json");
+
                     // ファイルが存在しない場合は即座にコピー
                     if (!System.IO.File.Exists(targetPath))
                     {
@@ -393,7 +393,7 @@ public class CustomLanguageService : ICustomLanguageService
                         _logService?.LogDebug($"言語ファイルを新規配置: {cultureCode}", "CustomLanguageService");
                         return;
                     }
-                    
+
                     // ファイルが存在する場合は軽量チェック
                     if (await ShouldUpdateLanguageFileAsync(assembly, cultureCode, targetPath))
                     {
@@ -410,7 +410,7 @@ public class CustomLanguageService : ICustomLanguageService
                     _logService?.LogError($"言語ファイル同期エラー ({cultureCode}): {ex.Message}", "CustomLanguageService", ex);
                 }
             });
-            
+
             await Task.WhenAll(tasks);
         }
         catch (Exception ex)
@@ -427,41 +427,41 @@ public class CustomLanguageService : ICustomLanguageService
         try
         {
             // 埋め込みリソースのサイズを取得
-            var resourceName = $"BrowserSelector.Infrastructure.Localization.{cultureCode}.json";
-            using var embeddedStream = assembly.GetManifestResourceStream(resourceName);
+            string resourceName = $"BrowserSelector.Infrastructure.Localization.{cultureCode}.json";
+            using System.IO.Stream? embeddedStream = assembly.GetManifestResourceStream(resourceName);
             if (embeddedStream == null)
             {
                 _logService?.LogWarning($"埋め込みリソースが見つかりません: {resourceName}", "CustomLanguageService");
                 return Task.FromResult(false);
             }
-            
-            var embeddedSize = embeddedStream.Length;
-            
+
+            long embeddedSize = embeddedStream.Length;
+
             // 既存ファイルのサイズを取得
-            var fileInfo = new System.IO.FileInfo(targetPath);
+            System.IO.FileInfo fileInfo = new(targetPath);
             if (!fileInfo.Exists)
             {
                 return Task.FromResult(true); // ファイルが存在しない場合は更新が必要
             }
-            
-            var existingSize = fileInfo.Length;
-            
+
+            long existingSize = fileInfo.Length;
+
             // サイズが異なる場合は更新が必要
             if (embeddedSize != existingSize)
             {
                 _logService?.LogDebug($"ファイルサイズが異なります: {cultureCode} (埋め込み: {embeddedSize}, 既存: {existingSize})", "CustomLanguageService");
                 return Task.FromResult(true);
             }
-            
+
             // サイズが同じでも、より詳細なチェックが必要な場合はここで実装
             // 現在はサイズ比較のみで高速化
-            
+
             // オプション: ハッシュ値による詳細チェック（必要に応じて有効化）
             // if (await ShouldCheckHashAsync())
             // {
             //     return await CompareFileHashesAsync(assembly, cultureCode, targetPath);
             // }
-            
+
             return Task.FromResult(false);
         }
         catch (Exception ex)
@@ -478,19 +478,19 @@ public class CustomLanguageService : ICustomLanguageService
     {
         try
         {
-            var assembly = System.Reflection.Assembly.GetExecutingAssembly();
-            var resourceName = $"BrowserSelector.Infrastructure.Localization.{cultureCode}.json";
-            
-            using var stream = assembly.GetManifestResourceStream(resourceName);
+            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            string resourceName = $"BrowserSelector.Infrastructure.Localization.{cultureCode}.json";
+
+            using System.IO.Stream? stream = assembly.GetManifestResourceStream(resourceName);
             if (stream == null)
             {
                 _logService?.LogWarning($"埋め込みリソースが見つかりません: {resourceName}", "CustomLanguageService");
                 return;
             }
 
-            using var fileStream = new System.IO.FileStream(targetPath, System.IO.FileMode.Create);
+            using System.IO.FileStream fileStream = new(targetPath, System.IO.FileMode.Create);
             await stream.CopyToAsync(fileStream);
-            
+
             _logService?.LogDebug($"言語ファイルを配置しました: {targetPath}", "CustomLanguageService");
         }
         catch (Exception ex)
@@ -523,22 +523,25 @@ public class CustomLanguageService : ICustomLanguageService
         try
         {
             // 埋め込みリソースのハッシュを計算
-            var resourceName = $"BrowserSelector.Infrastructure.Localization.{cultureCode}.json";
-            using var embeddedStream = assembly.GetManifestResourceStream(resourceName);
-            if (embeddedStream == null) return false;
-            
-            var embeddedHash = await ComputeStreamHashAsync(embeddedStream);
-            
+            string resourceName = $"BrowserSelector.Infrastructure.Localization.{cultureCode}.json";
+            using System.IO.Stream? embeddedStream = assembly.GetManifestResourceStream(resourceName);
+            if (embeddedStream == null)
+            {
+                return false;
+            }
+
+            byte[] embeddedHash = await ComputeStreamHashAsync(embeddedStream);
+
             // 既存ファイルのハッシュを計算
-            using var fileStream = new System.IO.FileStream(targetPath, System.IO.FileMode.Open, System.IO.FileAccess.Read);
-            var existingHash = await ComputeStreamHashAsync(fileStream);
-            
-            var isDifferent = !embeddedHash.SequenceEqual(existingHash);
+            using System.IO.FileStream fileStream = new(targetPath, System.IO.FileMode.Open, System.IO.FileAccess.Read);
+            byte[] existingHash = await ComputeStreamHashAsync(fileStream);
+
+            bool isDifferent = !embeddedHash.SequenceEqual(existingHash);
             if (isDifferent)
             {
                 _logService?.LogDebug($"ファイルハッシュが異なります: {cultureCode}", "CustomLanguageService");
             }
-            
+
             return isDifferent;
         }
         catch (Exception ex)
@@ -553,7 +556,7 @@ public class CustomLanguageService : ICustomLanguageService
     /// </summary>
     private async Task<byte[]> ComputeStreamHashAsync(System.IO.Stream stream)
     {
-        using var sha256 = System.Security.Cryptography.SHA256.Create();
+        using System.Security.Cryptography.SHA256 sha256 = System.Security.Cryptography.SHA256.Create();
         return await Task.Run(() => sha256.ComputeHash(stream));
     }
 
@@ -574,8 +577,8 @@ public class CustomLanguageService : ICustomLanguageService
     {
         try
         {
-            var json = await System.IO.File.ReadAllTextAsync(filePath);
-            var languageFile = JsonSerializer.Deserialize<CustomLanguageFile>(json);
+            string json = await System.IO.File.ReadAllTextAsync(filePath);
+            CustomLanguageFile? languageFile = JsonSerializer.Deserialize<CustomLanguageFile>(json);
             return languageFile;
         }
         catch (Exception ex)

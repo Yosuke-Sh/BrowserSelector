@@ -1,5 +1,4 @@
 using BrowserSelector.Core.Services;
-using BrowserSelector.Infrastructure.Services;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -17,14 +16,14 @@ public class SettingsServiceIntegrationTests : IDisposable
     {
         // テスト用の一時ディレクトリを作成
         _tempDirectory = Path.Combine(Path.GetTempPath(), "BrowserSelectorTest", Guid.NewGuid().ToString());
-        Directory.CreateDirectory(_tempDirectory);
+        _ = Directory.CreateDirectory(_tempDirectory);
 
         _host = Host.CreateDefaultBuilder()
             .ConfigureServices(services =>
             {
-                services.AddScoped<ISettingsService>(provider => 
+                _ = services.AddScoped<ISettingsService>(provider =>
                 {
-                    var logService = provider.GetService<ILogService>();
+                    ILogService? logService = provider.GetService<ILogService>();
                     return new TestSettingsService(logService, _tempDirectory);
                 });
             })
@@ -47,7 +46,7 @@ public class SettingsServiceIntegrationTests : IDisposable
                 // 削除に失敗しても無視
             }
         }
-        
+
         _host?.Dispose();
     }
 
@@ -55,70 +54,70 @@ public class SettingsServiceIntegrationTests : IDisposable
     public async Task SettingsService_SaveAndLoad_ShouldPersistCorrectly()
     {
         // Arrange
-        var testSettings = new BrowserSelector.Core.Models.AppSettings
+        Core.Models.AppSettings testSettings = new()
         {
             Language = "ja-JP",
             CustomProtocol = "testprotocol"
         };
 
         // Act
-        var saveResult = await _settingsService.SaveAppSettingsAsync(testSettings);
-        var loadedSettings = await _settingsService.LoadAppSettingsAsync();
+        bool saveResult = await _settingsService.SaveAppSettingsAsync(testSettings);
+        Core.Models.AppSettings loadedSettings = await _settingsService.LoadAppSettingsAsync();
 
         // Assert
         // TestSettingsServiceを使用するため、保存と読み込みが正常に動作する
-        saveResult.Should().BeTrue();
-        loadedSettings.Should().NotBeNull();
+        _ = saveResult.Should().BeTrue();
+        _ = loadedSettings.Should().NotBeNull();
 
-        loadedSettings.Language.Should().Be(testSettings.Language);
-        loadedSettings.CustomProtocol.Should().Be(testSettings.CustomProtocol);
+        _ = loadedSettings.Language.Should().Be(testSettings.Language);
+        _ = loadedSettings.CustomProtocol.Should().Be(testSettings.CustomProtocol);
     }
 
     [Fact]
     public async Task SettingsService_LoadVisualSettings_ShouldReturnDefaultValues()
     {
         // Act
-        var visualSettings = await _settingsService.LoadVisualSettingsAsync();
+        Core.Models.VisualSettings visualSettings = await _settingsService.LoadVisualSettingsAsync();
 
         // Assert
-        visualSettings.Should().NotBeNull();
-        visualSettings.BackgroundColor.Should().Be(System.Windows.Media.Colors.White);
-        visualSettings.UseBackgroundGradient.Should().BeFalse();
-        visualSettings.GradientStartColor.Should().Be(System.Windows.Media.Colors.Transparent);
-        visualSettings.GradientEndColor.Should().Be(System.Windows.Media.Colors.Transparent);
-        visualSettings.GradientDirection.Should().Be(BrowserSelector.Core.Enums.GradientDirection.Vertical);
-        visualSettings.IconScale.Should().Be(1.0);
-        visualSettings.ShowFocusIndicator.Should().BeTrue();
-        visualSettings.FocusColor.Should().Be(System.Windows.Media.Colors.Blue);
-        visualSettings.FocusThickness.Should().Be(2.0);
-        visualSettings.FocusWidth.Should().Be(100.0);
-        visualSettings.InitialWindowWidth.Should().Be(800.0);
-        visualSettings.InitialWindowHeight.Should().Be(600.0);
-        visualSettings.ShowLogo.Should().BeTrue();
-        visualSettings.ShowUrlInput.Should().BeTrue();
-        visualSettings.BrowserButtonWidth.Should().Be(120.0);
-        visualSettings.BrowserButtonHeight.Should().Be(90.0);
-        visualSettings.BrowserButtonBackgroundColor.Should().Be(System.Windows.Media.Colors.Transparent);
-        visualSettings.BrowserButtonForegroundColor.Should().Be(System.Windows.Media.Colors.Black);
-        visualSettings.BrowserButtonOpacity.Should().Be(1.0);
-        visualSettings.BrowserButtonCornerRadius.Should().Be(8.0);
-        visualSettings.ShowBrowserName.Should().BeTrue();
-        visualSettings.BrowserIconSize.Should().Be(32.0);
+        _ = visualSettings.Should().NotBeNull();
+        _ = visualSettings.BackgroundColor.Should().Be(System.Windows.Media.Colors.White);
+        _ = visualSettings.UseBackgroundGradient.Should().BeFalse();
+        _ = visualSettings.GradientStartColor.Should().Be(System.Windows.Media.Colors.Transparent);
+        _ = visualSettings.GradientEndColor.Should().Be(System.Windows.Media.Colors.Transparent);
+        _ = visualSettings.GradientDirection.Should().Be(BrowserSelector.Core.Enums.GradientDirection.Vertical);
+        _ = visualSettings.IconScale.Should().Be(1.0);
+        _ = visualSettings.ShowFocusIndicator.Should().BeTrue();
+        _ = visualSettings.FocusColor.Should().Be(System.Windows.Media.Colors.Blue);
+        _ = visualSettings.FocusThickness.Should().Be(2.0);
+        _ = visualSettings.FocusWidth.Should().Be(100.0);
+        _ = visualSettings.InitialWindowWidth.Should().Be(800.0);
+        _ = visualSettings.InitialWindowHeight.Should().Be(600.0);
+        _ = visualSettings.ShowLogo.Should().BeTrue();
+        _ = visualSettings.ShowUrlInput.Should().BeTrue();
+        _ = visualSettings.BrowserButtonWidth.Should().Be(120.0);
+        _ = visualSettings.BrowserButtonHeight.Should().Be(90.0);
+        _ = visualSettings.BrowserButtonBackgroundColor.Should().Be(System.Windows.Media.Colors.Transparent);
+        _ = visualSettings.BrowserButtonForegroundColor.Should().Be(System.Windows.Media.Colors.Black);
+        _ = visualSettings.BrowserButtonOpacity.Should().Be(1.0);
+        _ = visualSettings.BrowserButtonCornerRadius.Should().Be(8.0);
+        _ = visualSettings.ShowBrowserName.Should().BeTrue();
+        _ = visualSettings.BrowserIconSize.Should().Be(32.0);
     }
 
     [Fact]
     public async Task SettingsService_ResetSettings_ShouldRestoreDefaults()
     {
         // Arrange
-        var originalSettings = await _settingsService.LoadAppSettingsAsync();
+        _ = await _settingsService.LoadAppSettingsAsync();
 
         // Act
-        var resetResult = await _settingsService.ResetSettingsAsync();
-        var resetSettings = await _settingsService.LoadAppSettingsAsync();
+        bool resetResult = await _settingsService.ResetSettingsAsync();
+        Core.Models.AppSettings resetSettings = await _settingsService.LoadAppSettingsAsync();
 
         // Assert
-        resetResult.Should().BeTrue();
-        resetSettings.Should().NotBeNull();
+        _ = resetResult.Should().BeTrue();
+        _ = resetSettings.Should().NotBeNull();
         // デフォルト値に戻っていることを確認
         // TODO: 削除されたExpandShortenedUrlsプロパティのテストを更新
     }

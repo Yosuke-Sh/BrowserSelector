@@ -1,6 +1,5 @@
 using BrowserSelector.Core.Models;
 using BrowserSelector.Core.Services;
-using System.IO;
 using System.Text.Json;
 
 namespace BrowserSelector.IntegrationTests;
@@ -24,7 +23,7 @@ public class TestSettingsService : ISettingsService
         // 設定ディレクトリが存在しない場合は作成
         if (!Directory.Exists(_settingsDirectory))
         {
-            Directory.CreateDirectory(_settingsDirectory);
+            _ = Directory.CreateDirectory(_settingsDirectory);
         }
 
         _appSettingsPath = Path.Combine(_settingsDirectory, "appsettings.json");
@@ -39,15 +38,15 @@ public class TestSettingsService : ISettingsService
         {
             if (!File.Exists(_appSettingsPath))
             {
-                var defaultSettings = new AppSettings();
-                await SaveAppSettingsAsync(defaultSettings);
+                AppSettings defaultSettings = new();
+                _ = await SaveAppSettingsAsync(defaultSettings);
                 return defaultSettings;
             }
 
-            var json = await File.ReadAllTextAsync(_appSettingsPath);
-            var settings = JsonSerializer.Deserialize<AppSettings>(json);
-            var result = settings ?? new AppSettings();
-            
+            string json = await File.ReadAllTextAsync(_appSettingsPath);
+            AppSettings? settings = JsonSerializer.Deserialize<AppSettings>(json);
+            AppSettings result = settings ?? new AppSettings();
+
             _logService?.LogTrace($"アプリケーション設定読み込み完了: Language={result.Language}, EnableLogging={result.EnableLogging}", "TestSettingsService");
             return result;
         }
@@ -62,13 +61,13 @@ public class TestSettingsService : ISettingsService
     {
         try
         {
-            var options = new JsonSerializerOptions
+            JsonSerializerOptions options = new()
             {
                 WriteIndented = true,
                 Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
             };
 
-            var json = JsonSerializer.Serialize(settings, options);
+            string json = JsonSerializer.Serialize(settings, options);
             await File.WriteAllTextAsync(_appSettingsPath, json);
             return true;
         }
@@ -86,15 +85,15 @@ public class TestSettingsService : ISettingsService
         {
             if (!File.Exists(_visualSettingsPath))
             {
-                var defaultSettings = new VisualSettings();
-                await SaveVisualSettingsAsync(defaultSettings);
+                VisualSettings defaultSettings = new();
+                _ = await SaveVisualSettingsAsync(defaultSettings);
                 return defaultSettings;
             }
 
-            var json = await File.ReadAllTextAsync(_visualSettingsPath);
-            var settings = JsonSerializer.Deserialize<VisualSettings>(json);
-            var result = settings ?? new VisualSettings();
-            
+            string json = await File.ReadAllTextAsync(_visualSettingsPath);
+            VisualSettings? settings = JsonSerializer.Deserialize<VisualSettings>(json);
+            VisualSettings result = settings ?? new VisualSettings();
+
             _logService?.LogTrace($"視覚設定読み込み完了: BackgroundColor={result.BackgroundColor}", "TestSettingsService");
             return result;
         }
@@ -109,13 +108,13 @@ public class TestSettingsService : ISettingsService
     {
         try
         {
-            var options = new JsonSerializerOptions
+            JsonSerializerOptions options = new()
             {
                 WriteIndented = true,
                 Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
             };
 
-            var json = JsonSerializer.Serialize(settings, options);
+            string json = JsonSerializer.Serialize(settings, options);
             await File.WriteAllTextAsync(_visualSettingsPath, json);
             return true;
         }
@@ -137,14 +136,18 @@ public class TestSettingsService : ISettingsService
         {
             // 設定ファイルを削除
             if (File.Exists(_appSettingsPath))
+            {
                 File.Delete(_appSettingsPath);
+            }
 
             if (File.Exists(_visualSettingsPath))
+            {
                 File.Delete(_visualSettingsPath);
+            }
 
             // デフォルト設定を作成
-            await SaveAppSettingsAsync(new AppSettings());
-            await SaveVisualSettingsAsync(new VisualSettings());
+            _ = await SaveAppSettingsAsync(new AppSettings());
+            _ = await SaveVisualSettingsAsync(new VisualSettings());
 
             return true;
         }
@@ -163,15 +166,15 @@ public class TestSettingsService : ISettingsService
         {
             if (!File.Exists(_logSettingsPath))
             {
-                var defaultSettings = new LogSettings();
-                await SaveLogSettingsAsync(defaultSettings);
+                LogSettings defaultSettings = new();
+                _ = await SaveLogSettingsAsync(defaultSettings);
                 return defaultSettings;
             }
 
-            var json = await File.ReadAllTextAsync(_logSettingsPath);
-            var settings = JsonSerializer.Deserialize<LogSettings>(json);
-            var result = settings ?? new LogSettings();
-            
+            string json = await File.ReadAllTextAsync(_logSettingsPath);
+            LogSettings? settings = JsonSerializer.Deserialize<LogSettings>(json);
+            LogSettings result = settings ?? new LogSettings();
+
             _logService?.LogTrace($"ログ設定読み込み完了: LogLevel={result.LogLevel}", "TestSettingsService");
             return result;
         }
@@ -186,13 +189,13 @@ public class TestSettingsService : ISettingsService
     {
         try
         {
-            var options = new JsonSerializerOptions
+            JsonSerializerOptions options = new()
             {
                 WriteIndented = true,
                 Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
             };
 
-            var json = JsonSerializer.Serialize(settings, options);
+            string json = JsonSerializer.Serialize(settings, options);
             await File.WriteAllTextAsync(_logSettingsPath, json);
             return true;
         }
@@ -217,9 +220,9 @@ public class TestSettingsService : ISettingsService
                 ExportDate = DateTime.Now
             };
 
-            var json = JsonSerializer.Serialize(exportData, new JsonSerializerOptions { WriteIndented = true });
+            string json = JsonSerializer.Serialize(exportData, new JsonSerializerOptions { WriteIndented = true });
             await File.WriteAllTextAsync(filePath, json);
-            
+
             _logService?.LogTrace("設定エクスポート完了", "TestSettingsService");
             return true;
         }
@@ -241,37 +244,37 @@ public class TestSettingsService : ISettingsService
                 return false;
             }
 
-            var json = await File.ReadAllTextAsync(filePath);
-            var importData = JsonSerializer.Deserialize<JsonElement>(json);
-            
+            string json = await File.ReadAllTextAsync(filePath);
+            JsonElement importData = JsonSerializer.Deserialize<JsonElement>(json);
+
             // 各設定をインポート
-            if (importData.TryGetProperty("AppSettings", out var appSettingsElement))
+            if (importData.TryGetProperty("AppSettings", out JsonElement appSettingsElement))
             {
-                var appSettings = JsonSerializer.Deserialize<AppSettings>(appSettingsElement.GetRawText());
+                AppSettings? appSettings = JsonSerializer.Deserialize<AppSettings>(appSettingsElement.GetRawText());
                 if (appSettings != null)
                 {
-                    await SaveAppSettingsAsync(appSettings);
+                    _ = await SaveAppSettingsAsync(appSettings);
                 }
             }
-            
-            if (importData.TryGetProperty("VisualSettings", out var visualSettingsElement))
+
+            if (importData.TryGetProperty("VisualSettings", out JsonElement visualSettingsElement))
             {
-                var visualSettings = JsonSerializer.Deserialize<VisualSettings>(visualSettingsElement.GetRawText());
+                VisualSettings? visualSettings = JsonSerializer.Deserialize<VisualSettings>(visualSettingsElement.GetRawText());
                 if (visualSettings != null)
                 {
-                    await SaveVisualSettingsAsync(visualSettings);
+                    _ = await SaveVisualSettingsAsync(visualSettings);
                 }
             }
-            
-            if (importData.TryGetProperty("LogSettings", out var logSettingsElement))
+
+            if (importData.TryGetProperty("LogSettings", out JsonElement logSettingsElement))
             {
-                var logSettings = JsonSerializer.Deserialize<LogSettings>(logSettingsElement.GetRawText());
+                LogSettings? logSettings = JsonSerializer.Deserialize<LogSettings>(logSettingsElement.GetRawText());
                 if (logSettings != null)
                 {
-                    await SaveLogSettingsAsync(logSettings);
+                    _ = await SaveLogSettingsAsync(logSettings);
                 }
             }
-            
+
             _logService?.LogTrace("設定インポート完了", "TestSettingsService");
             return true;
         }

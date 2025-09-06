@@ -1,5 +1,5 @@
-using BrowserSelector.Presentation.ViewModels;
 using BrowserSelector.Core.Services;
+using BrowserSelector.Presentation.ViewModels;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
@@ -23,15 +23,15 @@ public partial class MainWindow : Window
         ApplyInitialSizeSettings(viewModel);
 
         // ウィンドウをアクティブにする
-        this.Activate();
-        this.Focus();
+        _ = Activate();
+        _ = Focus();
 
         // ウィンドウのLoadedイベントでサイズ設定を再適用
-        this.Loaded += MainWindow_Loaded;
+        Loaded += MainWindow_Loaded;
 
         // ウィンドウを確実に表示（App.xaml.csでShow()が呼ばれるため削除）
         // this.Show();
-        this.BringIntoView();
+        BringIntoView();
     }
 
     /// <summary>
@@ -41,51 +41,51 @@ public partial class MainWindow : Window
     {
         try
         {
-            var visualSettings = viewModel.VisualSettings;
+            Core.Models.VisualSettings visualSettings = viewModel.VisualSettings;
             if (visualSettings != null)
             {
                 // 最小・最大サイズの制限
-                var width = Math.Max(400, Math.Min(2000, visualSettings.InitialWindowWidth));
-                var height = Math.Max(300, Math.Min(1500, visualSettings.InitialWindowHeight));
+                double width = Math.Max(400, Math.Min(2000, visualSettings.InitialWindowWidth));
+                double height = Math.Max(300, Math.Min(1500, visualSettings.InitialWindowHeight));
 
                 // ログ出力
                 _logService?.LogDebug($"初期サイズ設定適用: Width={width}, Height={height}", "MainWindow");
                 _logService?.LogDebug($"VisualSettings: InitialWindowWidth={visualSettings.InitialWindowWidth}, InitialWindowHeight={visualSettings.InitialWindowHeight}", "MainWindow");
 
                 // ウィンドウの位置を中央に設定
-                this.WindowState = WindowState.Normal;
-                this.Left = (SystemParameters.PrimaryScreenWidth - width) / 2;
-                this.Top = (SystemParameters.PrimaryScreenHeight - height) / 2;
+                WindowState = WindowState.Normal;
+                Left = (SystemParameters.PrimaryScreenWidth - width) / 2;
+                Top = (SystemParameters.PrimaryScreenHeight - height) / 2;
 
                 // サイズを設定（位置設定の後）
-                this.Width = width;
-                this.Height = height;
+                Width = width;
+                Height = height;
 
                 // 設定を強制適用
-                this.UpdateLayout();
+                UpdateLayout();
 
-                _logService?.LogDebug($"ウィンドウサイズ設定完了: ActualWidth={this.ActualWidth}, ActualHeight={this.ActualHeight}", "MainWindow");
+                _logService?.LogDebug($"ウィンドウサイズ設定完了: ActualWidth={ActualWidth}, ActualHeight={ActualHeight}", "MainWindow");
             }
             else
             {
                 // デフォルトサイズ
                 _logService?.LogWarning("VisualSettingsがnullのため、デフォルトサイズを使用", "MainWindow");
-                this.WindowState = WindowState.Normal;
-                this.Left = 100;
-                this.Top = 100;
-                this.Width = 800;
-                this.Height = 600;
+                WindowState = WindowState.Normal;
+                Left = 100;
+                Top = 100;
+                Width = 800;
+                Height = 600;
             }
         }
         catch (Exception ex)
         {
             // エラー時はデフォルトサイズを使用
             _logService?.LogError($"初期サイズ設定適用エラー: {ex.Message}", "MainWindow", ex);
-            this.WindowState = WindowState.Normal;
-            this.Left = 100;
-            this.Top = 100;
-            this.Width = 800;
-            this.Height = 600;
+            WindowState = WindowState.Normal;
+            Left = 100;
+            Top = 100;
+            Width = 800;
+            Height = 600;
         }
     }
 
@@ -135,7 +135,7 @@ public partial class MainWindow : Window
         {
             _logService?.LogDebug("MainWindow: VisualSettingsプロパティ変更を検知しました。UI更新を通知します。", "MainWindow");
             // UI更新を強制
-            this.InvalidateVisual();
+            InvalidateVisual();
         }
     }
 
@@ -147,14 +147,14 @@ public partial class MainWindow : Window
         if (sender is Button button)
         {
             // データコンテキストの確認
-            if (DataContext is MainViewModel viewModel)
+            if (DataContext is MainViewModel)
             {
                 // ViewModelの状態確認
             }
 
             // ボタンのバインディング情報を確認
-            var command = button.Command;
-            var commandParameter = button.CommandParameter;
+            _ = button.Command;
+            _ = button.CommandParameter;
         }
     }
 }

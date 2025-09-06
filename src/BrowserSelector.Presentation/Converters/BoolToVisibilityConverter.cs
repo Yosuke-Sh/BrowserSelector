@@ -28,7 +28,7 @@ public class BoolToVisibilityConverter : IValueConverter
     {
         if (value is Visibility visibility)
         {
-            var result = visibility == Visibility.Visible;
+            bool result = visibility == Visibility.Visible;
 
             // Invertパラメータが指定されている場合は値を反転
             if (parameter is string param && param.Equals("Invert", StringComparison.OrdinalIgnoreCase))

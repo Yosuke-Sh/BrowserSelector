@@ -42,7 +42,7 @@ public partial class LogViewerViewModel : ObservableObject
             // ログ内容の更新処理（必要に応じて実装）
             // ここでは単純にウィンドウを再読み込み
             window.Close();
-            var newWindow = new LogViewerWindow(LogContent);
+            LogViewerWindow newWindow = new(LogContent);
             newWindow.Show();
         }
     }
@@ -56,11 +56,11 @@ public partial class LogViewerViewModel : ObservableObject
         try
         {
             Clipboard.SetText(LogContent);
-            LocalizedMessageBox.ShowInformation("Dialog.LogViewer.CopyToClipboardComplete", "MessageBox.Complete");
+            _ = LocalizedMessageBox.ShowInformation("Dialog.LogViewer.CopyToClipboardComplete", "MessageBox.Complete");
         }
         catch (Exception ex)
         {
-            LocalizedMessageBox.ShowError($"Dialog.LogViewer.CopyToClipboardError: {ex.Message}", "MessageBox.Error");
+            _ = LocalizedMessageBox.ShowError($"Dialog.LogViewer.CopyToClipboardError: {ex.Message}", "MessageBox.Error");
         }
     }
 

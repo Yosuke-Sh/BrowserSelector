@@ -1,12 +1,9 @@
 using BrowserSelector.Core.Models;
 using BrowserSelector.Core.Services;
 using BrowserSelector.Infrastructure.Services;
-using BrowserSelector.Infrastructure.SystemIntegration;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Moq;
-using Xunit;
 
 namespace BrowserSelector.UnitTests;
 
@@ -24,16 +21,16 @@ public class CoreProjectCoverageTests
         _mockRegistryService = new Mock<IRegistryService>();
         _mockLogService = new Mock<ILogService>();
 
-        var services = new ServiceCollection();
-        services.AddLogging();
-        services.AddSingleton(_mockRegistryService.Object);
-        services.AddSingleton(_mockLogService.Object);
-        services.AddSingleton<IBrowserService, BrowserService>();
-        services.AddSingleton<ISettingsService, SettingsService>();
-        services.AddSingleton<IUrlService, UrlService>();
-        services.AddSingleton<IUrlRuleService, UrlRuleService>();
-        services.AddSingleton<ICustomLanguageService, CustomLanguageService>();
-        
+        ServiceCollection services = new();
+        _ = services.AddLogging();
+        _ = services.AddSingleton(_mockRegistryService.Object);
+        _ = services.AddSingleton(_mockLogService.Object);
+        _ = services.AddSingleton<IBrowserService, BrowserService>();
+        _ = services.AddSingleton<ISettingsService, SettingsService>();
+        _ = services.AddSingleton<IUrlService, UrlService>();
+        _ = services.AddSingleton<IUrlRuleService, UrlRuleService>();
+        _ = services.AddSingleton<ICustomLanguageService, CustomLanguageService>();
+
         _serviceProvider = services.BuildServiceProvider();
     }
 
@@ -41,88 +38,88 @@ public class CoreProjectCoverageTests
     public void CoreModels_ShouldBeAccessible()
     {
         // Arrange & Act
-        var appSettings = new AppSettings();
-        var visualSettings = new VisualSettings();
-        var browser = new Browser();
-        var urlRule = new UrlRule();
-        var customLanguageFile = new CustomLanguageFile();
+        AppSettings appSettings = new();
+        VisualSettings visualSettings = new();
+        Browser browser = new();
+        UrlRule urlRule = new();
+        CustomLanguageFile customLanguageFile = new();
 
         // Assert - これらがアクセス可能であることを確認
-        appSettings.Should().NotBeNull();
-        visualSettings.Should().NotBeNull();
-        browser.Should().NotBeNull();
-        urlRule.Should().NotBeNull();
-        customLanguageFile.Should().NotBeNull();
+        _ = appSettings.Should().NotBeNull();
+        _ = visualSettings.Should().NotBeNull();
+        _ = browser.Should().NotBeNull();
+        _ = urlRule.Should().NotBeNull();
+        _ = customLanguageFile.Should().NotBeNull();
     }
 
     [Fact]
     public void CoreServices_ShouldBeResolvable()
     {
         // Arrange & Act
-        var browserService = _serviceProvider.GetService<IBrowserService>();
-        var settingsService = _serviceProvider.GetService<ISettingsService>();
-        var urlService = _serviceProvider.GetService<IUrlService>();
-        var urlRuleService = _serviceProvider.GetService<IUrlRuleService>();
-        var customLanguageService = _serviceProvider.GetService<ICustomLanguageService>();
+        IBrowserService? browserService = _serviceProvider.GetService<IBrowserService>();
+        ISettingsService? settingsService = _serviceProvider.GetService<ISettingsService>();
+        IUrlService? urlService = _serviceProvider.GetService<IUrlService>();
+        IUrlRuleService? urlRuleService = _serviceProvider.GetService<IUrlRuleService>();
+        ICustomLanguageService? customLanguageService = _serviceProvider.GetService<ICustomLanguageService>();
 
         // Assert
-        browserService.Should().NotBeNull();
-        settingsService.Should().NotBeNull();
-        urlService.Should().NotBeNull();
-        urlRuleService.Should().NotBeNull();
-        customLanguageService.Should().NotBeNull();
+        _ = browserService.Should().NotBeNull();
+        _ = settingsService.Should().NotBeNull();
+        _ = urlService.Should().NotBeNull();
+        _ = urlRuleService.Should().NotBeNull();
+        _ = customLanguageService.Should().NotBeNull();
     }
 
     [Fact]
     public async Task InfrastructureServices_ShouldExecuteMethods()
     {
         // Arrange
-        var browserService = _serviceProvider.GetRequiredService<IBrowserService>();
-        var settingsService = _serviceProvider.GetRequiredService<ISettingsService>();
-        var urlService = _serviceProvider.GetRequiredService<IUrlService>();
-        var urlRuleService = _serviceProvider.GetRequiredService<IUrlRuleService>();
-        var customLanguageService = _serviceProvider.GetRequiredService<ICustomLanguageService>();
+        IBrowserService browserService = _serviceProvider.GetRequiredService<IBrowserService>();
+        ISettingsService settingsService = _serviceProvider.GetRequiredService<ISettingsService>();
+        IUrlService urlService = _serviceProvider.GetRequiredService<IUrlService>();
+        IUrlRuleService urlRuleService = _serviceProvider.GetRequiredService<IUrlRuleService>();
+        ICustomLanguageService customLanguageService = _serviceProvider.GetRequiredService<ICustomLanguageService>();
 
         // Act & Assert - 各サービスのメソッドを実行してカバレッジを向上
-        var browsers = await browserService.DetectBrowsersAsync();
-        browsers.Should().NotBeNull();
+        IEnumerable<Browser> browsers = await browserService.DetectBrowsersAsync();
+        _ = browsers.Should().NotBeNull();
 
-        var appSettings = await settingsService.LoadAppSettingsAsync();
-        appSettings.Should().NotBeNull();
+        AppSettings appSettings = await settingsService.LoadAppSettingsAsync();
+        _ = appSettings.Should().NotBeNull();
 
-        var visualSettings = await settingsService.LoadVisualSettingsAsync();
-        visualSettings.Should().NotBeNull();
+        VisualSettings visualSettings = await settingsService.LoadVisualSettingsAsync();
+        _ = visualSettings.Should().NotBeNull();
 
-        var normalizedUrl = await urlService.NormalizeUrlAsync("https://example.com");
-        normalizedUrl.Should().NotBeNullOrEmpty();
+        string normalizedUrl = await urlService.NormalizeUrlAsync("https://example.com");
+        _ = normalizedUrl.Should().NotBeNullOrEmpty();
 
-        var isValidUrl = await urlService.ValidateUrlAsync("https://example.com");
-        isValidUrl.Should().BeTrue();
+        bool isValidUrl = await urlService.ValidateUrlAsync("https://example.com");
+        _ = isValidUrl.Should().BeTrue();
 
-        var domain = urlService.ExtractDomain("https://www.example.com/path");
-        domain.Should().Be("www.example.com");
+        string domain = urlService.ExtractDomain("https://www.example.com/path");
+        _ = domain.Should().Be("www.example.com");
 
-        var urlWithProtocol = urlService.AddProtocolIfNeeded("example.com");
-        urlWithProtocol.Should().Be("https://example.com");
+        string urlWithProtocol = urlService.AddProtocolIfNeeded("example.com");
+        _ = urlWithProtocol.Should().Be("https://example.com");
 
-        var urlRules = await urlRuleService.GetAllRulesAsync();
-        urlRules.Should().NotBeNull();
+        IEnumerable<UrlRule> urlRules = await urlRuleService.GetAllRulesAsync();
+        _ = urlRules.Should().NotBeNull();
 
-        var enabledRules = await urlRuleService.GetEnabledRulesAsync();
-        enabledRules.Should().NotBeNull();
+        IEnumerable<UrlRule> enabledRules = await urlRuleService.GetEnabledRulesAsync();
+        _ = enabledRules.Should().NotBeNull();
 
-        var availableLanguages = await customLanguageService.GetAvailableLanguagesAsync();
-        availableLanguages.Should().NotBeNull();
+        IEnumerable<LanguageInfo> availableLanguages = await customLanguageService.GetAvailableLanguagesAsync();
+        _ = availableLanguages.Should().NotBeNull();
 
-        var customLanguageFolder = customLanguageService.GetCustomLanguageFolder();
-        customLanguageFolder.Should().NotBeNullOrEmpty();
+        string customLanguageFolder = customLanguageService.GetCustomLanguageFolder();
+        _ = customLanguageFolder.Should().NotBeNullOrEmpty();
     }
 
     [Fact]
     public void BrowserModel_ShouldHaveAllProperties()
     {
         // Arrange
-        var browser = new Browser
+        Browser browser = new()
         {
             Name = "Test Browser",
             ExecutablePath = @"C:\Program Files\TestBrowser\browser.exe",
@@ -137,33 +134,33 @@ public class CoreProjectCoverageTests
         };
 
         // Act & Assert
-        browser.Name.Should().Be("Test Browser");
-        browser.ExecutablePath.Should().Be(@"C:\Program Files\TestBrowser\browser.exe");
-        browser.IconPath.Should().Be(@"C:\Program Files\TestBrowser\icon.ico");
-        browser.Arguments.Should().Be("--test-arg");
-        browser.IsDefault.Should().BeTrue();
-        browser.IsEnabled.Should().BeTrue();
-        browser.DisplayOrder.Should().Be(1);
-        browser.LastUsed.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(1));
-        browser.UseCount.Should().Be(5);
-        browser.Type.Should().Be(BrowserType.Chrome);
-        browser.IsValid.Should().BeTrue();
-        browser.DisplayName.Should().Be("Test Browser");
+        _ = browser.Name.Should().Be("Test Browser");
+        _ = browser.ExecutablePath.Should().Be(@"C:\Program Files\TestBrowser\browser.exe");
+        _ = browser.IconPath.Should().Be(@"C:\Program Files\TestBrowser\icon.ico");
+        _ = browser.Arguments.Should().Be("--test-arg");
+        _ = browser.IsDefault.Should().BeTrue();
+        _ = browser.IsEnabled.Should().BeTrue();
+        _ = browser.DisplayOrder.Should().Be(1);
+        _ = browser.LastUsed.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(1));
+        _ = browser.UseCount.Should().Be(5);
+        _ = browser.Type.Should().Be(BrowserType.Chrome);
+        _ = browser.IsValid.Should().BeTrue();
+        _ = browser.DisplayName.Should().Be("Test Browser");
 
         // メソッドの実行
         browser.IncrementUseCount();
-        browser.UseCount.Should().Be(6);
+        _ = browser.UseCount.Should().Be(6);
 
-        var clonedBrowser = browser.Clone();
-        clonedBrowser.Should().NotBeSameAs(browser);
-        clonedBrowser.Name.Should().Be(browser.Name);
+        Browser clonedBrowser = browser.Clone();
+        _ = clonedBrowser.Should().NotBeSameAs(browser);
+        _ = clonedBrowser.Name.Should().Be(browser.Name);
     }
 
     [Fact]
     public void UrlRuleModel_ShouldHaveAllProperties()
     {
         // Arrange
-        var urlRule = new UrlRule
+        UrlRule urlRule = new()
         {
             Pattern = "*.example.com",
             BrowserName = "Test Browser",
@@ -175,34 +172,34 @@ public class CoreProjectCoverageTests
         };
 
         // Act & Assert
-        urlRule.Pattern.Should().Be("*.example.com");
-        urlRule.BrowserName.Should().Be("Test Browser");
-        urlRule.Priority.Should().Be(75);
-        urlRule.IsEnabled.Should().BeTrue();
-        urlRule.Description.Should().Be("Test rule");
-        urlRule.CreatedAt.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(1));
-        urlRule.UpdatedAt.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(1));
-        urlRule.Id.Should().NotBe(Guid.Empty);
+        _ = urlRule.Pattern.Should().Be("*.example.com");
+        _ = urlRule.BrowserName.Should().Be("Test Browser");
+        _ = urlRule.Priority.Should().Be(75);
+        _ = urlRule.IsEnabled.Should().BeTrue();
+        _ = urlRule.Description.Should().Be("Test rule");
+        _ = urlRule.CreatedAt.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(1));
+        _ = urlRule.UpdatedAt.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(1));
+        _ = urlRule.Id.Should().NotBe(Guid.Empty);
 
         // メソッドの実行
-        var isMatch = urlRule.IsMatch("https://www.example.com");
-        isMatch.Should().BeTrue();
+        bool isMatch = urlRule.IsMatch("https://www.example.com");
+        _ = isMatch.Should().BeTrue();
 
-        var displayName = urlRule.DisplayName;
-        displayName.Should().Contain("*.example.com");
-        displayName.Should().Contain("Test Browser");
+        string displayName = urlRule.DisplayName;
+        _ = displayName.Should().Contain("*.example.com");
+        _ = displayName.Should().Contain("Test Browser");
 
-        var details = urlRule.GetDetails();
-        details.Should().Contain("*.example.com");
-        details.Should().Contain("Test Browser");
-        details.Should().Contain("75");
+        string details = urlRule.GetDetails();
+        _ = details.Should().Contain("*.example.com");
+        _ = details.Should().Contain("Test Browser");
+        _ = details.Should().Contain("75");
     }
 
     [Fact]
     public void CustomLanguageFileModel_ShouldHaveAllProperties()
     {
         // Arrange
-        var customLanguageFile = new CustomLanguageFile
+        CustomLanguageFile customLanguageFile = new()
         {
             CultureCode = "ja-JP",
             DisplayName = "日本語",
@@ -219,22 +216,22 @@ public class CoreProjectCoverageTests
         };
 
         // Act & Assert
-        customLanguageFile.CultureCode.Should().Be("ja-JP");
-        customLanguageFile.DisplayName.Should().Be("日本語");
-        customLanguageFile.Resources.Should().HaveCount(2);
-        customLanguageFile.Resources["key1"].Should().Be("value1");
-        customLanguageFile.CreatedAt.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(1));
-        customLanguageFile.UpdatedAt.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(1));
-        customLanguageFile.Version.Should().Be("1.1");
-        customLanguageFile.Description.Should().Be("Japanese language file");
-        customLanguageFile.Author.Should().Be("Test Author");
+        _ = customLanguageFile.CultureCode.Should().Be("ja-JP");
+        _ = customLanguageFile.DisplayName.Should().Be("日本語");
+        _ = customLanguageFile.Resources.Should().HaveCount(2);
+        _ = customLanguageFile.Resources["key1"].Should().Be("value1");
+        _ = customLanguageFile.CreatedAt.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(1));
+        _ = customLanguageFile.UpdatedAt.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(1));
+        _ = customLanguageFile.Version.Should().Be("1.1");
+        _ = customLanguageFile.Description.Should().Be("Japanese language file");
+        _ = customLanguageFile.Author.Should().Be("Test Author");
     }
 
     [Fact]
     public void AppSettingsModel_ShouldHaveAllProperties()
     {
         // Arrange
-        var appSettings = new AppSettings
+        AppSettings appSettings = new()
         {
             StartupMessage = "Test startup message",
             EnableLogging = false,
@@ -249,23 +246,23 @@ public class CoreProjectCoverageTests
         };
 
         // Act & Assert
-        appSettings.StartupMessage.Should().Be("Test startup message");
-        appSettings.EnableLogging.Should().BeFalse();
-        appSettings.LogLevel.Should().Be("Debug");
-        appSettings.CheckForUpdates.Should().BeFalse();
-        appSettings.UpdateCheckInterval.Should().Be(12);
-        appSettings.Language.Should().Be("ja-JP");
-        appSettings.PortableMode.Should().BeTrue();
-        appSettings.CustomProtocol.Should().Be("test-protocol");
-        appSettings.RegisterProtocol.Should().BeFalse();
-        appSettings.CloseAfterUrlRuleMatch.Should().BeFalse();
+        _ = appSettings.StartupMessage.Should().Be("Test startup message");
+        _ = appSettings.EnableLogging.Should().BeFalse();
+        _ = appSettings.LogLevel.Should().Be("Debug");
+        _ = appSettings.CheckForUpdates.Should().BeFalse();
+        _ = appSettings.UpdateCheckInterval.Should().Be(12);
+        _ = appSettings.Language.Should().Be("ja-JP");
+        _ = appSettings.PortableMode.Should().BeTrue();
+        _ = appSettings.CustomProtocol.Should().Be("test-protocol");
+        _ = appSettings.RegisterProtocol.Should().BeFalse();
+        _ = appSettings.CloseAfterUrlRuleMatch.Should().BeFalse();
     }
 
     [Fact]
     public void VisualSettingsModel_ShouldHaveAllProperties()
     {
         // Arrange
-        var visualSettings = new VisualSettings
+        VisualSettings visualSettings = new()
         {
             BackgroundColor = System.Windows.Media.Colors.Red,
             UseBackgroundGradient = true,
@@ -292,67 +289,67 @@ public class CoreProjectCoverageTests
         };
 
         // Act & Assert
-        visualSettings.BackgroundColor.Should().Be(System.Windows.Media.Colors.Red);
-        visualSettings.UseBackgroundGradient.Should().BeTrue();
-        visualSettings.GradientStartColor.Should().Be(System.Windows.Media.Colors.Blue);
-        visualSettings.GradientEndColor.Should().Be(System.Windows.Media.Colors.Green);
-        visualSettings.GradientDirection.Should().Be(BrowserSelector.Core.Enums.GradientDirection.Horizontal);
-        visualSettings.IconScale.Should().Be(1.5);
-        visualSettings.ShowFocusIndicator.Should().BeFalse();
-        visualSettings.FocusColor.Should().Be(System.Windows.Media.Colors.Yellow);
-        visualSettings.FocusThickness.Should().Be(3.0);
-        visualSettings.FocusWidth.Should().Be(150.0);
-        visualSettings.InitialWindowWidth.Should().Be(1000.0);
-        visualSettings.InitialWindowHeight.Should().Be(800.0);
-        visualSettings.ShowLogo.Should().BeFalse();
-        visualSettings.ShowUrlInput.Should().BeFalse();
-        visualSettings.BrowserButtonWidth.Should().Be(150.0);
-        visualSettings.BrowserButtonHeight.Should().Be(100.0);
-        visualSettings.BrowserButtonBackgroundColor.Should().Be(System.Windows.Media.Colors.White);
-        visualSettings.BrowserButtonForegroundColor.Should().Be(System.Windows.Media.Colors.Blue);
-        visualSettings.BrowserButtonOpacity.Should().Be(0.8);
-        visualSettings.BrowserButtonCornerRadius.Should().Be(10.0);
-        visualSettings.ShowBrowserName.Should().BeFalse();
-        visualSettings.BrowserIconSize.Should().Be(48.0);
+        _ = visualSettings.BackgroundColor.Should().Be(System.Windows.Media.Colors.Red);
+        _ = visualSettings.UseBackgroundGradient.Should().BeTrue();
+        _ = visualSettings.GradientStartColor.Should().Be(System.Windows.Media.Colors.Blue);
+        _ = visualSettings.GradientEndColor.Should().Be(System.Windows.Media.Colors.Green);
+        _ = visualSettings.GradientDirection.Should().Be(BrowserSelector.Core.Enums.GradientDirection.Horizontal);
+        _ = visualSettings.IconScale.Should().Be(1.5);
+        _ = visualSettings.ShowFocusIndicator.Should().BeFalse();
+        _ = visualSettings.FocusColor.Should().Be(System.Windows.Media.Colors.Yellow);
+        _ = visualSettings.FocusThickness.Should().Be(3.0);
+        _ = visualSettings.FocusWidth.Should().Be(150.0);
+        _ = visualSettings.InitialWindowWidth.Should().Be(1000.0);
+        _ = visualSettings.InitialWindowHeight.Should().Be(800.0);
+        _ = visualSettings.ShowLogo.Should().BeFalse();
+        _ = visualSettings.ShowUrlInput.Should().BeFalse();
+        _ = visualSettings.BrowserButtonWidth.Should().Be(150.0);
+        _ = visualSettings.BrowserButtonHeight.Should().Be(100.0);
+        _ = visualSettings.BrowserButtonBackgroundColor.Should().Be(System.Windows.Media.Colors.White);
+        _ = visualSettings.BrowserButtonForegroundColor.Should().Be(System.Windows.Media.Colors.Blue);
+        _ = visualSettings.BrowserButtonOpacity.Should().Be(0.8);
+        _ = visualSettings.BrowserButtonCornerRadius.Should().Be(10.0);
+        _ = visualSettings.ShowBrowserName.Should().BeFalse();
+        _ = visualSettings.BrowserIconSize.Should().Be(48.0);
     }
 
     [Fact]
     public async Task InfrastructureServices_ShouldHandleEdgeCases()
     {
         // Arrange
-        var browserService = _serviceProvider.GetRequiredService<IBrowserService>();
-        var settingsService = _serviceProvider.GetRequiredService<ISettingsService>();
-        var urlService = _serviceProvider.GetRequiredService<IUrlService>();
-        var urlRuleService = _serviceProvider.GetRequiredService<IUrlRuleService>();
-        var customLanguageService = _serviceProvider.GetRequiredService<ICustomLanguageService>();
+        _ = _serviceProvider.GetRequiredService<IBrowserService>();
+        ISettingsService settingsService = _serviceProvider.GetRequiredService<ISettingsService>();
+        IUrlService urlService = _serviceProvider.GetRequiredService<IUrlService>();
+        _ = _serviceProvider.GetRequiredService<IUrlRuleService>();
+        ICustomLanguageService customLanguageService = _serviceProvider.GetRequiredService<ICustomLanguageService>();
 
         // Act & Assert - エッジケースのテスト
-        var emptyUrl = await urlService.NormalizeUrlAsync("");
-        emptyUrl.Should().BeEmpty();
+        string emptyUrl = await urlService.NormalizeUrlAsync("");
+        _ = emptyUrl.Should().BeEmpty();
 
-        var whitespaceUrl = await urlService.NormalizeUrlAsync("   ");
-        whitespaceUrl.Should().BeEmpty();
+        string whitespaceUrl = await urlService.NormalizeUrlAsync("   ");
+        _ = whitespaceUrl.Should().BeEmpty();
 
-        var invalidUrl = await urlService.ValidateUrlAsync("invalid-url");
-        invalidUrl.Should().BeFalse();
+        bool invalidUrl = await urlService.ValidateUrlAsync("invalid-url");
+        _ = invalidUrl.Should().BeFalse();
 
-        var emptyDomain = urlService.ExtractDomain("");
-        emptyDomain.Should().BeEmpty();
+        string emptyDomain = urlService.ExtractDomain("");
+        _ = emptyDomain.Should().BeEmpty();
 
-        var urlWithProtocol = urlService.AddProtocolIfNeeded("http://example.com");
-        urlWithProtocol.Should().Be("http://example.com");
+        string urlWithProtocol = urlService.AddProtocolIfNeeded("http://example.com");
+        _ = urlWithProtocol.Should().Be("http://example.com");
 
         // 設定のリセット
-        await settingsService.ResetSettingsAsync();
-        var resetAppSettings = await settingsService.LoadAppSettingsAsync();
-        resetAppSettings.Should().NotBeNull();
+        _ = await settingsService.ResetSettingsAsync();
+        AppSettings resetAppSettings = await settingsService.LoadAppSettingsAsync();
+        _ = resetAppSettings.Should().NotBeNull();
 
         // カスタム言語ファイルの検証
-        var isValidFile = await customLanguageService.ValidateLanguageFileAsync("nonexistent.json");
-        isValidFile.Should().BeFalse();
+        bool isValidFile = await customLanguageService.ValidateLanguageFileAsync("nonexistent.json");
+        _ = isValidFile.Should().BeFalse();
 
         // カスタム言語の削除
-        var removeResult = await customLanguageService.RemoveCustomLanguageAsync("nonexistent");
-        removeResult.Should().BeFalse();
+        bool removeResult = await customLanguageService.RemoveCustomLanguageAsync("nonexistent");
+        _ = removeResult.Should().BeFalse();
     }
 }

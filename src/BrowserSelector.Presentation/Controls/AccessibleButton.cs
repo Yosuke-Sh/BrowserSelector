@@ -104,13 +104,13 @@ public class AccessibleButton : Button
         base.OnMouseLeftButtonDown(e);
 
         // フォーカスを設定
-        Focus();
+        _ = Focus();
     }
 
     private void OnKeyDown(object sender, KeyEventArgs e)
     {
         // EnterキーまたはSpaceキーでクリック
-        if (e.Key == Key.Enter || e.Key == Key.Space)
+        if (e.Key is Key.Enter or Key.Space)
         {
             e.Handled = true;
             OnClick();

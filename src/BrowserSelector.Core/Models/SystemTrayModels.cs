@@ -5,7 +5,7 @@ namespace BrowserSelector.Core.Models;
 /// </summary>
 public class SystemTrayMenuItems
 {
-    public List<SystemTrayMenuItem> Items { get; set; } = new();
+    public List<SystemTrayMenuItem> Items { get; set; } = [];
 }
 
 /// <summary>

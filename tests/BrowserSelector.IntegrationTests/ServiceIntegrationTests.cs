@@ -18,19 +18,19 @@ public class ServiceIntegrationTests : IDisposable
     {
         // テスト用の一時ディレクトリを作成
         _tempDirectory = Path.Combine(Path.GetTempPath(), "BrowserSelectorTest", Guid.NewGuid().ToString());
-        Directory.CreateDirectory(_tempDirectory);
+        _ = Directory.CreateDirectory(_tempDirectory);
 
-        var services = new ServiceCollection();
-        services.AddLogging(builder => builder.AddConsole());
-        services.AddSingleton<IRegistryService, WindowsRegistryService>();
-        services.AddSingleton<IBrowserService, BrowserService>();
-        services.AddSingleton<ISettingsService>(provider => 
+        ServiceCollection services = new();
+        _ = services.AddLogging(builder => builder.AddConsole());
+        _ = services.AddSingleton<IRegistryService, WindowsRegistryService>();
+        _ = services.AddSingleton<IBrowserService, BrowserService>();
+        _ = services.AddSingleton<ISettingsService>(provider =>
         {
-            var logService = provider.GetService<ILogService>();
+            ILogService? logService = provider.GetService<ILogService>();
             return new TestSettingsService(logService, _tempDirectory);
         });
-        services.AddSingleton<IUrlService, UrlService>();
-        
+        _ = services.AddSingleton<IUrlService, UrlService>();
+
         _serviceProvider = services.BuildServiceProvider();
     }
 
@@ -54,17 +54,17 @@ public class ServiceIntegrationTests : IDisposable
     public async Task BrowserService_ShouldDetectBrowsers()
     {
         // Arrange
-        var browserService = _serviceProvider.GetRequiredService<IBrowserService>();
+        IBrowserService browserService = _serviceProvider.GetRequiredService<IBrowserService>();
 
         // Act
-        var browsers = await browserService.DetectBrowsersAsync();
+        IEnumerable<Browser> browsers = await browserService.DetectBrowsersAsync();
 
         // Assert
-        browsers.Should().NotBeNull("ブラウザ検出サービスが正常に動作すること");
+        _ = browsers.Should().NotBeNull("ブラウザ検出サービスが正常に動作すること");
         // テスト環境ではブラウザが検出されない場合もあるため、柔軟に判定
         if (browsers.Any())
         {
-            browsers.Should().NotBeEmpty("少なくとも1つのブラウザが検出されること");
+            _ = browsers.Should().NotBeEmpty("少なくとも1つのブラウザが検出されること");
         }
     }
 
@@ -72,8 +72,8 @@ public class ServiceIntegrationTests : IDisposable
     public async Task SettingsService_ShouldSaveAndLoadSettings()
     {
         // Arrange
-        var settingsService = _serviceProvider.GetRequiredService<ISettingsService>();
-        var testSettings = new AppSettings
+        ISettingsService settingsService = _serviceProvider.GetRequiredService<ISettingsService>();
+        AppSettings testSettings = new()
         {
             Language = "ja-JP",
             CustomProtocol = "browserselector",
@@ -82,46 +82,46 @@ public class ServiceIntegrationTests : IDisposable
         };
 
         // Act
-        await settingsService.SaveAppSettingsAsync(testSettings);
-        var loadedSettings = await settingsService.LoadAppSettingsAsync();
+        _ = await settingsService.SaveAppSettingsAsync(testSettings);
+        AppSettings loadedSettings = await settingsService.LoadAppSettingsAsync();
 
         // Assert
-        loadedSettings.Should().NotBeNull("設定の読み込みが成功すること");
+        _ = loadedSettings.Should().NotBeNull("設定の読み込みが成功すること");
         // テスト環境では設定の永続化が期待通りに動作しない可能性があるため、実際の動作に合わせて調整
-        loadedSettings.Language.Should().Be(testSettings.Language, "言語設定が正しく保存・読み込みされること");
-        loadedSettings.CustomProtocol.Should().Be("browserselector", "カスタムプロトコルが正しく保存・読み込みされること");
-        loadedSettings.EnableLogging.Should().Be(testSettings.EnableLogging, "ログ有効設定が正しく保存・読み込みされること");
-        loadedSettings.CheckForUpdates.Should().Be(testSettings.CheckForUpdates, "更新チェック設定が正しく保存・読み込みされること");
+        _ = loadedSettings.Language.Should().Be(testSettings.Language, "言語設定が正しく保存・読み込みされること");
+        _ = loadedSettings.CustomProtocol.Should().Be("browserselector", "カスタムプロトコルが正しく保存・読み込みされること");
+        _ = loadedSettings.EnableLogging.Should().Be(testSettings.EnableLogging, "ログ有効設定が正しく保存・読み込みされること");
+        _ = loadedSettings.CheckForUpdates.Should().Be(testSettings.CheckForUpdates, "更新チェック設定が正しく保存・読み込みされること");
     }
 
     [Fact]
     public async Task UrlService_ShouldProcessUrls()
     {
         // Arrange
-        var urlService = _serviceProvider.GetRequiredService<IUrlService>();
-        var testUrl = "https://www.google.com";
+        IUrlService urlService = _serviceProvider.GetRequiredService<IUrlService>();
+        string testUrl = "https://www.google.com";
 
         // Act
-        var normalizedUrl = await urlService.NormalizeUrlAsync(testUrl);
-        var isValid = await urlService.ValidateUrlAsync(testUrl);
+        string normalizedUrl = await urlService.NormalizeUrlAsync(testUrl);
+        bool isValid = await urlService.ValidateUrlAsync(testUrl);
 
         // Assert
-        normalizedUrl.Should().NotBeNullOrEmpty("URL正規化が正常に動作すること");
-        isValid.Should().BeTrue("URL検証が正常に動作すること");
+        _ = normalizedUrl.Should().NotBeNullOrEmpty("URL正規化が正常に動作すること");
+        _ = isValid.Should().BeTrue("URL検証が正常に動作すること");
     }
 
     [Fact]
     public void ServiceContainer_ShouldResolveAllServices()
     {
         // Act & Assert
-        var browserService = _serviceProvider.GetRequiredService<IBrowserService>();
-        var settingsService = _serviceProvider.GetRequiredService<ISettingsService>();
-        var urlService = _serviceProvider.GetRequiredService<IUrlService>();
-        var registryService = _serviceProvider.GetRequiredService<IRegistryService>();
+        IBrowserService browserService = _serviceProvider.GetRequiredService<IBrowserService>();
+        ISettingsService settingsService = _serviceProvider.GetRequiredService<ISettingsService>();
+        IUrlService urlService = _serviceProvider.GetRequiredService<IUrlService>();
+        IRegistryService registryService = _serviceProvider.GetRequiredService<IRegistryService>();
 
-        browserService.Should().NotBeNull("BrowserServiceが正常に解決されること");
-        settingsService.Should().NotBeNull("SettingsServiceが正常に解決されること");
-        urlService.Should().NotBeNull("UrlServiceが正常に解決されること");
-        registryService.Should().NotBeNull("RegistryServiceが正常に解決されること");
+        _ = browserService.Should().NotBeNull("BrowserServiceが正常に解決されること");
+        _ = settingsService.Should().NotBeNull("SettingsServiceが正常に解決されること");
+        _ = urlService.Should().NotBeNull("UrlServiceが正常に解決されること");
+        _ = registryService.Should().NotBeNull("RegistryServiceが正常に解決されること");
     }
 }

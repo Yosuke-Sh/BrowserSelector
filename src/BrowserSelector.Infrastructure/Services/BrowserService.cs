@@ -14,7 +14,7 @@ public class BrowserService : IBrowserService
     private readonly IRegistryService _registryService;
     private readonly IUrlService _urlService;
     private readonly ILogService _logService;
-    private readonly List<Browser> _browsers = new();
+    private readonly List<Browser> _browsers = [];
 
     // 後方互換: 旧シグネチャ用コンストラクタ（テスト等）
     public BrowserService(IRegistryService registryService, IUrlService urlService)
@@ -35,11 +35,11 @@ public class BrowserService : IBrowserService
         try
         {
             // レジストリからブラウザを検出
-            var registryBrowsers = await _registryService.DetectBrowsersFromRegistryAsync();
+            IEnumerable<Browser> registryBrowsers = await _registryService.DetectBrowsersFromRegistryAsync();
             _browsers.Clear();
 
             // 自動検出されたブラウザにアイコンを設定
-            foreach (var browser in registryBrowsers)
+            foreach (Browser browser in registryBrowsers)
             {
                 if (string.IsNullOrEmpty(browser.IconPath) && !string.IsNullOrEmpty(browser.ExecutablePath))
                 {
@@ -50,11 +50,11 @@ public class BrowserService : IBrowserService
             _browsers.AddRange(registryBrowsers);
 
             // カスタムブラウザを追加（設定から読み込み）
-            var customBrowsers = await LoadCustomBrowsersAsync();
+            List<Browser> customBrowsers = await LoadCustomBrowsersAsync();
             _browsers.AddRange(customBrowsers);
 
             // Traceレベルで詳細なブラウザ情報を出力
-            var browserDetails = string.Join(", ", _browsers.Select(b => $"{b.Name}({b.Type}, Enabled:{b.IsEnabled})"));
+            string browserDetails = string.Join(", ", _browsers.Select(b => $"{b.Name}({b.Type}, Enabled:{b.IsEnabled})"));
             _logService.LogTrace($"ブラウザ検出処理完了: {_browsers.Count}個のブラウザを検出 - {browserDetails}", "BrowserService");
             return _browsers.OrderBy(b => b.DisplayOrder);
         }
@@ -84,7 +84,7 @@ public class BrowserService : IBrowserService
             }
 
             // URLを正規化
-            var normalizedUrl = await _urlService.NormalizeUrlAsync(url);
+            string normalizedUrl = await _urlService.NormalizeUrlAsync(url);
             _logService.LogDebug($"正規化されたURL - {normalizedUrl}", nameof(BrowserService));
 
             if (string.IsNullOrEmpty(normalizedUrl))
@@ -94,7 +94,7 @@ public class BrowserService : IBrowserService
             }
 
             // URLを検証
-            var isValidUrl = await _urlService.ValidateUrlAsync(normalizedUrl);
+            bool isValidUrl = await _urlService.ValidateUrlAsync(normalizedUrl);
             _logService.LogDebug($"URL検証結果 - {isValidUrl}", nameof(BrowserService));
 
             if (!isValidUrl)
@@ -107,7 +107,7 @@ public class BrowserService : IBrowserService
             string arguments = GetBrowserArguments(browser.Type, normalizedUrl);
 
             // ブラウザを起動
-            var startInfo = new ProcessStartInfo
+            ProcessStartInfo startInfo = new()
             {
                 FileName = browser.ExecutablePath,
                 Arguments = arguments,
@@ -119,7 +119,7 @@ public class BrowserService : IBrowserService
 
             _logService.LogDebug($"プロセス起動 - FileName: {startInfo.FileName}, Arguments: {startInfo.Arguments}", nameof(BrowserService));
 
-            using var process = Process.Start(startInfo);
+            using Process? process = Process.Start(startInfo);
             if (process != null)
             {
                 _logService.LogInformation($"プロセス起動成功 - PID: {process.Id}", nameof(BrowserService));
@@ -127,7 +127,7 @@ public class BrowserService : IBrowserService
                 // プロセス情報を取得して確認
                 try
                 {
-                    var processInfo = Process.GetProcessById(process.Id);
+                    Process processInfo = Process.GetProcessById(process.Id);
                     _logService.LogDebug($"実際に起動されたプロセス - 名前: {processInfo.ProcessName}, ファイル名: {processInfo.MainModule?.FileName}", nameof(BrowserService));
                 }
                 catch (Exception ex)
@@ -156,11 +156,15 @@ public class BrowserService : IBrowserService
         try
         {
             if (!browser.IsValid)
+            {
                 return false;
+            }
 
             // 重複チェック
             if (_browsers.Any(b => b.ExecutablePath.Equals(browser.ExecutablePath, StringComparison.OrdinalIgnoreCase)))
+            {
                 return false;
+            }
 
             browser.Type = BrowserType.Custom;
             browser.DisplayOrder = _browsers.Count + 1;
@@ -180,9 +184,11 @@ public class BrowserService : IBrowserService
     {
         try
         {
-            var existingBrowser = _browsers.FirstOrDefault(b => b.Id == browser.Id);
+            Browser? existingBrowser = _browsers.FirstOrDefault(b => b.Id == browser.Id);
             if (existingBrowser == null)
+            {
                 return false;
+            }
 
             // プロパティを更新
             existingBrowser.Name = browser.Name;
@@ -203,15 +209,17 @@ public class BrowserService : IBrowserService
     {
         try
         {
-            var browser = _browsers.FirstOrDefault(b => b.Id == browserId);
+            Browser? browser = _browsers.FirstOrDefault(b => b.Id == browserId);
             if (browser == null)
+            {
                 return false;
+            }
 
             // システム検出ブラウザも削除可能にする
             // if (browser.Type != BrowserType.Custom)
             //     return false;
 
-            _browsers.Remove(browser);
+            _ = _browsers.Remove(browser);
             await SaveCustomBrowsersAsync();
             return true;
         }
@@ -233,12 +241,14 @@ public class BrowserService : IBrowserService
     {
         try
         {
-            var browser = _browsers.FirstOrDefault(b => b.Id == browserId);
+            Browser? browser = _browsers.FirstOrDefault(b => b.Id == browserId);
             if (browser == null)
+            {
                 return false;
+            }
 
             // デフォルトブラウザを設定
-            foreach (var b in _browsers)
+            foreach (Browser b in _browsers)
             {
                 b.IsDefault = b.Id == browserId;
             }
@@ -257,9 +267,11 @@ public class BrowserService : IBrowserService
     {
         try
         {
-            var defaultBrowser = _browsers.FirstOrDefault(b => b.IsDefault);
+            Browser? defaultBrowser = _browsers.FirstOrDefault(b => b.IsDefault);
             if (defaultBrowser != null)
+            {
                 return defaultBrowser;
+            }
 
             // 設定から読み込み
             return await LoadDefaultBrowserAsync();
@@ -287,7 +299,7 @@ public class BrowserService : IBrowserService
     {
         try
         {
-            var browser = _browsers.FirstOrDefault(b => b.Id == browserId);
+            Browser? browser = _browsers.FirstOrDefault(b => b.Id == browserId);
             if (browser != null)
             {
                 await SaveBrowserUsageAsync(browser);

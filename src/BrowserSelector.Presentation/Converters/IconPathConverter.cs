@@ -16,9 +16,9 @@ public class IconPathConverter : IMultiValueConverter
         try
         {
             // IconPath、ExecutablePath、Nameの順で取得
-            var iconPath = values[0] as string;
-            var executablePath = values[1] as string;
-            var name = values[2] as string;
+            string? iconPath = values[0] as string;
+            string? executablePath = values[1] as string;
+            string? name = values[2] as string;
 
 
             // 1. IconPathが設定されている場合はそれを優先
@@ -31,7 +31,7 @@ public class IconPathConverter : IMultiValueConverter
                 {
                     try
                     {
-                        var bitmap = ExtractHighQualityIcon(iconPath, 0); // 最初のアイコンを取得
+                        BitmapImage? bitmap = ExtractHighQualityIcon(iconPath, 0); // 最初のアイコンを取得
                         if (bitmap != null)
                         {
                             return bitmap;
@@ -61,7 +61,7 @@ public class IconPathConverter : IMultiValueConverter
             {
                 try
                 {
-                    var bitmap = ExtractHighQualityIcon(executablePath, 0); // 最初のアイコンを取得
+                    BitmapImage? bitmap = ExtractHighQualityIcon(executablePath, 0); // 最初のアイコンを取得
                     if (bitmap != null)
                     {
                         return bitmap;
@@ -99,7 +99,7 @@ public class IconPathConverter : IMultiValueConverter
         try
         {
             // まず、利用可能なアイコン数を取得
-            var iconCount = ExtractIconEx(filePath, -1, out IntPtr dummy1, out IntPtr dummy2, 0);
+            int iconCount = ExtractIconEx(filePath, -1, out IntPtr dummy1, out IntPtr dummy2, 0);
 
             if (iconCount > 0 && iconIndex < iconCount)
             {
@@ -108,13 +108,13 @@ public class IconPathConverter : IMultiValueConverter
                 {
                     if (largeIcon != IntPtr.Zero)
                     {
-                        using var icon = System.Drawing.Icon.FromHandle(largeIcon);
+                        using System.Drawing.Icon icon = System.Drawing.Icon.FromHandle(largeIcon);
 
                         // アイコンの元のサイズを取得
-                        var originalSize = icon.Size;
+                        System.Drawing.Size originalSize = icon.Size;
 
                         // リサイズせずに元のアイコンをそのまま使用
-                        var bitmap = ConvertIconToHighQualityBitmapImage(icon, originalSize);
+                        BitmapImage bitmap = ConvertIconToHighQualityBitmapImage(icon, originalSize);
                         return bitmap;
                     }
                 }
@@ -122,12 +122,12 @@ public class IconPathConverter : IMultiValueConverter
             else
             {
                 // フォールバック: 標準のExtractAssociatedIconを使用
-                var icon = System.Drawing.Icon.ExtractAssociatedIcon(filePath);
+                System.Drawing.Icon? icon = System.Drawing.Icon.ExtractAssociatedIcon(filePath);
                 if (icon != null)
                 {
                     // リサイズせずに元のアイコンをそのまま使用
-                    var originalSize = icon.Size;
-                    var bitmap = ConvertIconToHighQualityBitmapImage(icon, originalSize);
+                    System.Drawing.Size originalSize = icon.Size;
+                    BitmapImage bitmap = ConvertIconToHighQualityBitmapImage(icon, originalSize);
                     return bitmap;
                 }
             }
@@ -151,11 +151,11 @@ public class IconPathConverter : IMultiValueConverter
     {
         try
         {
-            using var stream = new MemoryStream();
+            using MemoryStream stream = new();
             icon.Save(stream);
             stream.Position = 0;
 
-            var bitmap = new BitmapImage();
+            BitmapImage bitmap = new();
             bitmap.BeginInit();
             bitmap.CacheOption = BitmapCacheOption.OnLoad;
             bitmap.StreamSource = stream;

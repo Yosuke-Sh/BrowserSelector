@@ -10,7 +10,7 @@ namespace BrowserSelector.Infrastructure.Services;
 /// </summary>
 public class UrlRuleService : IUrlRuleService
 {
-    private readonly List<UrlRule> _rules = new();
+    private readonly List<UrlRule> _rules = [];
     private readonly string _rulesFilePath;
     private readonly object _lockObject = new();
     private readonly ILogService? _logService;
@@ -19,9 +19,9 @@ public class UrlRuleService : IUrlRuleService
     {
         _logService = logService;
         // 設定ファイルのパスを設定
-        var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-        var appFolder = Path.Combine(appDataPath, "BrowserSelector");
-        Directory.CreateDirectory(appFolder);
+        string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        string appFolder = Path.Combine(appDataPath, "BrowserSelector");
+        _ = Directory.CreateDirectory(appFolder);
         _rulesFilePath = Path.Combine(appFolder, "urlrules.json");
 
         // 初期化時は同期的にルールを読み込む（DI解決時のデッドロック回避のため）
@@ -77,7 +77,7 @@ public class UrlRuleService : IUrlRuleService
         {
             lock (_lockObject)
             {
-                var existingRule = _rules.FirstOrDefault(r => r.Id == rule.Id);
+                UrlRule? existingRule = _rules.FirstOrDefault(r => r.Id == rule.Id);
                 if (existingRule == null)
                 {
                     Debug.WriteLine($"UrlRuleService: ルールが見つかりません - {rule.Id}");
@@ -111,14 +111,14 @@ public class UrlRuleService : IUrlRuleService
         {
             lock (_lockObject)
             {
-                var rule = _rules.FirstOrDefault(r => r.Id == ruleId);
+                UrlRule? rule = _rules.FirstOrDefault(r => r.Id == ruleId);
                 if (rule == null)
                 {
                     Debug.WriteLine($"UrlRuleService: ルールが見つかりません - {ruleId}");
                     return false;
                 }
 
-                _rules.Remove(rule);
+                _ = _rules.Remove(rule);
                 Debug.WriteLine($"UrlRuleService: ルールを削除しました - {rule.DisplayName}");
             }
 
@@ -138,7 +138,7 @@ public class UrlRuleService : IUrlRuleService
         {
             lock (_lockObject)
             {
-                var rule = _rules.FirstOrDefault(r => r.Id == ruleId);
+                UrlRule? rule = _rules.FirstOrDefault(r => r.Id == ruleId);
                 if (rule == null)
                 {
                     Debug.WriteLine($"UrlRuleService: ルールが見つかりません - {ruleId}");
@@ -167,13 +167,13 @@ public class UrlRuleService : IUrlRuleService
             lock (_lockObject)
             {
                 // 有効なルールを優先度順に並べて検索
-                var enabledRules = _rules.Where(r => r.IsEnabled).OrderByDescending(r => r.Priority);
+                IOrderedEnumerable<UrlRule> enabledRules = _rules.Where(r => r.IsEnabled).OrderByDescending(r => r.Priority);
 
-                foreach (var rule in enabledRules)
+                foreach (UrlRule? rule in enabledRules)
                 {
                     if (rule.IsMatch(url))
                     {
-                        var browser = browsers.FirstOrDefault(b => b.Name.Equals(rule.BrowserName, StringComparison.OrdinalIgnoreCase));
+                        Browser? browser = browsers.FirstOrDefault(b => b.Name.Equals(rule.BrowserName, StringComparison.OrdinalIgnoreCase));
                         if (browser != null)
                         {
                             _logService?.LogInformation($"URL '{url}' にマッチするルール '{rule.Pattern}' が見つかりました -> {browser.Name}", "UrlRuleService");
@@ -203,7 +203,7 @@ public class UrlRuleService : IUrlRuleService
         {
             lock (_lockObject)
             {
-                var rule = _rules.FirstOrDefault(r => r.Id == ruleId);
+                UrlRule? rule = _rules.FirstOrDefault(r => r.Id == ruleId);
                 if (rule == null)
                 {
                     Debug.WriteLine($"UrlRuleService: ルールが見つかりません - {ruleId}");
@@ -231,12 +231,12 @@ public class UrlRuleService : IUrlRuleService
         {
             lock (_lockObject)
             {
-                var ruleIdList = ruleIds.ToList();
-                var maxPriority = ruleIdList.Count;
+                List<Guid> ruleIdList = ruleIds.ToList();
+                int maxPriority = ruleIdList.Count;
 
                 for (int i = 0; i < ruleIdList.Count; i++)
                 {
-                    var rule = _rules.FirstOrDefault(r => r.Id == ruleIdList[i]);
+                    UrlRule? rule = _rules.FirstOrDefault(r => r.Id == ruleIdList[i]);
                     if (rule != null)
                     {
                         rule.Priority = maxPriority - i;
@@ -271,8 +271,8 @@ public class UrlRuleService : IUrlRuleService
                 return;
             }
 
-            var json = File.ReadAllText(_rulesFilePath);
-            var rules = System.Text.Json.JsonSerializer.Deserialize<List<UrlRule>>(json);
+            string json = File.ReadAllText(_rulesFilePath);
+            List<UrlRule>? rules = System.Text.Json.JsonSerializer.Deserialize<List<UrlRule>>(json);
 
             lock (_lockObject)
             {
@@ -304,7 +304,7 @@ public class UrlRuleService : IUrlRuleService
                 rulesToSave = _rules.ToList();
             }
 
-            var json = System.Text.Json.JsonSerializer.Serialize(rulesToSave, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+            string json = System.Text.Json.JsonSerializer.Serialize(rulesToSave, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
             await File.WriteAllTextAsync(_rulesFilePath, json);
 
             Debug.WriteLine($"UrlRuleService: {rulesToSave.Count} 個のルールを保存しました");
@@ -328,7 +328,7 @@ public class UrlRuleService : IUrlRuleService
 
         try
         {
-            var json = System.Text.Json.JsonSerializer.Serialize(_rules, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+            string json = System.Text.Json.JsonSerializer.Serialize(_rules, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText(_rulesFilePath, json);
         }
         catch (Exception ex)

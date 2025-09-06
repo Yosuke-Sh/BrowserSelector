@@ -21,7 +21,7 @@ public class ProtocolHandler : IProtocolHandler
     {
         try
         {
-            using var key = Registry.CurrentUser.CreateSubKey(RegistryKeyPath);
+            using RegistryKey key = Registry.CurrentUser.CreateSubKey(RegistryKeyPath);
             if (key == null)
             {
                 throw new InvalidOperationException("レジストリキーの作成に失敗しました");
@@ -32,11 +32,11 @@ public class ProtocolHandler : IProtocolHandler
             key.SetValue("URL Protocol", "");
 
             // デフォルトアイコンの設定
-            using var defaultIconKey = key.CreateSubKey("DefaultIcon");
+            using RegistryKey defaultIconKey = key.CreateSubKey("DefaultIcon");
             defaultIconKey?.SetValue("", $"{applicationPath},0");
 
             // シェルコマンドの設定
-            using var shellKey = key.CreateSubKey(@"shell\open\command");
+            using RegistryKey shellKey = key.CreateSubKey(@"shell\open\command");
             shellKey?.SetValue("", $"\"{applicationPath}\" \"%1\"");
 
             return true;
@@ -78,7 +78,7 @@ public class ProtocolHandler : IProtocolHandler
     {
         try
         {
-            using var key = Registry.CurrentUser.OpenSubKey(RegistryKeyPath);
+            using RegistryKey? key = Registry.CurrentUser.OpenSubKey(RegistryKeyPath);
             return key != null;
         }
         catch
@@ -93,15 +93,14 @@ public class ProtocolHandler : IProtocolHandler
     public string? ExtractUrlFromProtocol(string protocolUrl)
     {
         if (string.IsNullOrEmpty(protocolUrl))
-            return null;
-
-        // browserselector:// プレフィックスを除去
-        if (protocolUrl.StartsWith($"{ProtocolName}://", StringComparison.OrdinalIgnoreCase))
         {
-            return protocolUrl.Substring($"{ProtocolName}://".Length);
+            return null;
         }
 
-        return null;
+        // browserselector:// プレフィックスを除去
+        return protocolUrl.StartsWith($"{ProtocolName}://", StringComparison.OrdinalIgnoreCase)
+            ? protocolUrl[$"{ProtocolName}://".Length..]
+            : null;
     }
 
     /// <summary>
@@ -119,14 +118,16 @@ public class ProtocolHandler : IProtocolHandler
     {
         try
         {
-            using var key = Registry.CurrentUser.OpenSubKey(RegistryKeyPath);
+            using RegistryKey? key = Registry.CurrentUser.OpenSubKey(RegistryKeyPath);
             if (key == null)
+            {
                 return null;
+            }
 
-            var description = key.GetValue("") as string ?? "";
-            var command = "";
+            string description = key.GetValue("") as string ?? "";
+            string command = "";
 
-            using var shellKey = key.OpenSubKey(@"shell\open\command");
+            using RegistryKey? shellKey = key.OpenSubKey(@"shell\open\command");
             if (shellKey != null)
             {
                 command = shellKey.GetValue("") as string ?? "";

@@ -3,8 +3,6 @@ using FlaUI.Core.AutomationElements;
 using FlaUI.Core.Definitions;
 using FlaUI.UIA3;
 using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Diagnostics;
 
 namespace BrowserSelector.UITests;
 
@@ -24,11 +22,11 @@ public class BrowserSelectionUITests
         try
         {
             // アプリケーションパスの構築
-            var appPath = System.IO.Path.Combine(
+            string appPath = System.IO.Path.Combine(
                 AppDomain.CurrentDomain.BaseDirectory,
-                "..", "..", "..", "..", "src", "BrowserSelector.App", 
+                "..", "..", "..", "..", "src", "BrowserSelector.App",
                 "bin", "Debug", "net8.0-windows", "BrowserSelector.App.exe");
-            
+
             // パスを正規化
             appPath = System.IO.Path.GetFullPath(appPath);
 
@@ -36,7 +34,7 @@ public class BrowserSelectionUITests
             {
                 _app = Application.Launch(appPath);
                 _automation = new UIA3Automation();
-                
+
                 // メインウィンドウの取得を待機
                 _mainWindow = _app.GetMainWindow(_automation, TimeSpan.FromSeconds(10));
             }
@@ -57,7 +55,7 @@ public class BrowserSelectionUITests
         try
         {
             _automation?.Dispose();
-            _app?.Close();
+            _ = (_app?.Close());
         }
         catch (Exception ex)
         {
@@ -76,7 +74,7 @@ public class BrowserSelectionUITests
         }
 
         // ブラウザグリッドまたはリストを検索
-        var browserContainer = _mainWindow.FindFirstChild(cf => 
+        AutomationElement browserContainer = _mainWindow.FindFirstChild(cf =>
             cf.ByControlType(ControlType.List)
              .Or(cf.ByControlType(ControlType.DataGrid))
              .Or(cf.ByControlType(ControlType.Group))
@@ -87,15 +85,15 @@ public class BrowserSelectionUITests
         // Assert
         if (browserContainer != null)
         {
-            browserContainer.Should().NotBeNull("ブラウザコンテナが存在すること");
-            browserContainer.IsEnabled.Should().BeTrue("ブラウザコンテナが有効であること");
-            
+            _ = browserContainer.Should().NotBeNull("ブラウザコンテナが存在すること");
+            _ = browserContainer.IsEnabled.Should().BeTrue("ブラウザコンテナが有効であること");
+
             // ブラウザアイテムを検索
-            var browserItems = browserContainer.FindAllChildren(cf => 
+            AutomationElement[] browserItems = browserContainer.FindAllChildren(cf =>
                 cf.ByControlType(ControlType.Button)
                  .Or(cf.ByControlType(ControlType.ListItem)));
-            
-            browserItems.Should().NotBeNull("ブラウザアイテムが検索できること");
+
+            _ = browserItems.Should().NotBeNull("ブラウザアイテムが検索できること");
         }
         else
         {
@@ -114,7 +112,7 @@ public class BrowserSelectionUITests
         }
 
         // ブラウザボタンを検索
-        var browserButtons = _mainWindow.FindAllChildren(cf => 
+        AutomationElement[] browserButtons = _mainWindow.FindAllChildren(cf =>
             cf.ByControlType(ControlType.Button)
              .And(cf.ByAutomationId("BrowserButton"))
              .Or(cf.ByName("Chrome"))
@@ -123,20 +121,20 @@ public class BrowserSelectionUITests
              .Or(cf.ByName("Safari")));
 
         // Assert
-        browserButtons.Should().NotBeNull("ブラウザボタンが検索できること");
-        
+        _ = browserButtons.Should().NotBeNull("ブラウザボタンが検索できること");
+
         if (browserButtons.Length > 0)
         {
-            foreach (var button in browserButtons)
+            foreach (AutomationElement? button in browserButtons)
             {
-                button.Should().NotBeNull("ブラウザボタンが有効であること");
-                button.IsEnabled.Should().BeTrue("ブラウザボタンが有効であること");
-                button.Name.Should().NotBeNullOrEmpty("ブラウザボタンに名前が設定されていること");
-                
+                _ = button.Should().NotBeNull("ブラウザボタンが有効であること");
+                _ = button.IsEnabled.Should().BeTrue("ブラウザボタンが有効であること");
+                _ = button.Name.Should().NotBeNullOrEmpty("ブラウザボタンに名前が設定されていること");
+
                 // ボタンの境界矩形を確認
-                var buttonBounds = button.BoundingRectangle;
-                buttonBounds.Width.Should().BeGreaterThan(0, "ブラウザボタンの境界矩形が設定されていること");
-                buttonBounds.Height.Should().BeGreaterThan(0, "ブラウザボタンの境界矩形が設定されていること");
+                System.Drawing.Rectangle buttonBounds = button.BoundingRectangle;
+                _ = buttonBounds.Width.Should().BeGreaterThan(0, "ブラウザボタンの境界矩形が設定されていること");
+                _ = buttonBounds.Height.Should().BeGreaterThan(0, "ブラウザボタンの境界矩形が設定されていること");
             }
         }
         else
@@ -156,21 +154,21 @@ public class BrowserSelectionUITests
         }
 
         // アイコン要素を検索
-        var iconElements = _mainWindow.FindAllChildren(cf => 
+        AutomationElement[] iconElements = _mainWindow.FindAllChildren(cf =>
             cf.ByControlType(ControlType.Image)
              .Or(cf.ByAutomationId("BrowserIcon")));
 
         // Assert
-        iconElements.Should().NotBeNull("アイコン要素が検索できること");
-        
+        _ = iconElements.Should().NotBeNull("アイコン要素が検索できること");
+
         if (iconElements.Length > 0)
         {
-            foreach (var icon in iconElements)
+            foreach (AutomationElement? icon in iconElements)
             {
-                icon.Should().NotBeNull("アイコン要素が有効であること");
-                var iconBounds = icon.BoundingRectangle;
-                iconBounds.Width.Should().BeGreaterThan(0, "アイコンの境界矩形が設定されていること");
-                iconBounds.Height.Should().BeGreaterThan(0, "アイコンの境界矩形が設定されていること");
+                _ = icon.Should().NotBeNull("アイコン要素が有効であること");
+                System.Drawing.Rectangle iconBounds = icon.BoundingRectangle;
+                _ = iconBounds.Width.Should().BeGreaterThan(0, "アイコンの境界矩形が設定されていること");
+                _ = iconBounds.Height.Should().BeGreaterThan(0, "アイコンの境界矩形が設定されていること");
             }
         }
         else
@@ -190,7 +188,7 @@ public class BrowserSelectionUITests
         }
 
         // URL入力フィールドを検索
-        var urlInput = _mainWindow.FindFirstChild(cf => 
+        AutomationElement urlInput = _mainWindow.FindFirstChild(cf =>
             cf.ByControlType(ControlType.Edit)
              .And(cf.ByAutomationId("UrlInput"))
              .Or(cf.ByName("URL"))
@@ -200,9 +198,9 @@ public class BrowserSelectionUITests
         // Assert
         if (urlInput != null)
         {
-            urlInput.Should().NotBeNull("URL入力フィールドが存在すること");
-            urlInput.IsEnabled.Should().BeTrue("URL入力フィールドが有効であること");
-            urlInput.Name.Should().NotBeNullOrEmpty("URL入力フィールドに名前が設定されていること");
+            _ = urlInput.Should().NotBeNull("URL入力フィールドが存在すること");
+            _ = urlInput.IsEnabled.Should().BeTrue("URL入力フィールドが有効であること");
+            _ = urlInput.Name.Should().NotBeNullOrEmpty("URL入力フィールドに名前が設定されていること");
         }
         else
         {
@@ -221,7 +219,7 @@ public class BrowserSelectionUITests
         }
 
         // 設定ボタンを検索
-        var settingsButton = _mainWindow.FindFirstChild(cf => 
+        AutomationElement settingsButton = _mainWindow.FindFirstChild(cf =>
             cf.ByControlType(ControlType.Button)
              .And(cf.ByAutomationId("SettingsButton"))
              .Or(cf.ByName("設定"))
@@ -232,9 +230,9 @@ public class BrowserSelectionUITests
         // Assert
         if (settingsButton != null)
         {
-            settingsButton.Should().NotBeNull("設定ボタンが存在すること");
-            settingsButton.IsEnabled.Should().BeTrue("設定ボタンが有効であること");
-            settingsButton.Name.Should().NotBeNullOrEmpty("設定ボタンに名前が設定されていること");
+            _ = settingsButton.Should().NotBeNull("設定ボタンが存在すること");
+            _ = settingsButton.IsEnabled.Should().BeTrue("設定ボタンが有効であること");
+            _ = settingsButton.Name.Should().NotBeNullOrEmpty("設定ボタンに名前が設定されていること");
         }
         else
         {
@@ -253,7 +251,7 @@ public class BrowserSelectionUITests
         }
 
         // メニューバーを検索
-        var menuBar = _mainWindow.FindFirstChild(cf => 
+        AutomationElement menuBar = _mainWindow.FindFirstChild(cf =>
             cf.ByControlType(ControlType.MenuBar)
              .Or(cf.ByAutomationId("MenuBar"))
              .Or(cf.ByName("メニュー"))
@@ -262,12 +260,12 @@ public class BrowserSelectionUITests
         // Assert
         if (menuBar != null)
         {
-            menuBar.Should().NotBeNull("メニューバーが存在すること");
-            menuBar.IsEnabled.Should().BeTrue("メニューバーが有効であること");
-            
+            _ = menuBar.Should().NotBeNull("メニューバーが存在すること");
+            _ = menuBar.IsEnabled.Should().BeTrue("メニューバーが有効であること");
+
             // メニューアイテムを検索
-            var menuItems = menuBar.FindAllChildren(cf => cf.ByControlType(ControlType.MenuItem));
-            menuItems.Should().NotBeNull("メニューアイテムが検索できること");
+            AutomationElement[] menuItems = menuBar.FindAllChildren(cf => cf.ByControlType(ControlType.MenuItem));
+            _ = menuItems.Should().NotBeNull("メニューアイテムが検索できること");
         }
         else
         {
@@ -286,7 +284,7 @@ public class BrowserSelectionUITests
         }
 
         // ステータスバーを検索
-        var statusBar = _mainWindow.FindFirstChild(cf => 
+        AutomationElement statusBar = _mainWindow.FindFirstChild(cf =>
             cf.ByControlType(ControlType.StatusBar)
              .Or(cf.ByAutomationId("StatusBar"))
              .Or(cf.ByName("ステータス"))
@@ -295,8 +293,8 @@ public class BrowserSelectionUITests
         // Assert
         if (statusBar != null)
         {
-            statusBar.Should().NotBeNull("ステータスバーが存在すること");
-            statusBar.IsEnabled.Should().BeTrue("ステータスバーが有効であること");
+            _ = statusBar.Should().NotBeNull("ステータスバーが存在すること");
+            _ = statusBar.IsEnabled.Should().BeTrue("ステータスバーが有効であること");
         }
         else
         {
@@ -315,13 +313,13 @@ public class BrowserSelectionUITests
         }
 
         // ウィンドウの状態を確認（FlaUIではWindowStateプロパティが利用できないため、基本プロパティを確認）
-        var isEnabled = _mainWindow.IsEnabled;
-        var bounds = _mainWindow.BoundingRectangle;
-        
+        bool isEnabled = _mainWindow.IsEnabled;
+        System.Drawing.Rectangle bounds = _mainWindow.BoundingRectangle;
+
         // Assert
-        isEnabled.Should().BeTrue("ウィンドウが有効であること");
-        bounds.Width.Should().BeGreaterThan(0, "ウィンドウの幅が0より大きいこと");
-        bounds.Height.Should().BeGreaterThan(0, "ウィンドウの高さが0より大きいこと");
+        _ = isEnabled.Should().BeTrue("ウィンドウが有効であること");
+        _ = bounds.Width.Should().BeGreaterThan(0, "ウィンドウの幅が0より大きいこと");
+        _ = bounds.Height.Should().BeGreaterThan(0, "ウィンドウの高さが0より大きいこと");
     }
 
     [TestMethod]
@@ -335,15 +333,15 @@ public class BrowserSelectionUITests
         }
 
         // UI要素の応答性を確認
-        var startTime = DateTime.Now;
-        var allElements = _mainWindow.FindAllChildren();
-        var endTime = DateTime.Now;
-        
+        DateTime startTime = DateTime.Now;
+        AutomationElement[] allElements = _mainWindow.FindAllChildren();
+        DateTime endTime = DateTime.Now;
+
         // Assert
-        allElements.Should().NotBeNull("UI要素が検索できること");
-        
-        var responseTime = (endTime - startTime).TotalMilliseconds;
-        responseTime.Should().BeLessThan(1000, "UI要素の検索が1秒以内に完了すること");
+        _ = allElements.Should().NotBeNull("UI要素が検索できること");
+
+        double responseTime = (endTime - startTime).TotalMilliseconds;
+        _ = responseTime.Should().BeLessThan(1000, "UI要素の検索が1秒以内に完了すること");
     }
 
     [TestMethod]
@@ -357,29 +355,29 @@ public class BrowserSelectionUITests
         }
 
         // アクセシビリティ要素を検索
-        var accessibleElements = _mainWindow.FindAllChildren(cf => 
+        AutomationElement[] accessibleElements = _mainWindow.FindAllChildren(cf =>
             cf.ByControlType(ControlType.Button)
              .Or(cf.ByControlType(ControlType.Edit))
              .Or(cf.ByControlType(ControlType.Text))
              .Or(cf.ByControlType(ControlType.MenuItem)));
 
         // Assert
-        accessibleElements.Should().NotBeNull("アクセシブルな要素が検索できること");
-        
+        _ = accessibleElements.Should().NotBeNull("アクセシブルな要素が検索できること");
+
         if (accessibleElements.Length > 0)
         {
-            foreach (var element in accessibleElements)
+            foreach (AutomationElement? element in accessibleElements)
             {
-                element.Should().NotBeNull("アクセシブルな要素が有効であること");
-                
+                _ = element.Should().NotBeNull("アクセシブルな要素が有効であること");
+
                 // 要素に名前が設定されていることを確認
                 if (!string.IsNullOrEmpty(element.Name))
                 {
-                    element.Name.Should().NotBeNullOrEmpty("要素に名前が設定されていること");
+                    _ = element.Name.Should().NotBeNullOrEmpty("要素に名前が設定されていること");
                 }
-                
+
                 // 要素が有効であることを確認
-                element.IsEnabled.Should().BeTrue("要素が有効であること");
+                _ = element.IsEnabled.Should().BeTrue("要素が有効であること");
             }
         }
         else

@@ -1,11 +1,10 @@
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using BrowserSelector.Core.Models;
 using BrowserSelector.Core.Services;
 using BrowserSelector.Infrastructure.Services;
-using BrowserSelector.Core.Models;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Xunit;
-using System.IO;
 
 namespace BrowserSelector.IntegrationTests
 {
@@ -28,52 +27,52 @@ namespace BrowserSelector.IntegrationTests
         {
             // テスト用の一時ディレクトリを作成
             _tempDirectory = Path.Combine(Path.GetTempPath(), "BrowserSelectorTest", Guid.NewGuid().ToString());
-            Directory.CreateDirectory(_tempDirectory);
+            _ = Directory.CreateDirectory(_tempDirectory);
 
-            var services = new ServiceCollection();
-            
+            ServiceCollection services = new();
+
             // 実際のサービスクラスを登録
-            services.AddLogging(builder => 
+            _ = services.AddLogging(builder =>
             {
                 // テスト実行時のログ出力を最小限に抑制
-                builder.SetMinimumLevel(LogLevel.Error); // エラーレベルのみ出力
+                _ = builder.SetMinimumLevel(LogLevel.Error); // エラーレベルのみ出力
             });
-            services.AddSingleton<ILogService, BrowserSelector.Infrastructure.Logging.LogService>();
-            services.AddSingleton<IRegistryService, BrowserSelector.Infrastructure.SystemIntegration.WindowsRegistryService>();
-            services.AddSingleton<IUrlService, UrlService>();
-            services.AddSingleton<IBrowserService, BrowserService>();
-            services.AddSingleton<ISettingsService>(provider => 
+            _ = services.AddSingleton<ILogService, BrowserSelector.Infrastructure.Logging.LogService>();
+            _ = services.AddSingleton<IRegistryService, BrowserSelector.Infrastructure.SystemIntegration.WindowsRegistryService>();
+            _ = services.AddSingleton<IUrlService, UrlService>();
+            _ = services.AddSingleton<IBrowserService, BrowserService>();
+            _ = services.AddSingleton<ISettingsService>(provider =>
             {
-                var logService = provider.GetService<ILogService>();
+                ILogService? logService = provider.GetService<ILogService>();
                 return new TestSettingsService(logService, _tempDirectory);
             });
-            services.AddSingleton<IUrlRuleService>(provider => 
+            _ = services.AddSingleton<IUrlRuleService>(provider =>
             {
-                var logService = provider.GetService<ILogService>();
+                ILogService? logService = provider.GetService<ILogService>();
                 return new TestUrlRuleService(logService, _tempDirectory);
             });
-            services.AddSingleton<ICustomLanguageService, CustomLanguageService>();
-            services.AddSingleton<ILocalizationService, BrowserSelector.Infrastructure.Localization.LocalizationService>();
-            
+            _ = services.AddSingleton<ICustomLanguageService, CustomLanguageService>();
+            _ = services.AddSingleton<ILocalizationService, BrowserSelector.Infrastructure.Localization.LocalizationService>();
+
             _serviceProvider = services.BuildServiceProvider();
             _browserService = _serviceProvider.GetRequiredService<IBrowserService>();
             _settingsService = _serviceProvider.GetRequiredService<ISettingsService>();
             _urlService = _serviceProvider.GetRequiredService<IUrlService>();
             _urlRuleService = _serviceProvider.GetRequiredService<IUrlRuleService>();
             _customLanguageService = _serviceProvider.GetRequiredService<ICustomLanguageService>();
-            
+
             _testDataPath = Path.Combine(Path.GetTempPath(), "BrowserSelectorTest");
-            Directory.CreateDirectory(_testDataPath);
+            _ = Directory.CreateDirectory(_testDataPath);
         }
 
         [Fact]
         public async Task BrowserService_DetectBrowsersFromRegistry_ShouldExecuteRealLogic()
         {
             // Act - 実際のレジストリ検索ロジックを実行
-            var browsers = await _browserService.DetectBrowsersAsync();
-            
+            IEnumerable<Browser> browsers = await _browserService.DetectBrowsersAsync();
+
             // Assert - 実際のロジックが実行されたことを確認
-            browsers.Should().NotBeNull();
+            _ = browsers.Should().NotBeNull();
             // システムにインストールされているブラウザが検出される可能性がある
         }
 
@@ -81,7 +80,7 @@ namespace BrowserSelector.IntegrationTests
         public async Task SettingsService_FileSystemOperations_ShouldExecuteRealLogic()
         {
             // Arrange
-            var testSettings = new AppSettings
+            AppSettings testSettings = new()
             {
                 StartupMessage = "Integration Test Message",
                 EnableLogging = true,
@@ -96,21 +95,21 @@ namespace BrowserSelector.IntegrationTests
             };
 
             // Act - 実際のファイルシステム操作を実行
-            var saveResult = await _settingsService.SaveAppSettingsAsync(testSettings);
-            var loadedSettings = await _settingsService.LoadAppSettingsAsync();
-            
+            bool saveResult = await _settingsService.SaveAppSettingsAsync(testSettings);
+            AppSettings loadedSettings = await _settingsService.LoadAppSettingsAsync();
+
             // Assert - 実際のロジックが実行されたことを確認
             // TestSettingsServiceを使用するため、保存と読み込みが正常に動作する
-            saveResult.Should().BeTrue();
-            loadedSettings.Should().NotBeNull();
-            loadedSettings.Should().BeOfType<AppSettings>();
+            _ = saveResult.Should().BeTrue();
+            _ = loadedSettings.Should().NotBeNull();
+            _ = loadedSettings.Should().BeOfType<AppSettings>();
         }
 
         [Fact]
         public async Task UrlService_UrlProcessing_ShouldExecuteRealLogic()
         {
             // Arrange
-            var testUrls = new[]
+            string[] testUrls = new[]
             {
                 "https://www.google.com",
                 "http://example.com",
@@ -119,28 +118,28 @@ namespace BrowserSelector.IntegrationTests
             };
 
             // Act - 実際のURL処理ロジックを実行
-            var results = new List<(string url, bool isValid, string normalized)>();
-            
-            foreach (var url in testUrls)
+            List<(string url, bool isValid, string normalized)> results = [];
+
+            foreach (string? url in testUrls)
             {
-                var isValid = await _urlService.ValidateUrlAsync(url);
-                var normalized = await _urlService.NormalizeUrlAsync(url);
+                bool isValid = await _urlService.ValidateUrlAsync(url);
+                string normalized = await _urlService.NormalizeUrlAsync(url);
                 results.Add((url, isValid, normalized));
             }
-            
+
             // Assert - 実際のロジックが実行されたことを確認
-            results.Should().HaveCount(4);
-            results[0].isValid.Should().BeTrue(); // https://www.google.com
-            results[1].isValid.Should().BeTrue(); // http://example.com
-            results[2].isValid.Should().BeTrue(); // ftp://files.example.com
-            results[3].isValid.Should().BeFalse(); // invalid-url
+            _ = results.Should().HaveCount(4);
+            _ = results[0].isValid.Should().BeTrue(); // https://www.google.com
+            _ = results[1].isValid.Should().BeTrue(); // http://example.com
+            _ = results[2].isValid.Should().BeTrue(); // ftp://files.example.com
+            _ = results[3].isValid.Should().BeFalse(); // invalid-url
         }
 
         [Fact]
         public async Task UrlRuleService_RuleManagement_ShouldExecuteRealLogic()
         {
             // Arrange
-            var testRule = new UrlRule
+            UrlRule testRule = new()
             {
                 Id = Guid.NewGuid(),
                 Pattern = "*.test.com",
@@ -151,24 +150,24 @@ namespace BrowserSelector.IntegrationTests
             };
 
             // Act - 実際のルール管理ロジックを実行
-            var addResult = await _urlRuleService.AddRuleAsync(testRule);
-            var allRules = await _urlRuleService.GetAllRulesAsync();
-            var updateResult = await _urlRuleService.UpdateRuleAsync(testRule);
-            var deleteResult = await _urlRuleService.DeleteRuleAsync(testRule.Id);
-            
+            bool addResult = await _urlRuleService.AddRuleAsync(testRule);
+            IEnumerable<UrlRule> allRules = await _urlRuleService.GetAllRulesAsync();
+            bool updateResult = await _urlRuleService.UpdateRuleAsync(testRule);
+            bool deleteResult = await _urlRuleService.DeleteRuleAsync(testRule.Id);
+
             // Assert - 実際のロジックが実行されたことを確認
             // TestSettingsServiceを使用するため、保存と読み込みが正常に動作する
-            addResult.Should().BeTrue();
-            allRules.Should().NotBeNull();
-            updateResult.Should().BeTrue();
-            deleteResult.Should().BeTrue();
+            _ = addResult.Should().BeTrue();
+            _ = allRules.Should().NotBeNull();
+            _ = updateResult.Should().BeTrue();
+            _ = deleteResult.Should().BeTrue();
         }
 
         [Fact]
         public async Task CustomLanguageService_LanguageManagement_ShouldExecuteRealLogic()
         {
             // Arrange
-            var testLanguage = new CustomLanguageFile
+            CustomLanguageFile testLanguage = new()
             {
                 CultureCode = "test-TEST",
                 DisplayName = "Test Language",
@@ -179,22 +178,22 @@ namespace BrowserSelector.IntegrationTests
             };
 
             // Act - 実際の言語管理ロジックを実行
-            var addResult = await _customLanguageService.AddCustomLanguageAsync(testLanguage.CultureCode);
-            var allLanguages = await _customLanguageService.GetAvailableLanguagesAsync();
-            var deleteResult = await _customLanguageService.RemoveCustomLanguageAsync(testLanguage.CultureCode);
-            
+            bool addResult = await _customLanguageService.AddCustomLanguageAsync(testLanguage.CultureCode);
+            IEnumerable<LanguageInfo> allLanguages = await _customLanguageService.GetAvailableLanguagesAsync();
+            bool deleteResult = await _customLanguageService.RemoveCustomLanguageAsync(testLanguage.CultureCode);
+
             // Assert - 実際のロジックが実行されたことを確認
             // テスト環境では無効なパスのためfalseが返される可能性がある
-            addResult.Should().BeFalse();
-            allLanguages.Should().NotBeNull();
-            deleteResult.Should().BeFalse();
+            _ = addResult.Should().BeFalse();
+            _ = allLanguages.Should().NotBeNull();
+            _ = deleteResult.Should().BeFalse();
         }
 
         [Fact]
         public async Task SettingsService_VisualSettingsPersistence_ShouldExecuteRealLogic()
         {
             // Arrange
-            var testVisualSettings = new VisualSettings
+            VisualSettings testVisualSettings = new()
             {
                 BackgroundColor = System.Windows.Media.Colors.Red,
                 UseBackgroundGradient = true,
@@ -208,20 +207,20 @@ namespace BrowserSelector.IntegrationTests
             };
 
             // Act - 実際の視覚設定永続化ロジックを実行
-            var saveResult = await _settingsService.SaveVisualSettingsAsync(testVisualSettings);
-            var loadedSettings = await _settingsService.LoadVisualSettingsAsync();
-            
+            bool saveResult = await _settingsService.SaveVisualSettingsAsync(testVisualSettings);
+            VisualSettings loadedSettings = await _settingsService.LoadVisualSettingsAsync();
+
             // Assert - 実際のロジックが実行されたことを確認
-            saveResult.Should().BeTrue();
-            loadedSettings.Should().NotBeNull();
-            loadedSettings.Should().BeOfType<VisualSettings>();
+            _ = saveResult.Should().BeTrue();
+            _ = loadedSettings.Should().NotBeNull();
+            _ = loadedSettings.Should().BeOfType<VisualSettings>();
         }
 
         [Fact]
         public async Task BrowserService_BrowserManagement_ShouldExecuteRealLogic()
         {
             // Arrange
-            var testBrowser = new Browser
+            Browser testBrowser = new()
             {
                 Id = Guid.NewGuid(),
                 Name = "Integration Test Browser",
@@ -232,57 +231,57 @@ namespace BrowserSelector.IntegrationTests
             };
 
             // Act - 実際のブラウザ管理ロジックを実行
-            var addResult = await _browserService.AddBrowserAsync(testBrowser);
-            var allBrowsers = await _browserService.GetAllBrowsersAsync();
-            var updateResult = await _browserService.UpdateBrowserAsync(testBrowser);
-            var deleteResult = await _browserService.RemoveBrowserAsync(testBrowser.Id);
-            
+            bool addResult = await _browserService.AddBrowserAsync(testBrowser);
+            IEnumerable<Browser> allBrowsers = await _browserService.GetAllBrowsersAsync();
+            bool updateResult = await _browserService.UpdateBrowserAsync(testBrowser);
+            bool deleteResult = await _browserService.RemoveBrowserAsync(testBrowser.Id);
+
             // Assert - 実際のロジックが実行されたことを確認
-            addResult.Should().BeTrue();
-            allBrowsers.Should().NotBeNull();
-            updateResult.Should().BeTrue();
-            deleteResult.Should().BeTrue();
+            _ = addResult.Should().BeTrue();
+            _ = allBrowsers.Should().NotBeNull();
+            _ = updateResult.Should().BeTrue();
+            _ = deleteResult.Should().BeTrue();
         }
 
         [Fact]
         public async Task SettingsService_ResetSettings_ShouldExecuteRealLogic()
         {
             // Act - 実際の設定リセットロジックを実行
-            var result = await _settingsService.ResetSettingsAsync();
-            
+            bool result = await _settingsService.ResetSettingsAsync();
+
             // Assert - 実際のロジックが実行されたことを確認（テスト環境では成功する場合もある）
-            result.Should().BeTrue();
+            _ = result.Should().BeTrue();
         }
 
         [Fact]
         public async Task SettingsService_ExportImportSettings_ShouldExecuteRealLogic()
         {
             // Arrange
-            var exportPath = Path.Combine(_testDataPath, "exported-settings.zip");
-            var importPath = Path.Combine(_testDataPath, "imported-settings.zip");
+            string exportPath = Path.Combine(_testDataPath, "exported-settings.zip");
+            string importPath = Path.Combine(_testDataPath, "imported-settings.zip");
 
             // Act - 実際の設定エクスポート・インポートロジックを実行
-            var exportResult = await _settingsService.ExportSettingsAsync(exportPath);
-            var importResult = await _settingsService.ImportSettingsAsync(importPath);
-            
+            bool exportResult = await _settingsService.ExportSettingsAsync(exportPath);
+            bool importResult = await _settingsService.ImportSettingsAsync(importPath);
+
             // Assert - 実際のロジックが実行されたことを確認
-            exportResult.Should().BeTrue();
+            _ = exportResult.Should().BeTrue();
             // テスト環境では存在しないファイルのインポートのためfalseが返される可能性がある
-            importResult.Should().BeFalse();
+            _ = importResult.Should().BeFalse();
         }
 
         public void Dispose()
         {
             _serviceProvider?.Dispose();
-            
+
             // テストデータのクリーンアップ
             if (Directory.Exists(_testDataPath))
             {
                 try
                 {
                     // ファイルの読み取り専用属性を解除
-                    var files = Directory.GetFiles(_testDataPath, "*", SearchOption.AllDirectories);
-                    foreach (var file in files)
+                    string[] files = Directory.GetFiles(_testDataPath, "*", SearchOption.AllDirectories);
+                    foreach (string file in files)
                     {
                         try
                         {
@@ -300,7 +299,7 @@ namespace BrowserSelector.IntegrationTests
                     // クリーンアップに失敗してもテストには影響しない
                 }
             }
-            
+
             // テスト用の一時ディレクトリを削除
             if (!string.IsNullOrEmpty(_tempDirectory) && Directory.Exists(_tempDirectory))
             {
