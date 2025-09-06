@@ -46,7 +46,7 @@ public class SettingsServiceIntegrationTests
         loadedSettings.CustomProtocol.Should().Be(testSettings.CustomProtocol);
     }
 
-    [Fact(Skip = "削除されたOpacityプロパティのテストを更新する必要があります")]
+    [Fact]
     public async Task SettingsService_LoadVisualSettings_ShouldReturnDefaultValues()
     {
         // Act
@@ -54,11 +54,28 @@ public class SettingsServiceIntegrationTests
 
         // Assert
         visualSettings.Should().NotBeNull();
-        // TODO: 削除されたOpacityプロパティのテストを更新
-        // visualSettings.Opacity.Should().BeGreaterThan(0);
-        // visualSettings.Opacity.Should().BeLessThanOrEqualTo(1);
         visualSettings.BackgroundColor.Should().Be(System.Windows.Media.Colors.White);
-        // TODO: 削除されたMessageTextColorプロパティのテストを更新
+        visualSettings.UseBackgroundGradient.Should().BeFalse();
+        visualSettings.GradientStartColor.Should().Be(System.Windows.Media.Colors.Transparent);
+        visualSettings.GradientEndColor.Should().Be(System.Windows.Media.Colors.Transparent);
+        visualSettings.GradientDirection.Should().Be(BrowserSelector.Core.Enums.GradientDirection.Vertical);
+        visualSettings.IconScale.Should().Be(1.0);
+        visualSettings.ShowFocusIndicator.Should().BeTrue();
+        visualSettings.FocusColor.Should().Be(System.Windows.Media.Colors.Blue);
+        visualSettings.FocusThickness.Should().Be(2.0);
+        visualSettings.FocusWidth.Should().Be(100.0);
+        visualSettings.InitialWindowWidth.Should().Be(800.0);
+        visualSettings.InitialWindowHeight.Should().Be(600.0);
+        visualSettings.ShowLogo.Should().BeTrue();
+        visualSettings.ShowUrlInput.Should().BeTrue();
+        visualSettings.BrowserButtonWidth.Should().Be(120.0);
+        visualSettings.BrowserButtonHeight.Should().Be(90.0);
+        visualSettings.BrowserButtonBackgroundColor.Should().Be(System.Windows.Media.Colors.Transparent);
+        visualSettings.BrowserButtonForegroundColor.Should().Be(System.Windows.Media.Colors.Black);
+        visualSettings.BrowserButtonOpacity.Should().Be(1.0);
+        visualSettings.BrowserButtonCornerRadius.Should().Be(8.0);
+        visualSettings.ShowBrowserName.Should().BeTrue();
+        visualSettings.BrowserIconSize.Should().Be(32.0);
     }
 
     [Fact]

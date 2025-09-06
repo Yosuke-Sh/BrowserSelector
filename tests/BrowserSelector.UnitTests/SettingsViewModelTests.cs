@@ -145,18 +145,24 @@ public class SettingsViewModelTests
         _viewModel.CancelCommand.Should().NotBeNull();
     }
 
-    [Fact(Skip = "削除されたプロパティのテストを更新する必要があります")]
+    [Fact]
     public void SettingsViewModel_DefaultValues_ShouldBeSetCorrectly()
     {
         // Assert
-        _viewModel.ShowFocusIndicator.Should().BeTrue();
-        _viewModel.FocusColor.Should().Be(System.Windows.Media.Colors.Blue);
-        _viewModel.FocusThickness.Should().Be(2.0);
-        // TODO: 削除されたプロパティのテストを更新
-        // _viewModel.EnableKeyboardNavigation.Should().BeTrue();
-        // _viewModel.EnableShortcuts.Should().BeTrue();
-        // _viewModel.EnableScreenReaderSupport.Should().BeTrue();
-        // _viewModel.ProvideDetailedDescriptions.Should().BeTrue();
+        _viewModel.VisualSettings.ShowFocusIndicator.Should().BeTrue();
+        _viewModel.VisualSettings.FocusColor.Should().Be(System.Windows.Media.Colors.Blue);
+        _viewModel.VisualSettings.FocusThickness.Should().Be(2.0);
+        _viewModel.VisualSettings.FocusWidth.Should().Be(100.0);
+        _viewModel.VisualSettings.BackgroundColor.Should().Be(System.Windows.Media.Colors.White);
+        _viewModel.VisualSettings.IconScale.Should().Be(1.0);
+        _viewModel.VisualSettings.ShowLogo.Should().BeTrue();
+        _viewModel.VisualSettings.ShowUrlInput.Should().BeTrue();
+        _viewModel.VisualSettings.BrowserButtonWidth.Should().Be(120.0);
+        _viewModel.VisualSettings.BrowserButtonHeight.Should().Be(90.0);
+        _viewModel.VisualSettings.BrowserButtonOpacity.Should().Be(1.0);
+        _viewModel.VisualSettings.BrowserButtonCornerRadius.Should().Be(8.0);
+        _viewModel.VisualSettings.ShowBrowserName.Should().BeTrue();
+        _viewModel.VisualSettings.BrowserIconSize.Should().Be(32.0);
     }
 
     [Fact]

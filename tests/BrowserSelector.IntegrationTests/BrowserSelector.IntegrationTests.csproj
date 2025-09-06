@@ -6,6 +6,11 @@
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
+    <CollectCoverage>true</CollectCoverage>
+    <CoverletOutputFormat>cobertura</CoverletOutputFormat>
+    <CoverletOutput>./TestResults/</CoverletOutput>
+    <Include>[*]*</Include>
+    <Exclude>[*.Tests]*</Exclude>
   </PropertyGroup>
 
   <ItemGroup>

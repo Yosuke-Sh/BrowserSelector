@@ -28,6 +28,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\BrowserSelector.App\BrowserSelector.App.csproj" />
+    <ProjectReference Include="..\..\src\BrowserSelector.Core\BrowserSelector.Core.csproj" />
+    <ProjectReference Include="..\..\src\BrowserSelector.Infrastructure\BrowserSelector.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\BrowserSelector.Presentation\BrowserSelector.Presentation.csproj" />
   </ItemGroup>
 
 </Project>
