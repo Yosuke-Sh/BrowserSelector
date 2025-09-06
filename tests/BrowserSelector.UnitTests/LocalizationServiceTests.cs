@@ -52,7 +52,7 @@ public class LocalizationServiceTests
     }
 
     [Fact]
-    public void LocalizationService_SetLanguage_ShouldChangeCulture()
+    public async Task LocalizationService_SetLanguage_ShouldChangeCulture()
     {
         // Arrange
         var mockCustomLanguageService = new Mock<ICustomLanguageService>();
@@ -64,15 +64,15 @@ public class LocalizationServiceTests
             });
         
         var service = new LocalizationService(mockCustomLanguageService.Object);
-        var englishCulture = new CultureInfo("en-US");
+        var japaneseCulture = new CultureInfo("ja-JP"); // 異なる言語を設定
         var languageChanged = false;
         service.LanguageChanged += (sender, e) => languageChanged = true;
 
         // Act
-        service.SetLanguage(englishCulture);
+        await service.SetLanguage(japaneseCulture);
 
         // Assert
-        service.CurrentCulture.Should().Be(englishCulture);
+        service.CurrentCulture.Should().Be(japaneseCulture);
         languageChanged.Should().BeTrue();
     }
 

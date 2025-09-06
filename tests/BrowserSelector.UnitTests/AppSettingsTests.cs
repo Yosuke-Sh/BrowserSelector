@@ -13,7 +13,7 @@ public class AppSettingsTests
 
         // Assert
         settings.EnableLogging.Should().BeTrue();
-        settings.Language.Should().Be("ja-JP");
+        settings.Language.Should().Be("en-US"); // デフォルト言語を英語に変更
         settings.PortableMode.Should().BeFalse();
         settings.CustomProtocol.Should().Be("browserselector");
         settings.CloseAfterUrlRuleMatch.Should().BeTrue();
@@ -28,13 +28,18 @@ public class AppSettingsTests
         settings.PropertyChanged += (sender, e) => propertyChangedCount++;
 
         // Act
+        settings.StartupMessage = "Test";
         settings.EnableLogging = false;
-        settings.Language = "en-US";
+        settings.LogLevel = "Debug";
+        settings.CheckForUpdates = false;
+        settings.UpdateCheckInterval = 12;
+        settings.Language = "ja-JP";
         settings.PortableMode = true;
         settings.CustomProtocol = "custom";
+        settings.RegisterProtocol = false;
         settings.CloseAfterUrlRuleMatch = false;
 
         // Assert
-        propertyChangedCount.Should().Be(5);
+        propertyChangedCount.Should().Be(10); // 全プロパティを変更
     }
 }

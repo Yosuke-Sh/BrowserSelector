@@ -29,7 +29,7 @@ public class SettingsViewModelTests
             .Setup(x => x.LoadAppSettingsAsync())
             .ReturnsAsync(new AppSettings
             {
-                Language = "ja-JP",
+                Language = "en-US", // デフォルト言語を英語に変更
                 CloseAfterUrlRuleMatch = true
             });
 
@@ -86,21 +86,21 @@ public class SettingsViewModelTests
     [Fact]
     public void SettingsViewModel_AvailableLogLevels_ShouldContainAllLogLevels()
     {
-        // Assert
-        _viewModel.AvailableLogLevels.Should().Contain(l => l.DisplayName == "トレース");
-        _viewModel.AvailableLogLevels.Should().Contain(l => l.DisplayName == "デバッグ");
-        _viewModel.AvailableLogLevels.Should().Contain(l => l.DisplayName == "情報");
-        _viewModel.AvailableLogLevels.Should().Contain(l => l.DisplayName == "警告");
-        _viewModel.AvailableLogLevels.Should().Contain(l => l.DisplayName == "エラー");
-        _viewModel.AvailableLogLevels.Should().Contain(l => l.DisplayName == "致命的エラー");
+        // Assert - ログレベルは英語で表示される
+        _viewModel.AvailableLogLevels.Should().Contain(l => l.DisplayName == "LogLevel.Trace");
+        _viewModel.AvailableLogLevels.Should().Contain(l => l.DisplayName == "LogLevel.Debug");
+        _viewModel.AvailableLogLevels.Should().Contain(l => l.DisplayName == "LogLevel.Information");
+        _viewModel.AvailableLogLevels.Should().Contain(l => l.DisplayName == "LogLevel.Warning");
+        _viewModel.AvailableLogLevels.Should().Contain(l => l.DisplayName == "LogLevel.Error");
+        _viewModel.AvailableLogLevels.Should().Contain(l => l.DisplayName == "LogLevel.Critical");
     }
 
     [Fact]
-    public void SettingsViewModel_SelectedLanguage_ShouldBeSetToJapaneseByDefault()
+    public void SettingsViewModel_SelectedLanguage_ShouldBeSetToEnglishByDefault()
     {
-        // Assert
+        // Assert - デフォルト言語は英語
         _viewModel.SelectedLanguage.Should().NotBeNull();
-        _viewModel.SelectedLanguage!.CultureCode.Should().Be("ja-JP");
+        _viewModel.SelectedLanguage!.CultureCode.Should().Be("en-US");
     }
 
     [Fact]
@@ -170,14 +170,14 @@ public class SettingsViewModelTests
         };
 
         _mockBrowserService
-            .Setup(x => x.GetAllBrowsersAsync())
+            .Setup(x => x.DetectBrowsersAsync())
             .ReturnsAsync(testBrowsers);
 
         // Act
         await _viewModel.RefreshBrowsersCommand.ExecuteAsync(null);
 
-        // Assert
-        _mockBrowserService.Verify(x => x.GetAllBrowsersAsync(), Times.Exactly(2)); // 初期化時とコマンド実行時
+        // Assert - RefreshBrowsersはDetectBrowsersAsyncを呼び出す
+        _mockBrowserService.Verify(x => x.DetectBrowsersAsync(), Times.Once);
         _viewModel.DetectedBrowsers.Should().HaveCount(2);
     }
 

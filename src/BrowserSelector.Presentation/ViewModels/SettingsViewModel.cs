@@ -654,12 +654,14 @@ public partial class SettingsViewModel : ObservableObject
             }
 
             _logService?.LogInformation($"ブラウザ再検出完了: {browsers.Count()}個のブラウザを検出", "SettingsViewModel");
-            MessageBox.Show($"ブラウザ {browsers.Count()} 個を検出しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
+            
+            LocalizedMessageBox.Show($"ブラウザ {browsers.Count()} 個を検出しました。", "完了");
         }
         catch (Exception ex)
         {
             _logService?.LogError($"ブラウザ再検出エラー: {ex.Message}", "SettingsViewModel", ex);
-            MessageBox.Show($"ブラウザの再検出中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+            
+            LocalizedMessageBox.ShowError($"ブラウザの再検出中にエラーが発生しました: {ex.Message}");
         }
     }
 
@@ -684,19 +686,19 @@ public partial class SettingsViewModel : ObservableObject
                 {
                     await RefreshBrowsersAsync();
                     _logService?.LogInformation("ブラウザ追加完了", "SettingsViewModel");
-                    MessageBox.Show("ブラウザを追加しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
+                    LocalizedMessageBox.Show("ブラウザを追加しました。", "完了");
                 }
                 else
                 {
                     _logService?.LogWarning("ブラウザ追加失敗", "SettingsViewModel");
-                    MessageBox.Show("ブラウザの追加に失敗しました。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                    LocalizedMessageBox.ShowError("ブラウザの追加に失敗しました。");
                 }
             }
         }
         catch (Exception ex)
         {
             _logService?.LogError($"ブラウザ追加エラー: {ex.Message}", "SettingsViewModel", ex);
-            MessageBox.Show($"ブラウザの追加中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+            LocalizedMessageBox.ShowError($"ブラウザの追加中にエラーが発生しました: {ex.Message}");
         }
     }
 
@@ -990,19 +992,19 @@ public partial class SettingsViewModel : ObservableObject
                     VisualSettings = await _settingsService.LoadVisualSettingsAsync();
                     await InitializeLanguagesAsync();
                     
-                    MessageBox.Show("設定ファイル群をインポートしました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
+                    LocalizedMessageBox.Show("設定ファイル群をインポートしました。", "完了");
                 }
                 else
                 {
                     _logService?.LogWarning("設定インポート失敗", "SettingsViewModel");
-                    MessageBox.Show("設定のインポートに失敗しました。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                    LocalizedMessageBox.ShowError("設定のインポートに失敗しました。");
                 }
             }
         }
         catch (Exception ex)
         {
             _logService?.LogError($"設定インポートエラー: {ex.Message}", "SettingsViewModel", ex);
-            MessageBox.Show($"設定のインポート中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+            LocalizedMessageBox.ShowError($"設定のインポート中にエラーが発生しました: {ex.Message}");
         }
     }
 
@@ -1029,19 +1031,19 @@ public partial class SettingsViewModel : ObservableObject
                 if (result)
                 {
                     _logService?.LogInformation($"設定エクスポート完了: {saveFileDialog.FileName}", "SettingsViewModel");
-                    MessageBox.Show("設定ファイル群をエクスポートしました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
+                    LocalizedMessageBox.Show("設定ファイル群をエクスポートしました。", "完了");
                 }
                 else
                 {
                     _logService?.LogWarning("設定エクスポート失敗", "SettingsViewModel");
-                    MessageBox.Show("設定のエクスポートに失敗しました。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                    LocalizedMessageBox.ShowError("設定のエクスポートに失敗しました。");
                 }
             }
         }
         catch (Exception ex)
         {
             _logService?.LogError($"設定エクスポートエラー: {ex.Message}", "SettingsViewModel", ex);
-            MessageBox.Show($"設定のエクスポート中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+            LocalizedMessageBox.ShowError($"設定のエクスポート中にエラーが発生しました: {ex.Message}");
         }
     }
 
@@ -1439,6 +1441,7 @@ public class LanguageInfo
         DisplayName = displayName;
     }
 }
+
 
 /// <summary>
 /// ログレベル情報を表すクラス
