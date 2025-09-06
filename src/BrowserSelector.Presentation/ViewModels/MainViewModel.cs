@@ -1,6 +1,7 @@
 using BrowserSelector.Core.Enums;
 using BrowserSelector.Core.Models;
 using BrowserSelector.Core.Services;
+using BrowserSelector.Presentation.Helpers;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
@@ -225,13 +226,13 @@ public partial class MainViewModel : ObservableObject
                 {
                     Browsers.Add(browser);
                 }
-                StatusMessage = $"ブラウザ {Browsers.Count} 個を読み込みました";
+                StatusMessage = LocalizedLogHelper.GetString("MainWindow.BrowsersLoaded", Browsers.Count);
                 return;
             }
 
             // ブラウザデータが存在しない場合のみ検出を実行
             IsLoading = true;
-            StatusMessage = "ブラウザを検出中...";
+            StatusMessage = LocalizedLogHelper.GetString("MainWindow.DetectingBrowsers");
 
             var browsers = await _browserService.DetectBrowsersAsync();
 
@@ -248,11 +249,11 @@ public partial class MainViewModel : ObservableObject
                 _logService?.LogDebug($"ブラウザ: {browser.Name}, ID: {browser.Id}, 有効: {browser.IsEnabled}, パス: {browser.ExecutablePath}, タイプ: {browser.Type}", "MainViewModel");
             }
 
-            StatusMessage = $"ブラウザ {Browsers.Count} 個を検出しました";
+            StatusMessage = LocalizedLogHelper.GetString("MainWindow.BrowsersDetected", Browsers.Count);
         }
         catch (Exception ex)
         {
-            StatusMessage = $"ブラウザ読み込みエラー: {ex.Message}";
+            StatusMessage = LocalizedLogHelper.GetString("MainWindow.BrowserLoadError", ex.Message);
             _logService?.LogError($"ブラウザ読み込みエラー: {ex.Message}", "MainViewModel", ex);
         }
         finally

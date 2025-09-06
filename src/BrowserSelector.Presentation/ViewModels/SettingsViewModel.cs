@@ -738,7 +738,7 @@ public partial class SettingsViewModel : ObservableObject
     {
         if (string.IsNullOrWhiteSpace(TestUrl))
         {
-            TestResult = "テストURLを入力してください";
+            TestResult = LocalizedLogHelper.GetString("Settings.UrlRules.EnterTestUrl");
             TestResultColor = Brushes.Red;
             return;
         }
@@ -748,18 +748,18 @@ public partial class SettingsViewModel : ObservableObject
             var matchingBrowser = await _urlRuleService.FindMatchingBrowserAsync(TestUrl, DetectedBrowsers);
             if (matchingBrowser != null)
             {
-                TestResult = $"マッチ: {matchingBrowser.Name}";
+                TestResult = LocalizedLogHelper.GetString("Settings.UrlRules.MatchFound", matchingBrowser.Name);
                 TestResultColor = Brushes.Green;
             }
             else
             {
-                TestResult = "マッチするルールなし";
+                TestResult = LocalizedLogHelper.GetString("Settings.UrlRules.NoMatchFound");
                 TestResultColor = Brushes.Orange;
             }
         }
         catch (Exception ex)
         {
-            TestResult = $"エラー: {ex.Message}";
+            TestResult = LocalizedLogHelper.GetString("Settings.UrlRules.TestError", ex.Message);
             TestResultColor = Brushes.Red;
         }
     }

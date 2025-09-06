@@ -151,6 +151,15 @@
   <data name="MainWindow.Loading" xml:space="preserve">
     <value>Loading...</value>
   </data>
+  <data name="MainWindow.BrowsersLoaded" xml:space="preserve">
+    <value>Loaded {0} browsers</value>
+  </data>
+  <data name="MainWindow.BrowsersDetected" xml:space="preserve">
+    <value>Detected {0} browsers</value>
+  </data>
+  <data name="MainWindow.BrowserLoadError" xml:space="preserve">
+    <value>Browser load error: {0}</value>
+  </data>
   <data name="MainWindow.UrlPrompt" xml:space="preserve">
     <value>Please enter URL...</value>
   </data>
@@ -262,11 +271,32 @@
   <data name="Dialog.UrlRuleEdit.Title" xml:space="preserve">
     <value>URL Rule Edit</value>
   </data>
+  <data name="Dialog.UrlRuleEdit.UrlRuleSettings" xml:space="preserve">
+    <value>URL Rule Settings</value>
+  </data>
   <data name="Dialog.IconSelection.Title" xml:space="preserve">
     <value>Icon Selection</value>
   </data>
   <data name="Dialog.LogViewer.Title" xml:space="preserve">
     <value>Log Viewer</value>
+  </data>
+  <data name="Settings.UrlRules.Title" xml:space="preserve">
+    <value>URL Rules</value>
+  </data>
+  <data name="Settings.UrlRules.EnterTestUrl" xml:space="preserve">
+    <value>Please enter a test URL</value>
+  </data>
+  <data name="Settings.UrlRules.MatchFound" xml:space="preserve">
+    <value>Match: {0}</value>
+  </data>
+  <data name="Settings.UrlRules.NoMatchFound" xml:space="preserve">
+    <value>No matching rule found</value>
+  </data>
+  <data name="Settings.UrlRules.TestError" xml:space="preserve">
+    <value>Error: {0}</value>
+  </data>
+  <data name="Dialog.BrowserEdit.SystemBrowserInfo" xml:space="preserve">
+    <value>This is a browser detected by the system. Name and executable path cannot be changed.</value>
   </data>
   <data name="Dialog.BrowserEdit.BasicInfo" xml:space="preserve">
     <value>Basic Information</value>
@@ -276,6 +306,24 @@
   </data>
   <data name="Dialog.BrowserEdit.Preview" xml:space="preserve">
     <value>Preview</value>
+  </data>
+  <data name="Dialog.BrowserEdit.SelectIconTooltip" xml:space="preserve">
+    <value>Open icon selection dialog</value>
+  </data>
+  <data name="Dialog.BrowserEdit.LaunchParametersTooltip" xml:space="preserve">
+    <value>Launch parameters added after URL</value>
+  </data>
+  <data name="Dialog.BrowserEdit.DisplayOrderTooltip" xml:space="preserve">
+    <value>Smaller numbers are displayed first</value>
+  </data>
+  <data name="Dialog.BrowserEdit.MoveUpTooltip" xml:space="preserve">
+    <value>Move up</value>
+  </data>
+  <data name="Dialog.BrowserEdit.MoveDownTooltip" xml:space="preserve">
+    <value>Move down</value>
+  </data>
+  <data name="Dialog.BrowserEdit.EnableBrowser" xml:space="preserve">
+    <value>Enable this browser</value>
   </data>
   <data name="Dialog.UrlRuleEdit.UrlPattern" xml:space="preserve">
     <value>URL Pattern</value>
@@ -289,6 +337,15 @@
   <data name="Dialog.UrlRuleEdit.OtherSettings" xml:space="preserve">
     <value>Other Settings</value>
   </data>
+  <data name="Dialog.UrlRuleEdit.PatternTooltip" xml:space="preserve">
+    <value>Example: *.google.com, http*, *.github.com/*</value>
+  </data>
+  <data name="Dialog.UrlRuleEdit.DescriptionTooltip" xml:space="preserve">
+    <value>Rule description (optional)</value>
+  </data>
+  <data name="Dialog.UrlRuleEdit.EnableRule" xml:space="preserve">
+    <value>Enable this rule</value>
+  </data>
   <data name="Dialog.IconSelection.SystemIcons" xml:space="preserve">
     <value>System Icons</value>
   </data>
@@ -297,6 +354,36 @@
   </data>
   <data name="Dialog.IconSelection.SelectionConfirmation" xml:space="preserve">
     <value>Selection Confirmation</value>
+  </data>
+  <data name="Dialog.IconSelection.SelectIcon" xml:space="preserve">
+    <value>Please select an icon</value>
+  </data>
+  <data name="Dialog.IconSelection.ExecutableFileIcon" xml:space="preserve">
+    <value>Executable file icon:</value>
+  </data>
+  <data name="Dialog.IconSelection.SelectFromFile" xml:space="preserve">
+    <value>Select icon from file:</value>
+  </data>
+  <data name="Dialog.IconSelection.BrowseFile" xml:space="preserve">
+    <value>Browse file...</value>
+  </data>
+  <data name="Dialog.IconSelection.RecentlyUsedIcons" xml:space="preserve">
+    <value>Recently used icons:</value>
+  </data>
+  <data name="Dialog.IconSelection.NoIconSelected" xml:space="preserve">
+    <value>No icon selected</value>
+  </data>
+  <data name="Dialog.IconSelection.SelectThisIcon" xml:space="preserve">
+    <value>Select this icon</value>
+  </data>
+  <data name="Dialog.LogViewer.Update" xml:space="preserve">
+    <value>Update</value>
+  </data>
+  <data name="Dialog.LogViewer.CopyToClipboard" xml:space="preserve">
+    <value>Copy to Clipboard</value>
+  </data>
+  <data name="Dialog.LogViewer.Close" xml:space="preserve">
+    <value>Close</value>
   </data>
   <data name="MessageBox.Confirm" xml:space="preserve">
     <value>Confirm</value>

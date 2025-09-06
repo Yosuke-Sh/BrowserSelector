@@ -19,6 +19,14 @@ public static class LocalizedLogHelper
     }
 
     /// <summary>
+    /// ローカライズされた文字列を取得
+    /// </summary>
+    public static string GetString(string key, params object[] args)
+    {
+        return _localizationService?.GetString(key, args) ?? key;
+    }
+
+    /// <summary>
     /// アプリケーション起動開始ログ
     /// </summary>
     public static void LogApplicationStart(ILogService logService, string category)

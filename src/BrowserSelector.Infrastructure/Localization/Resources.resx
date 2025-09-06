@@ -151,6 +151,15 @@
   <data name="MainWindow.Loading" xml:space="preserve">
     <value>読み込み中...</value>
   </data>
+  <data name="MainWindow.BrowsersLoaded" xml:space="preserve">
+    <value>ブラウザ {0} 個を読み込みました</value>
+  </data>
+  <data name="MainWindow.BrowsersDetected" xml:space="preserve">
+    <value>ブラウザ {0} 個を検出しました</value>
+  </data>
+  <data name="MainWindow.BrowserLoadError" xml:space="preserve">
+    <value>ブラウザ読み込みエラー: {0}</value>
+  </data>
   <data name="MainWindow.UrlPrompt" xml:space="preserve">
     <value>URLを入力してください...</value>
   </data>
@@ -262,11 +271,32 @@
   <data name="Dialog.UrlRuleEdit.Title" xml:space="preserve">
     <value>URLルール編集</value>
   </data>
+  <data name="Dialog.UrlRuleEdit.UrlRuleSettings" xml:space="preserve">
+    <value>URLルール設定</value>
+  </data>
   <data name="Dialog.IconSelection.Title" xml:space="preserve">
     <value>アイコン選択</value>
   </data>
   <data name="Dialog.LogViewer.Title" xml:space="preserve">
     <value>ログビューアー</value>
+  </data>
+  <data name="Settings.UrlRules.Title" xml:space="preserve">
+    <value>URLルール</value>
+  </data>
+  <data name="Settings.UrlRules.EnterTestUrl" xml:space="preserve">
+    <value>テストURLを入力してください</value>
+  </data>
+  <data name="Settings.UrlRules.MatchFound" xml:space="preserve">
+    <value>マッチ: {0}</value>
+  </data>
+  <data name="Settings.UrlRules.NoMatchFound" xml:space="preserve">
+    <value>マッチするルールなし</value>
+  </data>
+  <data name="Settings.UrlRules.TestError" xml:space="preserve">
+    <value>エラー: {0}</value>
+  </data>
+  <data name="Dialog.BrowserEdit.SystemBrowserInfo" xml:space="preserve">
+    <value>システムで検出されたブラウザです。名前と実行ファイルパスは変更できません。</value>
   </data>
   <data name="Dialog.BrowserEdit.BasicInfo" xml:space="preserve">
     <value>基本情報</value>
@@ -276,6 +306,24 @@
   </data>
   <data name="Dialog.BrowserEdit.Preview" xml:space="preserve">
     <value>プレビュー</value>
+  </data>
+  <data name="Dialog.BrowserEdit.SelectIconTooltip" xml:space="preserve">
+    <value>アイコン選択画面を開く</value>
+  </data>
+  <data name="Dialog.BrowserEdit.LaunchParametersTooltip" xml:space="preserve">
+    <value>URLの後に追加される起動パラメータ</value>
+  </data>
+  <data name="Dialog.BrowserEdit.DisplayOrderTooltip" xml:space="preserve">
+    <value>小さい数字が先に表示されます</value>
+  </data>
+  <data name="Dialog.BrowserEdit.MoveUpTooltip" xml:space="preserve">
+    <value>順序を上げる</value>
+  </data>
+  <data name="Dialog.BrowserEdit.MoveDownTooltip" xml:space="preserve">
+    <value>順序を下げる</value>
+  </data>
+  <data name="Dialog.BrowserEdit.EnableBrowser" xml:space="preserve">
+    <value>このブラウザを使用可能にする</value>
   </data>
   <data name="Dialog.UrlRuleEdit.UrlPattern" xml:space="preserve">
     <value>URLパターン</value>
@@ -289,6 +337,15 @@
   <data name="Dialog.UrlRuleEdit.OtherSettings" xml:space="preserve">
     <value>その他設定</value>
   </data>
+  <data name="Dialog.UrlRuleEdit.PatternTooltip" xml:space="preserve">
+    <value>例: *.google.com, http*, *.github.com/*</value>
+  </data>
+  <data name="Dialog.UrlRuleEdit.DescriptionTooltip" xml:space="preserve">
+    <value>ルールの説明（任意）</value>
+  </data>
+  <data name="Dialog.UrlRuleEdit.EnableRule" xml:space="preserve">
+    <value>このルールを有効にする</value>
+  </data>
   <data name="Dialog.IconSelection.SystemIcons" xml:space="preserve">
     <value>システムアイコン</value>
   </data>
@@ -297,6 +354,36 @@
   </data>
   <data name="Dialog.IconSelection.SelectionConfirmation" xml:space="preserve">
     <value>選択確認</value>
+  </data>
+  <data name="Dialog.IconSelection.SelectIcon" xml:space="preserve">
+    <value>アイコンを選択してください</value>
+  </data>
+  <data name="Dialog.IconSelection.ExecutableFileIcon" xml:space="preserve">
+    <value>実行ファイルのアイコン:</value>
+  </data>
+  <data name="Dialog.IconSelection.SelectFromFile" xml:space="preserve">
+    <value>ファイルからアイコンを選択:</value>
+  </data>
+  <data name="Dialog.IconSelection.BrowseFile" xml:space="preserve">
+    <value>ファイルを参照...</value>
+  </data>
+  <data name="Dialog.IconSelection.RecentlyUsedIcons" xml:space="preserve">
+    <value>最近使用したアイコン:</value>
+  </data>
+  <data name="Dialog.IconSelection.NoIconSelected" xml:space="preserve">
+    <value>アイコンが選択されていません</value>
+  </data>
+  <data name="Dialog.IconSelection.SelectThisIcon" xml:space="preserve">
+    <value>このアイコンを選択</value>
+  </data>
+  <data name="Dialog.LogViewer.Update" xml:space="preserve">
+    <value>更新</value>
+  </data>
+  <data name="Dialog.LogViewer.CopyToClipboard" xml:space="preserve">
+    <value>クリップボードにコピー</value>
+  </data>
+  <data name="Dialog.LogViewer.Close" xml:space="preserve">
+    <value>閉じる</value>
   </data>
   <data name="MessageBox.Confirm" xml:space="preserve">
     <value>確認</value>
