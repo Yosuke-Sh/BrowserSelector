@@ -379,6 +379,24 @@
   <data name="Dialog.BrowserEdit.ExecutableFileNotFound" xml:space="preserve">
     <value>Selected executable file does not exist.</value>
   </data>
+  <data name="Dialog.BrowserEdit.BrowserName" xml:space="preserve">
+    <value>Browser Name</value>
+  </data>
+  <data name="Dialog.BrowserEdit.ExecutablePath" xml:space="preserve">
+    <value>Executable Path</value>
+  </data>
+  <data name="Dialog.BrowserEdit.Icon" xml:space="preserve">
+    <value>Icon</value>
+  </data>
+  <data name="Dialog.BrowserEdit.LaunchParameters" xml:space="preserve">
+    <value>Launch Parameters</value>
+  </data>
+  <data name="Dialog.BrowserEdit.DisplayOrder" xml:space="preserve">
+    <value>Display Order</value>
+  </data>
+  <data name="Dialog.BrowserEdit.Enabled" xml:space="preserve">
+    <value>Enabled</value>
+  </data>
   <data name="Dialog.UrlRuleEdit.UrlPattern" xml:space="preserve">
     <value>URL Pattern</value>
   </data>
@@ -408,6 +426,21 @@
   </data>
   <data name="Dialog.UrlRuleEdit.SaveError" xml:space="preserve">
     <value>Error occurred while saving: {0}</value>
+  </data>
+  <data name="Dialog.UrlRuleEdit.Pattern" xml:space="preserve">
+    <value>Pattern</value>
+  </data>
+  <data name="Dialog.UrlRuleEdit.Browser" xml:space="preserve">
+    <value>Browser</value>
+  </data>
+  <data name="Dialog.UrlRuleEdit.Priority" xml:space="preserve">
+    <value>Priority</value>
+  </data>
+  <data name="Dialog.UrlRuleEdit.Enabled" xml:space="preserve">
+    <value>Enabled</value>
+  </data>
+  <data name="Dialog.UrlRuleEdit.Description" xml:space="preserve">
+    <value>Description</value>
   </data>
   <data name="Dialog.IconSelection.SystemIcons" xml:space="preserve">
     <value>System Icons</value>
@@ -441,6 +474,12 @@
   </data>
   <data name="Dialog.IconSelection.InvalidIconFile" xml:space="preserve">
     <value>Selected file is not a valid icon file.</value>
+  </data>
+  <data name="Dialog.IconSelection.ExecutableIcons" xml:space="preserve">
+    <value>Executable Icons:</value>
+  </data>
+  <data name="Dialog.IconSelection.RecentIcons" xml:space="preserve">
+    <value>Recently used icons:</value>
   </data>
   <data name="Dialog.LogViewer.Update" xml:space="preserve">
     <value>Update</value>
@@ -619,7 +658,13 @@
   <data name="Settings.Logging.OutputToConsole" xml:space="preserve">
     <value>Output to Console</value>
   </data>
+  <data name="Settings.Logging.EnableConsoleLogging" xml:space="preserve">
+    <value>Output to Console</value>
+  </data>
   <data name="Settings.Logging.OutputToFile" xml:space="preserve">
+    <value>Output to File</value>
+  </data>
+  <data name="Settings.Logging.EnableFileLogging" xml:space="preserve">
     <value>Output to File</value>
   </data>
   <data name="Settings.Logging.LogOutputFolder" xml:space="preserve">
@@ -631,7 +676,13 @@
   <data name="Settings.Logging.LogRetentionPeriod" xml:space="preserve">
     <value>Log Retention Period (Days)</value>
   </data>
+  <data name="Settings.Logging.LogRetentionDays" xml:space="preserve">
+    <value>Log Retention Period (Days)</value>
+  </data>
   <data name="Settings.Logging.LogFileNamePrefix" xml:space="preserve">
+    <value>Log File Name Prefix</value>
+  </data>
+  <data name="Settings.Logging.LogFilePrefix" xml:space="preserve">
     <value>Log File Name Prefix</value>
   </data>
   <data name="Settings.Logging.CurrentLogFile" xml:space="preserve">
@@ -640,10 +691,19 @@
   <data name="Settings.Logging.ShowLog" xml:space="preserve">
     <value>Show Log</value>
   </data>
+  <data name="Settings.Logging.ViewLogs" xml:space="preserve">
+    <value>Show Log</value>
+  </data>
   <data name="Settings.Logging.ClearLog" xml:space="preserve">
     <value>Clear Log</value>
   </data>
+  <data name="Settings.Logging.ClearLogs" xml:space="preserve">
+    <value>Clear Log</value>
+  </data>
   <data name="Settings.Logging.DeleteOldLogs" xml:space="preserve">
+    <value>Delete Old Logs</value>
+  </data>
+  <data name="Settings.Logging.CleanupOldLogs" xml:space="preserve">
     <value>Delete Old Logs</value>
   </data>
   <data name="Settings.ResetSettings" xml:space="preserve">
