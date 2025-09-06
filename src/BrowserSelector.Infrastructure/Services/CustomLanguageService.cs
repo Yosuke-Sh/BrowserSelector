@@ -29,6 +29,9 @@ public class CustomLanguageService : ICustomLanguageService
             System.IO.Directory.CreateDirectory(_customLanguageFolder);
             _logService?.LogDebug($"カスタム言語フォルダを作成しました: {_customLanguageFolder}", "CustomLanguageService");
         }
+        
+        // 初期起動時にデフォルト言語ファイルを配置
+        _ = Task.Run(async () => await EnsureDefaultLanguageFilesAsync());
     }
 
     public async Task<IEnumerable<LanguageInfo>> GetAvailableLanguagesAsync()
@@ -37,11 +40,7 @@ public class CustomLanguageService : ICustomLanguageService
         
         try
         {
-            // デフォルト言語を追加
-            languages.Add(new LanguageInfo("en-US", "English"));
-            languages.Add(new LanguageInfo("ja-JP", "日本語"));
-
-            // カスタム言語ファイルを検索
+            // 言語ファイルから読み込み（デフォルト言語も含む）
             if (System.IO.Directory.Exists(_customLanguageFolder))
             {
                 var languageFiles = System.IO.Directory.GetFiles(_customLanguageFolder, "*.json");
@@ -53,7 +52,9 @@ public class CustomLanguageService : ICustomLanguageService
                         var languageFile = await LoadLanguageFileAsync(filePath);
                         if (languageFile != null)
                         {
-                            languages.Add(new LanguageInfo(languageFile.CultureCode, languageFile.DisplayName));
+                            // 表示名はローカライズ不要（英語はEnglish、日本語は日本語）
+                            var displayName = GetLocalizedDisplayName(languageFile.CultureCode, languageFile.DisplayName);
+                            languages.Add(new LanguageInfo(languageFile.CultureCode, displayName));
                         }
                     }
                     catch (Exception ex)
@@ -61,6 +62,13 @@ public class CustomLanguageService : ICustomLanguageService
                         _logService?.LogWarning($"言語ファイルの読み込みに失敗しました: {filePath} - {ex.Message}", "CustomLanguageService");
                     }
                 }
+            }
+            
+            // 言語ファイルが存在しない場合はデフォルト言語を追加
+            if (languages.Count == 0)
+            {
+                languages.Add(new LanguageInfo("en-US", "English"));
+                languages.Add(new LanguageInfo("ja-JP", "日本語"));
             }
 
             _logService?.LogDebug($"利用可能な言語数: {languages.Count}", "CustomLanguageService");
@@ -342,6 +350,221 @@ public class CustomLanguageService : ICustomLanguageService
             _logService?.LogError($"リソースキーの取得に失敗しました: {ex.Message}", "CustomLanguageService", ex);
             return Task.FromResult<IEnumerable<string>>(new List<string>());
         }
+    }
+
+    /// <summary>
+    /// デフォルト言語ファイルが存在しない場合に配置する（高速版）
+    /// </summary>
+    private async Task EnsureDefaultLanguageFilesAsync()
+    {
+        try
+        {
+            // 高速同期処理
+            await SyncLanguageFilesFastAsync();
+            _logService?.LogDebug("言語ファイルの高速同期完了", "CustomLanguageService");
+        }
+        catch (Exception ex)
+        {
+            _logService?.LogError($"言語ファイルの同期に失敗しました: {ex.Message}", "CustomLanguageService", ex);
+        }
+    }
+
+    /// <summary>
+    /// 言語ファイルの高速同期処理
+    /// </summary>
+    private async Task SyncLanguageFilesFastAsync()
+    {
+        try
+        {
+            var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            var defaultLanguages = new[] { "en-US", "ja-JP" };
+            
+            // 並列処理で高速化
+            var tasks = defaultLanguages.Select(async cultureCode =>
+            {
+                try
+                {
+                    var targetPath = System.IO.Path.Combine(_customLanguageFolder, $"{cultureCode}.json");
+                    
+                    // ファイルが存在しない場合は即座にコピー
+                    if (!System.IO.File.Exists(targetPath))
+                    {
+                        await CopyEmbeddedLanguageFileAsync(cultureCode, targetPath);
+                        _logService?.LogDebug($"言語ファイルを新規配置: {cultureCode}", "CustomLanguageService");
+                        return;
+                    }
+                    
+                    // ファイルが存在する場合は軽量チェック
+                    if (await ShouldUpdateLanguageFileAsync(assembly, cultureCode, targetPath))
+                    {
+                        await CopyEmbeddedLanguageFileAsync(cultureCode, targetPath);
+                        _logService?.LogDebug($"言語ファイルを更新: {cultureCode}", "CustomLanguageService");
+                    }
+                    else
+                    {
+                        _logService?.LogDebug($"言語ファイルは最新: {cultureCode}", "CustomLanguageService");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logService?.LogError($"言語ファイル同期エラー ({cultureCode}): {ex.Message}", "CustomLanguageService", ex);
+                }
+            });
+            
+            await Task.WhenAll(tasks);
+        }
+        catch (Exception ex)
+        {
+            _logService?.LogError($"高速同期処理エラー: {ex.Message}", "CustomLanguageService", ex);
+        }
+    }
+
+    /// <summary>
+    /// 言語ファイルの更新が必要かどうかを軽量チェック
+    /// </summary>
+    private Task<bool> ShouldUpdateLanguageFileAsync(System.Reflection.Assembly assembly, string cultureCode, string targetPath)
+    {
+        try
+        {
+            // 埋め込みリソースのサイズを取得
+            var resourceName = $"BrowserSelector.Infrastructure.Localization.{cultureCode}.json";
+            using var embeddedStream = assembly.GetManifestResourceStream(resourceName);
+            if (embeddedStream == null)
+            {
+                _logService?.LogWarning($"埋め込みリソースが見つかりません: {resourceName}", "CustomLanguageService");
+                return Task.FromResult(false);
+            }
+            
+            var embeddedSize = embeddedStream.Length;
+            
+            // 既存ファイルのサイズを取得
+            var fileInfo = new System.IO.FileInfo(targetPath);
+            if (!fileInfo.Exists)
+            {
+                return Task.FromResult(true); // ファイルが存在しない場合は更新が必要
+            }
+            
+            var existingSize = fileInfo.Length;
+            
+            // サイズが異なる場合は更新が必要
+            if (embeddedSize != existingSize)
+            {
+                _logService?.LogDebug($"ファイルサイズが異なります: {cultureCode} (埋め込み: {embeddedSize}, 既存: {existingSize})", "CustomLanguageService");
+                return Task.FromResult(true);
+            }
+            
+            // サイズが同じでも、より詳細なチェックが必要な場合はここで実装
+            // 現在はサイズ比較のみで高速化
+            
+            // オプション: ハッシュ値による詳細チェック（必要に応じて有効化）
+            // if (await ShouldCheckHashAsync())
+            // {
+            //     return await CompareFileHashesAsync(assembly, cultureCode, targetPath);
+            // }
+            
+            return Task.FromResult(false);
+        }
+        catch (Exception ex)
+        {
+            _logService?.LogWarning($"更新チェックエラー ({cultureCode}): {ex.Message}", "CustomLanguageService");
+            return Task.FromResult(false); // エラーの場合は更新しない
+        }
+    }
+
+    /// <summary>
+    /// 埋め込みリソースから言語ファイルをコピー
+    /// </summary>
+    private async Task CopyEmbeddedLanguageFileAsync(string cultureCode, string targetPath)
+    {
+        try
+        {
+            var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            var resourceName = $"BrowserSelector.Infrastructure.Localization.{cultureCode}.json";
+            
+            using var stream = assembly.GetManifestResourceStream(resourceName);
+            if (stream == null)
+            {
+                _logService?.LogWarning($"埋め込みリソースが見つかりません: {resourceName}", "CustomLanguageService");
+                return;
+            }
+
+            using var fileStream = new System.IO.FileStream(targetPath, System.IO.FileMode.Create);
+            await stream.CopyToAsync(fileStream);
+            
+            _logService?.LogDebug($"言語ファイルを配置しました: {targetPath}", "CustomLanguageService");
+        }
+        catch (Exception ex)
+        {
+            _logService?.LogError($"言語ファイルのコピーに失敗しました: {cultureCode} -> {targetPath} - {ex.Message}", "CustomLanguageService", ex);
+        }
+    }
+
+
+    /// <summary>
+    /// 言語選択コンボボックス用の表示名を取得（ローカライズ不要）
+    /// </summary>
+    private string GetLocalizedDisplayName(string cultureCode, string originalDisplayName)
+    {
+        // 言語選択コンボボックスはローカライズ不要
+        // 英語は「English」、日本語は「日本語」と表示
+        return cultureCode switch
+        {
+            "en-US" => "English",
+            "ja-JP" => "日本語",
+            _ => originalDisplayName // その他の言語は元の表示名を使用
+        };
+    }
+
+    /// <summary>
+    /// ハッシュ値による詳細比較（オプション機能）
+    /// </summary>
+    private async Task<bool> CompareFileHashesAsync(System.Reflection.Assembly assembly, string cultureCode, string targetPath)
+    {
+        try
+        {
+            // 埋め込みリソースのハッシュを計算
+            var resourceName = $"BrowserSelector.Infrastructure.Localization.{cultureCode}.json";
+            using var embeddedStream = assembly.GetManifestResourceStream(resourceName);
+            if (embeddedStream == null) return false;
+            
+            var embeddedHash = await ComputeStreamHashAsync(embeddedStream);
+            
+            // 既存ファイルのハッシュを計算
+            using var fileStream = new System.IO.FileStream(targetPath, System.IO.FileMode.Open, System.IO.FileAccess.Read);
+            var existingHash = await ComputeStreamHashAsync(fileStream);
+            
+            var isDifferent = !embeddedHash.SequenceEqual(existingHash);
+            if (isDifferent)
+            {
+                _logService?.LogDebug($"ファイルハッシュが異なります: {cultureCode}", "CustomLanguageService");
+            }
+            
+            return isDifferent;
+        }
+        catch (Exception ex)
+        {
+            _logService?.LogWarning($"ハッシュ比較エラー ({cultureCode}): {ex.Message}", "CustomLanguageService");
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// ストリームのハッシュ値を計算
+    /// </summary>
+    private async Task<byte[]> ComputeStreamHashAsync(System.IO.Stream stream)
+    {
+        using var sha256 = System.Security.Cryptography.SHA256.Create();
+        return await Task.Run(() => sha256.ComputeHash(stream));
+    }
+
+    /// <summary>
+    /// ハッシュチェックが必要かどうかを判定
+    /// </summary>
+    private Task<bool> ShouldCheckHashAsync()
+    {
+        // 現在は無効化（高速化のため）
+        // 必要に応じて設定ファイルや環境変数で制御可能
+        return Task.FromResult(false);
     }
 
     /// <summary>

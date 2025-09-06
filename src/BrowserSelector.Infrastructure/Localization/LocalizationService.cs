@@ -25,13 +25,17 @@ public class LocalizationService : ILocalizationService
         _logService = logService;
         _currentCulture = new CultureInfo("en-US");
         
-        // 初期化時にJSONリソースを読み込み
-        _ = Task.Run(async () => await LoadJsonResourcesAsync(_currentCulture.Name));
+        // 初期化時にJSONリソースとカスタムリソースを読み込み
+        _ = Task.Run(async () => 
+        {
+            await LoadJsonResourcesAsync(_currentCulture.Name);
+            await LoadCustomLanguageResourcesAsync(_currentCulture.Name);
+        });
     }
 
     public string GetString(string key)
     {
-        _logService?.LogDebug($"GetString呼び出し: {key}, 現在のカルチャ: {_currentCulture.Name}", "LocalizationService");
+        _logService?.LogDebug($"GetString呼び出し: {key}, 現在のカルチャ: {_currentCulture.Name}, カスタムリソース数: {_customResources.Count}, JSONリソース数: {_jsonResources.Count}", "LocalizationService");
         
         // カスタム言語リソースを優先
         if (_customResources.TryGetValue(key, out var customValue))
@@ -56,7 +60,7 @@ public class LocalizationService : ILocalizationService
         }
 
         // リソースが見つからない場合はキーをそのまま返す
-        _logService?.LogWarning($"リソースキーが見つかりません: {key}, JSONリソース数: {_jsonResources.Count}", "LocalizationService");
+        _logService?.LogWarning($"リソースキーが見つかりません: {key}, カスタムリソース数: {_customResources.Count}, JSONリソース数: {_jsonResources.Count}", "LocalizationService");
         return key;
     }
 
@@ -206,12 +210,7 @@ public class LocalizationService : ILocalizationService
         {
             _customResources.Clear();
             
-            // デフォルト言語の場合はカスタムリソースを読み込まない
-            if (cultureCode == "en-US" || cultureCode == "ja-JP")
-            {
-                _logService?.LogDebug($"デフォルト言語のためカスタムリソースを読み込みません: {cultureCode}", "LocalizationService");
-                return;
-            }
+            // すべての言語でカスタムリソースを読み込み（デフォルト言語も含む）
 
             var customResources = await _customLanguageService.LoadCustomLanguageAsync(cultureCode);
             if (customResources != null)

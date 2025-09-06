@@ -239,12 +239,12 @@ public partial class SettingsViewModel : ObservableObject
         {
             AvailableLanguages.Clear();
             
-            // カスタム言語サービスから利用可能な言語を取得
-            var availableLanguages = await _localizationService.GetSupportedLanguagesAsync();
+            // カスタム言語サービスから利用可能な言語を取得（ローカライズ不要の表示名）
+            var availableLanguages = await _customLanguageService.GetAvailableLanguagesAsync();
             
-            foreach (var culture in availableLanguages)
+            foreach (var languageInfo in availableLanguages)
             {
-                AvailableLanguages.Add(new LanguageInfo(culture.Name, culture.DisplayName));
+                AvailableLanguages.Add(new LanguageInfo(languageInfo.CultureCode, languageInfo.DisplayName));
             }
 
             // 現在の言語を選択
@@ -291,12 +291,12 @@ public partial class SettingsViewModel : ObservableObject
         {
             AvailableLanguages.Clear();
             
-            // カスタム言語サービスから利用可能な言語を取得
-            var availableLanguages = await _localizationService.GetSupportedLanguagesAsync();
+            // カスタム言語サービスから利用可能な言語を取得（ローカライズ不要の表示名）
+            var availableLanguages = await _customLanguageService.GetAvailableLanguagesAsync();
             
-            foreach (var culture in availableLanguages)
+            foreach (var languageInfo in availableLanguages)
             {
-                AvailableLanguages.Add(new LanguageInfo(culture.Name, culture.DisplayName));
+                AvailableLanguages.Add(new LanguageInfo(languageInfo.CultureCode, languageInfo.DisplayName));
             }
 
             // 現在の言語を選択
