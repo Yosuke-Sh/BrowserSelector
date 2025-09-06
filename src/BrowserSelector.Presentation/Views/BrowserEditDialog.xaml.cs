@@ -1,5 +1,6 @@
 using BrowserSelector.Core.Models;
 using BrowserSelector.Core.Services;
+using BrowserSelector.Presentation.Helpers;
 using Microsoft.Win32;
 using System.IO;
 using System.Windows;
@@ -47,7 +48,9 @@ public partial class BrowserEditDialog : Window
         }
 
         DataContext = Browser;
-        Title = _isNewBrowser ? "ブラウザ追加" : (_isSystemBrowser ? "システムブラウザ設定" : "ブラウザ編集");
+        Title = _isNewBrowser ? LocalizedLogHelper.GetString("Dialog.BrowserEdit.AddTitle") : 
+                (_isSystemBrowser ? LocalizedLogHelper.GetString("Dialog.BrowserEdit.SystemTitle") : 
+                 LocalizedLogHelper.GetString("Dialog.BrowserEdit.EditTitle"));
 
         // システムブラウザの場合は、編集不可能な項目を無効化
         if (_isSystemBrowser)
@@ -147,19 +150,19 @@ public partial class BrowserEditDialog : Window
         // バリデーション
         if (string.IsNullOrWhiteSpace(Browser.Name))
         {
-            MessageBox.Show("ブラウザ名を入力してください。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+            LocalizedMessageBox.ShowError("Dialog.BrowserEdit.EnterBrowserName", "MessageBox.Error");
             return;
         }
 
         if (string.IsNullOrWhiteSpace(Browser.ExecutablePath))
         {
-            MessageBox.Show("実行ファイルを選択してください。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+            LocalizedMessageBox.ShowError("Dialog.BrowserEdit.SelectExecutableFile", "MessageBox.Error");
             return;
         }
 
         if (!File.Exists(Browser.ExecutablePath))
         {
-            MessageBox.Show("選択された実行ファイルが存在しません。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+            LocalizedMessageBox.ShowError("Dialog.BrowserEdit.ExecutableFileNotFound", "MessageBox.Error");
             return;
         }
 

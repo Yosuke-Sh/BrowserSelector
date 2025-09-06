@@ -1,4 +1,5 @@
 using BrowserSelector.Core.Services;
+using BrowserSelector.Presentation.Helpers;
 using Microsoft.Win32;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -376,8 +377,7 @@ public partial class IconSelectionDialog : Window
             }
             else
             {
-                MessageBox.Show("選択されたファイルは有効なアイコンファイルではありません。", "エラー",
-                              MessageBoxButton.OK, MessageBoxImage.Error);
+                LocalizedMessageBox.ShowError("Dialog.IconSelection.InvalidIconFile", "MessageBox.Error");
             }
         }
     }

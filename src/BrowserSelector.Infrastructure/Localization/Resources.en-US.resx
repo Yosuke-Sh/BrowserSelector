@@ -160,6 +160,12 @@
   <data name="MainWindow.BrowserLoadError" xml:space="preserve">
     <value>Browser load error: {0}</value>
   </data>
+  <data name="MainWindow.TitleMessage" xml:space="preserve">
+    <value>Please set URL and select browser.</value>
+  </data>
+  <data name="MainWindow.SelectBrowser" xml:space="preserve">
+    <value>Please select browser.</value>
+  </data>
   <data name="MainWindow.UrlPrompt" xml:space="preserve">
     <value>Please enter URL...</value>
   </data>
@@ -265,8 +271,41 @@
   <data name="Settings.Logging.LogManagement" xml:space="preserve">
     <value>Log Management</value>
   </data>
+  <data name="Settings.Logging.Title" xml:space="preserve">
+    <value>Logging</value>
+  </data>
+  <data name="LogLevel.Trace" xml:space="preserve">
+    <value>Trace</value>
+  </data>
+  <data name="LogLevel.Debug" xml:space="preserve">
+    <value>Debug</value>
+  </data>
+  <data name="LogLevel.Information" xml:space="preserve">
+    <value>Information</value>
+  </data>
+  <data name="LogLevel.Warning" xml:space="preserve">
+    <value>Warning</value>
+  </data>
+  <data name="LogLevel.Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="LogLevel.Critical" xml:space="preserve">
+    <value>Critical</value>
+  </data>
   <data name="Dialog.BrowserEdit.Title" xml:space="preserve">
     <value>Browser Edit</value>
+  </data>
+  <data name="Dialog.BrowserEdit.AddTitle" xml:space="preserve">
+    <value>Add Browser</value>
+  </data>
+  <data name="Dialog.BrowserEdit.SystemTitle" xml:space="preserve">
+    <value>System Browser Settings</value>
+  </data>
+  <data name="Dialog.BrowserEdit.EditTitle" xml:space="preserve">
+    <value>Edit Browser</value>
+  </data>
+  <data name="Dialog.BrowserEdit.BrowserSettings" xml:space="preserve">
+    <value>Browser Settings</value>
   </data>
   <data name="Dialog.UrlRuleEdit.Title" xml:space="preserve">
     <value>URL Rule Edit</value>
@@ -294,6 +333,12 @@
   </data>
   <data name="Settings.UrlRules.TestError" xml:space="preserve">
     <value>Error: {0}</value>
+  </data>
+  <data name="Settings.UrlRules.AddRule" xml:space="preserve">
+    <value>Add Rule</value>
+  </data>
+  <data name="Settings.UrlRules.Refresh" xml:space="preserve">
+    <value>Refresh</value>
   </data>
   <data name="Dialog.BrowserEdit.SystemBrowserInfo" xml:space="preserve">
     <value>This is a browser detected by the system. Name and executable path cannot be changed.</value>
@@ -325,6 +370,15 @@
   <data name="Dialog.BrowserEdit.EnableBrowser" xml:space="preserve">
     <value>Enable this browser</value>
   </data>
+  <data name="Dialog.BrowserEdit.EnterBrowserName" xml:space="preserve">
+    <value>Please enter browser name.</value>
+  </data>
+  <data name="Dialog.BrowserEdit.SelectExecutableFile" xml:space="preserve">
+    <value>Please select executable file.</value>
+  </data>
+  <data name="Dialog.BrowserEdit.ExecutableFileNotFound" xml:space="preserve">
+    <value>Selected executable file does not exist.</value>
+  </data>
   <data name="Dialog.UrlRuleEdit.UrlPattern" xml:space="preserve">
     <value>URL Pattern</value>
   </data>
@@ -345,6 +399,15 @@
   </data>
   <data name="Dialog.UrlRuleEdit.EnableRule" xml:space="preserve">
     <value>Enable this rule</value>
+  </data>
+  <data name="Dialog.UrlRuleEdit.EnterPattern" xml:space="preserve">
+    <value>Please enter pattern.</value>
+  </data>
+  <data name="Dialog.UrlRuleEdit.SelectBrowser" xml:space="preserve">
+    <value>Please select browser.</value>
+  </data>
+  <data name="Dialog.UrlRuleEdit.SaveError" xml:space="preserve">
+    <value>Error occurred while saving: {0}</value>
   </data>
   <data name="Dialog.IconSelection.SystemIcons" xml:space="preserve">
     <value>System Icons</value>
@@ -376,6 +439,9 @@
   <data name="Dialog.IconSelection.SelectThisIcon" xml:space="preserve">
     <value>Select this icon</value>
   </data>
+  <data name="Dialog.IconSelection.InvalidIconFile" xml:space="preserve">
+    <value>Selected file is not a valid icon file.</value>
+  </data>
   <data name="Dialog.LogViewer.Update" xml:space="preserve">
     <value>Update</value>
   </data>
@@ -384,6 +450,12 @@
   </data>
   <data name="Dialog.LogViewer.Close" xml:space="preserve">
     <value>Close</value>
+  </data>
+  <data name="Dialog.LogViewer.CopyToClipboardComplete" xml:space="preserve">
+    <value>Log content copied to clipboard.</value>
+  </data>
+  <data name="Dialog.LogViewer.CopyToClipboardError" xml:space="preserve">
+    <value>Failed to copy to clipboard: {0}</value>
   </data>
   <data name="MessageBox.Confirm" xml:space="preserve">
     <value>Confirm</value>
@@ -396,6 +468,12 @@
   </data>
   <data name="MessageBox.Error" xml:space="preserve">
     <value>Error</value>
+  </data>
+  <data name="MessageBox.InputError" xml:space="preserve">
+    <value>Input Error</value>
+  </data>
+  <data name="MessageBox.Complete" xml:space="preserve">
+    <value>Complete</value>
   </data>
   <data name="MessageBox.Yes" xml:space="preserve">
     <value>Yes</value>

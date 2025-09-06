@@ -160,6 +160,12 @@
   <data name="MainWindow.BrowserLoadError" xml:space="preserve">
     <value>ブラウザ読み込みエラー: {0}</value>
   </data>
+  <data name="MainWindow.TitleMessage" xml:space="preserve">
+    <value>URLを設定し、ブラウザを選択してください。</value>
+  </data>
+  <data name="MainWindow.SelectBrowser" xml:space="preserve">
+    <value>ブラウザを選択してください。</value>
+  </data>
   <data name="MainWindow.UrlPrompt" xml:space="preserve">
     <value>URLを入力してください...</value>
   </data>
@@ -265,8 +271,41 @@
   <data name="Settings.Logging.LogManagement" xml:space="preserve">
     <value>ログ管理</value>
   </data>
+  <data name="Settings.Logging.Title" xml:space="preserve">
+    <value>ログ設定</value>
+  </data>
+  <data name="LogLevel.Trace" xml:space="preserve">
+    <value>トレース</value>
+  </data>
+  <data name="LogLevel.Debug" xml:space="preserve">
+    <value>デバッグ</value>
+  </data>
+  <data name="LogLevel.Information" xml:space="preserve">
+    <value>情報</value>
+  </data>
+  <data name="LogLevel.Warning" xml:space="preserve">
+    <value>警告</value>
+  </data>
+  <data name="LogLevel.Error" xml:space="preserve">
+    <value>エラー</value>
+  </data>
+  <data name="LogLevel.Critical" xml:space="preserve">
+    <value>致命的エラー</value>
+  </data>
   <data name="Dialog.BrowserEdit.Title" xml:space="preserve">
     <value>ブラウザ編集</value>
+  </data>
+  <data name="Dialog.BrowserEdit.AddTitle" xml:space="preserve">
+    <value>ブラウザ追加</value>
+  </data>
+  <data name="Dialog.BrowserEdit.SystemTitle" xml:space="preserve">
+    <value>システムブラウザ設定</value>
+  </data>
+  <data name="Dialog.BrowserEdit.EditTitle" xml:space="preserve">
+    <value>ブラウザ編集</value>
+  </data>
+  <data name="Dialog.BrowserEdit.BrowserSettings" xml:space="preserve">
+    <value>ブラウザ設定</value>
   </data>
   <data name="Dialog.UrlRuleEdit.Title" xml:space="preserve">
     <value>URLルール編集</value>
@@ -294,6 +333,12 @@
   </data>
   <data name="Settings.UrlRules.TestError" xml:space="preserve">
     <value>エラー: {0}</value>
+  </data>
+  <data name="Settings.UrlRules.AddRule" xml:space="preserve">
+    <value>ルール追加</value>
+  </data>
+  <data name="Settings.UrlRules.Refresh" xml:space="preserve">
+    <value>更新</value>
   </data>
   <data name="Dialog.BrowserEdit.SystemBrowserInfo" xml:space="preserve">
     <value>システムで検出されたブラウザです。名前と実行ファイルパスは変更できません。</value>
@@ -325,6 +370,15 @@
   <data name="Dialog.BrowserEdit.EnableBrowser" xml:space="preserve">
     <value>このブラウザを使用可能にする</value>
   </data>
+  <data name="Dialog.BrowserEdit.EnterBrowserName" xml:space="preserve">
+    <value>ブラウザ名を入力してください。</value>
+  </data>
+  <data name="Dialog.BrowserEdit.SelectExecutableFile" xml:space="preserve">
+    <value>実行ファイルを選択してください。</value>
+  </data>
+  <data name="Dialog.BrowserEdit.ExecutableFileNotFound" xml:space="preserve">
+    <value>選択された実行ファイルが存在しません。</value>
+  </data>
   <data name="Dialog.UrlRuleEdit.UrlPattern" xml:space="preserve">
     <value>URLパターン</value>
   </data>
@@ -345,6 +399,15 @@
   </data>
   <data name="Dialog.UrlRuleEdit.EnableRule" xml:space="preserve">
     <value>このルールを有効にする</value>
+  </data>
+  <data name="Dialog.UrlRuleEdit.EnterPattern" xml:space="preserve">
+    <value>パターンを入力してください。</value>
+  </data>
+  <data name="Dialog.UrlRuleEdit.SelectBrowser" xml:space="preserve">
+    <value>ブラウザを選択してください。</value>
+  </data>
+  <data name="Dialog.UrlRuleEdit.SaveError" xml:space="preserve">
+    <value>保存中にエラーが発生しました: {0}</value>
   </data>
   <data name="Dialog.IconSelection.SystemIcons" xml:space="preserve">
     <value>システムアイコン</value>
@@ -376,6 +439,9 @@
   <data name="Dialog.IconSelection.SelectThisIcon" xml:space="preserve">
     <value>このアイコンを選択</value>
   </data>
+  <data name="Dialog.IconSelection.InvalidIconFile" xml:space="preserve">
+    <value>選択されたファイルは有効なアイコンファイルではありません。</value>
+  </data>
   <data name="Dialog.LogViewer.Update" xml:space="preserve">
     <value>更新</value>
   </data>
@@ -384,6 +450,12 @@
   </data>
   <data name="Dialog.LogViewer.Close" xml:space="preserve">
     <value>閉じる</value>
+  </data>
+  <data name="Dialog.LogViewer.CopyToClipboardComplete" xml:space="preserve">
+    <value>ログ内容をクリップボードにコピーしました。</value>
+  </data>
+  <data name="Dialog.LogViewer.CopyToClipboardError" xml:space="preserve">
+    <value>クリップボードへのコピーに失敗しました: {0}</value>
   </data>
   <data name="MessageBox.Confirm" xml:space="preserve">
     <value>確認</value>
@@ -396,6 +468,12 @@
   </data>
   <data name="MessageBox.Error" xml:space="preserve">
     <value>エラー</value>
+  </data>
+  <data name="MessageBox.InputError" xml:space="preserve">
+    <value>入力エラー</value>
+  </data>
+  <data name="MessageBox.Complete" xml:space="preserve">
+    <value>完了</value>
   </data>
   <data name="MessageBox.Yes" xml:space="preserve">
     <value>はい</value>

@@ -348,12 +348,12 @@ public partial class SettingsViewModel : ObservableObject
     private void InitializeLogLevels()
     {
         AvailableLogLevels.Clear();
-        AvailableLogLevels.Add(new LogLevelInfo(LogLevel.Trace, "トレース"));
-        AvailableLogLevels.Add(new LogLevelInfo(LogLevel.Debug, "デバッグ"));
-        AvailableLogLevels.Add(new LogLevelInfo(LogLevel.Information, "情報"));
-        AvailableLogLevels.Add(new LogLevelInfo(LogLevel.Warning, "警告"));
-        AvailableLogLevels.Add(new LogLevelInfo(LogLevel.Error, "エラー"));
-        AvailableLogLevels.Add(new LogLevelInfo(LogLevel.Critical, "致命的エラー"));
+        AvailableLogLevels.Add(new LogLevelInfo(LogLevel.Trace, LocalizedLogHelper.GetString("LogLevel.Trace")));
+        AvailableLogLevels.Add(new LogLevelInfo(LogLevel.Debug, LocalizedLogHelper.GetString("LogLevel.Debug")));
+        AvailableLogLevels.Add(new LogLevelInfo(LogLevel.Information, LocalizedLogHelper.GetString("LogLevel.Information")));
+        AvailableLogLevels.Add(new LogLevelInfo(LogLevel.Warning, LocalizedLogHelper.GetString("LogLevel.Warning")));
+        AvailableLogLevels.Add(new LogLevelInfo(LogLevel.Error, LocalizedLogHelper.GetString("LogLevel.Error")));
+        AvailableLogLevels.Add(new LogLevelInfo(LogLevel.Critical, LocalizedLogHelper.GetString("LogLevel.Critical")));
     }
 
     /// <summary>

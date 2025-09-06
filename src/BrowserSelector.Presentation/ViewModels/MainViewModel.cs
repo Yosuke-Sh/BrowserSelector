@@ -39,7 +39,7 @@ public partial class MainViewModel : ObservableObject
     private bool _isSettingsVisible;
 
     [ObservableProperty]
-    private string _titleMessage = "URLを設定し、ブラウザを選択してください。";
+    private string _titleMessage = LocalizedLogHelper.GetString("MainWindow.TitleMessage");
 
     [ObservableProperty]
     private VisualSettings _visualSettings = new();
@@ -520,11 +520,11 @@ public partial class MainViewModel : ObservableObject
     {
         if (string.IsNullOrWhiteSpace(Url))
         {
-            TitleMessage = "URLを設定し、ブラウザを選択してください。";
+            TitleMessage = LocalizedLogHelper.GetString("MainWindow.TitleMessage");
         }
         else
         {
-            TitleMessage = "ブラウザを選択してください。";
+            TitleMessage = LocalizedLogHelper.GetString("MainWindow.SelectBrowser");
         }
     }
 }
