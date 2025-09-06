@@ -320,38 +320,10 @@ public class UrlRuleService : IUrlRuleService
     /// </summary>
     private void CreateDefaultRulesSync()
     {
-        var defaultRules = new List<UrlRule>
-        {
-            new UrlRule
-            {
-                Pattern = "*.google.com",
-                BrowserName = "Chrome",
-                Priority = 80,
-                Description = "Google系サイトはChromeで開く",
-                IsEnabled = true
-            },
-            new UrlRule
-            {
-                Pattern = "*.microsoft.com",
-                BrowserName = "Edge",
-                Priority = 80,
-                Description = "Microsoft系サイトはEdgeで開く",
-                IsEnabled = true
-            },
-            new UrlRule
-            {
-                Pattern = "http*",
-                BrowserName = "Chrome",
-                Priority = 60,
-                Description = "HTTPサイトはChromeで開く",
-                IsEnabled = true
-            }
-        };
-
+        // サンプルルールは不要のため、空のルールリストで初期化
         lock (_lockObject)
         {
             _rules.Clear();
-            _rules.AddRange(defaultRules);
         }
 
         try

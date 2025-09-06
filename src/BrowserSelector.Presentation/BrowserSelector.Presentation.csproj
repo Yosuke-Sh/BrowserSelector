@@ -14,14 +14,6 @@
     <Resource Include="Resources\Images\*.svg" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Remove="Views\BrowserSelector_Logo_240.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="Views\BrowserSelector_Logo_240.png" />
-  </ItemGroup>
-
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>

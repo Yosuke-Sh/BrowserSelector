@@ -107,10 +107,12 @@
                         <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
                             <TextBox Text="{Binding DisplayOrder}" Width="60" Margin="0,5,5,5" 
                                      ToolTip="{extensions:Localization Dialog.BrowserEdit.DisplayOrderTooltip}"/>
-                            <Button Content="↑" Width="25" Height="25" Margin="2,0" Click="MoveUp_Click" 
-                                    ToolTip="{extensions:Localization Dialog.BrowserEdit.MoveUpTooltip}"/>
-                            <Button Content="↓" Width="25" Height="25" Margin="2,0" Click="MoveDown_Click" 
-                                    ToolTip="{extensions:Localization Dialog.BrowserEdit.MoveDownTooltip}"/>
+                            <Button Content="↑" Width="30" Height="30" Margin="2,0" Click="MoveUp_Click" 
+                                    ToolTip="{extensions:Localization Dialog.BrowserEdit.MoveUpTooltip}"
+                                    FontFamily="Segoe UI Symbol" FontSize="14" FontWeight="Bold"/>
+                            <Button Content="↓" Width="30" Height="30" Margin="2,0" Click="MoveDown_Click" 
+                                    ToolTip="{extensions:Localization Dialog.BrowserEdit.MoveDownTooltip}"
+                                    FontFamily="Segoe UI Symbol" FontSize="14" FontWeight="Bold"/>
                         </StackPanel>
 
                         <!-- 有効/無効 -->

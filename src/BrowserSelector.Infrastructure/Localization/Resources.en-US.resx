@@ -724,4 +724,7 @@
   <data name="Settings.UrlRules.TestUrlTooltip" xml:space="preserve">
     <value>Enter URL to test URL rules</value>
   </data>
+  <data name="Common.Multiply" xml:space="preserve">
+    <value>x</value>
+  </data>
 </root>
