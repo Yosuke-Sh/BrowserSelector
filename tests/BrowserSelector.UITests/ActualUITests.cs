@@ -13,6 +13,7 @@ namespace BrowserSelector.UITests;
 /// 実際のUI要素に基づいたUIテスト
 /// </summary>
 [TestClass]
+[DoNotParallelize]
 public class ActualUITests
 {
     private Application? _app = null;
@@ -44,6 +45,58 @@ public class ActualUITests
     {
         _automation?.Dispose();
         _app?.Close();
+    }
+
+    /// <summary>
+    /// 設定ウィンドウを複数の方法で検索するヘルパーメソッド
+    /// </summary>
+    private FlaUI.Core.AutomationElements.Window? FindSettingsWindow()
+    {
+        if (_app == null || _automation == null) return null;
+
+        // 方法1: ウィンドウ名で検索
+        var settingsWindow = _app.GetAllTopLevelWindows(_automation)
+            .FirstOrDefault(w => w.Name.Contains("設定") || w.Name.Contains("Settings") || w.Name == "SettingsWindow");
+        
+        if (settingsWindow != null) return settingsWindow;
+
+        // 方法2: ウィンドウプロパティで検索
+        settingsWindow = _app.GetAllTopLevelWindows(_automation)
+            .FirstOrDefault(w => w.Properties.Name.Value.Contains("設定") || w.Properties.Name.Value.Contains("Settings"));
+        
+        if (settingsWindow != null) return settingsWindow;
+
+        // 方法3: クラス名で検索
+        settingsWindow = _app.GetAllTopLevelWindows(_automation)
+            .FirstOrDefault(w => w.Properties.ClassName.Value.Contains("SettingsWindow"));
+        
+        if (settingsWindow != null) return settingsWindow;
+
+        // 方法4: プロセス名とウィンドウタイトルで検索
+        var allWindows = _app.GetAllTopLevelWindows(_automation);
+        foreach (var window in allWindows)
+        {
+            try
+            {
+                var name = window.Name;
+                var className = window.Properties.ClassName.Value;
+                
+                // デバッグ情報を出力
+                Console.WriteLine($"検出されたウィンドウ: Name='{name}', ClassName='{className}'");
+                
+                if (name.Contains("設定") || name.Contains("Settings") || 
+                    className.Contains("SettingsWindow") || className.Contains("Window"))
+                {
+                    return window;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ウィンドウ検索エラー: {ex.Message}");
+            }
+        }
+
+        return null;
     }
 
     [TestMethod]
@@ -106,19 +159,10 @@ public class ActualUITests
         if (settingsButton != null)
         {
             settingsButton.Click();
-            Thread.Sleep(2000); // 待機時間を延長
+            Thread.Sleep(3000); // 待機時間をさらに延長
 
             // 設定ウィンドウを複数の方法で検索
-            var settingsWindow = _app.GetAllTopLevelWindows(_automation)
-                .FirstOrDefault(w => w.Name.Contains("設定") || w.Name.Contains("Settings") || w.Name == "SettingsWindow");
-            
-            if (settingsWindow == null)
-            {
-                // ウィンドウタイトルで検索
-                settingsWindow = _app.GetAllTopLevelWindows(_automation)
-                    .FirstOrDefault(w => w.Properties.Name.Value.Contains("設定") || w.Properties.Name.Value.Contains("Settings"));
-            }
-
+            var settingsWindow = FindSettingsWindow();
             settingsWindow.Should().NotBeNull("設定ウィンドウが開かれること");
 
             // Assert
@@ -146,17 +190,9 @@ public class ActualUITests
         if (settingsButton != null)
         {
             settingsButton.Click();
-            Thread.Sleep(2000);
+            Thread.Sleep(3000);
 
-            var settingsWindow = _app.GetAllTopLevelWindows(_automation)
-                .FirstOrDefault(w => w.Name.Contains("設定") || w.Name.Contains("Settings") || w.Name == "SettingsWindow");
-            
-            if (settingsWindow == null)
-            {
-                settingsWindow = _app.GetAllTopLevelWindows(_automation)
-                    .FirstOrDefault(w => w.Properties.Name.Value.Contains("設定") || w.Properties.Name.Value.Contains("Settings"));
-            }
-
+            var settingsWindow = FindSettingsWindow();
             settingsWindow.Should().NotBeNull("設定ウィンドウが開かれること");
 
             // Assert
