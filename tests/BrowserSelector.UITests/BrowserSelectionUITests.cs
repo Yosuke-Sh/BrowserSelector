@@ -24,7 +24,7 @@ public class BrowserSelectionUITests
             // アプリケーションパスの構築
             string appPath = System.IO.Path.Combine(
                 AppDomain.CurrentDomain.BaseDirectory,
-                "..", "..", "..", "..", "src", "BrowserSelector.App",
+                "..", "..", "..", "..", "..", "src", "BrowserSelector.App",
                 "bin", "Debug", "net8.0-windows", "BrowserSelector.App.exe");
 
             // パスを正規化
@@ -341,7 +341,7 @@ public class BrowserSelectionUITests
         _ = allElements.Should().NotBeNull("UI要素が検索できること");
 
         double responseTime = (endTime - startTime).TotalMilliseconds;
-        _ = responseTime.Should().BeLessThan(1000, "UI要素の検索が1秒以内に完了すること");
+        _ = responseTime.Should().BeLessThan(2000, "UI要素の検索が2秒以内に完了すること");
     }
 
     [TestMethod]

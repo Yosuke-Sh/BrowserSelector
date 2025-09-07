@@ -24,7 +24,7 @@ public class AdvancedInteractionTests
             // アプリケーションパスの構築
             string appPath = System.IO.Path.Combine(
                 AppDomain.CurrentDomain.BaseDirectory,
-                "..", "..", "..", "..", "src", "BrowserSelector.App",
+                "..", "..", "..", "..", "..", "src", "BrowserSelector.App",
                 "bin", "Debug", "net8.0-windows", "BrowserSelector.App.exe");
 
             // パスを正規化

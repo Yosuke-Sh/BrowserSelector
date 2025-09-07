@@ -14,25 +14,20 @@ public class MainWindowUITests
     [TestInitialize]
     public void Setup()
     {
-        // テスト用のアプリケーション起動
-        string appPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "src", "BrowserSelector.App", "bin", "Debug", "net8.0-windows", "BrowserSelector.App.exe");
-
-        if (System.IO.File.Exists(appPath))
+        try
         {
-            try
-            {
-                _app = Application.Launch(appPath);
-                _automation = new UIA3Automation();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"UIテスト用アプリケーション起動に失敗: {ex.Message}");
-                // アプリケーションが起動できない場合は、テストをスキップする
-            }
+            // テスト用のアプリケーション起動
+            string appPath = UITestHelper.GetApplicationPath();
+            Console.WriteLine($"アプリケーションパス: {appPath}");
+            
+            _app = Application.Launch(appPath);
+            _automation = new UIA3Automation();
         }
-        else
+        catch (Exception ex)
         {
-            Console.WriteLine($"UIテスト用アプリケーションが見つかりません: {appPath}");
+            Console.WriteLine($"UIテスト用アプリケーション起動に失敗: {ex.Message}");
+            Console.WriteLine(UITestHelper.GetPathInfo());
+            // アプリケーションが起動できない場合は、テストをスキップする
         }
     }
 
