@@ -57,7 +57,7 @@ public class ServiceIntegrationTests : IDisposable
         IBrowserService browserService = _serviceProvider.GetRequiredService<IBrowserService>();
 
         // Act
-        IEnumerable<Browser> browsers = await browserService.DetectBrowsersAsync();
+        IEnumerable<Browser> browsers = await browserService.DetectBrowsersAsync().ConfigureAwait(false);
 
         // Assert
         _ = browsers.Should().NotBeNull("ブラウザ検出サービスが正常に動作すること");
@@ -82,8 +82,8 @@ public class ServiceIntegrationTests : IDisposable
         };
 
         // Act
-        _ = await settingsService.SaveAppSettingsAsync(testSettings);
-        AppSettings loadedSettings = await settingsService.LoadAppSettingsAsync();
+        _ = await settingsService.SaveAppSettingsAsync(testSettings).ConfigureAwait(false);
+        AppSettings loadedSettings = await settingsService.LoadAppSettingsAsync().ConfigureAwait(false);
 
         // Assert
         _ = loadedSettings.Should().NotBeNull("設定の読み込みが成功すること");
@@ -102,8 +102,8 @@ public class ServiceIntegrationTests : IDisposable
         string testUrl = "https://www.google.com";
 
         // Act
-        string normalizedUrl = await urlService.NormalizeUrlAsync(testUrl);
-        bool isValid = await urlService.ValidateUrlAsync(testUrl);
+        string normalizedUrl = await urlService.NormalizeUrlAsync(testUrl).ConfigureAwait(false);
+        bool isValid = await urlService.ValidateUrlAsync(testUrl).ConfigureAwait(false);
 
         // Assert
         _ = normalizedUrl.Should().NotBeNullOrEmpty("URL正規化が正常に動作すること");
@@ -138,8 +138,8 @@ public class ServiceIntegrationTests : IDisposable
         };
 
         // Act
-        await settingsService.SaveAppSettingsAsync(invalidSettings);
-        var loadedSettings = await settingsService.LoadAppSettingsAsync();
+        await settingsService.SaveAppSettingsAsync(invalidSettings).ConfigureAwait(false);
+        var loadedSettings = await settingsService.LoadAppSettingsAsync().ConfigureAwait(false);
 
         // Assert
         loadedSettings.Should().NotBeNull("設定がnullでないこと");
@@ -156,8 +156,8 @@ public class ServiceIntegrationTests : IDisposable
         // Act & Assert
         foreach (string invalidUrl in invalidUrls)
         {
-            string normalizedUrl = await urlService.NormalizeUrlAsync(invalidUrl);
-            bool isValid = await urlService.ValidateUrlAsync(invalidUrl);
+            string normalizedUrl = await urlService.NormalizeUrlAsync(invalidUrl).ConfigureAwait(false);
+            bool isValid = await urlService.ValidateUrlAsync(invalidUrl).ConfigureAwait(false);
 
             normalizedUrl.Should().NotBeNull($"無効なURL '{invalidUrl}' の正規化結果がnullでないこと");
             isValid.Should().BeFalse($"無効なURL '{invalidUrl}' が正しく無効と判定されること");
@@ -175,8 +175,8 @@ public class ServiceIntegrationTests : IDisposable
         };
 
         // Act
-        await settingsService.SaveVisualSettingsAsync(visualSettings);
-        var loadedSettings = await settingsService.LoadVisualSettingsAsync();
+        await settingsService.SaveVisualSettingsAsync(visualSettings).ConfigureAwait(false);
+        var loadedSettings = await settingsService.LoadVisualSettingsAsync().ConfigureAwait(false);
 
         // Assert
         loadedSettings.Should().NotBeNull("視覚設定がnullでないこと");
@@ -196,8 +196,8 @@ public class ServiceIntegrationTests : IDisposable
         };
 
         // Act
-        await settingsService.SaveLogSettingsAsync(logSettings);
-        var loadedSettings = await settingsService.LoadLogSettingsAsync();
+        await settingsService.SaveLogSettingsAsync(logSettings).ConfigureAwait(false);
+        var loadedSettings = await settingsService.LoadLogSettingsAsync().ConfigureAwait(false);
 
         // Assert
         loadedSettings.Should().NotBeNull("ログ設定がnullでないこと");
@@ -222,8 +222,8 @@ public class ServiceIntegrationTests : IDisposable
         // Act & Assert
         foreach (string testUrl in testUrls)
         {
-            string normalizedUrl = await urlService.NormalizeUrlAsync(testUrl);
-            bool isValid = await urlService.ValidateUrlAsync(testUrl);
+            string normalizedUrl = await urlService.NormalizeUrlAsync(testUrl).ConfigureAwait(false);
+            bool isValid = await urlService.ValidateUrlAsync(testUrl).ConfigureAwait(false);
 
             normalizedUrl.Should().NotBeNullOrEmpty($"URL '{testUrl}' の正規化結果がnullでないこと");
             isValid.Should().BeTrue($"URL '{testUrl}' が有効と判定されること");
@@ -248,8 +248,8 @@ public class ServiceIntegrationTests : IDisposable
                     Language = $"test-{index}",
                     CustomProtocol = $"protocol-{index}"
                 };
-                await settingsService.SaveAppSettingsAsync(settings);
-                var loaded = await settingsService.LoadAppSettingsAsync();
+                await settingsService.SaveAppSettingsAsync(settings).ConfigureAwait(false);
+                var loaded = await settingsService.LoadAppSettingsAsync().ConfigureAwait(false);
                 loaded.Should().NotBeNull($"並行アクセス {index} で設定がnullでないこと");
             }));
         }
@@ -273,8 +273,8 @@ public class ServiceIntegrationTests : IDisposable
         string exportPath = Path.Combine(_tempDirectory, "exported-settings.zip");
 
         // Act
-        await settingsService.SaveAppSettingsAsync(testSettings);
-        await settingsService.ExportSettingsAsync(exportPath);
+        await settingsService.SaveAppSettingsAsync(testSettings).ConfigureAwait(false);
+        await settingsService.ExportSettingsAsync(exportPath).ConfigureAwait(false);
         
         // 新しい設定で上書き
         var newSettings = new AppSettings
@@ -282,11 +282,11 @@ public class ServiceIntegrationTests : IDisposable
             Language = "en-US",
             CustomProtocol = "new"
         };
-        await settingsService.SaveAppSettingsAsync(newSettings);
+        await settingsService.SaveAppSettingsAsync(newSettings).ConfigureAwait(false);
         
         // 設定をインポート
-        await settingsService.ImportSettingsAsync(exportPath);
-        var importedSettings = await settingsService.LoadAppSettingsAsync();
+        await settingsService.ImportSettingsAsync(exportPath).ConfigureAwait(false);
+        var importedSettings = await settingsService.LoadAppSettingsAsync().ConfigureAwait(false);
 
         // Assert
         importedSettings.Should().NotBeNull("インポートされた設定がnullでないこと");

@@ -22,10 +22,11 @@
 - **高品質アイコン表示**: Win32 APIを使用した高解像度アイコン抽出と表示
 - **起動引数対応**: コマンドライン引数でURLを受け取り、ブラウザ選択画面を表示
 - **重複除去**: 同じパスのブラウザの重複登録を防止
-- **設定管理**: アプリケーション設定と視覚設定の管理
+- **設定管理**: アプリケーション設定、視覚設定、ログ設定の管理
 - **多言語対応**: 日本語・英語の完全対応
-- **透明化・視覚効果**: ウィンドウ透明化、カスタム背景色、グラデーション
-- **システム統合**: プロトコルハンドラー、自動アップデート
+- **視覚効果**: カスタム背景色、グラデーション、ブラウザボタンカスタマイズ
+- **URLルール管理**: 特定のURLパターンに対して自動的にブラウザを選択
+- **自動アップデート**: GitHub Releases連携による設定ファイル差分更新
 
 ### 🚀 使用方法
 
@@ -206,10 +207,11 @@ BrowserSelectorは自動更新機能を搭載しています：
 - **High-Quality Icon Display**: High-resolution icon extraction and display using Win32 API
 - **Launch Argument Support**: Accepts URLs via command line arguments and displays browser selection screen
 - **Duplicate Prevention**: Prevents duplicate registration of browsers with the same path
-- **Settings Management**: Manages application and visual settings
+- **Settings Management**: Manages application, visual, and log settings
 - **Multi-language Support**: Full support for Japanese and English
-- **Transparency & Visual Effects**: Window transparency, custom background colors, gradients
-- **System Integration**: Protocol handler, automatic updates
+- **Visual Effects**: Custom background colors, gradients, browser button customization
+- **URL Rule Management**: Automatically select browsers for specific URL patterns
+- **Automatic Updates**: GitHub Releases integration with settings file differential updates
 
 ### 🚀 Usage
 

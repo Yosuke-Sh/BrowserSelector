@@ -109,7 +109,7 @@ public class TestUrlRuleService : IUrlRuleService
                 _rules.Add(rule);
             }
 
-            await SaveRulesAsync();
+            await SaveRulesAsync().ConfigureAwait(false);
             _logService?.LogTrace("URLルール追加完了", "TestUrlRuleService");
             return true;
         }
@@ -144,7 +144,7 @@ public class TestUrlRuleService : IUrlRuleService
                 _rules[index] = rule;
             }
 
-            await SaveRulesAsync();
+            await SaveRulesAsync().ConfigureAwait(false);
             _logService?.LogTrace("URLルール更新完了", "TestUrlRuleService");
             return true;
         }
@@ -172,7 +172,7 @@ public class TestUrlRuleService : IUrlRuleService
                 _ = _rules.Remove(rule);
             }
 
-            await SaveRulesAsync();
+            await SaveRulesAsync().ConfigureAwait(false);
             _logService?.LogTrace("URLルール削除完了", "TestUrlRuleService");
             return true;
         }
@@ -219,7 +219,7 @@ public class TestUrlRuleService : IUrlRuleService
                 rule.IsEnabled = isEnabled;
             }
 
-            await SaveRulesAsync();
+            await SaveRulesAsync().ConfigureAwait(false);
             _logService?.LogTrace("URLルール切り替え完了", "TestUrlRuleService");
             return true;
         }
@@ -280,7 +280,7 @@ public class TestUrlRuleService : IUrlRuleService
                 rule.Priority = newPriority;
             }
 
-            await SaveRulesAsync();
+            await SaveRulesAsync().ConfigureAwait(false);
             _logService?.LogTrace("URLルール優先度変更完了", "TestUrlRuleService");
             return true;
         }
@@ -320,7 +320,7 @@ public class TestUrlRuleService : IUrlRuleService
                 _rules.AddRange(reorderedRules);
             }
 
-            await SaveRulesAsync();
+            await SaveRulesAsync().ConfigureAwait(false);
             _logService?.LogTrace("URLルール並び替え完了", "TestUrlRuleService");
             return true;
         }

@@ -62,26 +62,38 @@ public interface ISettingsService
 {
     AppSettings AppSettings { get; }
     VisualSettings VisualSettings { get; }
-    AccessibilitySettings AccessibilitySettings { get; }
-    Task SaveSettingsAsync();
-    Task LoadSettingsAsync();
-    Task ResetToDefaultsAsync();
+    LogSettings LogSettings { get; }
+    Task SaveAppSettingsAsync(AppSettings settings);
+    Task<AppSettings> LoadAppSettingsAsync();
+    Task SaveVisualSettingsAsync(VisualSettings settings);
+    Task<VisualSettings> LoadVisualSettingsAsync();
+    Task SaveLogSettingsAsync(LogSettings settings);
+    Task<LogSettings> LoadLogSettingsAsync();
+    Task<bool> ResetSettingsAsync();
+    Task<bool> ExportSettingsAsync(string filePath);
+    Task<bool> ImportSettingsAsync(string filePath);
 }
 ```
 
 **Properties:**
-- `AppSettings`: Application configuration
-- `VisualSettings`: UI appearance settings
-- `AccessibilitySettings`: Accessibility options
+- `AppSettings`: Application configuration (language, update settings, etc.)
+- `VisualSettings`: UI appearance settings (background, buttons, window size, etc.)
+- `LogSettings`: Logging configuration (log level, file settings, etc.)
 
 **Methods:**
-- `SaveSettingsAsync()`: Persists settings to file
-- `LoadSettingsAsync()`: Loads settings from file
-- `ResetToDefaultsAsync()`: Resets all settings to defaults
+- `SaveAppSettingsAsync(AppSettings)`: Persists application settings to file
+- `LoadAppSettingsAsync()`: Loads application settings from file
+- `SaveVisualSettingsAsync(VisualSettings)`: Persists visual settings to file
+- `LoadVisualSettingsAsync()`: Loads visual settings from file
+- `SaveLogSettingsAsync(LogSettings)`: Persists log settings to file
+- `LoadLogSettingsAsync()`: Loads log settings from file
+- `ResetSettingsAsync()`: Resets all settings to defaults
+- `ExportSettingsAsync(string)`: Exports settings to file
+- `ImportSettingsAsync(string)`: Imports settings from file
 
 ### IUpdateService
 
-Handles automatic updates.
+Handles automatic updates with GitHub Releases integration.
 
 ```csharp
 public interface IUpdateService : IDisposable
@@ -99,11 +111,11 @@ public interface IUpdateService : IDisposable
 - `UpdateAvailable`: Fired when an update is available
 
 **Methods:**
-- `CheckForUpdatesAsync()`: Checks for available updates
-- `DownloadUpdateAsync(UpdateInfo, IProgress<int>)`: Downloads update with progress
-- `InstallUpdateAsync(UpdateInfo)`: Installs the downloaded update
+- `CheckForUpdatesAsync()`: Checks GitHub Releases for new versions
+- `DownloadUpdateAsync(UpdateInfo, IProgress<int>)`: Downloads update files
+- `InstallUpdateAsync(UpdateInfo)`: Installs the update (settings files only)
 - `RollbackUpdateAsync()`: Rolls back to previous version
-- `CreateBackup()`: Creates backup of current version
+- `CreateBackup()`: Creates backup of current settings
 
 ### ILocalizationService
 

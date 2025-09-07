@@ -42,9 +42,22 @@ public class TestUrlRuleService : IUrlRuleService
                 }
             }
         }
-        catch (Exception ex)
+        catch (FileNotFoundException ex)
         {
-            _logService?.LogError($"URLルールの読み込みエラー: {ex.Message}", "TestUrlRuleService", ex);
+            _logService?.LogError($"URLルールファイルが見つかりません: {ex.Message}", "TestUrlRuleService", ex);
+        }
+        catch (JsonException ex)
+        {
+            _logService?.LogError($"URLルールJSON解析エラー: {ex.Message}", "TestUrlRuleService", ex);
+        }
+        catch (IOException ex)
+        {
+            _logService?.LogError($"URLルールファイルI/Oエラー: {ex.Message}", "TestUrlRuleService", ex);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            _logService?.LogError($"URLルールファイルアクセス権限エラー: {ex.Message}", "TestUrlRuleService", ex);
+            throw; // アクセス権限エラーは再スロー
         }
     }
 
@@ -60,7 +73,7 @@ public class TestUrlRuleService : IUrlRuleService
                 return Task.FromResult<IEnumerable<UrlRule>>(result);
             }
         }
-        catch (Exception ex)
+        catch (InvalidOperationException ex)
         {
             _logService?.LogError($"URLルール一覧取得エラー: {ex.Message}", "TestUrlRuleService", ex);
             return Task.FromResult<IEnumerable<UrlRule>>([]);
@@ -79,7 +92,7 @@ public class TestUrlRuleService : IUrlRuleService
                 return Task.FromResult<IEnumerable<UrlRule>>(result);
             }
         }
-        catch (Exception ex)
+        catch (InvalidOperationException ex)
         {
             _logService?.LogError($"有効URLルール一覧取得エラー: {ex.Message}", "TestUrlRuleService", ex);
             return Task.FromResult<IEnumerable<UrlRule>>([]);
@@ -113,9 +126,14 @@ public class TestUrlRuleService : IUrlRuleService
             _logService?.LogTrace("URLルール追加完了", "TestUrlRuleService");
             return true;
         }
-        catch (Exception ex)
+        catch (ArgumentException ex)
         {
-            _logService?.LogError($"URLルール追加エラー: {ex.Message}", "TestUrlRuleService", ex);
+            _logService?.LogError($"URLルール追加エラー（引数不正）: {ex.Message}", "TestUrlRuleService", ex);
+            return false;
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logService?.LogError($"URLルール追加エラー（操作不正）: {ex.Message}", "TestUrlRuleService", ex);
             return false;
         }
     }
@@ -148,9 +166,14 @@ public class TestUrlRuleService : IUrlRuleService
             _logService?.LogTrace("URLルール更新完了", "TestUrlRuleService");
             return true;
         }
-        catch (Exception ex)
+        catch (ArgumentException ex)
         {
-            _logService?.LogError($"URLルール更新エラー: {ex.Message}", "TestUrlRuleService", ex);
+            _logService?.LogError($"URLルール更新エラー（引数不正）: {ex.Message}", "TestUrlRuleService", ex);
+            return false;
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logService?.LogError($"URLルール更新エラー（操作不正）: {ex.Message}", "TestUrlRuleService", ex);
             return false;
         }
     }
@@ -176,9 +199,14 @@ public class TestUrlRuleService : IUrlRuleService
             _logService?.LogTrace("URLルール削除完了", "TestUrlRuleService");
             return true;
         }
-        catch (Exception ex)
+        catch (ArgumentException ex)
         {
-            _logService?.LogError($"URLルール削除エラー: {ex.Message}", "TestUrlRuleService", ex);
+            _logService?.LogError($"URLルール削除エラー（引数不正）: {ex.Message}", "TestUrlRuleService", ex);
+            return false;
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logService?.LogError($"URLルール削除エラー（操作不正）: {ex.Message}", "TestUrlRuleService", ex);
             return false;
         }
     }
@@ -195,9 +223,14 @@ public class TestUrlRuleService : IUrlRuleService
                 return Task.FromResult(rule);
             }
         }
-        catch (Exception ex)
+        catch (ArgumentException ex)
         {
-            _logService?.LogError($"URLルール取得エラー: {ex.Message}", "TestUrlRuleService", ex);
+            _logService?.LogError($"URLルール取得エラー（引数不正）: {ex.Message}", "TestUrlRuleService", ex);
+            return Task.FromResult<UrlRule?>(null);
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logService?.LogError($"URLルール取得エラー（操作不正）: {ex.Message}", "TestUrlRuleService", ex);
             return Task.FromResult<UrlRule?>(null);
         }
     }
@@ -223,9 +256,14 @@ public class TestUrlRuleService : IUrlRuleService
             _logService?.LogTrace("URLルール切り替え完了", "TestUrlRuleService");
             return true;
         }
-        catch (Exception ex)
+        catch (ArgumentException ex)
         {
-            _logService?.LogError($"URLルール切り替えエラー: {ex.Message}", "TestUrlRuleService", ex);
+            _logService?.LogError($"URLルール切り替えエラー（引数不正）: {ex.Message}", "TestUrlRuleService", ex);
+            return false;
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logService?.LogError($"URLルール切り替えエラー（操作不正）: {ex.Message}", "TestUrlRuleService", ex);
             return false;
         }
     }
@@ -256,9 +294,14 @@ public class TestUrlRuleService : IUrlRuleService
                 return Task.FromResult<Browser?>(null);
             }
         }
-        catch (Exception ex)
+        catch (ArgumentException ex)
         {
-            _logService?.LogError($"URLマッチングエラー: {ex.Message}", "TestUrlRuleService", ex);
+            _logService?.LogError($"URLマッチングエラー（引数不正）: {ex.Message}", "TestUrlRuleService", ex);
+            return Task.FromResult<Browser?>(null);
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logService?.LogError($"URLマッチングエラー（操作不正）: {ex.Message}", "TestUrlRuleService", ex);
             return Task.FromResult<Browser?>(null);
         }
     }
@@ -284,9 +327,14 @@ public class TestUrlRuleService : IUrlRuleService
             _logService?.LogTrace("URLルール優先度変更完了", "TestUrlRuleService");
             return true;
         }
-        catch (Exception ex)
+        catch (ArgumentException ex)
         {
-            _logService?.LogError($"URLルール優先度変更エラー: {ex.Message}", "TestUrlRuleService", ex);
+            _logService?.LogError($"URLルール優先度変更エラー（引数不正）: {ex.Message}", "TestUrlRuleService", ex);
+            return false;
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logService?.LogError($"URLルール優先度変更エラー（操作不正）: {ex.Message}", "TestUrlRuleService", ex);
             return false;
         }
     }
@@ -324,9 +372,14 @@ public class TestUrlRuleService : IUrlRuleService
             _logService?.LogTrace("URLルール並び替え完了", "TestUrlRuleService");
             return true;
         }
-        catch (Exception ex)
+        catch (ArgumentException ex)
         {
-            _logService?.LogError($"URLルール並び替えエラー: {ex.Message}", "TestUrlRuleService", ex);
+            _logService?.LogError($"URLルール並び替えエラー（引数不正）: {ex.Message}", "TestUrlRuleService", ex);
+            return false;
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logService?.LogError($"URLルール並び替えエラー（操作不正）: {ex.Message}", "TestUrlRuleService", ex);
             return false;
         }
     }
@@ -341,9 +394,18 @@ public class TestUrlRuleService : IUrlRuleService
                 File.WriteAllText(_rulesFilePath, json);
             }
         }
-        catch (Exception ex)
+        catch (JsonException ex)
         {
-            _logService?.LogError($"URLルール保存エラー: {ex.Message}", "TestUrlRuleService", ex);
+            _logService?.LogError($"URLルールJSON保存エラー: {ex.Message}", "TestUrlRuleService", ex);
+        }
+        catch (IOException ex)
+        {
+            _logService?.LogError($"URLルールファイル保存I/Oエラー: {ex.Message}", "TestUrlRuleService", ex);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            _logService?.LogError($"URLルールファイル保存アクセス権限エラー: {ex.Message}", "TestUrlRuleService", ex);
+            throw; // アクセス権限エラーは再スロー
         }
         return Task.CompletedTask;
     }

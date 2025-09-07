@@ -39,11 +39,11 @@ public class TestSettingsService : ISettingsService
             if (!File.Exists(_appSettingsPath))
             {
                 AppSettings defaultSettings = new();
-                _ = await SaveAppSettingsAsync(defaultSettings);
+                _ = await SaveAppSettingsAsync(defaultSettings).ConfigureAwait(false);
                 return defaultSettings;
             }
 
-            string json = await File.ReadAllTextAsync(_appSettingsPath);
+            string json = await File.ReadAllTextAsync(_appSettingsPath).ConfigureAwait(false);
             AppSettings? settings = JsonSerializer.Deserialize<AppSettings>(json);
             AppSettings result = settings ?? new AppSettings();
 
@@ -68,7 +68,7 @@ public class TestSettingsService : ISettingsService
             };
 
             string json = JsonSerializer.Serialize(settings, options);
-            await File.WriteAllTextAsync(_appSettingsPath, json);
+            await File.WriteAllTextAsync(_appSettingsPath, json).ConfigureAwait(false);
             return true;
         }
         catch (Exception ex)
@@ -86,11 +86,11 @@ public class TestSettingsService : ISettingsService
             if (!File.Exists(_visualSettingsPath))
             {
                 VisualSettings defaultSettings = new();
-                _ = await SaveVisualSettingsAsync(defaultSettings);
+                _ = await SaveVisualSettingsAsync(defaultSettings).ConfigureAwait(false);
                 return defaultSettings;
             }
 
-            string json = await File.ReadAllTextAsync(_visualSettingsPath);
+            string json = await File.ReadAllTextAsync(_visualSettingsPath).ConfigureAwait(false);
             VisualSettings? settings = JsonSerializer.Deserialize<VisualSettings>(json);
             VisualSettings result = settings ?? new VisualSettings();
 
@@ -115,7 +115,7 @@ public class TestSettingsService : ISettingsService
             };
 
             string json = JsonSerializer.Serialize(settings, options);
-            await File.WriteAllTextAsync(_visualSettingsPath, json);
+            await File.WriteAllTextAsync(_visualSettingsPath, json).ConfigureAwait(false);
             return true;
         }
         catch (Exception ex)
@@ -146,8 +146,8 @@ public class TestSettingsService : ISettingsService
             }
 
             // デフォルト設定を作成
-            _ = await SaveAppSettingsAsync(new AppSettings());
-            _ = await SaveVisualSettingsAsync(new VisualSettings());
+            _ = await SaveAppSettingsAsync(new AppSettings()).ConfigureAwait(false);
+            _ = await SaveVisualSettingsAsync(new VisualSettings()).ConfigureAwait(false);
 
             return true;
         }
@@ -167,11 +167,11 @@ public class TestSettingsService : ISettingsService
             if (!File.Exists(_logSettingsPath))
             {
                 LogSettings defaultSettings = new();
-                _ = await SaveLogSettingsAsync(defaultSettings);
+                _ = await SaveLogSettingsAsync(defaultSettings).ConfigureAwait(false);
                 return defaultSettings;
             }
 
-            string json = await File.ReadAllTextAsync(_logSettingsPath);
+            string json = await File.ReadAllTextAsync(_logSettingsPath).ConfigureAwait(false);
             LogSettings? settings = JsonSerializer.Deserialize<LogSettings>(json);
             LogSettings result = settings ?? new LogSettings();
 
@@ -196,7 +196,7 @@ public class TestSettingsService : ISettingsService
             };
 
             string json = JsonSerializer.Serialize(settings, options);
-            await File.WriteAllTextAsync(_logSettingsPath, json);
+            await File.WriteAllTextAsync(_logSettingsPath, json).ConfigureAwait(false);
             return true;
         }
         catch (Exception ex)
@@ -214,14 +214,14 @@ public class TestSettingsService : ISettingsService
             // テスト用の簡単なエクスポート実装
             var exportData = new
             {
-                AppSettings = await LoadAppSettingsAsync(),
-                VisualSettings = await LoadVisualSettingsAsync(),
-                LogSettings = await LoadLogSettingsAsync(),
+                AppSettings = await LoadAppSettingsAsync().ConfigureAwait(false),
+                VisualSettings = await LoadVisualSettingsAsync().ConfigureAwait(false),
+                LogSettings = await LoadLogSettingsAsync().ConfigureAwait(false),
                 ExportDate = DateTime.Now
             };
 
             string json = JsonSerializer.Serialize(exportData, new JsonSerializerOptions { WriteIndented = true });
-            await File.WriteAllTextAsync(filePath, json);
+            await File.WriteAllTextAsync(filePath, json).ConfigureAwait(false);
 
             _logService?.LogTrace("設定エクスポート完了", "TestSettingsService");
             return true;
@@ -244,7 +244,7 @@ public class TestSettingsService : ISettingsService
                 return false;
             }
 
-            string json = await File.ReadAllTextAsync(filePath);
+            string json = await File.ReadAllTextAsync(filePath).ConfigureAwait(false);
             JsonElement importData = JsonSerializer.Deserialize<JsonElement>(json);
 
             // 各設定をインポート
@@ -253,7 +253,7 @@ public class TestSettingsService : ISettingsService
                 AppSettings? appSettings = JsonSerializer.Deserialize<AppSettings>(appSettingsElement.GetRawText());
                 if (appSettings != null)
                 {
-                    _ = await SaveAppSettingsAsync(appSettings);
+                    _ = await SaveAppSettingsAsync(appSettings).ConfigureAwait(false);
                 }
             }
 
@@ -262,7 +262,7 @@ public class TestSettingsService : ISettingsService
                 VisualSettings? visualSettings = JsonSerializer.Deserialize<VisualSettings>(visualSettingsElement.GetRawText());
                 if (visualSettings != null)
                 {
-                    _ = await SaveVisualSettingsAsync(visualSettings);
+                    _ = await SaveVisualSettingsAsync(visualSettings).ConfigureAwait(false);
                 }
             }
 
@@ -271,7 +271,7 @@ public class TestSettingsService : ISettingsService
                 LogSettings? logSettings = JsonSerializer.Deserialize<LogSettings>(logSettingsElement.GetRawText());
                 if (logSettings != null)
                 {
-                    _ = await SaveLogSettingsAsync(logSettings);
+                    _ = await SaveLogSettingsAsync(logSettings).ConfigureAwait(false);
                 }
             }
 

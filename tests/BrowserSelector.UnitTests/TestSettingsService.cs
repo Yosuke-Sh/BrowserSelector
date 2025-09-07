@@ -50,10 +50,25 @@ public class TestSettingsService : ISettingsService
             _logService?.LogTrace($"アプリケーション設定読み込み完了: Language={result.Language}, EnableLogging={result.EnableLogging}", "TestSettingsService");
             return result;
         }
-        catch (Exception ex)
+        catch (FileNotFoundException ex)
         {
-            _logService?.LogError($"アプリケーション設定の読み込みエラー: {ex.Message}", "TestSettingsService", ex);
+            _logService?.LogError($"アプリケーション設定ファイルが見つかりません: {ex.Message}", "TestSettingsService", ex);
             return new AppSettings();
+        }
+        catch (JsonException ex)
+        {
+            _logService?.LogError($"アプリケーション設定JSON解析エラー: {ex.Message}", "TestSettingsService", ex);
+            return new AppSettings();
+        }
+        catch (IOException ex)
+        {
+            _logService?.LogError($"アプリケーション設定ファイルI/Oエラー: {ex.Message}", "TestSettingsService", ex);
+            return new AppSettings();
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            _logService?.LogError($"アプリケーション設定ファイルアクセス権限エラー: {ex.Message}", "TestSettingsService", ex);
+            throw; // アクセス権限エラーは再スロー
         }
     }
 
@@ -71,10 +86,20 @@ public class TestSettingsService : ISettingsService
             await File.WriteAllTextAsync(_appSettingsPath, json);
             return true;
         }
-        catch (Exception ex)
+        catch (JsonException ex)
         {
-            _logService?.LogError($"アプリケーション設定の保存エラー: {ex.Message}", "TestSettingsService", ex);
+            _logService?.LogError($"アプリケーション設定JSON保存エラー: {ex.Message}", "TestSettingsService", ex);
             return false;
+        }
+        catch (IOException ex)
+        {
+            _logService?.LogError($"アプリケーション設定ファイル保存I/Oエラー: {ex.Message}", "TestSettingsService", ex);
+            return false;
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            _logService?.LogError($"アプリケーション設定ファイル保存アクセス権限エラー: {ex.Message}", "TestSettingsService", ex);
+            throw; // アクセス権限エラーは再スロー
         }
     }
 
@@ -97,10 +122,25 @@ public class TestSettingsService : ISettingsService
             _logService?.LogTrace($"視覚設定読み込み完了: BackgroundColor={result.BackgroundColor}", "TestSettingsService");
             return result;
         }
-        catch (Exception ex)
+        catch (FileNotFoundException ex)
         {
-            _logService?.LogError($"視覚設定の読み込みエラー: {ex.Message}", "TestSettingsService", ex);
+            _logService?.LogError($"視覚設定ファイルが見つかりません: {ex.Message}", "TestSettingsService", ex);
             return new VisualSettings();
+        }
+        catch (JsonException ex)
+        {
+            _logService?.LogError($"視覚設定JSON解析エラー: {ex.Message}", "TestSettingsService", ex);
+            return new VisualSettings();
+        }
+        catch (IOException ex)
+        {
+            _logService?.LogError($"視覚設定ファイルI/Oエラー: {ex.Message}", "TestSettingsService", ex);
+            return new VisualSettings();
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            _logService?.LogError($"視覚設定ファイルアクセス権限エラー: {ex.Message}", "TestSettingsService", ex);
+            throw; // アクセス権限エラーは再スロー
         }
     }
 
@@ -118,10 +158,20 @@ public class TestSettingsService : ISettingsService
             await File.WriteAllTextAsync(_visualSettingsPath, json);
             return true;
         }
-        catch (Exception ex)
+        catch (JsonException ex)
         {
-            _logService?.LogError($"視覚設定の保存エラー: {ex.Message}", "TestSettingsService", ex);
+            _logService?.LogError($"視覚設定JSON保存エラー: {ex.Message}", "TestSettingsService", ex);
             return false;
+        }
+        catch (IOException ex)
+        {
+            _logService?.LogError($"視覚設定ファイル保存I/Oエラー: {ex.Message}", "TestSettingsService", ex);
+            return false;
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            _logService?.LogError($"視覚設定ファイル保存アクセス権限エラー: {ex.Message}", "TestSettingsService", ex);
+            throw; // アクセス権限エラーは再スロー
         }
     }
 
@@ -151,10 +201,15 @@ public class TestSettingsService : ISettingsService
 
             return true;
         }
-        catch (Exception ex)
+        catch (IOException ex)
         {
-            _logService?.LogError($"設定リセットエラー: {ex.Message}", "TestSettingsService", ex);
+            _logService?.LogError($"設定リセットI/Oエラー: {ex.Message}", "TestSettingsService", ex);
             return false;
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            _logService?.LogError($"設定リセットアクセス権限エラー: {ex.Message}", "TestSettingsService", ex);
+            throw; // アクセス権限エラーは再スロー
         }
     }
 
@@ -189,10 +244,25 @@ public class TestSettingsService : ISettingsService
             _logService?.LogTrace($"ログ設定読み込み完了: LogLevel={result.LogLevel}", "TestSettingsService");
             return result;
         }
-        catch (Exception ex)
+        catch (FileNotFoundException ex)
         {
-            _logService?.LogError($"ログ設定の読み込みエラー: {ex.Message}", "TestSettingsService", ex);
+            _logService?.LogError($"ログ設定ファイルが見つかりません: {ex.Message}", "TestSettingsService", ex);
             return new LogSettings();
+        }
+        catch (JsonException ex)
+        {
+            _logService?.LogError($"ログ設定JSON解析エラー: {ex.Message}", "TestSettingsService", ex);
+            return new LogSettings();
+        }
+        catch (IOException ex)
+        {
+            _logService?.LogError($"ログ設定ファイルI/Oエラー: {ex.Message}", "TestSettingsService", ex);
+            return new LogSettings();
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            _logService?.LogError($"ログ設定ファイルアクセス権限エラー: {ex.Message}", "TestSettingsService", ex);
+            throw; // アクセス権限エラーは再スロー
         }
     }
 
@@ -210,10 +280,20 @@ public class TestSettingsService : ISettingsService
             await File.WriteAllTextAsync(_logSettingsPath, json);
             return true;
         }
-        catch (Exception ex)
+        catch (JsonException ex)
         {
-            _logService?.LogError($"ログ設定の保存エラー: {ex.Message}", "TestSettingsService", ex);
+            _logService?.LogError($"ログ設定JSON保存エラー: {ex.Message}", "TestSettingsService", ex);
             return false;
+        }
+        catch (IOException ex)
+        {
+            _logService?.LogError($"ログ設定ファイル保存I/Oエラー: {ex.Message}", "TestSettingsService", ex);
+            return false;
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            _logService?.LogError($"ログ設定ファイル保存アクセス権限エラー: {ex.Message}", "TestSettingsService", ex);
+            throw; // アクセス権限エラーは再スロー
         }
     }
 }
