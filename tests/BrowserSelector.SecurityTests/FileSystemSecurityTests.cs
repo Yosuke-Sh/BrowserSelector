@@ -1,8 +1,7 @@
+using FluentAssertions;
 using System;
 using System.IO;
 using System.Linq;
-using System.Security;
-using FluentAssertions;
 using Xunit;
 
 namespace BrowserSelector.SecurityTests;
@@ -23,7 +22,7 @@ public class FileSystemSecurityTests
     {
         // Arrange
         var isValidPath = IsValidFilePath(validPath);
-        
+
         // Act & Assert
         isValidPath.Should().BeTrue($"有効なファイルパス '{validPath}' は受け入れられるべきです");
     }
@@ -42,7 +41,7 @@ public class FileSystemSecurityTests
     {
         // Arrange
         var isValidPath = IsValidFilePath(maliciousPath);
-        
+
         // Act & Assert
         isValidPath.Should().BeFalse($"パストラバーサル攻撃パス '{maliciousPath}' は拒否されるべきです");
     }
@@ -77,7 +76,7 @@ public class FileSystemSecurityTests
     {
         // Arrange
         var isValidPath = IsValidFilePath(reservedName);
-        
+
         // Act & Assert
         isValidPath.Should().BeFalse($"予約されたファイル名 '{reservedName}' は拒否されるべきです");
     }
@@ -101,7 +100,7 @@ public class FileSystemSecurityTests
     {
         // Arrange
         var isValidPath = IsValidFilePath(invalidPath);
-        
+
         // Act & Assert
         isValidPath.Should().BeFalse($"無効な文字を含むパス '{invalidPath}' は拒否されるべきです");
     }
@@ -114,10 +113,10 @@ public class FileSystemSecurityTests
     {
         // Arrange
         var longPath = "C:\\" + new string('a', 300) + "\\file.txt";
-        
+
         // Act
         var isValidPath = IsValidFilePath(longPath);
-        
+
         // Assert
         isValidPath.Should().BeFalse("長すぎるファイルパスは拒否されるべきです");
     }
@@ -131,15 +130,15 @@ public class FileSystemSecurityTests
         // Arrange
         var basePath = Path.GetTempPath();
         var testDir = Path.Combine(basePath, "BrowserSelectorTest_" + Guid.NewGuid().ToString("N")[..8]);
-        
+
         try
         {
             // Act
             var canCreate = CanCreateDirectory(testDir);
-            
+
             // Assert
             canCreate.Should().BeTrue("有効なディレクトリは作成できるべきです");
-            
+
             // クリーンアップ
             if (Directory.Exists(testDir))
             {
@@ -170,10 +169,10 @@ public class FileSystemSecurityTests
     {
         // Arrange
         var testDir = Path.Combine(dangerousPath, "BrowserSelectorTest_" + Guid.NewGuid().ToString("N")[..8]);
-        
+
         // Act
         var canCreate = CanCreateDirectory(testDir);
-        
+
         // Assert
         canCreate.Should().BeFalse($"危険なディレクトリパス '{dangerousPath}' での作成は拒否されるべきです");
     }
@@ -187,15 +186,15 @@ public class FileSystemSecurityTests
         // Arrange
         var tempFile = Path.GetTempFileName();
         var testContent = "Test content for security validation";
-        
+
         try
         {
             File.WriteAllText(tempFile, testContent);
-            
+
             // Act
             var canRead = CanReadFile(tempFile);
             var content = canRead ? File.ReadAllText(tempFile) : null;
-            
+
             // Assert
             canRead.Should().BeTrue("有効なファイルは読み取れるべきです");
             content.Should().Be(testContent, "ファイル内容は正しく読み取られるべきです");
@@ -223,7 +222,7 @@ public class FileSystemSecurityTests
     {
         // Act
         var canRead = CanReadFile(dangerousFile);
-        
+
         // Assert
         canRead.Should().BeFalse($"危険なファイル '{dangerousFile}' の読み取りは拒否されるべきです");
     }
@@ -237,15 +236,15 @@ public class FileSystemSecurityTests
         // Arrange
         var tempFile = Path.GetTempFileName();
         var testContent = "Test content for security validation";
-        
+
         try
         {
             // Act
             var canWrite = CanWriteFile(tempFile, testContent);
-            
+
             // Assert
             canWrite.Should().BeTrue("有効なファイルは書き込めるべきです");
-            
+
             if (canWrite)
             {
                 var content = File.ReadAllText(tempFile);
@@ -275,10 +274,10 @@ public class FileSystemSecurityTests
     {
         // Arrange
         var testContent = "Malicious content";
-        
+
         // Act
         var canWrite = CanWriteFile(dangerousFile, testContent);
-        
+
         // Assert
         canWrite.Should().BeFalse($"危険なファイル '{dangerousFile}' への書き込みは拒否されるべきです");
     }

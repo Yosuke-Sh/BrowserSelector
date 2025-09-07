@@ -1,8 +1,6 @@
 using FlaUI.Core;
-using FlaUI.Core.AutomationElements;
 using FlaUI.UIA3;
 using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BrowserSelector.UITests;
 

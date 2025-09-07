@@ -1,7 +1,6 @@
-using System.Windows;
-using System.Windows.Threading;
-using System.Reflection;
 using FluentAssertions;
+using System.Reflection;
+using System.Windows;
 
 namespace BrowserSelector.AppTests;
 
@@ -55,7 +54,7 @@ public static class WpfTestHelper
         // ウィンドウのイベントが適切に設定されているかテスト
         var windowType = window.GetType();
         var events = windowType.GetEvents();
-        
+
         // 主要なイベントの存在を確認
         events.Should().Contain(e => e.Name == "Loaded");
         events.Should().Contain(e => e.Name == "Closing");
@@ -78,7 +77,7 @@ public static class WpfTestHelper
     {
         var appType = app.GetType();
         var events = appType.GetEvents();
-        
+
         // 主要なイベントの存在を確認
         events.Should().Contain(e => e.Name == "Startup");
         events.Should().Contain(e => e.Name == "Exit");
@@ -91,7 +90,7 @@ public static class WpfTestHelper
     {
         var method = obj.GetType().GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance);
         method.Should().NotBeNull($"Private method '{methodName}' should exist");
-        
+
         var result = method!.Invoke(obj, parameters);
         return (T)result!;
     }
@@ -103,7 +102,7 @@ public static class WpfTestHelper
     {
         var property = obj.GetType().GetProperty(propertyName, BindingFlags.NonPublic | BindingFlags.Instance);
         property.Should().NotBeNull($"Private property '{propertyName}' should exist");
-        
+
         var value = property!.GetValue(obj);
         return (T)value!;
     }
@@ -115,7 +114,7 @@ public static class WpfTestHelper
     {
         var field = obj.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
         field.Should().NotBeNull($"Private field '{fieldName}' should exist");
-        
+
         var value = field!.GetValue(obj);
         return (T)value!;
     }

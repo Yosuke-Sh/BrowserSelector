@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 
 namespace BrowserSelector.UITests;
@@ -44,7 +43,7 @@ public static class UITestHelper
     private static string GetProjectRoot()
     {
         string currentDir = AppDomain.CurrentDomain.BaseDirectory;
-        
+
         // プロジェクトルートを探す（.slnファイルがあるディレクトリ）
         while (!string.IsNullOrEmpty(currentDir))
         {
@@ -52,7 +51,7 @@ public static class UITestHelper
             {
                 return currentDir;
             }
-            
+
             string? parentDir = Path.GetDirectoryName(currentDir);
             if (parentDir == null || parentDir == currentDir)
             {
@@ -91,7 +90,7 @@ public static class UITestHelper
         var info = new System.Text.StringBuilder();
         info.AppendLine($"Current Directory: {AppDomain.CurrentDomain.BaseDirectory}");
         info.AppendLine($"Project Root: {GetProjectRoot()}");
-        
+
         try
         {
             string appPath = GetApplicationPath();
@@ -117,7 +116,7 @@ public static class UITestHelper
         try
         {
             // URL入力フィールドを探す
-            var urlTextBox = mainWindow.FindFirstDescendant(cf => 
+            var urlTextBox = mainWindow.FindFirstDescendant(cf =>
                 cf.ByControlType(FlaUI.Core.Definitions.ControlType.Edit)
                 .And(cf.ByAutomationId("UrlTextBox"))
                 .Or(cf.ByControlType(FlaUI.Core.Definitions.ControlType.Edit)));
@@ -127,7 +126,7 @@ public static class UITestHelper
                 // 既存のテキストをクリア
                 urlTextBox.Focus();
                 System.Threading.Thread.Sleep(100);
-                
+
                 // テキストボックスに直接値を設定
                 if (urlTextBox.Patterns.Value.IsSupported)
                 {
@@ -138,14 +137,14 @@ public static class UITestHelper
                     // フォーカスしてテキストを入力
                     urlTextBox.Focus();
                     System.Threading.Thread.Sleep(100);
-                    
+
                     // キーボード入力でURLを設定
                     FlaUI.Core.Input.Keyboard.TypeSimultaneously(FlaUI.Core.WindowsAPI.VirtualKeyShort.CONTROL, FlaUI.Core.WindowsAPI.VirtualKeyShort.KEY_A);
                     System.Threading.Thread.Sleep(100);
                     FlaUI.Core.Input.Keyboard.Type(url);
                 }
                 System.Threading.Thread.Sleep(300);
-                
+
                 Console.WriteLine($"URL設定完了: {url}");
                 return true;
             }
@@ -171,12 +170,12 @@ public static class UITestHelper
     public static bool WaitForBrowserButtonsEnabled(FlaUI.Core.AutomationElements.Window mainWindow, int timeoutMs = 5000)
     {
         var startTime = DateTime.Now;
-        
+
         while ((DateTime.Now - startTime).TotalMilliseconds < timeoutMs)
         {
             try
             {
-                var browserButtons = mainWindow.FindAllDescendants(cf => 
+                var browserButtons = mainWindow.FindAllDescendants(cf =>
                     cf.ByControlType(FlaUI.Core.Definitions.ControlType.Button)
                     .And(cf.ByAutomationId("BrowserButton")));
 
@@ -192,7 +191,7 @@ public static class UITestHelper
                         }
                     }
                 }
-                
+
                 System.Threading.Thread.Sleep(100);
             }
             catch (Exception ex)
@@ -200,7 +199,7 @@ public static class UITestHelper
                 Console.WriteLine($"ブラウザボタン待機エラー: {ex.Message}");
             }
         }
-        
+
         Console.WriteLine($"ブラウザボタンの有効化タイムアウト: {timeoutMs}ms");
         return false;
     }

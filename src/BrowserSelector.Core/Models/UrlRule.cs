@@ -2,154 +2,153 @@
 // Copyright (c) 2024 BrowserSelector. All rights reserved.
 // </copyright>
 
+using System.ComponentModel.DataAnnotations;
+
 namespace BrowserSelector.Core.Models
 {
-    using System.ComponentModel.DataAnnotations;
-
-/// <summary>
-/// URLパターンに基づくブラウザ振り分けルール
-/// </summary>
-public class UrlRule
-{
     /// <summary>
-    /// ルールの一意識別子
+    /// URLパターンに基づくブラウザ振り分けルール
     /// </summary>
-    public Guid Id { get; set; } = Guid.NewGuid();
-
-    /// <summary>
-    /// URLパターン（例: "*.google.com", "http*", "*.github.com/*"）
-    /// </summary>
-    [Required]
-    [StringLength(500)]
-    public string Pattern { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 対象ブラウザの名前
-    /// </summary>
-    [Required]
-    [StringLength(100)]
-    public string BrowserName { get; set; } = string.Empty;
-
-    /// <summary>
-    /// ルールの優先度（数値が大きいほど優先）
-    /// </summary>
-    [Range(1, 100)]
-    public int Priority { get; set; } = 50;
-
-    /// <summary>
-    /// ルールが有効かどうか
-    /// </summary>
-    public bool IsEnabled { get; set; } = true;
-
-    /// <summary>
-    /// ルールの説明
-    /// </summary>
-    [StringLength(200)]
-    public string Description { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 作成日時
-    /// </summary>
-    public DateTime CreatedAt { get; set; } = DateTime.Now;
-
-    /// <summary>
-    /// 更新日時
-    /// </summary>
-    public DateTime UpdatedAt { get; set; } = DateTime.Now;
-
-    /// <summary>
-    /// ルールが指定されたURLにマッチするかを判定
-    /// </summary>
-    /// <param name="url">判定対象のURL</param>
-    /// <returns>マッチする場合true</returns>
-    public bool IsMatch(string url)
+    public class UrlRule
     {
-        if (string.IsNullOrWhiteSpace(url) || string.IsNullOrWhiteSpace(this.Pattern))
+        /// <summary>
+        /// ルールの一意識別子
+        /// </summary>
+        public Guid Id { get; set; } = Guid.NewGuid();
+
+        /// <summary>
+        /// URLパターン（例: "*.google.com", "http*", "*.github.com/*"）
+        /// </summary>
+        [Required]
+        [StringLength(500)]
+        public string Pattern { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 対象ブラウザの名前
+        /// </summary>
+        [Required]
+        [StringLength(100)]
+        public string BrowserName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// ルールの優先度（数値が大きいほど優先）
+        /// </summary>
+        [Range(1, 100)]
+        public int Priority { get; set; } = 50;
+
+        /// <summary>
+        /// ルールが有効かどうか
+        /// </summary>
+        public bool IsEnabled { get; set; } = true;
+
+        /// <summary>
+        /// ルールの説明
+        /// </summary>
+        [StringLength(200)]
+        public string Description { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 作成日時
+        /// </summary>
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        /// <summary>
+        /// 更新日時
+        /// </summary>
+        public DateTime UpdatedAt { get; set; } = DateTime.Now;
+
+        /// <summary>
+        /// ルールが指定されたURLにマッチするかを判定
+        /// </summary>
+        /// <param name="url">判定対象のURL</param>
+        /// <returns>マッチする場合true</returns>
+        public bool IsMatch(string url)
         {
-            return false;
-        }
-
-        // パターンを小文字に変換
-        string pattern = this.Pattern.ToLowerInvariant();
-        string targetUrl = url.ToLowerInvariant();
-
-        // ワイルドカードパターンの処理
-        if (pattern.Contains('*'))
-        {
-            return this.IsWildcardMatch(pattern, targetUrl);
-        }
-
-        // 完全一致
-        return targetUrl == pattern;
-    }
-
-    /// <summary>
-    /// ワイルドカードパターンのマッチング
-    /// </summary>
-    /// <param name="pattern">ワイルドカードを含むパターン</param>
-    /// <param name="url">判定対象のURL</param>
-    /// <returns>マッチする場合true</returns>
-    private bool IsWildcardMatch(string pattern, string url)
-    {
-        // パターンをワイルドカードで分割
-        string[] parts = pattern.Split('*', StringSplitOptions.RemoveEmptyEntries);
-
-        if (parts.Length == 0)
-        {
-            return true; // パターンが "*" のみの場合
-        }
-
-        if (parts.Length == 1)
-        {
-            // パターンが "*text" または "text*" の場合
-            if (pattern.StartsWith("*"))
-            {
-                return url.EndsWith(parts[0]);
-            }
-
-            if (pattern.EndsWith("*"))
-            {
-                return url.StartsWith(parts[0]);
-            }
-        }
-
-        // パターンが "text*" で終わる場合の特別処理
-        if (pattern.EndsWith("*") && parts.Length > 0)
-        {
-            string prefix = pattern[..^1];
-            return url.StartsWith(prefix);
-        }
-
-        // 複数のワイルドカードがある場合
-        int currentIndex = 0;
-        foreach (string part in parts)
-        {
-            int foundIndex = url.IndexOf(part, currentIndex);
-            if (foundIndex == -1)
+            if (string.IsNullOrWhiteSpace(url) || string.IsNullOrWhiteSpace(Pattern))
             {
                 return false;
             }
 
-            currentIndex = foundIndex + part.Length;
+            // パターンを大文字に変換
+            string pattern = Pattern.ToUpperInvariant();
+            string targetUrl = url.ToUpperInvariant();
+
+            // ワイルドカードパターンの処理
+            if (pattern.Contains('*', StringComparison.Ordinal))
+            {
+                return IsWildcardMatch(pattern, targetUrl);
+            }
+
+            // 完全一致
+            return targetUrl == pattern;
         }
 
-        return true;
-    }
+        /// <summary>
+        /// ワイルドカードパターンのマッチング
+        /// </summary>
+        /// <param name="pattern">ワイルドカードを含むパターン</param>
+        /// <param name="url">判定対象のURL</param>
+        /// <returns>マッチする場合true</returns>
+        private bool IsWildcardMatch(string pattern, string url)
+        {
+            // パターンをワイルドカードで分割
+            string[] parts = pattern.Split('*', StringSplitOptions.RemoveEmptyEntries);
 
-    /// <summary>
-    /// ルールの表示名を取得
-    /// </summary>
-    public string DisplayName => $"{this.Pattern} → {this.BrowserName} (優先度: {this.Priority})";
+            if (parts.Length == 0)
+            {
+                return true; // パターンが "*" のみの場合
+            }
 
-    /// <summary>
-    /// ルールの詳細情報を取得
-    /// </summary>
-    public string GetDetails()
-    {
-        string status = this.IsEnabled ? "有効" : "無効";
-        string desc = string.IsNullOrWhiteSpace(this.Description) ? "説明なし" : this.Description;
-        return $"パターン: {this.Pattern}\nブラウザ: {this.BrowserName}\n優先度: {this.Priority}\n状態: {status}\n説明: {desc}";
+            if (parts.Length == 1)
+            {
+                // パターンが "*text" または "text*" の場合
+                if (pattern.StartsWith('*'))
+                {
+                    return url.EndsWith(parts[0], StringComparison.Ordinal);
+                }
+
+                if (pattern.EndsWith('*'))
+                {
+                    return url.StartsWith(parts[0], StringComparison.Ordinal);
+                }
+            }
+
+            // パターンが "text*" で終わる場合の特別処理
+            if (pattern.EndsWith('*') && parts.Length > 0)
+            {
+                string prefix = pattern[..^1];
+                return url.StartsWith(prefix, StringComparison.Ordinal);
+            }
+
+            // 複数のワイルドカードがある場合
+            int currentIndex = 0;
+            foreach (string part in parts)
+            {
+                int foundIndex = url.IndexOf(part, currentIndex, StringComparison.Ordinal);
+                if (foundIndex == -1)
+                {
+                    return false;
+                }
+
+                currentIndex = foundIndex + part.Length;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// ルールの表示名を取得
+        /// </summary>
+        public string DisplayName => $"{Pattern} → {BrowserName} (優先度: {Priority})";
+
+        /// <summary>
+        /// ルールの詳細情報を取得
+        /// </summary>
+        public string GetDetails()
+        {
+            string status = IsEnabled ? "有効" : "無効";
+            string desc = string.IsNullOrWhiteSpace(Description) ? "説明なし" : Description;
+            return $"パターン: {Pattern}\nブラウザ: {BrowserName}\n優先度: {Priority}\n状態: {status}\n説明: {desc}";
+        }
     }
 }
-}
-

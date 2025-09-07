@@ -1,7 +1,10 @@
+// <copyright file="IUrlService.cs" company="BrowserSelector">
+// Copyright (c) BrowserSelector. All rights reserved.
+// </copyright>
 namespace BrowserSelector.Core.Services;
 
 /// <summary>
-/// URL処理サービスのインターフェース
+/// URL処琁E��ービスのインターフェース
 /// </summary>
 public interface IUrlService
 {
@@ -15,21 +18,21 @@ public interface IUrlService
 
 
     /// <summary>
-    /// URLが有効かどうかを検証する
+    /// URLが有効かどぁE��を検証する
     /// </summary>
     /// <param name="url">検証するURL</param>
-    /// <returns>有効な場合はtrue</returns>
+    /// <returns>有効な場合�Etrue</returns>
     Task<bool> ValidateUrlAsync(string url);
 
     /// <summary>
     /// URLからドメインを抽出する
     /// </summary>
     /// <param name="url">URL</param>
-    /// <returns>ドメイン名</returns>
+    /// <returns>ドメイン吁E/returns>
     string ExtractDomain(string url);
 
     /// <summary>
-    /// プロトコルを追加する（必要に応じて）
+    /// プロトコルを追加する�E�忁E��に応じて�E�E
     /// </summary>
     /// <param name="url">URL</param>
     /// <returns>プロトコルが追加されたURL</returns>

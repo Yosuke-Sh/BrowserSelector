@@ -1,11 +1,6 @@
 using FlaUI.Core;
-using FlaUI.Core.AutomationElements;
 using FlaUI.UIA3;
 using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Linq;
-using System.Threading;
 
 namespace BrowserSelector.UITests;
 
@@ -57,19 +52,19 @@ public class ActualUITests
         // 方法1: ウィンドウ名で検索
         var settingsWindow = _app.GetAllTopLevelWindows(_automation)
             .FirstOrDefault(w => w.Name.Contains("設定") || w.Name.Contains("Settings") || w.Name == "SettingsWindow");
-        
+
         if (settingsWindow != null) return settingsWindow;
 
         // 方法2: ウィンドウプロパティで検索
         settingsWindow = _app.GetAllTopLevelWindows(_automation)
             .FirstOrDefault(w => w.Properties.Name.Value.Contains("設定") || w.Properties.Name.Value.Contains("Settings"));
-        
+
         if (settingsWindow != null) return settingsWindow;
 
         // 方法3: クラス名で検索
         settingsWindow = _app.GetAllTopLevelWindows(_automation)
             .FirstOrDefault(w => w.Properties.ClassName.Value.Contains("SettingsWindow"));
-        
+
         if (settingsWindow != null) return settingsWindow;
 
         // 方法4: プロセス名とウィンドウタイトルで検索
@@ -80,11 +75,11 @@ public class ActualUITests
             {
                 var name = window.Name;
                 var className = window.Properties.ClassName.Value;
-                
+
                 // デバッグ情報を出力
                 Console.WriteLine($"検出されたウィンドウ: Name='{name}', ClassName='{className}'");
-                
-                if (name.Contains("設定") || name.Contains("Settings") || 
+
+                if (name.Contains("設定") || name.Contains("Settings") ||
                     className.Contains("SettingsWindow") || className.Contains("Window"))
                 {
                     return window;

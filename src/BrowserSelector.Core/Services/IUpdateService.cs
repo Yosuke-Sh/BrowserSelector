@@ -1,47 +1,50 @@
+// <copyright file="IUpdateService.cs" company="BrowserSelector">
+// Copyright (c) BrowserSelector. All rights reserved.
+// </copyright>
 using BrowserSelector.Core.Models;
 
 namespace BrowserSelector.Core.Services;
 
 /// <summary>
-/// 自動アップデート機能を提供するサービスのインターフェース
+/// 自動アチE�EチE�Eト機�Eを提供するサービスのインターフェース
 /// </summary>
 public interface IUpdateService : IDisposable
 {
     /// <summary>
-    /// アップデートが利用可能になった時のイベント
+    /// アチE�EチE�Eトが利用可能になった時のイベンチE
     /// </summary>
     event EventHandler<UpdateAvailableEventArgs>? UpdateAvailable;
 
     /// <summary>
-    /// アップデートをチェック
+    /// アチE�EチE�EトをチェチE��
     /// </summary>
-    /// <returns>アップデート情報</returns>
+    /// <returns>アチE�EチE�Eト情報</returns>
     Task<UpdateInfo?> CheckForUpdatesAsync();
 
     /// <summary>
-    /// アップデートをダウンロード
+    /// アチE�EチE�EトをダウンローチE
     /// </summary>
-    /// <param name="updateInfo">アップデート情報</param>
-    /// <param name="progress">進捗報告</param>
-    /// <returns>ダウンロードが成功したかどうか</returns>
+    /// <param name="updateInfo">アチE�EチE�Eト情報</param>
+    /// <param name="progress">進捗報呁E/param>
+    /// <returns>ダウンロードが成功したかどぁE��</returns>
     Task<bool> DownloadUpdateAsync(UpdateInfo updateInfo, IProgress<int>? progress = null);
 
     /// <summary>
-    /// アップデートをインストール
+    /// アチE�EチE�Eトをインスト�Eル
     /// </summary>
-    /// <param name="updateInfo">アップデート情報</param>
-    /// <returns>インストールが成功したかどうか</returns>
+    /// <param name="updateInfo">アチE�EチE�Eト情報</param>
+    /// <returns>インスト�Eルが�E功したかどぁE��</returns>
     Task<bool> InstallUpdateAsync(UpdateInfo updateInfo);
 
     /// <summary>
-    /// アップデートをロールバック
+    /// アチE�EチE�Eトをロールバック
     /// </summary>
-    /// <returns>ロールバックが成功したかどうか</returns>
+    /// <returns>ロールバックが�E功したかどぁE��</returns>
     Task<bool> RollbackUpdateAsync();
 
     /// <summary>
-    /// バックアップを作成
+    /// バックアチE�Eを作�E
     /// </summary>
-    /// <returns>バックアップが成功したかどうか</returns>
+    /// <returns>バックアチE�Eが�E功したかどぁE��</returns>
     bool CreateBackup();
 }

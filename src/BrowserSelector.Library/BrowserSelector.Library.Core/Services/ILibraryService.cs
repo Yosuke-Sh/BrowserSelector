@@ -1,5 +1,4 @@
 using BrowserSelector.Core.Models;
-using BrowserSelector.Core.Services;
 
 namespace BrowserSelector.Library.Core.Services;
 

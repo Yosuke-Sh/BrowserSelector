@@ -27,15 +27,15 @@ public class SimplePerformanceBenchmarks
     public TimeSpan UrlValidationResponseTime(string url)
     {
         var stopwatch = Stopwatch.StartNew();
-        
+
         try
         {
             // URL検証のシミュレーション
-            var isValid = Uri.TryCreate(url, UriKind.Absolute, out var uri) && 
+            var isValid = Uri.TryCreate(url, UriKind.Absolute, out var uri) &&
                          (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
-            
+
             stopwatch.Stop();
-            
+
             Console.WriteLine($"URL検証結果: {url} -> {isValid}");
         }
         catch (Exception ex)
@@ -53,14 +53,14 @@ public class SimplePerformanceBenchmarks
     [Benchmark]
     public long MemoryUsage()
     {
-        // ガベージコレクション実行
-        GC.Collect();
+        // ガベージコレクション実行（パフォーマンステストのため）
+        GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true);
         GC.WaitForPendingFinalizers();
-        GC.Collect();
-        
+        GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true);
+
         var memory = GC.GetTotalMemory(false);
         Console.WriteLine($"メモリ使用量: {memory / 1024 / 1024} MB");
-        
+
         return memory;
     }
 
@@ -81,18 +81,18 @@ public class SimplePerformanceBenchmarks
             {
                 data.Add($"Test data item {i}");
             }
-            
+
             // データ処理のシミュレーション
-            var processedData = data.Where(x => x.Contains("Test")).ToList();
-            
-            // ガベージコレクション実行
-            GC.Collect();
+            _ = data.Where(x => x.Contains("Test", StringComparison.Ordinal)).ToList();
+
+            // ガベージコレクション実行（パフォーマンステストのため）
+            GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true);
             GC.WaitForPendingFinalizers();
-            GC.Collect();
-            
+            GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true);
+
             var memory = GC.GetTotalMemory(false);
             Console.WriteLine($"大量データ処理後メモリ使用量: {memory / 1024 / 1024} MB (データ数: {dataCount})");
-            
+
             return memory;
         }
         catch (Exception ex)
@@ -109,7 +109,7 @@ public class SimplePerformanceBenchmarks
     public TimeSpan GarbageCollectionEfficiency()
     {
         var stopwatch = Stopwatch.StartNew();
-        
+
         try
         {
             // 大量のオブジェクトを生成
@@ -118,20 +118,20 @@ public class SimplePerformanceBenchmarks
             {
                 objects.Add(new { Id = i, Data = new string('x', 100) });
             }
-            
+
             // オブジェクトをクリア
             objects.Clear();
             objects = null;
-            
-            // ガベージコレクション実行
+
+            // ガベージコレクション実行（パフォーマンステストのため）
             stopwatch.Restart();
-            GC.Collect();
+            GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true);
             GC.WaitForPendingFinalizers();
-            GC.Collect();
+            GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true);
             stopwatch.Stop();
-            
+
             Console.WriteLine($"ガベージコレクション時間: {stopwatch.ElapsedMilliseconds} ms");
-            
+
             return stopwatch.Elapsed;
         }
         catch (Exception ex)

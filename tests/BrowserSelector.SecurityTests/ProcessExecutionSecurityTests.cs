@@ -1,8 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using FluentAssertions;
+using System;
+using System.Linq;
 using Xunit;
 
 namespace BrowserSelector.SecurityTests;
@@ -26,7 +24,7 @@ public class ProcessExecutionSecurityTests
     {
         // Arrange
         var isValidPath = IsValidExecutablePath(validPath);
-        
+
         // Act & Assert
         isValidPath.Should().BeTrue($"有効なブラウザ実行パス '{validPath}' は受け入れられるべきです");
     }
@@ -49,7 +47,7 @@ public class ProcessExecutionSecurityTests
     {
         // Arrange
         var isValidPath = IsValidExecutablePath(dangerousPath);
-        
+
         // Act & Assert
         isValidPath.Should().BeFalse($"危険な実行パス '{dangerousPath}' は拒否されるべきです");
     }
@@ -70,7 +68,7 @@ public class ProcessExecutionSecurityTests
     {
         // Arrange
         var isValidPath = IsValidExecutablePath(invalidPath);
-        
+
         // Act & Assert
         isValidPath.Should().BeFalse($"無効な実行パス '{invalidPath}' は拒否されるべきです");
     }
@@ -91,7 +89,7 @@ public class ProcessExecutionSecurityTests
     {
         // Arrange
         var isValidArgument = IsValidCommandLineArgument(validArgument);
-        
+
         // Act & Assert
         isValidArgument.Should().BeTrue($"有効なコマンドライン引数 '{validArgument}' は受け入れられるべきです");
     }
@@ -112,7 +110,7 @@ public class ProcessExecutionSecurityTests
     {
         // Arrange
         var isValidArgument = IsValidCommandLineArgument(dangerousArgument);
-        
+
         // Act & Assert
         isValidArgument.Should().BeFalse($"危険なコマンドライン引数 '{dangerousArgument}' は拒否されるべきです");
     }
@@ -131,7 +129,7 @@ public class ProcessExecutionSecurityTests
     {
         // Arrange
         var isValidArgument = IsValidCommandLineArgument(invalidArgument);
-        
+
         // Act & Assert
         isValidArgument.Should().BeFalse($"無効なコマンドライン引数 '{invalidArgument}' は拒否されるべきです");
     }
@@ -144,10 +142,10 @@ public class ProcessExecutionSecurityTests
     {
         // Arrange
         var longArgument = "https://example.com/" + new string('a', 10000);
-        
+
         // Act
         var isValidArgument = IsValidCommandLineArgument(longArgument);
-        
+
         // Assert
         isValidArgument.Should().BeFalse("長すぎるコマンドライン引数は拒否されるべきです");
     }
@@ -161,10 +159,10 @@ public class ProcessExecutionSecurityTests
         // Arrange
         var validPath = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
         var validArguments = "https://www.google.com";
-        
+
         // Act
         var canExecute = CanExecuteProcess(validPath, validArguments);
-        
+
         // Assert
         canExecute.Should().BeTrue("有効なプロセスは実行できるべきです");
     }
@@ -182,7 +180,7 @@ public class ProcessExecutionSecurityTests
     {
         // Act
         var canExecute = CanExecuteProcess(dangerousPath, dangerousArguments);
-        
+
         // Assert
         canExecute.Should().BeFalse($"危険なプロセス '{dangerousPath}' の実行は拒否されるべきです");
     }
@@ -195,10 +193,10 @@ public class ProcessExecutionSecurityTests
     {
         // Arrange
         var validPath = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
-        
+
         // Act
         var hasPermission = HasExecutionPermission(validPath);
-        
+
         // Assert
         hasPermission.Should().BeTrue("有効なプロセスには実行権限があるべきです");
     }
@@ -216,7 +214,7 @@ public class ProcessExecutionSecurityTests
     {
         // Act
         var hasPermission = HasExecutionPermission(dangerousPath);
-        
+
         // Assert
         hasPermission.Should().BeFalse($"危険なプロセス '{dangerousPath}' には実行権限がないべきです");
     }

@@ -1,7 +1,7 @@
-using BenchmarkDotNet.Running;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Exporters;
 using BenchmarkDotNet.Loggers;
+using BenchmarkDotNet.Running;
 using System;
 
 namespace BrowserSelector.PerformanceTests;
@@ -26,7 +26,7 @@ public class Program
         {
             // 基本的なパフォーマンステストの実行
             Console.WriteLine("1. 基本パフォーマンステストを実行中...");
-            var results = BenchmarkRunner.Run<SimplePerformanceBenchmarks>(config);
+            _ = BenchmarkRunner.Run<SimplePerformanceBenchmarks>(config);
             Console.WriteLine("基本パフォーマンステスト完了");
             Console.WriteLine();
 

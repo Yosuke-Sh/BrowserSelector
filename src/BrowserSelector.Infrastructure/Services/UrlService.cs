@@ -8,15 +8,12 @@ namespace BrowserSelector.Infrastructure.Services;
 /// </summary>
 public class UrlService : IUrlService
 {
-    private readonly HttpClient _httpClient;
-    private readonly ISettingsService _settingsService;
     private readonly ILogService? _logService;
 
     public UrlService(ISettingsService settingsService, ILogService? logService = null)
     {
-        _settingsService = settingsService;
         _logService = logService;
-        _httpClient = new HttpClient
+        using var httpClient = new HttpClient
         {
             Timeout = TimeSpan.FromSeconds(10)
         };

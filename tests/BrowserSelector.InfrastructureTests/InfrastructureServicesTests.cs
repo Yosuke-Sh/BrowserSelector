@@ -1,8 +1,8 @@
+using BrowserSelector.Core.Enums;
 using BrowserSelector.Core.Models;
 using BrowserSelector.Core.Services;
-using BrowserSelector.Core.Enums;
-using BrowserSelector.Infrastructure.Services;
 using BrowserSelector.Infrastructure.Logging;
+using BrowserSelector.Infrastructure.Services;
 using FluentAssertions;
 using Moq;
 
@@ -24,15 +24,13 @@ public class InfrastructureServicesTests
 
         var expectedBrowsers = new List<Browser>
         {
-            new Browser
-            {
+            new() {
                 Name = "Google Chrome",
                 ExecutablePath = @"C:\Program Files\Google\Chrome\Application\chrome.exe",
                 Type = BrowserType.Chrome,
                 DisplayOrder = 1
             },
-            new Browser
-            {
+            new() {
                 Name = "Mozilla Firefox",
                 ExecutablePath = @"C:\Program Files\Mozilla Firefox\firefox.exe",
                 Type = BrowserType.Firefox,

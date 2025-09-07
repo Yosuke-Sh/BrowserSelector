@@ -1,8 +1,6 @@
 using FlaUI.Core;
-using FlaUI.Core.AutomationElements;
 using FlaUI.UIA3;
 using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BrowserSelector.UITests;
 
@@ -30,7 +28,7 @@ public class OptimizedUITests
 
             _app = Application.Launch(appPath);
             _automation = new UIA3Automation();
-            
+
             // アプリケーションの起動を待機
             System.Threading.Thread.Sleep(2000);
         }
@@ -83,7 +81,7 @@ public class OptimizedUITests
 
         urlInput!.Click();
         System.Threading.Thread.Sleep(500);
-        
+
         // キーボード入力でURLを設定
         FlaUI.Core.Input.Keyboard.Type("https://www.google.com");
         System.Threading.Thread.Sleep(500);

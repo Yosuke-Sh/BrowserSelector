@@ -1,9 +1,8 @@
-using Xunit;
+using BrowserSelector.App;
+using BrowserSelector.App.DependencyInjection;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using BrowserSelector.App;
-using BrowserSelector.App.DependencyInjection;
 
 namespace BrowserSelector.AppTests;
 
@@ -18,7 +17,7 @@ public class AppTests : IDisposable
     public AppTests()
     {
         var services = new ServiceCollection();
-        
+
         // テスト用のログ設定
         services.AddLogging(builder =>
         {
@@ -27,7 +26,7 @@ public class AppTests : IDisposable
 
         // Appプロジェクトの依存関係を設定
         services.AddBrowserSelectorServices();
-        
+
         _serviceProvider = services.BuildServiceProvider();
     }
 
@@ -41,11 +40,11 @@ public class AppTests : IDisposable
 
         // Assert
         provider.Should().NotBeNull();
-        
+
         // 主要なサービスの登録を確認（AppSettingsは直接登録されていないため、他のサービスを確認）
         var browserService = provider.GetService<BrowserSelector.Core.Services.IBrowserService>();
         browserService.Should().NotBeNull();
-        
+
         var settingsService = provider.GetService<BrowserSelector.Core.Services.ISettingsService>();
         settingsService.Should().NotBeNull();
     }
@@ -55,7 +54,7 @@ public class AppTests : IDisposable
     {
         // Arrange & Act
         var programType = typeof(Program);
-        
+
         // Assert
         programType.Should().NotBeNull();
         programType.Name.Should().Be("Program");
@@ -66,7 +65,7 @@ public class AppTests : IDisposable
     {
         // Arrange & Act
         var assembly = typeof(Program).Assembly;
-        
+
         // Assert
         assembly.Should().NotBeNull();
         assembly.GetName().Name.Should().Be("BrowserSelector.App");
@@ -82,35 +81,35 @@ public class AppTests : IDisposable
 
         // Assert
         provider.Should().NotBeNull();
-        
+
         // すべての主要サービスの登録を確認
         var browserService = provider.GetService<BrowserSelector.Core.Services.IBrowserService>();
         browserService.Should().NotBeNull();
-        
+
         var settingsService = provider.GetService<BrowserSelector.Core.Services.ISettingsService>();
         settingsService.Should().NotBeNull();
-        
+
         var localizationService = provider.GetService<BrowserSelector.Core.Services.ILocalizationService>();
         localizationService.Should().NotBeNull();
-        
+
         var customLanguageService = provider.GetService<BrowserSelector.Core.Services.ICustomLanguageService>();
         customLanguageService.Should().NotBeNull();
-        
+
         var urlRuleService = provider.GetService<BrowserSelector.Core.Services.IUrlRuleService>();
         urlRuleService.Should().NotBeNull();
-        
+
         var urlService = provider.GetService<BrowserSelector.Core.Services.IUrlService>();
         urlService.Should().NotBeNull();
-        
+
         var logService = provider.GetService<BrowserSelector.Core.Services.ILogService>();
         logService.Should().NotBeNull();
-        
+
         var protocolHandler = provider.GetService<BrowserSelector.Core.Services.IProtocolHandler>();
         protocolHandler.Should().NotBeNull();
-        
+
         var systemTrayService = provider.GetService<BrowserSelector.Core.Services.ISystemTrayService>();
         systemTrayService.Should().NotBeNull();
-        
+
         var updateService = provider.GetService<BrowserSelector.Core.Services.IUpdateService>();
         updateService.Should().NotBeNull();
     }
@@ -125,14 +124,14 @@ public class AppTests : IDisposable
 
         // Assert
         provider.Should().NotBeNull();
-        
+
         // ViewModelの登録を確認
         var mainViewModel = provider.GetService<BrowserSelector.Presentation.ViewModels.MainViewModel>();
         mainViewModel.Should().NotBeNull();
-        
+
         var settingsViewModel = provider.GetService<BrowserSelector.Presentation.ViewModels.SettingsViewModel>();
         settingsViewModel.Should().NotBeNull();
-        
+
         var languageManagementViewModel = provider.GetService<BrowserSelector.Presentation.ViewModels.LanguageManagementViewModel>();
         languageManagementViewModel.Should().NotBeNull();
     }
@@ -147,11 +146,11 @@ public class AppTests : IDisposable
 
         // Assert
         provider.Should().NotBeNull();
-        
+
         // 同じインスタンスが返されることを確認（Scopedサービスの場合）
         var browserService1 = provider.GetService<BrowserSelector.Core.Services.IBrowserService>();
         var browserService2 = provider.GetService<BrowserSelector.Core.Services.IBrowserService>();
-        
+
         // 注意: 実際のライフタイムは実装によって異なる可能性があります
         browserService1.Should().NotBeNull();
         browserService2.Should().NotBeNull();
@@ -307,11 +306,11 @@ public class AppTests : IDisposable
     {
         // Arrange & Act
         var services = new ServiceCollection();
-        
+
         // Assert - 例外が発生しないことを確認
         var act = () => services.AddBrowserSelectorServices();
         act.Should().NotThrow();
-        
+
         var provider = services.BuildServiceProvider();
         provider.Should().NotBeNull();
     }
@@ -326,11 +325,11 @@ public class AppTests : IDisposable
 
         // Assert
         provider.Should().NotBeNull();
-        
+
         // サービスのライフタイムを確認
         var browserService = provider.GetService<BrowserSelector.Core.Services.IBrowserService>();
         browserService.Should().NotBeNull();
-        
+
         // 同じプロバイダーから再度取得してインスタンスを確認
         var browserService2 = provider.GetService<BrowserSelector.Core.Services.IBrowserService>();
         browserService2.Should().NotBeNull();
@@ -346,7 +345,7 @@ public class AppTests : IDisposable
 
         // Assert
         provider.Should().NotBeNull();
-        
+
         // すべての主要インターフェースの登録を確認
         var interfaces = new[]
         {
@@ -380,7 +379,7 @@ public class AppTests : IDisposable
 
         // Assert
         provider.Should().NotBeNull();
-        
+
         // ViewModelの型を確認
         var mainViewModel = provider.GetService<BrowserSelector.Presentation.ViewModels.MainViewModel>();
         mainViewModel.Should().NotBeNull();
@@ -405,7 +404,7 @@ public class AppTests : IDisposable
 
         // Assert
         provider.Should().NotBeNull();
-        
+
         // 実装型の確認
         var browserService = provider.GetService<BrowserSelector.Core.Services.IBrowserService>();
         browserService.Should().NotBeNull();
@@ -434,7 +433,7 @@ public class AppTests : IDisposable
 
         // Assert
         provider.Should().NotBeNull();
-        
+
         // すべてのサービスがnullでないことを確認
         var allServices = new object?[]
         {
@@ -467,17 +466,17 @@ public class AppTests : IDisposable
 
         // Assert
         provider.Should().NotBeNull();
-        
+
         // 依存関係の確認
         var browserService = provider.GetService<BrowserSelector.Core.Services.IBrowserService>();
         browserService.Should().NotBeNull();
-        
+
         var settingsService = provider.GetService<BrowserSelector.Core.Services.ISettingsService>();
         settingsService.Should().NotBeNull();
-        
+
         var logService = provider.GetService<BrowserSelector.Core.Services.ILogService>();
         logService.Should().NotBeNull();
-        
+
         // サービス間の依存関係が正しく解決されることを確認
         var mainViewModel = provider.GetService<BrowserSelector.Presentation.ViewModels.MainViewModel>();
         mainViewModel.Should().NotBeNull();

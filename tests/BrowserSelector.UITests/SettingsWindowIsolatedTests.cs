@@ -1,8 +1,6 @@
 using FlaUI.Core;
-using FlaUI.Core.AutomationElements;
 using FlaUI.UIA3;
 using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BrowserSelector.UITests;
 
@@ -30,7 +28,7 @@ public class SettingsWindowIsolatedTests
 
             _app = Application.Launch(appPath);
             _automation = new UIA3Automation();
-            
+
             // アプリケーションの起動を待機
             System.Threading.Thread.Sleep(2000);
         }
@@ -57,19 +55,19 @@ public class SettingsWindowIsolatedTests
         // 方法1: ウィンドウ名で検索
         var settingsWindow = _app.GetAllTopLevelWindows(_automation)
             .FirstOrDefault(w => w.Name.Contains("設定") || w.Name.Contains("Settings") || w.Name == "SettingsWindow");
-        
+
         if (settingsWindow != null) return settingsWindow;
 
         // 方法2: ウィンドウプロパティで検索
         settingsWindow = _app.GetAllTopLevelWindows(_automation)
             .FirstOrDefault(w => w.Properties.Name.Value.Contains("設定") || w.Properties.Name.Value.Contains("Settings"));
-        
+
         if (settingsWindow != null) return settingsWindow;
 
         // 方法3: クラス名で検索
         settingsWindow = _app.GetAllTopLevelWindows(_automation)
             .FirstOrDefault(w => w.Properties.ClassName.Value.Contains("SettingsWindow"));
-        
+
         if (settingsWindow != null) return settingsWindow;
 
         // 方法4: プロセス名とウィンドウタイトルで検索
@@ -80,11 +78,11 @@ public class SettingsWindowIsolatedTests
             {
                 var name = window.Name;
                 var className = window.Properties.ClassName.Value;
-                
+
                 // デバッグ情報を出力
                 Console.WriteLine($"検出されたウィンドウ: Name='{name}', ClassName='{className}'");
-                
-                if (name.Contains("設定") || name.Contains("Settings") || 
+
+                if (name.Contains("設定") || name.Contains("Settings") ||
                     className.Contains("SettingsWindow") || className.Contains("Window"))
                 {
                     return window;
@@ -119,7 +117,7 @@ public class SettingsWindowIsolatedTests
         // Assert - 設定ウィンドウが開かれること
         var settingsWindow = FindSettingsWindow();
         _ = settingsWindow.Should().NotBeNull("設定ウィンドウが開かれること");
-        
+
         // ウィンドウの詳細情報を出力
         Console.WriteLine($"設定ウィンドウ検出成功: Name='{settingsWindow!.Name}', ClassName='{settingsWindow.Properties.ClassName.Value}'");
     }
@@ -201,12 +199,12 @@ public class SettingsWindowIsolatedTests
             .Or(cf.ByName("保存"))
             .Or(cf.ByName("OK"))
             .Or(cf.ByControlType(FlaUI.Core.Definitions.ControlType.Button).And(cf.ByName("保存"))));
-        
+
         var cancelButton = settingsWindow.FindFirstDescendant(cf => cf.ByName("CancelSettingsButton")
             .Or(cf.ByName("キャンセル"))
             .Or(cf.ByName("Cancel"))
             .Or(cf.ByControlType(FlaUI.Core.Definitions.ControlType.Button).And(cf.ByName("キャンセル"))));
-        
+
         var resetButton = settingsWindow.FindFirstDescendant(cf => cf.ByName("ResetSettingsButton")
             .Or(cf.ByName("リセット"))
             .Or(cf.ByName("Reset"))

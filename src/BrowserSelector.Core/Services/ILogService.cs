@@ -1,3 +1,6 @@
+// <copyright file="ILogService.cs" company="BrowserSelector">
+// Copyright (c) BrowserSelector. All rights reserved.
+// </copyright>
 using BrowserSelector.Core.Enums;
 using BrowserSelector.Core.Models;
 
@@ -9,42 +12,42 @@ namespace BrowserSelector.Core.Services;
 public interface ILogService
 {
     /// <summary>
-    /// トレースレベルのログを出力
+    /// トレースレベルのログを�E劁E
     /// </summary>
     void LogTrace(string message, string? category = null, Exception? exception = null);
 
     /// <summary>
-    /// デバッグレベルのログを出力
+    /// チE��チE��レベルのログを�E劁E
     /// </summary>
     void LogDebug(string message, string? category = null, Exception? exception = null);
 
     /// <summary>
-    /// 情報レベルのログを出力
+    /// 惁E��レベルのログを�E劁E
     /// </summary>
     void LogInformation(string message, string? category = null, Exception? exception = null);
 
     /// <summary>
-    /// 警告レベルのログを出力
+    /// 警告レベルのログを�E劁E
     /// </summary>
     void LogWarning(string message, string? category = null, Exception? exception = null);
 
     /// <summary>
-    /// エラーレベルのログを出力
+    /// エラーレベルのログを�E劁E
     /// </summary>
     void LogError(string message, string? category = null, Exception? exception = null);
 
     /// <summary>
-    /// 致命的エラーレベルのログを出力
+    /// 致命皁E��ラーレベルのログを�E劁E
     /// </summary>
     void LogCritical(string message, string? category = null, Exception? exception = null);
 
     /// <summary>
-    /// 指定されたレベルのログを出力
+    /// 持E��されたレベルのログを�E劁E
     /// </summary>
     void Log(LogLevel level, string message, string? category = null, Exception? exception = null);
 
     /// <summary>
-    /// 詳細情報付きのログを出力
+    /// 詳細惁E��付きのログを�E劁E
     /// </summary>
     void LogDetailed(LogLevel level, string message, string? category = null,
                     string? eventId = null, string? requestTarget = null, string? userInfo = null,
@@ -62,17 +65,17 @@ public interface ILogService
     void ClearLogs();
 
     /// <summary>
-    /// 古いログファイルを削除
+    /// 古ぁE��グファイルを削除
     /// </summary>
     void CleanupOldLogs();
 
     /// <summary>
-    /// ログファイルの内容を取得
+    /// ログファイルの冁E��を取征E
     /// </summary>
     string GetLogContent(int maxLines = 1000);
 
     /// <summary>
-    /// ログファイルのパスを取得
+    /// ログファイルのパスを取征E
     /// </summary>
     string GetLogFilePath();
 }

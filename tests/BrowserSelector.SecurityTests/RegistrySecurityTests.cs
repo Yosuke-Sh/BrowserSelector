@@ -1,7 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using FluentAssertions;
+using System;
+using System.Linq;
 using Xunit;
 
 namespace BrowserSelector.SecurityTests;
@@ -24,7 +23,7 @@ public class RegistrySecurityTests
     {
         // Arrange
         var isValidKey = IsValidRegistryKey(validKey);
-        
+
         // Act & Assert
         isValidKey.Should().BeTrue($"有効なレジストリキー '{validKey}' は受け入れられるべきです");
     }
@@ -44,7 +43,7 @@ public class RegistrySecurityTests
     {
         // Arrange
         var isValidKey = IsValidRegistryKey(dangerousKey);
-        
+
         // Act & Assert
         isValidKey.Should().BeFalse($"危険なレジストリキー '{dangerousKey}' は拒否されるべきです");
     }
@@ -64,7 +63,7 @@ public class RegistrySecurityTests
     {
         // Arrange
         var isValidKey = IsValidRegistryKey(invalidKey);
-        
+
         // Act & Assert
         isValidKey.Should().BeFalse($"無効なレジストリキー '{invalidKey}' は拒否されるべきです");
     }
@@ -82,7 +81,7 @@ public class RegistrySecurityTests
     {
         // Arrange
         var isValidValue = IsValidRegistryValue(validValue);
-        
+
         // Act & Assert
         isValidValue.Should().BeTrue($"有効なレジストリ値 '{validValue}' は受け入れられるべきです");
     }
@@ -104,7 +103,7 @@ public class RegistrySecurityTests
     {
         // Arrange
         var isValidValue = IsValidRegistryValue(dangerousValue);
-        
+
         // Act & Assert
         isValidValue.Should().BeFalse($"危険なレジストリ値 '{dangerousValue}' は拒否されるべきです");
     }
@@ -123,7 +122,7 @@ public class RegistrySecurityTests
     {
         // Arrange
         var isValidData = IsValidRegistryData(validData);
-        
+
         // Act & Assert
         isValidData.Should().BeTrue($"有効なレジストリデータ '{validData}' は受け入れられるべきです");
     }
@@ -145,7 +144,7 @@ public class RegistrySecurityTests
     {
         // Arrange
         var isValidData = IsValidRegistryData(dangerousData);
-        
+
         // Act & Assert
         isValidData.Should().BeFalse($"危険なレジストリデータ '{dangerousData}' は拒否されるべきです");
     }
@@ -158,10 +157,10 @@ public class RegistrySecurityTests
     {
         // Arrange
         var longKey = "HKEY_CURRENT_USER\\Software\\" + new string('a', 300);
-        
+
         // Act
         var isValidKey = IsValidRegistryKey(longKey);
-        
+
         // Assert
         isValidKey.Should().BeFalse("長すぎるレジストリキーは拒否されるべきです");
     }
@@ -174,10 +173,10 @@ public class RegistrySecurityTests
     {
         // Arrange
         var longValue = new string('a', 1000);
-        
+
         // Act
         var isValidValue = IsValidRegistryValue(longValue);
-        
+
         // Assert
         isValidValue.Should().BeFalse("長すぎるレジストリ値は拒否されるべきです");
     }
@@ -190,10 +189,10 @@ public class RegistrySecurityTests
     {
         // Arrange
         var longData = new string('a', 10000);
-        
+
         // Act
         var isValidData = IsValidRegistryData(longData);
-        
+
         // Assert
         isValidData.Should().BeFalse("長すぎるレジストリデータは拒否されるべきです");
     }

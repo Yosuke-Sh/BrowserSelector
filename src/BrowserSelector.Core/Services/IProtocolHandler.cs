@@ -1,9 +1,12 @@
+// <copyright file="IProtocolHandler.cs" company="BrowserSelector">
+// Copyright (c) BrowserSelector. All rights reserved.
+// </copyright>
 using BrowserSelector.Core.Models;
 
 namespace BrowserSelector.Core.Services;
 
 /// <summary>
-/// プロトコルハンドラーを管理するサービスのインターフェース
+/// プロトコルハンドラーを管琁E��るサービスのインターフェース
 /// </summary>
 public interface IProtocolHandler
 {
@@ -11,19 +14,19 @@ public interface IProtocolHandler
     /// プロトコルを登録
     /// </summary>
     /// <param name="applicationPath">アプリケーションのパス</param>
-    /// <returns>登録が成功したかどうか</returns>
+    /// <returns>登録が�E功したかどぁE��</returns>
     bool RegisterProtocol(string applicationPath);
 
     /// <summary>
     /// プロトコルを登録解除
     /// </summary>
-    /// <returns>登録解除が成功したかどうか</returns>
+    /// <returns>登録解除が�E功したかどぁE��</returns>
     bool UnregisterProtocol();
 
     /// <summary>
-    /// プロトコルが登録されているかチェック
+    /// プロトコルが登録されてぁE��かチェチE��
     /// </summary>
-    /// <returns>登録されているかどうか</returns>
+    /// <returns>登録されてぁE��かどぁE��</returns>
     bool IsProtocolRegistered();
 
     /// <summary>
@@ -34,15 +37,15 @@ public interface IProtocolHandler
     string? ExtractUrlFromProtocol(string protocolUrl);
 
     /// <summary>
-    /// プロトコルURLを生成
+    /// プロトコルURLを生戁E
     /// </summary>
-    /// <param name="url">元のURL</param>
+    /// <param name="url">允E�EURL</param>
     /// <returns>プロトコルURL</returns>
     string CreateProtocolUrl(string url);
 
     /// <summary>
-    /// プロトコル登録情報を取得
+    /// プロトコル登録惁E��を取征E
     /// </summary>
-    /// <returns>登録情報</returns>
+    /// <returns>登録惁E��</returns>
     ProtocolRegistrationInfo? GetProtocolRegistrationInfo();
 }

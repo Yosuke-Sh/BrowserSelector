@@ -275,7 +275,7 @@ public class ServiceIntegrationTests : IDisposable
         // Act
         await settingsService.SaveAppSettingsAsync(testSettings).ConfigureAwait(false);
         await settingsService.ExportSettingsAsync(exportPath).ConfigureAwait(false);
-        
+
         // 新しい設定で上書き
         var newSettings = new AppSettings
         {
@@ -283,7 +283,7 @@ public class ServiceIntegrationTests : IDisposable
             CustomProtocol = "new"
         };
         await settingsService.SaveAppSettingsAsync(newSettings).ConfigureAwait(false);
-        
+
         // 設定をインポート
         await settingsService.ImportSettingsAsync(exportPath).ConfigureAwait(false);
         var importedSettings = await settingsService.LoadAppSettingsAsync().ConfigureAwait(false);

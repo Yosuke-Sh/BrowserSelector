@@ -32,7 +32,7 @@ public class LibraryService : ILibraryService
     public async Task<bool> ValidateBrowserAsync(Browser browser)
     {
         _logService?.LogTrace($"ブラウザ検証開始: {browser.Name}", "LibraryService");
-        
+
         try
         {
             // 基本検証
@@ -79,7 +79,7 @@ public class LibraryService : ILibraryService
     public async Task<string> NormalizeUrlAsync(string url)
     {
         _logService?.LogTrace($"URL正規化開始: {url}", "LibraryService");
-        
+
         try
         {
             if (string.IsNullOrWhiteSpace(url))
@@ -123,7 +123,7 @@ public class LibraryService : ILibraryService
     public async Task<bool> ValidateSettingsAsync(AppSettings settings)
     {
         _logService?.LogTrace("アプリケーション設定検証開始", "LibraryService");
-        
+
         try
         {
             if (settings == null)
@@ -172,7 +172,7 @@ public class LibraryService : ILibraryService
     public async Task<bool> ValidateVisualSettingsAsync(VisualSettings settings)
     {
         _logService?.LogTrace("ビジュアル設定検証開始", "LibraryService");
-        
+
         try
         {
             if (settings == null)
@@ -220,7 +220,7 @@ public class LibraryService : ILibraryService
     public async Task<bool> ValidateUrlRuleAsync(UrlRule rule)
     {
         _logService?.LogTrace($"URLルール検証開始: {rule.Pattern}", "LibraryService");
-        
+
         try
         {
             if (rule == null)
@@ -277,7 +277,7 @@ public class LibraryService : ILibraryService
     public async Task<bool> ValidateLogSettingsAsync(LogSettings settings)
     {
         _logService?.LogTrace("ログ設定検証開始", "LibraryService");
-        
+
         try
         {
             if (settings == null)
@@ -287,7 +287,7 @@ public class LibraryService : ILibraryService
             }
 
             // ログレベルの検証
-            if (settings.LogLevel < BrowserSelector.Core.Enums.LogLevel.Trace || 
+            if (settings.LogLevel < BrowserSelector.Core.Enums.LogLevel.Trace ||
                 settings.LogLevel > BrowserSelector.Core.Enums.LogLevel.Critical)
             {
                 _logService?.LogWarning($"無効なログレベル: {settings.LogLevel}", "LibraryService");

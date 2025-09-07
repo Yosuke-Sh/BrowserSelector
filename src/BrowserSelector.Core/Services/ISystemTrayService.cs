@@ -1,47 +1,50 @@
+// <copyright file="ISystemTrayService.cs" company="BrowserSelector">
+// Copyright (c) BrowserSelector. All rights reserved.
+// </copyright>
 using BrowserSelector.Core.Models;
 
 namespace BrowserSelector.Core.Services;
 
 /// <summary>
-/// システムトレイ機能を提供するサービスのインターフェース
+/// シスチE��トレイ機�Eを提供するサービスのインターフェース
 /// </summary>
 public interface ISystemTrayService
 {
     /// <summary>
-    /// システムトレイアクションが発生した時のイベント
+    /// シスチE��トレイアクションが発生した時のイベンチE
     /// </summary>
     event EventHandler<SystemTrayEventArgs>? SystemTrayAction;
 
     /// <summary>
-    /// システムトレイアイコンを初期化
+    /// シスチE��トレイアイコンを�E期化
     /// </summary>
     /// <param name="iconPath">アイコンファイルのパス</param>
-    /// <param name="tooltipText">ツールチップテキスト</param>
+    /// <param name="tooltipText">チE�EルチップテキスチE/param>
     void InitializeSystemTray(string iconPath, string tooltipText);
 
     /// <summary>
-    /// システムトレイアイコンを表示
+    /// シスチE��トレイアイコンを表示
     /// </summary>
     void ShowSystemTray();
 
     /// <summary>
-    /// システムトレイアイコンを非表示
+    /// シスチE��トレイアイコンを非表示
     /// </summary>
     void HideSystemTray();
 
     /// <summary>
-    /// バルーンティップを表示
+    /// バルーンチE��チE�Eを表示
     /// </summary>
     /// <param name="title">タイトル</param>
-    /// <param name="text">テキスト</param>
-    /// <param name="icon">アイコンタイプ</param>
-    /// <param name="timeout">表示時間（ミリ秒）</param>
+    /// <param name="text">チE��スチE/param>
+    /// <param name="icon">アイコンタイチE/param>
+    /// <param name="timeout">表示時間�E�ミリ秒！E/param>
     void ShowBalloonTip(string title, string text, System.Windows.Forms.ToolTipIcon icon = System.Windows.Forms.ToolTipIcon.Info, int timeout = 3000);
 
     /// <summary>
-    /// コンテキストメニューを更新
+    /// コンチE��ストメニューを更新
     /// </summary>
-    /// <param name="menuItems">メニューアイテム</param>
+    /// <param name="menuItems">メニューアイチE��</param>
     void UpdateContextMenu(SystemTrayMenuItems menuItems);
 }
 

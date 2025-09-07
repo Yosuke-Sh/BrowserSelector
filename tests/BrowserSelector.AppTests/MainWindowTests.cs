@@ -1,9 +1,7 @@
-using Xunit;
-using FluentAssertions;
-using System.Windows;
-using System.Reflection;
 using BrowserSelector.App;
-using System.Linq;
+using FluentAssertions;
+using System.Reflection;
+using System.Windows;
 
 namespace BrowserSelector.AppTests;
 
@@ -18,7 +16,7 @@ public class MainWindowTests
     {
         // Arrange & Act
         var mainWindowType = typeof(MainWindow);
-        
+
         // Assert
         mainWindowType.Should().NotBeNull();
         mainWindowType.BaseType.Should().Be(typeof(Window));
@@ -30,7 +28,7 @@ public class MainWindowTests
         // Arrange & Act
         var mainWindowType = typeof(MainWindow);
         var initializeComponentMethod = mainWindowType.GetMethod("InitializeComponent", BindingFlags.Public | BindingFlags.Instance);
-        
+
         // Assert
         initializeComponentMethod.Should().NotBeNull();
         initializeComponentMethod.ReturnType.Should().Be(typeof(void));
@@ -42,7 +40,7 @@ public class MainWindowTests
         // Arrange & Act
         var mainWindowType = typeof(MainWindow);
         var constructors = mainWindowType.GetConstructors();
-        
+
         // Assert
         constructors.Should().NotBeEmpty();
         constructors.Should().Contain(c => c.GetParameters().Length == 0);
@@ -53,7 +51,7 @@ public class MainWindowTests
     {
         // Arrange & Act
         var mainWindowType = typeof(MainWindow);
-        
+
         // Assert
         mainWindowType.IsPublic.Should().BeTrue();
         mainWindowType.IsClass.Should().BeTrue();
@@ -64,7 +62,7 @@ public class MainWindowTests
     {
         // Arrange & Act
         var mainWindowType = typeof(MainWindow);
-        
+
         // Assert
         mainWindowType.Namespace.Should().Be("BrowserSelector.App");
     }
@@ -77,7 +75,7 @@ public class MainWindowTests
         var titleProperty = mainWindowType.GetProperty("Title", BindingFlags.Public | BindingFlags.Instance);
         var widthProperty = mainWindowType.GetProperty("Width", BindingFlags.Public | BindingFlags.Instance);
         var heightProperty = mainWindowType.GetProperty("Height", BindingFlags.Public | BindingFlags.Instance);
-        
+
         // Assert
         titleProperty.Should().NotBeNull();
         widthProperty.Should().NotBeNull();
@@ -90,7 +88,7 @@ public class MainWindowTests
         // Arrange & Act
         var mainWindowType = typeof(MainWindow);
         var windowStateProperty = mainWindowType.GetProperty("WindowState", BindingFlags.Public | BindingFlags.Instance);
-        
+
         // Assert
         windowStateProperty.Should().NotBeNull();
         windowStateProperty.PropertyType.Should().Be(typeof(WindowState));
@@ -102,7 +100,7 @@ public class MainWindowTests
         // Arrange & Act
         var mainWindowType = typeof(MainWindow);
         var resizeModeProperty = mainWindowType.GetProperty("ResizeMode", BindingFlags.Public | BindingFlags.Instance);
-        
+
         // Assert
         resizeModeProperty.Should().NotBeNull();
         resizeModeProperty.PropertyType.Should().Be(typeof(ResizeMode));
@@ -114,7 +112,7 @@ public class MainWindowTests
         // Arrange & Act
         var mainWindowType = typeof(MainWindow);
         var showInTaskbarProperty = mainWindowType.GetProperty("ShowInTaskbar", BindingFlags.Public | BindingFlags.Instance);
-        
+
         // Assert
         showInTaskbarProperty.Should().NotBeNull();
         showInTaskbarProperty.PropertyType.Should().Be(typeof(bool));
@@ -126,7 +124,7 @@ public class MainWindowTests
         // Arrange & Act
         var mainWindowType = typeof(MainWindow);
         var topmostProperty = mainWindowType.GetProperty("Topmost", BindingFlags.Public | BindingFlags.Instance);
-        
+
         // Assert
         topmostProperty.Should().NotBeNull();
         topmostProperty.PropertyType.Should().Be(typeof(bool));
@@ -138,7 +136,7 @@ public class MainWindowTests
         // Arrange & Act
         var mainWindowType = typeof(MainWindow);
         var windowStartupLocationProperty = mainWindowType.GetProperty("WindowStartupLocation", BindingFlags.Public | BindingFlags.Instance);
-        
+
         // Assert
         windowStartupLocationProperty.Should().NotBeNull();
         windowStartupLocationProperty.PropertyType.Should().Be(typeof(WindowStartupLocation));
@@ -150,7 +148,7 @@ public class MainWindowTests
         // Arrange & Act
         var mainWindowType = typeof(MainWindow);
         var contentProperty = mainWindowType.GetProperty("Content", BindingFlags.Public | BindingFlags.Instance);
-        
+
         // Assert
         contentProperty.Should().NotBeNull();
         contentProperty.PropertyType.Should().Be(typeof(object));
@@ -162,7 +160,7 @@ public class MainWindowTests
         // Arrange & Act
         var mainWindowType = typeof(MainWindow);
         var backgroundProperty = mainWindowType.GetProperty("Background", BindingFlags.Public | BindingFlags.Instance);
-        
+
         // Assert
         backgroundProperty.Should().NotBeNull();
     }
@@ -173,7 +171,7 @@ public class MainWindowTests
         // Arrange & Act
         var mainWindowType = typeof(MainWindow);
         var foregroundProperty = mainWindowType.GetProperty("Foreground", BindingFlags.Public | BindingFlags.Instance);
-        
+
         // Assert
         foregroundProperty.Should().NotBeNull();
     }
@@ -184,7 +182,7 @@ public class MainWindowTests
         // Arrange & Act
         var mainWindowType = typeof(MainWindow);
         var fontFamilyProperty = mainWindowType.GetProperty("FontFamily", BindingFlags.Public | BindingFlags.Instance);
-        
+
         // Assert
         fontFamilyProperty.Should().NotBeNull();
     }
@@ -195,7 +193,7 @@ public class MainWindowTests
         // Arrange & Act
         var mainWindowType = typeof(MainWindow);
         var fontSizeProperty = mainWindowType.GetProperty("FontSize", BindingFlags.Public | BindingFlags.Instance);
-        
+
         // Assert
         fontSizeProperty.Should().NotBeNull();
         fontSizeProperty.PropertyType.Should().Be(typeof(double));
@@ -207,7 +205,7 @@ public class MainWindowTests
         // Arrange & Act
         var mainWindowType = typeof(MainWindow);
         var visibilityProperty = mainWindowType.GetProperty("Visibility", BindingFlags.Public | BindingFlags.Instance);
-        
+
         // Assert
         visibilityProperty.Should().NotBeNull();
         visibilityProperty.PropertyType.Should().Be(typeof(Visibility));
@@ -219,7 +217,7 @@ public class MainWindowTests
         // Arrange & Act
         var mainWindowType = typeof(MainWindow);
         var isEnabledProperty = mainWindowType.GetProperty("IsEnabled", BindingFlags.Public | BindingFlags.Instance);
-        
+
         // Assert
         isEnabledProperty.Should().NotBeNull();
         isEnabledProperty.PropertyType.Should().Be(typeof(bool));
@@ -231,7 +229,7 @@ public class MainWindowTests
         // Arrange & Act
         var mainWindowType = typeof(MainWindow);
         var focusableProperty = mainWindowType.GetProperty("Focusable", BindingFlags.Public | BindingFlags.Instance);
-        
+
         // Assert
         focusableProperty.Should().NotBeNull();
         focusableProperty.PropertyType.Should().Be(typeof(bool));
@@ -243,7 +241,7 @@ public class MainWindowTests
         // Arrange & Act
         var mainWindowType = typeof(MainWindow);
         var isHitTestVisibleProperty = mainWindowType.GetProperty("IsHitTestVisible", BindingFlags.Public | BindingFlags.Instance);
-        
+
         // Assert
         isHitTestVisibleProperty.Should().NotBeNull();
         isHitTestVisibleProperty.PropertyType.Should().Be(typeof(bool));
@@ -255,7 +253,7 @@ public class MainWindowTests
         // Arrange & Act
         var mainWindowType = typeof(MainWindow);
         var events = mainWindowType.GetEvents();
-        
+
         // Assert
         events.Should().NotBeEmpty();
         events.Should().Contain(e => e.Name == "Loaded");
@@ -268,7 +266,7 @@ public class MainWindowTests
     {
         // Arrange & Act
         var mainWindowType = typeof(MainWindow);
-        
+
         // Assert
         mainWindowType.IsPublic.Should().BeTrue();
         mainWindowType.IsClass.Should().BeTrue();
@@ -283,7 +281,7 @@ public class MainWindowTests
         var mainWindowType = typeof(MainWindow);
         var constructors = mainWindowType.GetConstructors();
         var defaultConstructor = constructors.FirstOrDefault(c => c.GetParameters().Length == 0);
-        
+
         // Assert
         defaultConstructor.Should().NotBeNull();
         defaultConstructor.IsPublic.Should().BeTrue();
@@ -296,7 +294,7 @@ public class MainWindowTests
         // Arrange & Act
         var mainWindowType = typeof(MainWindow);
         var initializeComponentMethod = mainWindowType.GetMethod("InitializeComponent", BindingFlags.Public | BindingFlags.Instance);
-        
+
         // Assert
         initializeComponentMethod.Should().NotBeNull();
         initializeComponentMethod.IsPublic.Should().BeTrue();
@@ -311,7 +309,7 @@ public class MainWindowTests
     {
         // Arrange & Act
         var mainWindowType = typeof(MainWindow);
-        
+
         // Assert
         mainWindowType.BaseType.Should().Be(typeof(Window));
         mainWindowType.BaseType.Should().NotBeNull();
@@ -322,7 +320,7 @@ public class MainWindowTests
     {
         // Arrange & Act
         var mainWindowType = typeof(MainWindow);
-        
+
         // Assert
         mainWindowType.Namespace.Should().Be("BrowserSelector.App");
     }
@@ -333,7 +331,7 @@ public class MainWindowTests
         // Arrange & Act
         var mainWindowType = typeof(MainWindow);
         var assembly = mainWindowType.Assembly;
-        
+
         // Assert
         assembly.Should().NotBeNull();
         assembly.GetName().Name.Should().Be("BrowserSelector.App");
@@ -345,7 +343,7 @@ public class MainWindowTests
         // Arrange & Act
         var mainWindowType = typeof(MainWindow);
         var attributes = mainWindowType.GetCustomAttributes();
-        
+
         // Assert
         attributes.Should().NotBeNull();
     }
@@ -357,7 +355,7 @@ public class MainWindowTests
         var mainWindowType = typeof(MainWindow);
         var constructors = mainWindowType.GetConstructors();
         var defaultConstructor = constructors.FirstOrDefault(c => c.GetParameters().Length == 0);
-        
+
         // Assert
         defaultConstructor.Should().NotBeNull();
         defaultConstructor.GetParameters().Should().BeEmpty();
@@ -369,7 +367,7 @@ public class MainWindowTests
         // Arrange & Act
         var mainWindowType = typeof(MainWindow);
         var methods = mainWindowType.GetMethods(BindingFlags.Public | BindingFlags.Instance);
-        
+
         // Assert
         methods.Should().NotBeEmpty();
         methods.Should().Contain(m => m.Name == "InitializeComponent");
@@ -381,7 +379,7 @@ public class MainWindowTests
         // Arrange & Act
         var mainWindowType = typeof(MainWindow);
         var properties = mainWindowType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
-        
+
         // Assert
         properties.Should().NotBeEmpty();
         properties.Should().Contain(p => p.Name == "Title");
@@ -395,7 +393,7 @@ public class MainWindowTests
         // Arrange & Act
         var mainWindowType = typeof(MainWindow);
         var events = mainWindowType.GetEvents();
-        
+
         // Assert
         events.Should().NotBeEmpty();
         events.Should().Contain(e => e.Name == "Loaded");
@@ -409,7 +407,7 @@ public class MainWindowTests
         // Arrange & Act
         var mainWindowType = typeof(MainWindow);
         var fields = mainWindowType.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
-        
+
         // Assert
         fields.Should().NotBeNull();
     }
@@ -420,7 +418,7 @@ public class MainWindowTests
         // Arrange & Act
         var mainWindowType = typeof(MainWindow);
         var interfaces = mainWindowType.GetInterfaces();
-        
+
         // Assert
         interfaces.Should().NotBeNull();
     }
@@ -430,7 +428,7 @@ public class MainWindowTests
     {
         // Arrange & Act
         var mainWindowType = typeof(MainWindow);
-        
+
         // Assert
         mainWindowType.IsGenericTypeDefinition.Should().BeFalse();
         mainWindowType.IsGenericType.Should().BeFalse();
@@ -441,7 +439,7 @@ public class MainWindowTests
     {
         // Arrange & Act
         var mainWindowType = typeof(MainWindow);
-        
+
         // Assert
         mainWindowType.IsPublic.Should().BeTrue();
         mainWindowType.IsClass.Should().BeTrue();
@@ -455,7 +453,7 @@ public class MainWindowTests
         // Arrange & Act
         var mainWindowType = typeof(MainWindow);
         var initializeComponentMethod = mainWindowType.GetMethod("InitializeComponent", BindingFlags.Public | BindingFlags.Instance);
-        
+
         // Assert
         initializeComponentMethod.Should().NotBeNull();
         initializeComponentMethod.ReturnType.Should().Be(typeof(void));
@@ -469,14 +467,14 @@ public class MainWindowTests
         var titleProperty = mainWindowType.GetProperty("Title", BindingFlags.Public | BindingFlags.Instance);
         var widthProperty = mainWindowType.GetProperty("Width", BindingFlags.Public | BindingFlags.Instance);
         var heightProperty = mainWindowType.GetProperty("Height", BindingFlags.Public | BindingFlags.Instance);
-        
+
         // Assert
         titleProperty.Should().NotBeNull();
         titleProperty.PropertyType.Should().Be(typeof(string));
-        
+
         widthProperty.Should().NotBeNull();
         widthProperty.PropertyType.Should().Be(typeof(double));
-        
+
         heightProperty.Should().NotBeNull();
         heightProperty.PropertyType.Should().Be(typeof(double));
     }
@@ -489,14 +487,14 @@ public class MainWindowTests
         var loadedEvent = mainWindowType.GetEvent("Loaded", BindingFlags.Public | BindingFlags.Instance);
         var closingEvent = mainWindowType.GetEvent("Closing", BindingFlags.Public | BindingFlags.Instance);
         var closedEvent = mainWindowType.GetEvent("Closed", BindingFlags.Public | BindingFlags.Instance);
-        
+
         // Assert
         loadedEvent.Should().NotBeNull();
         loadedEvent.EventHandlerType.Should().Be(typeof(RoutedEventHandler));
-        
+
         closingEvent.Should().NotBeNull();
         closingEvent.EventHandlerType.Should().Be(typeof(System.ComponentModel.CancelEventHandler));
-        
+
         closedEvent.Should().NotBeNull();
         closedEvent.EventHandlerType.Should().Be(typeof(EventHandler));
     }
@@ -508,7 +506,7 @@ public class MainWindowTests
         var mainWindowType = typeof(MainWindow);
         var assembly = mainWindowType.Assembly;
         var attributes = assembly.GetCustomAttributes();
-        
+
         // Assert
         attributes.Should().NotBeNull();
         attributes.Should().NotBeEmpty();
@@ -521,7 +519,7 @@ public class MainWindowTests
         var mainWindowType = typeof(MainWindow);
         var assembly = mainWindowType.Assembly;
         var referencedAssemblies = assembly.GetReferencedAssemblies();
-        
+
         // Assert
         referencedAssemblies.Should().NotBeEmpty();
         referencedAssemblies.Should().Contain(a => a.Name == "PresentationFramework");

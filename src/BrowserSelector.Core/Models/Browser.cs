@@ -6,135 +6,135 @@ namespace BrowserSelector.Core.Models
 {
     using CommunityToolkit.Mvvm.ComponentModel;
 
-/// <summary>
-/// ブラウザ情報を表すモデル
-/// </summary>
-public partial class Browser : ObservableObject
-{
-    [ObservableProperty]
-    private string _name = string.Empty;
-
-    [ObservableProperty]
-    private string _executablePath = string.Empty;
-
-    [ObservableProperty]
-    private string _iconPath = string.Empty;
-
-    [ObservableProperty]
-    private string _arguments = string.Empty;
-
-    [ObservableProperty]
-    private bool _isDefault;
-
-    [ObservableProperty]
-    private bool _isEnabled = true;
-
-    [ObservableProperty]
-    private int _displayOrder;
-
-    [ObservableProperty]
-    private DateTime _lastUsed = DateTime.MinValue;
-
-    [ObservableProperty]
-    private int _useCount;
-
     /// <summary>
-    /// ブラウザの一意識別子
+    /// ブラウザ情報を表すモデル
     /// </summary>
-    public Guid Id { get; set; } = Guid.NewGuid();
-
-    /// <summary>
-    /// ブラウザの種類
-    /// </summary>
-    public BrowserType Type { get; set; } = BrowserType.Custom;
-
-    /// <summary>
-    /// ブラウザが有効かどうかを判定
-    /// </summary>
-    public bool IsValid => !string.IsNullOrWhiteSpace(this.Name) && !string.IsNullOrWhiteSpace(this.ExecutablePath);
-
-    /// <summary>
-    /// ブラウザの表示名を取得
-    /// </summary>
-    public string DisplayName => string.IsNullOrWhiteSpace(this.Name) ? "Unknown Browser" : this.Name;
-
-    /// <summary>
-    /// 使用回数を増加
-    /// </summary>
-    public void IncrementUseCount()
+    public partial class Browser : ObservableObject
     {
-        this.UseCount++;
-        this.LastUsed = DateTime.Now;
-    }
+        [ObservableProperty]
+        private string _name = string.Empty;
 
-    /// <summary>
-    /// ブラウザの複製を作成
-    /// </summary>
-    public Browser Clone()
-    {
-        return new Browser
+        [ObservableProperty]
+        private string _executablePath = string.Empty;
+
+        [ObservableProperty]
+        private string _iconPath = string.Empty;
+
+        [ObservableProperty]
+        private string _arguments = string.Empty;
+
+        [ObservableProperty]
+        private bool _isDefault;
+
+        [ObservableProperty]
+        private bool _isEnabled = true;
+
+        [ObservableProperty]
+        private int _displayOrder;
+
+        [ObservableProperty]
+        private DateTime _lastUsed = DateTime.MinValue;
+
+        [ObservableProperty]
+        private int _useCount;
+
+        /// <summary>
+        /// ブラウザの一意識別子
+        /// </summary>
+        public Guid Id { get; set; } = Guid.NewGuid();
+
+        /// <summary>
+        /// ブラウザの種類
+        /// </summary>
+        public BrowserType Type { get; set; } = BrowserType.Custom;
+
+        /// <summary>
+        /// ブラウザが有効かどうかを判定
+        /// </summary>
+        public bool IsValid => !string.IsNullOrWhiteSpace(Name) && !string.IsNullOrWhiteSpace(ExecutablePath);
+
+        /// <summary>
+        /// ブラウザの表示名を取得
+        /// </summary>
+        public string DisplayName => string.IsNullOrWhiteSpace(Name) ? "Unknown Browser" : Name;
+
+        /// <summary>
+        /// 使用回数を増加
+        /// </summary>
+        public void IncrementUseCount()
         {
-            Id = Guid.NewGuid(),
-            Name = this.Name,
-            ExecutablePath = this.ExecutablePath,
-            IconPath = this.IconPath,
-            Arguments = this.Arguments,
-            IsDefault = false, // 複製時はデフォルトをfalseにする
-            IsEnabled = this.IsEnabled,
-            DisplayOrder = this.DisplayOrder,
-            Type = this.Type
-        };
+            UseCount++;
+            LastUsed = DateTime.Now;
+        }
+
+        /// <summary>
+        /// ブラウザの複製を作成
+        /// </summary>
+        public Browser Clone()
+        {
+            return new Browser
+            {
+                Id = Guid.NewGuid(),
+                Name = Name,
+                ExecutablePath = ExecutablePath,
+                IconPath = IconPath,
+                Arguments = Arguments,
+                IsDefault = false, // 複製時はデフォルトをfalseにする
+                IsEnabled = IsEnabled,
+                DisplayOrder = DisplayOrder,
+                Type = Type
+            };
+        }
     }
-}
-
-/// <summary>
-/// ブラウザの種類を表す列挙型
-/// </summary>
-public enum BrowserType
-{
-    /// <summary>
-    /// カスタムブラウザ
-    /// </summary>
-    Custom,
 
     /// <summary>
-    /// Chrome
+    /// ブラウザの種類を表す列挙型
     /// </summary>
-    Chrome,
+    public enum BrowserType
+    {
+        /// <summary>
+        /// カスタムブラウザ
+        /// </summary>
+        Custom,
 
-    /// <summary>
-    /// Firefox
-    /// </summary>
-    Firefox,
+        /// <summary>
+        /// Chrome
+        /// </summary>
+        Chrome,
 
-    /// <summary>
-    /// Edge
-    /// </summary>
-    Edge,
+        /// <summary>
+        /// Firefox
+        /// </summary>
+        Firefox,
 
-    /// <summary>
-    /// Safari
-    /// </summary>
-    Safari,
+        /// <summary>
+        /// Edge
+        /// </summary>
+        Edge,
 
-    /// <summary>
-    /// Opera
-    /// </summary>
-    Opera,
+        /// <summary>
+        /// Safari
+        /// </summary>
+        Safari,
 
-    /// <summary>
-    /// Internet Explorer
-    /// </summary>
-    InternetExplorer,
+        /// <summary>
+        /// Opera
+        /// </summary>
+        Opera,
 
-    /// <summary>
-    /// Brave
-    /// </summary>
-    Brave,
+        /// <summary>
+        /// Internet Explorer
+        /// </summary>
+        InternetExplorer,
 
-    /// <summary>
-    /// Vivaldi
-    /// </summary>
-    Vivaldi
-}
+        /// <summary>
+        /// Brave
+        /// </summary>
+        Brave,
+
+        /// <summary>
+        /// Vivaldi
+        /// </summary>
+        Vivaldi
+    }
 }

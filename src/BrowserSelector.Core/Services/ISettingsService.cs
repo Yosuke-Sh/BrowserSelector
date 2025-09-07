@@ -1,3 +1,7 @@
+// <copyright file="ISettingsService.cs" company="BrowserSelector">
+// Copyright (c) BrowserSelector. All rights reserved.
+// </copyright>
+
 using BrowserSelector.Core.Models;
 
 namespace BrowserSelector.Core.Services;

@@ -1,6 +1,10 @@
+// <copyright file="VisualSettings.cs" company="BrowserSelector">
+// Copyright (c) BrowserSelector. All rights reserved.
+// </copyright>
+
+using System.Windows.Media;
 using BrowserSelector.Core.Enums;
 using CommunityToolkit.Mvvm.ComponentModel;
-using System.Windows.Media;
 
 namespace BrowserSelector.Core.Models;
 
@@ -75,5 +79,4 @@ public partial class VisualSettings : ObservableObject
 
     [ObservableProperty]
     private double _browserIconSize = 32.0;
-
 }

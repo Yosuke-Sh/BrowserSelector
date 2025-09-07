@@ -1,8 +1,6 @@
 using FlaUI.Core;
-using FlaUI.Core.AutomationElements;
 using FlaUI.UIA3;
 using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BrowserSelector.UITests;
 
@@ -76,14 +74,14 @@ public class BrowserButtonCustomizationUITests
         foreach (var button in actualBrowserButtons)
         {
             _ = button.Should().NotBeNull("ボタン要素が有効であること");
-            
+
             // ボタンが無効の場合はスキップ（ブラウザが検出されていない可能性）
             if (!button.IsEnabled)
             {
                 Console.WriteLine($"ボタン '{button.Name}' が無効です。ブラウザが検出されていない可能性があります。");
                 continue;
             }
-            
+
             _ = button.Name.Should().NotBeNullOrEmpty("ボタンに名前が設定されていること");
 
             // ボタンの境界矩形を確認

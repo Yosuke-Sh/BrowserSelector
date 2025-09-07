@@ -1,9 +1,8 @@
+using BrowserSelector.Core.Enums;
+using BrowserSelector.Core.Models;
 using BrowserSelector.Library.Core.Services;
 using BrowserSelector.Library.Infrastructure.Services;
-using BrowserSelector.Core.Models;
-using BrowserSelector.Core.Enums;
 using FluentAssertions;
-using Xunit;
 
 namespace BrowserSelector.LibraryTests;
 

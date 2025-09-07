@@ -1,9 +1,6 @@
-using Xunit;
 using FluentAssertions;
-using System.Windows;
 using System.Reflection;
-using System.Linq;
-using App = BrowserSelector.App.App;
+using System.Windows;
 
 namespace BrowserSelector.AppTests;
 
@@ -18,7 +15,7 @@ public class AppClassTests
     {
         // Arrange & Act
         var appType = typeof(BrowserSelector.App.App);
-        
+
         // Assert
         appType.Should().NotBeNull();
         appType.BaseType.Should().Be(typeof(Application));
@@ -30,7 +27,7 @@ public class AppClassTests
         // Arrange & Act
         var appType = typeof(BrowserSelector.App.App);
         var onStartupMethod = appType.GetMethod("OnStartup", BindingFlags.NonPublic | BindingFlags.Instance);
-        
+
         // Assert
         onStartupMethod.Should().NotBeNull();
         onStartupMethod.ReturnType.Should().Be(typeof(void));
@@ -42,7 +39,7 @@ public class AppClassTests
         // Arrange & Act
         var appType = typeof(BrowserSelector.App.App);
         var onExitMethod = appType.GetMethod("OnExit", BindingFlags.NonPublic | BindingFlags.Instance);
-        
+
         // Assert
         onExitMethod.Should().NotBeNull();
         onExitMethod.ReturnType.Should().Be(typeof(void));
@@ -54,7 +51,7 @@ public class AppClassTests
         // Arrange & Act
         var appType = typeof(BrowserSelector.App.App);
         var initializeComponentMethod = appType.GetMethod("InitializeComponent", BindingFlags.Public | BindingFlags.Instance);
-        
+
         // Assert
         initializeComponentMethod.Should().NotBeNull();
         initializeComponentMethod.ReturnType.Should().Be(typeof(void));
@@ -66,7 +63,7 @@ public class AppClassTests
         // Arrange & Act
         var appType = typeof(BrowserSelector.App.App);
         var mainWindowProperty = appType.GetProperty("MainWindow", BindingFlags.Public | BindingFlags.Instance);
-        
+
         // Assert
         mainWindowProperty.Should().NotBeNull();
         mainWindowProperty.PropertyType.Should().Be(typeof(Window));
@@ -78,7 +75,7 @@ public class AppClassTests
         // Arrange & Act
         var appType = typeof(BrowserSelector.App.App);
         var startupUriProperty = appType.GetProperty("StartupUri", BindingFlags.Public | BindingFlags.Instance);
-        
+
         // Assert
         startupUriProperty.Should().NotBeNull();
         startupUriProperty.PropertyType.Should().Be(typeof(Uri));
@@ -90,7 +87,7 @@ public class AppClassTests
         // Arrange & Act
         var appType = typeof(BrowserSelector.App.App);
         var shutdownModeProperty = appType.GetProperty("ShutdownMode", BindingFlags.Public | BindingFlags.Instance);
-        
+
         // Assert
         shutdownModeProperty.Should().NotBeNull();
         shutdownModeProperty.PropertyType.Should().Be(typeof(ShutdownMode));
@@ -102,7 +99,7 @@ public class AppClassTests
         // Arrange & Act
         var assembly = typeof(BrowserSelector.App.App).Assembly;
         var assemblyName = assembly.GetName();
-        
+
         // Assert
         assembly.Should().NotBeNull();
         assemblyName.Name.Should().Be("BrowserSelector.App");
@@ -115,7 +112,7 @@ public class AppClassTests
         // Arrange & Act
         var assembly = typeof(BrowserSelector.App.App).Assembly;
         var attributes = assembly.GetCustomAttributes();
-        
+
         // Assert
         attributes.Should().NotBeNull();
         attributes.Should().NotBeEmpty();
@@ -126,7 +123,7 @@ public class AppClassTests
     {
         // Arrange & Act
         var appType = typeof(BrowserSelector.App.App);
-        
+
         // Assert
         appType.Namespace.Should().Be("BrowserSelector.App");
     }
@@ -136,7 +133,7 @@ public class AppClassTests
     {
         // Arrange & Act
         var appType = typeof(BrowserSelector.App.App);
-        
+
         // Assert
         appType.IsPublic.Should().BeTrue();
         appType.IsClass.Should().BeTrue();
@@ -148,7 +145,7 @@ public class AppClassTests
         // Arrange & Act
         var appType = typeof(BrowserSelector.App.App);
         var constructors = appType.GetConstructors();
-        
+
         // Assert
         constructors.Should().NotBeEmpty();
         constructors.Should().Contain(c => c.GetParameters().Length == 0);
@@ -161,7 +158,7 @@ public class AppClassTests
         var appType = typeof(BrowserSelector.App.App);
         var assembly = appType.Assembly;
         var referencedAssemblies = assembly.GetReferencedAssemblies();
-        
+
         // Assert
         referencedAssemblies.Should().NotBeEmpty();
         referencedAssemblies.Should().Contain(a => a.Name == "PresentationFramework");
@@ -174,7 +171,7 @@ public class AppClassTests
         // Arrange & Act
         var appType = typeof(BrowserSelector.App.App);
         var fields = appType.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
-        
+
         // Assert
         fields.Should().NotBeEmpty();
         fields.Should().Contain(f => f.Name == "_host");
@@ -186,7 +183,7 @@ public class AppClassTests
     {
         // Arrange & Act
         var appType = typeof(BrowserSelector.App.App);
-        
+
         // Assert
         appType.IsPublic.Should().BeTrue();
         appType.IsClass.Should().BeTrue();
@@ -201,7 +198,7 @@ public class AppClassTests
         var appType = typeof(BrowserSelector.App.App);
         var constructors = appType.GetConstructors();
         var defaultConstructor = constructors.FirstOrDefault(c => c.GetParameters().Length == 0);
-        
+
         // Assert
         defaultConstructor.Should().NotBeNull();
         defaultConstructor.IsPublic.Should().BeTrue();
@@ -216,18 +213,18 @@ public class AppClassTests
         var onStartupMethod = appType.GetMethod("OnStartup", BindingFlags.NonPublic | BindingFlags.Instance);
         var onExitMethod = appType.GetMethod("OnExit", BindingFlags.NonPublic | BindingFlags.Instance);
         var initializeComponentMethod = appType.GetMethod("InitializeComponent", BindingFlags.Public | BindingFlags.Instance);
-        
+
         // Assert
         onStartupMethod.Should().NotBeNull();
         onStartupMethod.IsPublic.Should().BeFalse();
         onStartupMethod.IsStatic.Should().BeFalse();
         onStartupMethod.IsVirtual.Should().BeTrue(); // Override method
-        
+
         onExitMethod.Should().NotBeNull();
         onExitMethod.IsPublic.Should().BeFalse();
         onExitMethod.IsStatic.Should().BeFalse();
         onExitMethod.IsVirtual.Should().BeTrue(); // Override method
-        
+
         initializeComponentMethod.Should().NotBeNull();
         initializeComponentMethod.IsPublic.Should().BeTrue();
         initializeComponentMethod.IsStatic.Should().BeFalse();
@@ -241,16 +238,16 @@ public class AppClassTests
         var mainWindowProperty = appType.GetProperty("MainWindow", BindingFlags.Public | BindingFlags.Instance);
         var startupUriProperty = appType.GetProperty("StartupUri", BindingFlags.Public | BindingFlags.Instance);
         var shutdownModeProperty = appType.GetProperty("ShutdownMode", BindingFlags.Public | BindingFlags.Instance);
-        
+
         // Assert
         mainWindowProperty.Should().NotBeNull();
         mainWindowProperty.CanRead.Should().BeTrue();
         mainWindowProperty.CanWrite.Should().BeTrue();
-        
+
         startupUriProperty.Should().NotBeNull();
         startupUriProperty.CanRead.Should().BeTrue();
         startupUriProperty.CanWrite.Should().BeTrue();
-        
+
         shutdownModeProperty.Should().NotBeNull();
         shutdownModeProperty.CanRead.Should().BeTrue();
         shutdownModeProperty.CanWrite.Should().BeTrue();
@@ -263,12 +260,12 @@ public class AppClassTests
         var appType = typeof(BrowserSelector.App.App);
         var hostField = appType.GetField("_host", BindingFlags.NonPublic | BindingFlags.Instance);
         var logServiceField = appType.GetField("_logService", BindingFlags.NonPublic | BindingFlags.Instance);
-        
+
         // Assert
         hostField.Should().NotBeNull();
         hostField.IsPublic.Should().BeFalse();
         hostField.IsStatic.Should().BeFalse();
-        
+
         logServiceField.Should().NotBeNull();
         logServiceField.IsPublic.Should().BeFalse();
         logServiceField.IsStatic.Should().BeFalse();
@@ -281,22 +278,22 @@ public class AppClassTests
         var appType = typeof(BrowserSelector.App.App);
         var assembly = appType.Assembly;
         var referencedAssemblies = assembly.GetReferencedAssemblies();
-        
+
         // Assert
         referencedAssemblies.Should().NotBeEmpty();
-        
+
         // WPF関連のアセンブリが参照されていることを確認
-        var wpfAssemblies = referencedAssemblies.Where(a => 
-            a.Name == "PresentationFramework" || 
-            a.Name == "PresentationCore" || 
+        var wpfAssemblies = referencedAssemblies.Where(a =>
+            a.Name == "PresentationFramework" ||
+            a.Name == "PresentationCore" ||
             a.Name == "WindowsBase");
-        
+
         wpfAssemblies.Should().HaveCount(3);
-        
+
         // Microsoft.Extensions関連のアセンブリが参照されていることを確認
-        var microsoftAssemblies = referencedAssemblies.Where(a => 
+        var microsoftAssemblies = referencedAssemblies.Where(a =>
             a.Name.StartsWith("Microsoft.Extensions"));
-        
+
         microsoftAssemblies.Should().NotBeEmpty();
     }
 }

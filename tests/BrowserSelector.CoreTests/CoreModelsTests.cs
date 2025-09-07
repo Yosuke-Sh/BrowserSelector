@@ -1,5 +1,5 @@
-using BrowserSelector.Core.Models;
 using BrowserSelector.Core.Enums;
+using BrowserSelector.Core.Models;
 using FluentAssertions;
 
 namespace BrowserSelector.CoreTests;

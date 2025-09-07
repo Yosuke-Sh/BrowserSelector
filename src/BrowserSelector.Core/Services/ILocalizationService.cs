@@ -1,3 +1,7 @@
+// <copyright file="ILocalizationService.cs" company="BrowserSelector">
+// Copyright (c) BrowserSelector. All rights reserved.
+// </copyright>
+
 using System.Globalization;
 
 namespace BrowserSelector.Core.Services;
@@ -53,7 +57,7 @@ public class LanguageChangedEventArgs : EventArgs
 
     public LanguageChangedEventArgs(CultureInfo oldCulture, CultureInfo newCulture)
     {
-        this.OldCulture = oldCulture;
-        this.NewCulture = newCulture;
+        OldCulture = oldCulture;
+        NewCulture = newCulture;
     }
 }

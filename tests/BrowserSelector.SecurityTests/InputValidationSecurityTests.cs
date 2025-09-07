@@ -1,8 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
 using FluentAssertions;
+using System;
+using System.Text.RegularExpressions;
 using Xunit;
 
 namespace BrowserSelector.SecurityTests;
@@ -30,7 +28,7 @@ public class InputValidationSecurityTests
     {
         // Arrange
         var isValidUrl = IsValidUrl(maliciousUrl);
-        
+
         // Act & Assert
         isValidUrl.Should().BeFalse($"悪意のあるURL '{maliciousUrl}' は拒否されるべきです");
     }
@@ -49,7 +47,7 @@ public class InputValidationSecurityTests
     {
         // Arrange
         var isValidUrl = IsValidUrl(maliciousUrl);
-        
+
         // Act & Assert
         isValidUrl.Should().BeFalse($"SQLインジェクション攻撃URL '{maliciousUrl}' は拒否されるべきです");
     }
@@ -67,7 +65,7 @@ public class InputValidationSecurityTests
     {
         // Arrange
         var isValidUrl = IsValidUrl(maliciousUrl);
-        
+
         // Act & Assert
         isValidUrl.Should().BeFalse($"パストラバーサル攻撃URL '{maliciousUrl}' は拒否されるべきです");
     }
@@ -85,7 +83,7 @@ public class InputValidationSecurityTests
     {
         // Arrange
         var isValidUrl = IsValidUrl(maliciousUrl);
-        
+
         // Act & Assert
         isValidUrl.Should().BeFalse($"コマンドインジェクション攻撃URL '{maliciousUrl}' は拒否されるべきです");
     }
@@ -108,7 +106,7 @@ public class InputValidationSecurityTests
     {
         // Arrange
         var isValidUrl = IsValidUrl(validUrl);
-        
+
         // Act & Assert
         isValidUrl.Should().BeTrue($"有効なURL '{validUrl}' は受け入れられるべきです");
     }
@@ -121,10 +119,10 @@ public class InputValidationSecurityTests
     {
         // Arrange
         var longUrl = "https://example.com/" + new string('a', 10000);
-        
+
         // Act
         var isValidUrl = IsValidUrl(longUrl);
-        
+
         // Assert
         isValidUrl.Should().BeFalse("長すぎるURLは拒否されるべきです");
     }
@@ -142,7 +140,7 @@ public class InputValidationSecurityTests
     {
         // Arrange
         var isValidUrl = IsValidUrl(urlWithSpecialChars);
-        
+
         // Act & Assert
         isValidUrl.Should().BeFalse($"特殊文字を含むURL '{urlWithSpecialChars}' は拒否されるべきです");
     }
@@ -161,7 +159,7 @@ public class InputValidationSecurityTests
     {
         // Arrange
         var isValidName = IsValidBrowserName(browserName);
-        
+
         // Act & Assert
         isValidName.Should().BeTrue($"有効なブラウザ名 '{browserName}' は受け入れられるべきです");
     }
@@ -180,7 +178,7 @@ public class InputValidationSecurityTests
     {
         // Arrange
         var isValidName = IsValidBrowserName(maliciousName);
-        
+
         // Act & Assert
         isValidName.Should().BeFalse($"悪意のあるブラウザ名 '{maliciousName}' は拒否されるべきです");
     }
@@ -198,7 +196,7 @@ public class InputValidationSecurityTests
     {
         // Arrange
         var isValidValue = IsValidSettingValue(settingValue);
-        
+
         // Act & Assert
         isValidValue.Should().BeTrue($"有効な設定値 '{settingValue}' は受け入れられるべきです");
     }
@@ -219,7 +217,7 @@ public class InputValidationSecurityTests
     {
         // Arrange
         var isValidValue = IsValidSettingValue(maliciousValue);
-        
+
         // Act & Assert
         isValidValue.Should().BeFalse($"悪意のある設定値 '{maliciousValue}' は拒否されるべきです");
     }

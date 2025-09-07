@@ -1,9 +1,6 @@
-using Xunit;
+using BrowserSelector.App;
 using FluentAssertions;
 using System.Reflection;
-using System.Windows;
-using BrowserSelector.App;
-using System.Linq;
 
 namespace BrowserSelector.AppTests;
 
@@ -19,7 +16,7 @@ public class ProgramTests
         // Arrange & Act
         var programType = typeof(Program);
         var mainMethod = programType.GetMethod("Main", BindingFlags.Public | BindingFlags.Static);
-        
+
         // Assert
         mainMethod.Should().NotBeNull();
         mainMethod.ReturnType.Should().Be(typeof(void));
@@ -34,7 +31,7 @@ public class ProgramTests
         var programType = typeof(Program);
         var mainMethod = programType.GetMethod("Main", BindingFlags.Public | BindingFlags.Static);
         var parameters = mainMethod.GetParameters();
-        
+
         // Assert
         parameters.Should().HaveCount(1);
         parameters[0].ParameterType.Should().Be(typeof(string[]));
@@ -46,7 +43,7 @@ public class ProgramTests
     {
         // Arrange & Act
         var programType = typeof(Program);
-        
+
         // Assert
         programType.IsPublic.Should().BeTrue();
         programType.IsClass.Should().BeTrue();
@@ -57,7 +54,7 @@ public class ProgramTests
     {
         // Arrange & Act
         var programType = typeof(Program);
-        
+
         // Assert
         programType.Namespace.Should().Be("BrowserSelector.App");
     }
@@ -69,7 +66,7 @@ public class ProgramTests
         var programType = typeof(Program);
         var mainMethod = programType.GetMethod("Main", BindingFlags.Public | BindingFlags.Static);
         var attributes = mainMethod.GetCustomAttributes();
-        
+
         // Assert
         attributes.Should().NotBeEmpty();
         attributes.Should().Contain(a => a.GetType().Name == "STAThreadAttribute");
@@ -81,7 +78,7 @@ public class ProgramTests
         // Arrange & Act
         var programType = typeof(Program);
         var constructors = programType.GetConstructors();
-        
+
         // Assert
         constructors.Should().NotBeEmpty();
         constructors.Should().Contain(c => c.GetParameters().Length == 0);
@@ -94,7 +91,7 @@ public class ProgramTests
         var programType = typeof(Program);
         var assembly = programType.Assembly;
         var assemblyName = assembly.GetName();
-        
+
         // Assert
         assembly.Should().NotBeNull();
         assemblyName.Name.Should().Be("BrowserSelector.App");
@@ -107,7 +104,7 @@ public class ProgramTests
         var programType = typeof(Program);
         var assembly = programType.Assembly;
         var attributes = assembly.GetCustomAttributes();
-        
+
         // Assert
         attributes.Should().NotBeNull();
         attributes.Should().NotBeEmpty();
@@ -120,7 +117,7 @@ public class ProgramTests
         var programType = typeof(Program);
         var assembly = programType.Assembly;
         var referencedAssemblies = assembly.GetReferencedAssemblies();
-        
+
         // Assert
         referencedAssemblies.Should().NotBeEmpty();
         referencedAssemblies.Should().Contain(a => a.Name == "PresentationFramework");
@@ -134,7 +131,7 @@ public class ProgramTests
         // Arrange & Act
         var programType = typeof(Program);
         var attributes = programType.GetCustomAttributes();
-        
+
         // Assert
         attributes.Should().NotBeNull();
     }
@@ -146,7 +143,7 @@ public class ProgramTests
         var programType = typeof(Program);
         var mainMethod = programType.GetMethod("Main", BindingFlags.Public | BindingFlags.Static);
         var attributes = mainMethod.GetCustomAttributes();
-        
+
         // Assert
         attributes.Should().NotBeEmpty();
     }
@@ -159,7 +156,7 @@ public class ProgramTests
         var mainMethod = programType.GetMethod("Main", BindingFlags.Public | BindingFlags.Static);
         var parameters = mainMethod.GetParameters();
         var parameterAttributes = parameters[0].GetCustomAttributes();
-        
+
         // Assert
         parameterAttributes.Should().NotBeNull();
     }
@@ -170,7 +167,7 @@ public class ProgramTests
         // Arrange & Act
         var programType = typeof(Program);
         var mainMethod = programType.GetMethod("Main", BindingFlags.Public | BindingFlags.Static);
-        
+
         // Assert
         mainMethod.ReturnType.Should().Be(typeof(void));
     }
@@ -182,7 +179,7 @@ public class ProgramTests
         var programType = typeof(Program);
         var mainMethod = programType.GetMethod("Main", BindingFlags.Public | BindingFlags.Static);
         var parameters = mainMethod.GetParameters();
-        
+
         // Assert
         mainMethod.Name.Should().Be("Main");
         mainMethod.IsStatic.Should().BeTrue();
@@ -197,7 +194,7 @@ public class ProgramTests
         // Arrange & Act
         var programType = typeof(Program);
         var mainMethod = programType.GetMethod("Main", BindingFlags.Public | BindingFlags.Static);
-        
+
         // Assert
         mainMethod.IsPublic.Should().BeTrue();
         mainMethod.IsStatic.Should().BeTrue();
@@ -210,7 +207,7 @@ public class ProgramTests
     {
         // Arrange & Act
         var programType = typeof(Program);
-        
+
         // Assert
         programType.IsPublic.Should().BeTrue();
         programType.IsClass.Should().BeTrue();
@@ -225,16 +222,16 @@ public class ProgramTests
         var programType = typeof(Program);
         var assembly = programType.Assembly;
         var referencedAssemblies = assembly.GetReferencedAssemblies();
-        
+
         // Assert
         referencedAssemblies.Should().NotBeEmpty();
-        
+
         // WPF関連のアセンブリが参照されていることを確認
-        var wpfAssemblies = referencedAssemblies.Where(a => 
-            a.Name == "PresentationFramework" || 
-            a.Name == "PresentationCore" || 
+        var wpfAssemblies = referencedAssemblies.Where(a =>
+            a.Name == "PresentationFramework" ||
+            a.Name == "PresentationCore" ||
             a.Name == "WindowsBase");
-        
+
         wpfAssemblies.Should().HaveCount(3);
     }
 
@@ -245,10 +242,10 @@ public class ProgramTests
         var programType = typeof(Program);
         var mainMethod = programType.GetMethod("Main", BindingFlags.Public | BindingFlags.Static);
         var parameters = mainMethod.GetParameters();
-        
+
         // Assert
         parameters.Should().HaveCount(1);
-        
+
         var argsParameter = parameters[0];
         argsParameter.Name.Should().Be("args");
         argsParameter.ParameterType.Should().Be(typeof(string[]));
@@ -262,7 +259,7 @@ public class ProgramTests
     {
         // Arrange & Act
         var programType = typeof(Program);
-        
+
         // Assert
         programType.IsClass.Should().BeTrue();
         programType.IsPublic.Should().BeTrue();
@@ -278,7 +275,7 @@ public class ProgramTests
         // Arrange & Act
         var programType = typeof(Program);
         var mainMethod = programType.GetMethod("Main", BindingFlags.Public | BindingFlags.Static);
-        
+
         // Assert
         mainMethod.Should().NotBeNull();
         mainMethod.IsPublic.Should().BeTrue();
@@ -295,7 +292,7 @@ public class ProgramTests
         var programType = typeof(Program);
         var mainMethod = programType.GetMethod("Main", BindingFlags.Public | BindingFlags.Static);
         var parameters = mainMethod.GetParameters();
-        
+
         // Assert
         parameters.Should().HaveCount(1);
         var argsParameter = parameters[0];
@@ -313,7 +310,7 @@ public class ProgramTests
         var programType = typeof(Program);
         var mainMethod = programType.GetMethod("Main", BindingFlags.Public | BindingFlags.Static);
         var attributes = mainMethod.GetCustomAttributes();
-        
+
         // Assert
         attributes.Should().NotBeEmpty();
         attributes.Should().Contain(a => a.GetType().Name == "STAThreadAttribute");
@@ -326,7 +323,7 @@ public class ProgramTests
         var programType = typeof(Program);
         var assembly = programType.Assembly;
         var assemblyName = assembly.GetName();
-        
+
         // Assert
         assembly.Should().NotBeNull();
         assemblyName.Name.Should().Be("BrowserSelector.App");
@@ -340,7 +337,7 @@ public class ProgramTests
         // Arrange & Act
         var programType = typeof(Program);
         var baseType = programType.BaseType;
-        
+
         // Assert
         baseType.Should().Be(typeof(object));
         programType.GetInterfaces().Should().BeEmpty();
@@ -351,7 +348,7 @@ public class ProgramTests
     {
         // Arrange & Act
         var programType = typeof(Program);
-        
+
         // Assert
         programType.IsGenericType.Should().BeFalse();
         programType.IsGenericTypeDefinition.Should().BeFalse();
@@ -364,7 +361,7 @@ public class ProgramTests
         // Arrange & Act
         var programType = typeof(Program);
         var methods = programType.GetMethods(BindingFlags.Public | BindingFlags.Static);
-        
+
         // Assert
         methods.Should().HaveCount(1);
         methods.Should().Contain(m => m.Name == "Main");
@@ -376,7 +373,7 @@ public class ProgramTests
         // Arrange & Act
         var programType = typeof(Program);
         var constructors = programType.GetConstructors();
-        
+
         // Assert
         constructors.Should().HaveCount(1);
         constructors.Should().Contain(c => c.GetParameters().Length == 0);
@@ -388,7 +385,7 @@ public class ProgramTests
         // Arrange & Act
         var programType = typeof(Program);
         var properties = programType.GetProperties();
-        
+
         // Assert
         properties.Should().BeEmpty();
     }
@@ -399,7 +396,7 @@ public class ProgramTests
         // Arrange & Act
         var programType = typeof(Program);
         var events = programType.GetEvents();
-        
+
         // Assert
         events.Should().BeEmpty();
     }
@@ -410,7 +407,7 @@ public class ProgramTests
         // Arrange & Act
         var programType = typeof(Program);
         var fields = programType.GetFields();
-        
+
         // Assert
         fields.Should().BeEmpty();
     }
@@ -421,7 +418,7 @@ public class ProgramTests
         // Arrange & Act
         var programType = typeof(Program);
         var nestedTypes = programType.GetNestedTypes();
-        
+
         // Assert
         nestedTypes.Should().BeEmpty();
     }
@@ -433,7 +430,7 @@ public class ProgramTests
         var programType = typeof(Program);
         var assembly = programType.Assembly;
         var location = assembly.Location;
-        
+
         // Assert
         location.Should().NotBeNullOrEmpty();
         location.Should().Contain("BrowserSelector.App.dll");
@@ -446,7 +443,7 @@ public class ProgramTests
         var programType = typeof(Program);
         var assembly = programType.Assembly;
         var manifestModule = assembly.ManifestModule;
-        
+
         // Assert
         manifestModule.Should().NotBeNull();
         manifestModule.Name.Should().Contain("BrowserSelector.App.dll");
@@ -459,7 +456,7 @@ public class ProgramTests
         var programType = typeof(Program);
         var assembly = programType.Assembly;
         var modules = assembly.GetModules();
-        
+
         // Assert
         modules.Should().NotBeEmpty();
         modules.Should().HaveCount(1);
@@ -472,7 +469,7 @@ public class ProgramTests
         var programType = typeof(Program);
         var assembly = programType.Assembly;
         var types = assembly.GetTypes();
-        
+
         // Assert
         types.Should().NotBeEmpty();
         types.Should().Contain(typeof(Program));
@@ -485,7 +482,7 @@ public class ProgramTests
         var programType = typeof(Program);
         var assembly = programType.Assembly;
         var exportedTypes = assembly.GetExportedTypes();
-        
+
         // Assert
         exportedTypes.Should().NotBeEmpty();
         exportedTypes.Should().Contain(typeof(Program));
@@ -498,7 +495,7 @@ public class ProgramTests
         var programType = typeof(Program);
         var assembly = programType.Assembly;
         var attributes = assembly.GetCustomAttributes();
-        
+
         // Assert
         attributes.Should().NotBeNull();
     }
@@ -510,7 +507,7 @@ public class ProgramTests
         var programType = typeof(Program);
         var assembly = programType.Assembly;
         var securityRules = assembly.GetCustomAttributes(typeof(System.Security.SecurityRulesAttribute), false);
-        
+
         // Assert
         securityRules.Should().NotBeNull();
     }
@@ -522,7 +519,7 @@ public class ProgramTests
         var programType = typeof(Program);
         var assembly = programType.Assembly;
         var configuration = assembly.GetCustomAttributes(typeof(System.Reflection.AssemblyConfigurationAttribute), false);
-        
+
         // Assert
         configuration.Should().NotBeNull();
     }
@@ -534,7 +531,7 @@ public class ProgramTests
         var programType = typeof(Program);
         var assembly = programType.Assembly;
         var company = assembly.GetCustomAttributes(typeof(System.Reflection.AssemblyCompanyAttribute), false);
-        
+
         // Assert
         company.Should().NotBeNull();
     }
@@ -546,7 +543,7 @@ public class ProgramTests
         var programType = typeof(Program);
         var assembly = programType.Assembly;
         var product = assembly.GetCustomAttributes(typeof(System.Reflection.AssemblyProductAttribute), false);
-        
+
         // Assert
         product.Should().NotBeNull();
     }
@@ -558,7 +555,7 @@ public class ProgramTests
         var programType = typeof(Program);
         var assembly = programType.Assembly;
         var copyright = assembly.GetCustomAttributes(typeof(System.Reflection.AssemblyCopyrightAttribute), false);
-        
+
         // Assert
         copyright.Should().NotBeNull();
     }
@@ -570,7 +567,7 @@ public class ProgramTests
         var programType = typeof(Program);
         var assembly = programType.Assembly;
         var trademark = assembly.GetCustomAttributes(typeof(System.Reflection.AssemblyTrademarkAttribute), false);
-        
+
         // Assert
         trademark.Should().NotBeNull();
     }
@@ -582,7 +579,7 @@ public class ProgramTests
         var programType = typeof(Program);
         var assembly = programType.Assembly;
         var description = assembly.GetCustomAttributes(typeof(System.Reflection.AssemblyDescriptionAttribute), false);
-        
+
         // Assert
         description.Should().NotBeNull();
     }
@@ -594,7 +591,7 @@ public class ProgramTests
         var programType = typeof(Program);
         var assembly = programType.Assembly;
         var title = assembly.GetCustomAttributes(typeof(System.Reflection.AssemblyTitleAttribute), false);
-        
+
         // Assert
         title.Should().NotBeNull();
     }
@@ -606,7 +603,7 @@ public class ProgramTests
         var programType = typeof(Program);
         var assembly = programType.Assembly;
         var fileVersion = assembly.GetCustomAttributes(typeof(System.Reflection.AssemblyFileVersionAttribute), false);
-        
+
         // Assert
         fileVersion.Should().NotBeNull();
     }
@@ -618,7 +615,7 @@ public class ProgramTests
         var programType = typeof(Program);
         var assembly = programType.Assembly;
         var informationalVersion = assembly.GetCustomAttributes(typeof(System.Reflection.AssemblyInformationalVersionAttribute), false);
-        
+
         // Assert
         informationalVersion.Should().NotBeNull();
     }

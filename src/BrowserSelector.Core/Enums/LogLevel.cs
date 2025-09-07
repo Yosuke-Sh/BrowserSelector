@@ -37,6 +37,6 @@ namespace BrowserSelector.Core.Enums
         /// <summary>
         /// 致命的なエラー
         /// </summary>
-        Critical = 5
+        Critical = 5,
     }
 }

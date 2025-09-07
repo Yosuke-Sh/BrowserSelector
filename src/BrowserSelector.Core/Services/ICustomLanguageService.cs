@@ -1,14 +1,17 @@
+// <copyright file="ICustomLanguageService.cs" company="BrowserSelector">
+// Copyright (c) BrowserSelector. All rights reserved.
+// </copyright>
 using BrowserSelector.Core.Models;
 
 namespace BrowserSelector.Core.Services;
 
 /// <summary>
-/// カスタム言語ファイル管理サービスのインターフェース
+/// カスタム言語ファイル管琁E��ービスのインターフェース
 /// </summary>
 public interface ICustomLanguageService
 {
     /// <summary>
-    /// 利用可能な言語一覧を取得
+    /// 利用可能な言語一覧を取征E
     /// </summary>
     Task<IEnumerable<LanguageInfo>> GetAvailableLanguagesAsync();
 
@@ -28,7 +31,7 @@ public interface ICustomLanguageService
     Task<bool> ValidateLanguageFileAsync(string languageFilePath);
 
     /// <summary>
-    /// カスタム言語フォルダのパスを取得
+    /// カスタム言語フォルダのパスを取征E
     /// </summary>
     string GetCustomLanguageFolder();
 
@@ -38,17 +41,17 @@ public interface ICustomLanguageService
     Task<Dictionary<string, string>?> LoadCustomLanguageAsync(string cultureCode);
 
     /// <summary>
-    /// カスタム言語ファイルの保存
+    /// カスタム言語ファイルの保孁E
     /// </summary>
     Task<bool> SaveCustomLanguageAsync(string cultureCode, string displayName, Dictionary<string, string> resources);
 
     /// <summary>
-    /// 言語ファイルテンプレートを生成
+    /// 言語ファイルチE��プレートを生�E
     /// </summary>
     Task<bool> GenerateLanguageTemplateAsync(string cultureCode, string displayName);
 
     /// <summary>
-    /// 利用可能なリソースキーの一覧を取得
+    /// 利用可能なリソースキーの一覧を取征E
     /// </summary>
     Task<IEnumerable<string>> GetAvailableResourceKeysAsync();
 }
