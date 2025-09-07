@@ -1,0 +1,143 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, developer ]
+  pull_request:
+    branches: [ main, developer ]
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  SOLUTION_FILE: 'BrowserSelector.WPF.sln'
+
+jobs:
+  # ビルドとテスト
+  build-and-test:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+        
+    - name: Restore dependencies
+      run: dotnet restore ${{ env.SOLUTION_FILE }}
+      
+    - name: Build solution
+      run: dotnet build ${{ env.SOLUTION_FILE }} --configuration Release --no-restore
+      
+    - name: Run unit tests
+      run: dotnet test tests/BrowserSelector.UnitTests/ --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./TestResults/UnitTests
+      
+    - name: Run integration tests
+      run: dotnet test tests/BrowserSelector.IntegrationTests/ --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./TestResults/IntegrationTests
+      
+    - name: Run app tests
+      run: dotnet test tests/BrowserSelector.AppTests/ --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./TestResults/AppTests
+      
+    - name: Run security tests
+      run: dotnet test tests/BrowserSelector.SecurityTests/ --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./TestResults/SecurityTests
+      
+    - name: Run performance tests
+      run: dotnet test tests/BrowserSelector.PerformanceTests/ --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./TestResults/PerformanceTests
+      
+    - name: Run UI tests
+      run: dotnet test tests/BrowserSelector.UITests/ --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./TestResults/UITests
+      
+    - name: Run E2E tests
+      run: dotnet test tests/BrowserSelector.E2ETests/ --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./TestResults/E2ETests
+
+  # カバレッジレポート生成
+  coverage-report:
+    runs-on: windows-latest
+    needs: build-and-test
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+        
+    - name: Install ReportGenerator
+      run: dotnet tool install -g dotnet-reportgenerator-globaltool
+      
+    - name: Generate coverage report
+      run: |
+        reportgenerator -reports:"TestResults/**/coverage.cobertura.xml" -targetdir:"TestResults/CoverageReport" -reporttypes:"Html;Cobertura"
+        
+    - name: Upload coverage reports
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-reports
+        path: TestResults/CoverageReport/
+
+  # 品質ゲート
+  quality-gate:
+    runs-on: windows-latest
+    needs: [build-and-test, coverage-report]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+        
+    - name: Download coverage reports
+      uses: actions/download-artifact@v4
+      with:
+        name: coverage-reports
+        path: TestResults/CoverageReport/
+        
+    - name: Check coverage threshold
+      run: |
+        # カバレッジ閾値チェック（最低85%）
+        $coverage = (Get-Content "TestResults/CoverageReport/Cobertura.xml" | Select-String "line-rate" | ForEach-Object { [double]($_.Line -split '"')[1] })
+        if ($coverage -lt 0.85) {
+          Write-Error "Code coverage is below 85% threshold. Current coverage: $($coverage * 100)%"
+          exit 1
+        }
+        Write-Host "Code coverage check passed: $($coverage * 100)%"
+        
+    - name: Quality gate passed
+      run: echo "All quality gates passed successfully"
+
+  # リリース準備（mainブランチのみ）
+  release-prep:
+    runs-on: windows-latest
+    needs: [build-and-test, coverage-report, quality-gate]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+        
+    - name: Publish application
+      run: |
+        dotnet publish src/BrowserSelector.App/ --configuration Release --output ./publish/
+        
+    - name: Create release artifacts
+      run: |
+        # リリース用アーティファクトの作成
+        mkdir -p ./release-artifacts
+        Copy-Item -Path "./publish/*" -Destination "./release-artifacts/" -Recurse
+        
+    - name: Upload release artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-artifacts
+        path: release-artifacts/
