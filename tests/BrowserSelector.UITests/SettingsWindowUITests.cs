@@ -89,21 +89,22 @@ public class SettingsWindowUITests
         System.Threading.Thread.Sleep(500);
 
         // 設定ボタンをクリック
-        var settingsButton = mainWindow.FindFirstDescendant(cf => cf.ByName("設定").Or(cf.ByName("Settings")));
+        var settingsButton = mainWindow.FindFirstDescendant(cf => cf.ByName("設定ボタン").Or(cf.ByName("設定")).Or(cf.ByName("Settings")));
         if (settingsButton != null)
         {
             settingsButton.Click();
             System.Threading.Thread.Sleep(1000);
 
-            var settingsWindow = _app.GetMainWindow(_automation);
+            var settingsWindow = _app.GetAllTopLevelWindows(_automation)
+                .FirstOrDefault(w => w.Name.Contains("設定") || w.Name.Contains("Settings"));
 
             // Assert - 必要なタブが存在することを確認
-            var tabs = settingsWindow.FindAllDescendants(cf => cf.ByControlType(FlaUI.Core.Definitions.ControlType.TabItem));
+            var tabs = settingsWindow?.FindAllDescendants(cf => cf.ByControlType(FlaUI.Core.Definitions.ControlType.TabItem)) ?? Array.Empty<FlaUI.Core.AutomationElements.AutomationElement>();
             
             // タブが見つからない場合はコンテナを探す
             if (tabs.Length == 0)
             {
-                var tabControl = settingsWindow.FindFirstDescendant(cf => cf.ByControlType(FlaUI.Core.Definitions.ControlType.Tab));
+                var tabControl = settingsWindow?.FindFirstDescendant(cf => cf.ByControlType(FlaUI.Core.Definitions.ControlType.Tab));
                 if (tabControl != null)
                 {
                     tabs = tabControl.FindAllDescendants(cf => cf.ByControlType(FlaUI.Core.Definitions.ControlType.TabItem));
@@ -145,26 +146,27 @@ public class SettingsWindowUITests
         System.Threading.Thread.Sleep(500);
 
         // 設定ボタンをクリック
-        var settingsButton = mainWindow.FindFirstDescendant(cf => cf.ByName("設定").Or(cf.ByName("Settings")));
+        var settingsButton = mainWindow.FindFirstDescendant(cf => cf.ByName("設定ボタン").Or(cf.ByName("設定")).Or(cf.ByName("Settings")));
         if (settingsButton != null)
         {
             settingsButton.Click();
             System.Threading.Thread.Sleep(1000);
 
-            var settingsWindow = _app.GetMainWindow(_automation);
+            var settingsWindow = _app.GetAllTopLevelWindows(_automation)
+                .FirstOrDefault(w => w.Name.Contains("設定") || w.Name.Contains("Settings"));
 
             // 表示タブをクリック
-            var displayTab = settingsWindow.FindFirstDescendant(cf => cf.ByName("表示").Or(cf.ByName("Display")));
+            var displayTab = settingsWindow?.FindFirstDescendant(cf => cf.ByName("表示").Or(cf.ByName("Display")));
             if (displayTab != null)
             {
                 displayTab.Click();
                 System.Threading.Thread.Sleep(500);
 
                 // Assert - 透明度設定が存在することを確認
-                var transparencySlider = settingsWindow.FindFirstDescendant(cf => cf.ByName("透明度").Or(cf.ByName("Transparency")));
+                var transparencySlider = settingsWindow?.FindFirstDescendant(cf => cf.ByName("透明度").Or(cf.ByName("Transparency")));
                 _ = transparencySlider.Should().NotBeNull("透明度スライダーが存在すること");
 
-                var transparencyLabel = settingsWindow.FindFirstDescendant(cf => cf.ByName("透明度").Or(cf.ByName("Transparency")));
+                var transparencyLabel = settingsWindow?.FindFirstDescendant(cf => cf.ByName("透明度").Or(cf.ByName("Transparency")));
                 _ = transparencyLabel.Should().NotBeNull("透明度ラベルが存在すること");
             }
             else
@@ -193,29 +195,30 @@ public class SettingsWindowUITests
         System.Threading.Thread.Sleep(500);
 
         // 設定ボタンをクリック
-        var settingsButton = mainWindow.FindFirstDescendant(cf => cf.ByName("設定").Or(cf.ByName("Settings")));
+        var settingsButton = mainWindow.FindFirstDescendant(cf => cf.ByName("設定ボタン").Or(cf.ByName("設定")).Or(cf.ByName("Settings")));
         if (settingsButton != null)
         {
             settingsButton.Click();
             System.Threading.Thread.Sleep(1000);
 
-            var settingsWindow = _app.GetMainWindow(_automation);
+            var settingsWindow = _app.GetAllTopLevelWindows(_automation)
+                .FirstOrDefault(w => w.Name.Contains("設定") || w.Name.Contains("Settings"));
 
             // ブラウザタブをクリック
-            var browserTab = settingsWindow.FindFirstDescendant(cf => cf.ByName("ブラウザ").Or(cf.ByName("Browser")));
+            var browserTab = settingsWindow?.FindFirstDescendant(cf => cf.ByName("ブラウザ").Or(cf.ByName("Browser")));
             if (browserTab != null)
             {
                 browserTab.Click();
                 System.Threading.Thread.Sleep(500);
 
                 // Assert - ブラウザリストが存在することを確認
-                var browserList = settingsWindow.FindFirstDescendant(cf => cf.ByControlType(FlaUI.Core.Definitions.ControlType.List));
+                var browserList = settingsWindow?.FindFirstDescendant(cf => cf.ByControlType(FlaUI.Core.Definitions.ControlType.List));
                 _ = browserList.Should().NotBeNull("ブラウザリストが存在すること");
 
-                var addButton = settingsWindow.FindFirstDescendant(cf => cf.ByName("追加").Or(cf.ByName("Add")));
+                var addButton = settingsWindow?.FindFirstDescendant(cf => cf.ByName("追加").Or(cf.ByName("Add")));
                 _ = addButton.Should().NotBeNull("追加ボタンが存在すること");
 
-                var removeButton = settingsWindow.FindFirstDescendant(cf => cf.ByName("削除").Or(cf.ByName("Remove")));
+                var removeButton = settingsWindow?.FindFirstDescendant(cf => cf.ByName("削除").Or(cf.ByName("Remove")));
                 _ = removeButton.Should().NotBeNull("削除ボタンが存在すること");
             }
             else
@@ -244,29 +247,30 @@ public class SettingsWindowUITests
         System.Threading.Thread.Sleep(500);
 
         // 設定ボタンをクリック
-        var settingsButton = mainWindow.FindFirstDescendant(cf => cf.ByName("設定").Or(cf.ByName("Settings")));
+        var settingsButton = mainWindow.FindFirstDescendant(cf => cf.ByName("設定ボタン").Or(cf.ByName("設定")).Or(cf.ByName("Settings")));
         if (settingsButton != null)
         {
             settingsButton.Click();
             System.Threading.Thread.Sleep(1000);
 
-            var settingsWindow = _app.GetMainWindow(_automation);
+            var settingsWindow = _app.GetAllTopLevelWindows(_automation)
+                .FirstOrDefault(w => w.Name.Contains("設定") || w.Name.Contains("Settings"));
 
             // アクセシビリティタブをクリック
-            var accessibilityTab = settingsWindow.FindFirstDescendant(cf => cf.ByName("アクセシビリティ").Or(cf.ByName("Accessibility")));
+            var accessibilityTab = settingsWindow?.FindFirstDescendant(cf => cf.ByName("アクセシビリティ").Or(cf.ByName("Accessibility")));
             if (accessibilityTab != null)
             {
                 accessibilityTab.Click();
                 System.Threading.Thread.Sleep(500);
 
                 // Assert - アクセシビリティ設定が存在することを確認
-                var focusCheckbox = settingsWindow.FindFirstDescendant(cf => cf.ByName("フォーカス表示").Or(cf.ByName("Focus Display")));
+                var focusCheckbox = settingsWindow?.FindFirstDescendant(cf => cf.ByName("フォーカス表示").Or(cf.ByName("Focus Display")));
                 _ = focusCheckbox.Should().NotBeNull("フォーカス表示チェックボックスが存在すること");
 
-                var highContrastCheckbox = settingsWindow.FindFirstDescendant(cf => cf.ByName("高コントラスト").Or(cf.ByName("High Contrast")));
+                var highContrastCheckbox = settingsWindow?.FindFirstDescendant(cf => cf.ByName("高コントラスト").Or(cf.ByName("High Contrast")));
                 _ = highContrastCheckbox.Should().NotBeNull("高コントラストチェックボックスが存在すること");
 
-                var screenReaderCheckbox = settingsWindow.FindFirstDescendant(cf => cf.ByName("スクリーンリーダー").Or(cf.ByName("Screen Reader")));
+                var screenReaderCheckbox = settingsWindow?.FindFirstDescendant(cf => cf.ByName("スクリーンリーダー").Or(cf.ByName("Screen Reader")));
                 _ = screenReaderCheckbox.Should().NotBeNull("スクリーンリーダーチェックボックスが存在すること");
             }
             else
@@ -295,16 +299,17 @@ public class SettingsWindowUITests
         System.Threading.Thread.Sleep(500);
 
         // 設定ボタンをクリック
-        var settingsButton = mainWindow.FindFirstDescendant(cf => cf.ByName("設定").Or(cf.ByName("Settings")));
+        var settingsButton = mainWindow.FindFirstDescendant(cf => cf.ByName("設定ボタン").Or(cf.ByName("設定")).Or(cf.ByName("Settings")));
         if (settingsButton != null)
         {
             settingsButton.Click();
             System.Threading.Thread.Sleep(1000);
 
-            var settingsWindow = _app.GetMainWindow(_automation);
+            var settingsWindow = _app.GetAllTopLevelWindows(_automation)
+                .FirstOrDefault(w => w.Name.Contains("設定") || w.Name.Contains("Settings"));
 
             // Assert - 保存とキャンセルボタンが存在することを確認
-            var allButtons = settingsWindow.FindAllDescendants(cf => cf.ByControlType(FlaUI.Core.Definitions.ControlType.Button));
+            var allButtons = settingsWindow?.FindAllDescendants(cf => cf.ByControlType(FlaUI.Core.Definitions.ControlType.Button)) ?? Array.Empty<FlaUI.Core.AutomationElements.AutomationElement>();
             
             // ボタンのテキストを確認
             var buttonTexts = allButtons.Select(btn => btn.Name).ToList();
@@ -353,16 +358,17 @@ public class SettingsWindowUITests
         System.Threading.Thread.Sleep(500);
 
         // 設定ボタンをクリック
-        var settingsButton = mainWindow.FindFirstDescendant(cf => cf.ByName("設定").Or(cf.ByName("Settings")));
+        var settingsButton = mainWindow.FindFirstDescendant(cf => cf.ByName("設定ボタン").Or(cf.ByName("設定")).Or(cf.ByName("Settings")));
         if (settingsButton != null)
         {
             settingsButton.Click();
             System.Threading.Thread.Sleep(1000);
 
-            var settingsWindow = _app.GetMainWindow(_automation);
+            var settingsWindow = _app.GetAllTopLevelWindows(_automation)
+                .FirstOrDefault(w => w.Name.Contains("設定") || w.Name.Contains("Settings"));
 
             // キャンセルボタンをクリック
-            var cancelButton = settingsWindow.FindFirstDescendant(cf => cf.ByName("キャンセル").Or(cf.ByName("Cancel")));
+            var cancelButton = settingsWindow?.FindFirstDescendant(cf => cf.ByName("キャンセル").Or(cf.ByName("Cancel")));
             if (cancelButton != null)
             {
                 cancelButton.Click();
@@ -398,19 +404,20 @@ public class SettingsWindowUITests
         System.Threading.Thread.Sleep(500);
 
         // 設定ボタンをクリック
-        var settingsButton = mainWindow.FindFirstDescendant(cf => cf.ByName("設定").Or(cf.ByName("Settings")));
+        var settingsButton = mainWindow.FindFirstDescendant(cf => cf.ByName("設定ボタン").Or(cf.ByName("設定")).Or(cf.ByName("Settings")));
         if (settingsButton != null)
         {
             settingsButton.Click();
             System.Threading.Thread.Sleep(1000);
 
-            var settingsWindow = _app.GetMainWindow(_automation);
+            var settingsWindow = _app.GetAllTopLevelWindows(_automation)
+                .FirstOrDefault(w => w.Name.Contains("設定") || w.Name.Contains("Settings"));
 
             // Assert - キーボードナビゲーションが可能であることを確認
-            var focusableElements = settingsWindow.FindAllDescendants(cf => cf.ByControlType(FlaUI.Core.Definitions.ControlType.Button)
+            var focusableElements = settingsWindow?.FindAllDescendants(cf => cf.ByControlType(FlaUI.Core.Definitions.ControlType.Button)
                 .Or(cf.ByControlType(FlaUI.Core.Definitions.ControlType.Tab))
                 .Or(cf.ByControlType(FlaUI.Core.Definitions.ControlType.CheckBox))
-                .Or(cf.ByControlType(FlaUI.Core.Definitions.ControlType.Slider)));
+                .Or(cf.ByControlType(FlaUI.Core.Definitions.ControlType.Slider))) ?? Array.Empty<FlaUI.Core.AutomationElements.AutomationElement>();
 
             _ = focusableElements.Should().NotBeEmpty("フォーカス可能な要素が存在すること");
 
@@ -445,16 +452,17 @@ public class SettingsWindowUITests
         System.Threading.Thread.Sleep(500);
 
         // 設定ボタンをクリック
-        var settingsButton = mainWindow.FindFirstDescendant(cf => cf.ByName("設定").Or(cf.ByName("Settings")));
+        var settingsButton = mainWindow.FindFirstDescendant(cf => cf.ByName("設定ボタン").Or(cf.ByName("設定")).Or(cf.ByName("Settings")));
         if (settingsButton != null)
         {
             settingsButton.Click();
             System.Threading.Thread.Sleep(1000);
 
-            var settingsWindow = _app.GetMainWindow(_automation);
+            var settingsWindow = _app.GetAllTopLevelWindows(_automation)
+                .FirstOrDefault(w => w.Name.Contains("設定") || w.Name.Contains("Settings"));
 
             // Assert - アクセシビリティプロパティが設定されていることを確認
-            var buttons = settingsWindow.FindAllDescendants(cf => cf.ByControlType(FlaUI.Core.Definitions.ControlType.Button));
+            var buttons = settingsWindow?.FindAllDescendants(cf => cf.ByControlType(FlaUI.Core.Definitions.ControlType.Button)) ?? Array.Empty<FlaUI.Core.AutomationElements.AutomationElement>();
             _ = buttons.Should().NotBeEmpty("ボタンが存在すること");
 
             foreach (var button in buttons)
@@ -476,7 +484,7 @@ public class SettingsWindowUITests
                 }
             }
 
-            var labels = settingsWindow.FindAllDescendants(cf => cf.ByControlType(FlaUI.Core.Definitions.ControlType.Text));
+            var labels = settingsWindow?.FindAllDescendants(cf => cf.ByControlType(FlaUI.Core.Definitions.ControlType.Text)) ?? Array.Empty<FlaUI.Core.AutomationElements.AutomationElement>();
             _ = labels.Should().NotBeEmpty("ラベルが存在すること");
 
             foreach (var label in labels)

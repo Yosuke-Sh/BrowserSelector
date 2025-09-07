@@ -1,4 +1,4 @@
-<Window x:Class="BrowserSelector.Presentation.Views.MainWindow"
+    <Window x:Class="BrowserSelector.Presentation.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -14,7 +14,8 @@
         ShowInTaskbar="True"
         Icon="/BrowserSelector.Presentation;component/Resources/Images/BrowserSelector_Icon_32.png"
         d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
-        DataContext="{Binding RelativeSource={RelativeSource Self}}">
+        DataContext="{Binding RelativeSource={RelativeSource Self}}"
+        AutomationProperties.Name="MainWindow">
 
     <Window.Resources>
         <!-- コンバーター -->
@@ -101,7 +102,7 @@
         </Style>
     </Window.Resources>
 
-    <Grid>
+    <Grid AutomationProperties.Name="MainContentGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -115,7 +116,8 @@
 
         <!-- ヘッダー -->
         <Grid Grid.Row="0" Margin="20,20,20,15" 
-              Visibility="{Binding VisualSettings.ShowLogo, Converter={StaticResource BoolToVisibilityConverter}}">
+              Visibility="{Binding VisualSettings.ShowLogo, Converter={StaticResource BoolToVisibilityConverter}}"
+              AutomationProperties.Name="HeaderGrid">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
@@ -129,7 +131,8 @@
                    HorizontalAlignment="Left"
                    VerticalAlignment="Top"
                    Margin="-15,-9,0,0"
-                   RenderOptions.BitmapScalingMode="HighQuality" Grid.ColumnSpan="2"/>
+                   RenderOptions.BitmapScalingMode="HighQuality" Grid.ColumnSpan="2"
+                   AutomationProperties.Name="LogoImage"/>
 
             <!-- タイトルテキスト（中央） -->
             <TextBlock Grid.Column="1"
@@ -138,6 +141,7 @@
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"
                        Width="443"
+                       AutomationProperties.Name="TitleTextBlock"
                        >
                 <TextBlock.Effect>
                     <DropShadowEffect
@@ -160,17 +164,19 @@
                    HorizontalAlignment="Center"
                    Margin="20,70,20,0"
                    Foreground="#666666"
-                   Visibility="{Binding Url, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                   Visibility="{Binding Url, Converter={StaticResource BoolToVisibilityConverter}}"
+                   AutomationProperties.Name="UrlDisplayTextBlock"/>
 
         <!-- URL入力 -->
         <Grid Grid.Row="1" Margin="20,10" 
-              Visibility="{Binding VisualSettings.ShowUrlInput, Converter={StaticResource BoolToVisibilityConverter}}">
+              Visibility="{Binding VisualSettings.ShowUrlInput, Converter={StaticResource BoolToVisibilityConverter}}"
+              AutomationProperties.Name="UrlInputGrid">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <Grid Grid.Column="0">
+            <Grid Grid.Column="0" AutomationProperties.Name="UrlTextBoxContainer">
                 <TextBox Text="{Binding Url, UpdateSourceTrigger=PropertyChanged}"
                           FontSize="16"
                           Padding="40,8,10,8"
@@ -178,7 +184,8 @@
                           VerticalAlignment="Center"
                           Background="#FAFAFA"
                           BorderBrush="#E0E0E0"
-                          BorderThickness="1">
+                          BorderThickness="1"
+                          AutomationProperties.Name="UrlInputTextBox">
                     <TextBox.Style>
                         <Style TargetType="TextBox">
                             <Style.Triggers>
@@ -223,8 +230,9 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             
-            <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
-                <ItemsControl ItemsSource="{Binding Browsers}">
+            <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" AutomationProperties.Name="BrowserButtonsScrollViewer">
+                <ItemsControl ItemsSource="{Binding Browsers}"
+                              AutomationProperties.Name="BrowserButtonsContainer">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel/>
@@ -238,7 +246,8 @@
                                     CommandParameter="{Binding}"
                                     Content="{Binding DisplayName}"
                                     Click="BrowserButton_Click"
-                                    IsEnabled="{Binding DataContext.Url, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource StringToBoolConverter}}"/>
+                                    IsEnabled="{Binding DataContext.Url, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource StringToBoolConverter}}"
+                                    AutomationProperties.Name="{Binding DisplayName, StringFormat={}{0}BrowserButton}"/>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
@@ -254,7 +263,8 @@
                      Foreground="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
                      BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"
                      BorderThickness="1"
-                     Cursor="Hand">
+                     Cursor="Hand"
+                     AutomationProperties.Name="SettingsButton">
                 <StackPanel Orientation="Horizontal">
                     <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Settings_Gray.png"
                             Width="16" Height="16" 
