@@ -2,6 +2,11 @@
 
 **BrowserSelector**は、Windows環境で複数のブラウザから選択してURLを開くためのモダンなWPFアプリケーションです。
 
+[![CI/CD](https://github.com/Yosuke-Sh/BrowserSelector/workflows/CI/CD%20Pipeline/badge.svg)](https://github.com/Yosuke-Sh/BrowserSelector/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![.NET 8.0](https://img.shields.io/badge/.NET-8.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/8.0)
+[![Windows](https://img.shields.io/badge/Platform-Windows-blue.svg)](https://www.microsoft.com/windows)
+
 ## ✨ 特徴
 
 ### 🎨 視覚的に優れたデザイン
@@ -19,6 +24,8 @@
 - **重複除去**: 同じパスのブラウザの重複登録を防止
 - **設定管理**: アプリケーション設定と視覚設定の管理
 - **多言語対応**: 日本語・英語の完全対応
+- **透明化・視覚効果**: ウィンドウ透明化、カスタム背景色、グラデーション
+- **システム統合**: プロトコルハンドラー、自動アップデート
 
 ### 🚀 使用方法
 
@@ -81,15 +88,26 @@ BrowserSelector.WPF/
 ## 🧪 テスト
 
 ### テストカバレッジ
-- **単体テスト**: xUnit + Moq + FluentAssertions
-- **統合テスト**: xUnit + Microsoft.Extensions.Hosting.Testing
-- **UIテスト**: FlaUI
+- **単体テスト**: 190テスト中189成功（xUnit + Moq + FluentAssertions）
+- **統合テスト**: 設定ファイル保存・読み込み、レジストリアクセス
+- **UIテスト**: 3テスト中3成功（MSTest + FlaUI）
+- **セキュリティテスト**: 入力値検証、ファイルパス、レジストリアクセス
+- **パフォーマンステスト**: BenchmarkDotNetによるベンチマーク
 - **E2Eテスト**: Playwright for .NET
 
 ### テスト実行
 ```bash
+# 全テスト実行
 dotnet test
+
+# カバレッジレポート生成
+dotnet test --collect:"XPlat Code Coverage"
 ```
+
+### 品質保証
+- **CI/CD**: GitHub Actionsによる自動テスト実行
+- **品質ゲート**: 85%カバレッジ閾値
+- **警告解消**: ビルド警告0件の維持
 
 ## 📦 ビルド
 
@@ -116,13 +134,185 @@ dotnet build --configuration Release
 3. ビルド: `dotnet build`
 4. テスト実行: `dotnet test`
 
+## 📦 ダウンロード・インストール
+
+### リリース版
+- [GitHub Releases](https://github.com/Yosuke-Sh/BrowserSelector/releases)から最新版をダウンロード
+- ポータブル版（ZIP）またはインストーラー版を選択
+
+### システム要件
+- **OS**: Windows 10/11
+- **.NET Runtime**: .NET 8.0 Runtime
+- **メモリ**: 100MB以下
+- **ディスク**: 50MB以上の空き容量
+
+## 🔄 自動アップデート
+
+BrowserSelectorは自動更新機能を搭載しています：
+- 起動時の自動更新チェック
+- GitHub Releases API連携
+- セキュアな更新プロセス
+- ロールバック機能
+
 ## 📄 ライセンス
 
-このプロジェクトはMITライセンスの下で公開されています。
+このプロジェクトはMITライセンスの下で公開されています。詳細は[LICENSE](LICENSE)ファイルを参照してください。
 
 ## 🤝 貢献
 
 プルリクエストやイシューの報告を歓迎します。
+
+### 貢献方法
+1. リポジトリをフォーク
+2. フィーチャーブランチを作成
+3. 変更をコミット
+4. プルリクエストを作成
+
+### 開発ガイドライン
+- コード品質: 85%以上のカバレッジ
+- 警告: ビルド警告0件の維持
+- テスト: 新機能にはテストを追加
+- ドキュメント: 変更には適切なドキュメント更新
+
+## 📞 サポート
+
+- **Issues**: [GitHub Issues](https://github.com/Yosuke-Sh/BrowserSelector/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/Yosuke-Sh/BrowserSelector/discussions)
+- **Wiki**: [プロジェクトWiki](https://github.com/Yosuke-Sh/BrowserSelector/wiki)
+
+---
+
+## English
+
+**BrowserSelector** is a modern WPF application for selecting and opening URLs with multiple browsers on Windows.
+
+[![CI/CD](https://github.com/Yosuke-Sh/BrowserSelector/workflows/CI/CD%20Pipeline/badge.svg)](https://github.com/Yosuke-Sh/BrowserSelector/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![.NET 8.0](https://img.shields.io/badge/.NET-8.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/8.0)
+[![Windows](https://img.shields.io/badge/Platform-Windows-blue.svg)](https://www.microsoft.com/windows)
+
+### ✨ Features
+
+#### 🎨 Visually Superior Design
+- **Modern UI**: Refined design inspired by Material Design
+- **High-Quality Icons**: High-resolution icon extraction using Win32 API ExtractIconEx
+- **SVG Icons**: High-resolution and scalable vector icons
+- **Custom Logo**: Dedicated logo expressing the concept of browser selection
+- **Animation Effects**: Drop shadows and transitions on hover
+- **Responsive Layout**: Adapts to various screen sizes
+
+#### 🔧 Core Features
+- **Automatic Browser Detection**: Automatically detects installed browsers from Windows Registry
+- **High-Quality Icon Display**: High-resolution icon extraction and display using Win32 API
+- **Launch Argument Support**: Accepts URLs via command line arguments and displays browser selection screen
+- **Duplicate Prevention**: Prevents duplicate registration of browsers with the same path
+- **Settings Management**: Manages application and visual settings
+- **Multi-language Support**: Full support for Japanese and English
+- **Transparency & Visual Effects**: Window transparency, custom background colors, gradients
+- **System Integration**: Protocol handler, automatic updates
+
+### 🚀 Usage
+
+#### Normal Launch
+```bash
+dotnet run --project src/BrowserSelector.App
+```
+
+#### Launch with URL
+```bash
+dotnet run --project src/BrowserSelector.App -- "https://www.google.com"
+```
+
+### 🏗️ Architecture
+
+#### Project Structure
+```
+BrowserSelector.WPF/
+├── src/
+│   ├── BrowserSelector.Core/           # Domain Layer
+│   ├── BrowserSelector.Infrastructure/ # Infrastructure Layer
+│   ├── BrowserSelector.Presentation/   # Presentation Layer
+│   └── BrowserSelector.App/           # Application Layer
+├── tests/                              # Test Projects
+└── deployment/                         # Distribution Packages
+```
+
+#### Technology Stack
+- **Framework**: WPF (.NET 8.0)
+- **MVVM Library**: CommunityToolkit.Mvvm
+- **DI Container**: Microsoft.Extensions.DependencyInjection
+- **Configuration**: Microsoft.Extensions.Configuration
+- **Localization**: Microsoft.Extensions.Localization
+
+### 🧪 Testing
+
+#### Test Coverage
+- **Unit Tests**: 189/190 tests passing (xUnit + Moq + FluentAssertions)
+- **Integration Tests**: Settings file save/load, registry access
+- **UI Tests**: 3/3 tests passing (MSTest + FlaUI)
+- **Security Tests**: Input validation, file paths, registry access
+- **Performance Tests**: Benchmarks with BenchmarkDotNet
+- **E2E Tests**: Playwright for .NET
+
+#### Test Execution
+```bash
+# Run all tests
+dotnet test
+
+# Generate coverage report
+dotnet test --collect:"XPlat Code Coverage"
+```
+
+#### Quality Assurance
+- **CI/CD**: Automated test execution with GitHub Actions
+- **Quality Gates**: 85% coverage threshold
+- **Warning Resolution**: Maintain zero build warnings
+
+### 📦 Download & Installation
+
+#### Release Version
+- Download the latest version from [GitHub Releases](https://github.com/Yosuke-Sh/BrowserSelector/releases)
+- Choose between portable version (ZIP) or installer version
+
+#### System Requirements
+- **OS**: Windows 10/11
+- **.NET Runtime**: .NET 8.0 Runtime
+- **Memory**: Less than 100MB
+- **Disk**: 50MB+ free space
+
+### 🔄 Automatic Updates
+
+BrowserSelector features automatic update functionality:
+- Automatic update check on startup
+- GitHub Releases API integration
+- Secure update process
+- Rollback functionality
+
+### 📄 License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+### 🤝 Contributing
+
+Pull requests and issue reports are welcome.
+
+#### How to Contribute
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Create a pull request
+
+#### Development Guidelines
+- Code Quality: 85%+ coverage
+- Warnings: Maintain zero build warnings
+- Testing: Add tests for new features
+- Documentation: Update documentation for changes
+
+### 📞 Support
+
+- **Issues**: [GitHub Issues](https://github.com/Yosuke-Sh/BrowserSelector/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/Yosuke-Sh/BrowserSelector/discussions)
+- **Wiki**: [Project Wiki](https://github.com/Yosuke-Sh/BrowserSelector/wiki)
 
 ---
 
