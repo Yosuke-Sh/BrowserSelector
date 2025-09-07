@@ -112,5 +112,11 @@ csharp_prefer_braces = true
 dotnet_code_quality_unused_parameters = all
 dotnet_code_quality_unused_parameters.exclude_parameters_that_start_with_underscore = true
 
-# StyleCopルールの無効化
+# StyleCopルールの無効化（スタイル警告を除外）
 dotnet_diagnostic.SA1309.severity = none
+dotnet_diagnostic.SA1101.severity = none  # Prefix local calls with this
+dotnet_diagnostic.SA1000.severity = none  # Keywords should be spaced correctly
+dotnet_diagnostic.SA1413.severity = none  # Use trailing comma in multi-line initializers
+dotnet_diagnostic.SA1208.severity = none  # System using directives should be placed before other using directives
+dotnet_diagnostic.SA1633.severity = none  # File should have header
+dotnet_diagnostic.SA1200.severity = none  # Using directive should appear within a namespace declaration

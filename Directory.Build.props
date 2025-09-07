@@ -8,7 +8,8 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningsAsErrors />
     <WarningsNotAsErrors />
-    <NoWarn>$(NoWarn);CS1591</NoWarn> <!-- XML documentation warnings -->
+    <!-- 重要なコード品質警告のみを対象とし、スタイル警告は除外 -->
+    <NoWarn>$(NoWarn);CS1591;SA1101;SA1000;SA1413;SA1208;SA1633;SA1200</NoWarn>
   </PropertyGroup>
 
   <!-- コード品質パッケージ -->
