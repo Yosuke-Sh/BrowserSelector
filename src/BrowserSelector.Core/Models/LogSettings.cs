@@ -1,8 +1,12 @@
-using BrowserSelector.Core.Enums;
-using CommunityToolkit.Mvvm.ComponentModel;
-using System.IO;
+// <copyright file="LogSettings.cs" company="BrowserSelector">
+// Copyright (c) 2024 BrowserSelector. All rights reserved.
+// </copyright>
 
-namespace BrowserSelector.Core.Models;
+namespace BrowserSelector.Core.Models
+{
+    using BrowserSelector.Core.Enums;
+    using CommunityToolkit.Mvvm.ComponentModel;
+    using System.IO;
 
 /// <summary>
 /// ログ設定を表すモデル
@@ -89,12 +93,13 @@ public partial class LogSettings : ObservableObject
     /// </summary>
     public string GetLogFilePath()
     {
-        if (string.IsNullOrEmpty(LogOutputFolder))
+        if (string.IsNullOrEmpty(this.LogOutputFolder))
         {
-            LogOutputFolder = GetDefaultLogFolder();
+            this.LogOutputFolder = this.GetDefaultLogFolder();
         }
 
-        string fileName = $"{LogFilePrefix}_{DateTime.Now:yyyyMMdd}.{LogFileSuffix}";
-        return Path.Combine(LogOutputFolder, fileName);
+        string fileName = $"{this.LogFilePrefix}_{DateTime.Now:yyyyMMdd}.{this.LogFileSuffix}";
+        return Path.Combine(this.LogOutputFolder, fileName);
     }
+}
 }

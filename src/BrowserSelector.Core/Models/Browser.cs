@@ -1,6 +1,10 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+// <copyright file="Browser.cs" company="BrowserSelector">
+// Copyright (c) 2024 BrowserSelector. All rights reserved.
+// </copyright>
 
-namespace BrowserSelector.Core.Models;
+namespace BrowserSelector.Core.Models
+{
+    using CommunityToolkit.Mvvm.ComponentModel;
 
 /// <summary>
 /// ブラウザ情報を表すモデル
@@ -47,20 +51,20 @@ public partial class Browser : ObservableObject
     /// <summary>
     /// ブラウザが有効かどうかを判定
     /// </summary>
-    public bool IsValid => !string.IsNullOrWhiteSpace(Name) && !string.IsNullOrWhiteSpace(ExecutablePath);
+    public bool IsValid => !string.IsNullOrWhiteSpace(this.Name) && !string.IsNullOrWhiteSpace(this.ExecutablePath);
 
     /// <summary>
     /// ブラウザの表示名を取得
     /// </summary>
-    public string DisplayName => string.IsNullOrWhiteSpace(Name) ? "Unknown Browser" : Name;
+    public string DisplayName => string.IsNullOrWhiteSpace(this.Name) ? "Unknown Browser" : this.Name;
 
     /// <summary>
     /// 使用回数を増加
     /// </summary>
     public void IncrementUseCount()
     {
-        UseCount++;
-        LastUsed = DateTime.Now;
+        this.UseCount++;
+        this.LastUsed = DateTime.Now;
     }
 
     /// <summary>
@@ -71,14 +75,14 @@ public partial class Browser : ObservableObject
         return new Browser
         {
             Id = Guid.NewGuid(),
-            Name = Name,
-            ExecutablePath = ExecutablePath,
-            IconPath = IconPath,
-            Arguments = Arguments,
+            Name = this.Name,
+            ExecutablePath = this.ExecutablePath,
+            IconPath = this.IconPath,
+            Arguments = this.Arguments,
             IsDefault = false, // 複製時はデフォルトをfalseにする
-            IsEnabled = IsEnabled,
-            DisplayOrder = DisplayOrder,
-            Type = Type
+            IsEnabled = this.IsEnabled,
+            DisplayOrder = this.DisplayOrder,
+            Type = this.Type
         };
     }
 }
@@ -132,4 +136,5 @@ public enum BrowserType
     /// Vivaldi
     /// </summary>
     Vivaldi
+}
 }

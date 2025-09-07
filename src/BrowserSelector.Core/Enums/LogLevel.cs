@@ -1,37 +1,42 @@
-namespace BrowserSelector.Core.Enums;
+// <copyright file="LogLevel.cs" company="BrowserSelector">
+// Copyright (c) 2024 BrowserSelector. All rights reserved.
+// </copyright>
 
-/// <summary>
-/// ログレベルを定義する列挙型
-/// </summary>
-public enum LogLevel
+namespace BrowserSelector.Core.Enums
 {
     /// <summary>
-    /// トレース情報（最も詳細なレベル）
+    /// ログレベルを定義する列挙型
     /// </summary>
-    Trace = 0,
+    public enum LogLevel
+    {
+        /// <summary>
+        /// トレース情報（最も詳細なレベル）
+        /// </summary>
+        Trace = 0,
 
-    /// <summary>
-    /// デバッグ情報
-    /// </summary>
-    Debug = 1,
+        /// <summary>
+        /// デバッグ情報
+        /// </summary>
+        Debug = 1,
 
-    /// <summary>
-    /// 一般的な情報
-    /// </summary>
-    Information = 2,
+        /// <summary>
+        /// 一般的な情報
+        /// </summary>
+        Information = 2,
 
-    /// <summary>
-    /// 警告
-    /// </summary>
-    Warning = 3,
+        /// <summary>
+        /// 警告
+        /// </summary>
+        Warning = 3,
 
-    /// <summary>
-    /// エラー
-    /// </summary>
-    Error = 4,
+        /// <summary>
+        /// エラー
+        /// </summary>
+        Error = 4,
 
-    /// <summary>
-    /// 致命的なエラー
-    /// </summary>
-    Critical = 5
+        /// <summary>
+        /// 致命的なエラー
+        /// </summary>
+        Critical = 5
+    }
 }

@@ -1,4 +1,9 @@
-namespace BrowserSelector.Core.Models;
+// <copyright file="LanguageCodeInfo.cs" company="BrowserSelector">
+// Copyright (c) 2024 BrowserSelector. All rights reserved.
+// </copyright>
+
+namespace BrowserSelector.Core.Models
+{
 
 /// <summary>
 /// 言語コード情報
@@ -11,13 +16,14 @@ public class LanguageCodeInfo
 
     public LanguageCodeInfo(string code, string displayName, string nativeName)
     {
-        Code = code;
-        DisplayName = displayName;
-        NativeName = nativeName;
+        this.Code = code;
+        this.DisplayName = displayName;
+        this.NativeName = nativeName;
     }
 
     public override string ToString()
     {
-        return $"{DisplayName} ({Code})";
+        return $"{this.DisplayName} ({this.Code})";
     }
+}
 }

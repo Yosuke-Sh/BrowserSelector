@@ -1,4 +1,9 @@
-namespace BrowserSelector.Core.Models;
+// <copyright file="LanguageInfo.cs" company="BrowserSelector">
+// Copyright (c) 2024 BrowserSelector. All rights reserved.
+// </copyright>
+
+namespace BrowserSelector.Core.Models
+{
 
 /// <summary>
 /// 言語情報を表すモデル
@@ -29,8 +34,8 @@ public class LanguageInfo
     /// <param name="displayName">表示名</param>
     public LanguageInfo(string cultureCode, string displayName)
     {
-        CultureCode = cultureCode;
-        DisplayName = displayName;
+        this.CultureCode = cultureCode;
+        this.DisplayName = displayName;
     }
 
     /// <summary>
@@ -38,7 +43,7 @@ public class LanguageInfo
     /// </summary>
     public override string ToString()
     {
-        return DisplayName;
+        return this.DisplayName;
     }
 
     /// <summary>
@@ -46,7 +51,7 @@ public class LanguageInfo
     /// </summary>
     public override bool Equals(object? obj)
     {
-        return obj is LanguageInfo other && CultureCode == other.CultureCode;
+        return obj is LanguageInfo other && this.CultureCode == other.CultureCode;
     }
 
     /// <summary>
@@ -54,6 +59,7 @@ public class LanguageInfo
     /// </summary>
     public override int GetHashCode()
     {
-        return CultureCode.GetHashCode();
+        return this.CultureCode.GetHashCode();
     }
+}
 }

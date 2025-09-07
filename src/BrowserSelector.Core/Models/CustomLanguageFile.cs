@@ -1,4 +1,9 @@
-namespace BrowserSelector.Core.Models;
+// <copyright file="CustomLanguageFile.cs" company="BrowserSelector">
+// Copyright (c) 2024 BrowserSelector. All rights reserved.
+// </copyright>
+
+namespace BrowserSelector.Core.Models
+{
 
 /// <summary>
 /// カスタム言語ファイルのモデル
@@ -44,4 +49,5 @@ public class CustomLanguageFile
     /// 作成者
     /// </summary>
     public string? Author { get; set; }
+}
 }

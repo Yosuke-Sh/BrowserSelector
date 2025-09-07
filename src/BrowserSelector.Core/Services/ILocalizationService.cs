@@ -53,7 +53,7 @@ public class LanguageChangedEventArgs : EventArgs
 
     public LanguageChangedEventArgs(CultureInfo oldCulture, CultureInfo newCulture)
     {
-        OldCulture = oldCulture;
-        NewCulture = newCulture;
+        this.OldCulture = oldCulture;
+        this.NewCulture = newCulture;
     }
 }

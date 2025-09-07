@@ -1,4 +1,9 @@
-namespace BrowserSelector.Core.Models;
+// <copyright file="SystemTrayModels.cs" company="BrowserSelector">
+// Copyright (c) 2024 BrowserSelector. All rights reserved.
+// </copyright>
+
+namespace BrowserSelector.Core.Models
+{
 
 /// <summary>
 /// システムトレイメニューアイテム
@@ -43,7 +48,7 @@ public class SystemTrayEventArgs : EventArgs
 
     public SystemTrayEventArgs(SystemTrayActionType actionType)
     {
-        ActionType = actionType;
+        this.ActionType = actionType;
     }
 }
 
@@ -81,8 +86,7 @@ public class UpdateAvailableEventArgs : EventArgs
 
     public UpdateAvailableEventArgs(UpdateInfo updateInfo)
     {
-        UpdateInfo = updateInfo;
+        this.UpdateInfo = updateInfo;
     }
 }
-
-
+}

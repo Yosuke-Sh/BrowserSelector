@@ -1,4 +1,9 @@
-namespace BrowserSelector.Core.Enums;
+// <copyright file="GradientDirection.cs" company="BrowserSelector">
+// Copyright (c) 2024 BrowserSelector. All rights reserved.
+// </copyright>
+
+namespace BrowserSelector.Core.Enums
+{
 
 /// <summary>
 /// グラデーションの方向を表す列挙型
@@ -19,4 +24,5 @@ public enum GradientDirection
     /// 斜め方向（左上から右下）
     /// </summary>
     Diagonal
+}
 }

@@ -1,6 +1,10 @@
-using System.ComponentModel.DataAnnotations;
+// <copyright file="UrlRule.cs" company="BrowserSelector">
+// Copyright (c) 2024 BrowserSelector. All rights reserved.
+// </copyright>
 
-namespace BrowserSelector.Core.Models;
+namespace BrowserSelector.Core.Models
+{
+    using System.ComponentModel.DataAnnotations;
 
 /// <summary>
 /// URLパターンに基づくブラウザ振り分けルール
@@ -60,19 +64,19 @@ public class UrlRule
     /// <returns>マッチする場合true</returns>
     public bool IsMatch(string url)
     {
-        if (string.IsNullOrWhiteSpace(url) || string.IsNullOrWhiteSpace(Pattern))
+        if (string.IsNullOrWhiteSpace(url) || string.IsNullOrWhiteSpace(this.Pattern))
         {
             return false;
         }
 
         // パターンを小文字に変換
-        string pattern = Pattern.ToLowerInvariant();
+        string pattern = this.Pattern.ToLowerInvariant();
         string targetUrl = url.ToLowerInvariant();
 
         // ワイルドカードパターンの処理
         if (pattern.Contains('*'))
         {
-            return IsWildcardMatch(pattern, targetUrl);
+            return this.IsWildcardMatch(pattern, targetUrl);
         }
 
         // 完全一致
@@ -135,16 +139,17 @@ public class UrlRule
     /// <summary>
     /// ルールの表示名を取得
     /// </summary>
-    public string DisplayName => $"{Pattern} → {BrowserName} (優先度: {Priority})";
+    public string DisplayName => $"{this.Pattern} → {this.BrowserName} (優先度: {this.Priority})";
 
     /// <summary>
     /// ルールの詳細情報を取得
     /// </summary>
     public string GetDetails()
     {
-        string status = IsEnabled ? "有効" : "無効";
-        string desc = string.IsNullOrWhiteSpace(Description) ? "説明なし" : Description;
-        return $"パターン: {Pattern}\nブラウザ: {BrowserName}\n優先度: {Priority}\n状態: {status}\n説明: {desc}";
+        string status = this.IsEnabled ? "有効" : "無効";
+        string desc = string.IsNullOrWhiteSpace(this.Description) ? "説明なし" : this.Description;
+        return $"パターン: {this.Pattern}\nブラウザ: {this.BrowserName}\n優先度: {this.Priority}\n状態: {status}\n説明: {desc}";
     }
+}
 }
 

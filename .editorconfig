@@ -111,3 +111,6 @@ csharp_prefer_braces = true
 # 例外処理
 dotnet_code_quality_unused_parameters = all
 dotnet_code_quality_unused_parameters.exclude_parameters_that_start_with_underscore = true
+
+# StyleCopルールの無効化
+dotnet_diagnostic.SA1309.severity = none

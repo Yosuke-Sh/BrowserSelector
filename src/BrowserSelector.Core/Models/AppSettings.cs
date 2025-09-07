@@ -1,6 +1,10 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+// <copyright file="AppSettings.cs" company="BrowserSelector">
+// Copyright (c) 2024 BrowserSelector. All rights reserved.
+// </copyright>
 
-namespace BrowserSelector.Core.Models;
+namespace BrowserSelector.Core.Models
+{
+    using CommunityToolkit.Mvvm.ComponentModel;
 
 /// <summary>
 /// アプリケーション全体の設定を表すモデル
@@ -37,4 +41,5 @@ public partial class AppSettings : ObservableObject
 
     [ObservableProperty]
     private bool _closeAfterUrlRuleMatch = true;
+}
 }
