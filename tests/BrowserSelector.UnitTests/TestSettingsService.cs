@@ -39,11 +39,11 @@ public class TestSettingsService : ISettingsService
             if (!File.Exists(_appSettingsPath))
             {
                 AppSettings defaultSettings = new();
-                _ = await SaveAppSettingsAsync(defaultSettings);
+                _ = await SaveAppSettingsAsync(defaultSettings).ConfigureAwait(false);
                 return defaultSettings;
             }
 
-            string json = await File.ReadAllTextAsync(_appSettingsPath);
+            string json = await File.ReadAllTextAsync(_appSettingsPath).ConfigureAwait(false);
             AppSettings? settings = JsonSerializer.Deserialize<AppSettings>(json);
             AppSettings result = settings ?? new AppSettings();
 
@@ -83,7 +83,7 @@ public class TestSettingsService : ISettingsService
             };
 
             string json = JsonSerializer.Serialize(settings, options);
-            await File.WriteAllTextAsync(_appSettingsPath, json);
+            await File.WriteAllTextAsync(_appSettingsPath, json).ConfigureAwait(false);
             return true;
         }
         catch (JsonException ex)
@@ -111,11 +111,11 @@ public class TestSettingsService : ISettingsService
             if (!File.Exists(_visualSettingsPath))
             {
                 VisualSettings defaultSettings = new();
-                _ = await SaveVisualSettingsAsync(defaultSettings);
+                _ = await SaveVisualSettingsAsync(defaultSettings).ConfigureAwait(false);
                 return defaultSettings;
             }
 
-            string json = await File.ReadAllTextAsync(_visualSettingsPath);
+            string json = await File.ReadAllTextAsync(_visualSettingsPath).ConfigureAwait(false);
             VisualSettings? settings = JsonSerializer.Deserialize<VisualSettings>(json);
             VisualSettings result = settings ?? new VisualSettings();
 
@@ -155,7 +155,7 @@ public class TestSettingsService : ISettingsService
             };
 
             string json = JsonSerializer.Serialize(settings, options);
-            await File.WriteAllTextAsync(_visualSettingsPath, json);
+            await File.WriteAllTextAsync(_visualSettingsPath, json).ConfigureAwait(false);
             return true;
         }
         catch (JsonException ex)
@@ -197,7 +197,7 @@ public class TestSettingsService : ISettingsService
 
             // デフォルト設定を作成
             _ = await SaveAppSettingsAsync(new AppSettings());
-            _ = await SaveVisualSettingsAsync(new VisualSettings());
+            _ = await SaveVisualSettingsAsync(new VisualSettings()).ConfigureAwait(false);
 
             return true;
         }
@@ -216,13 +216,13 @@ public class TestSettingsService : ISettingsService
     public async Task<bool> ImportSettingsAsync(string filePath)
     {
         // テスト用の簡易実装
-        return await Task.FromResult(false);
+        return await Task.FromResult(false).ConfigureAwait(false);
     }
 
     public async Task<bool> ExportSettingsAsync(string filePath)
     {
         // テスト用の簡易実装
-        return await Task.FromResult(false);
+        return await Task.FromResult(false).ConfigureAwait(false);
     }
 
     public async Task<LogSettings> LoadLogSettingsAsync()
@@ -233,11 +233,11 @@ public class TestSettingsService : ISettingsService
             if (!File.Exists(_logSettingsPath))
             {
                 LogSettings defaultSettings = new();
-                _ = await SaveLogSettingsAsync(defaultSettings);
+                _ = await SaveLogSettingsAsync(defaultSettings).ConfigureAwait(false);
                 return defaultSettings;
             }
 
-            string json = await File.ReadAllTextAsync(_logSettingsPath);
+            string json = await File.ReadAllTextAsync(_logSettingsPath).ConfigureAwait(false);
             LogSettings? settings = JsonSerializer.Deserialize<LogSettings>(json);
             LogSettings result = settings ?? new LogSettings();
 
@@ -277,7 +277,7 @@ public class TestSettingsService : ISettingsService
             };
 
             string json = JsonSerializer.Serialize(settings, options);
-            await File.WriteAllTextAsync(_logSettingsPath, json);
+            await File.WriteAllTextAsync(_logSettingsPath, json).ConfigureAwait(false);
             return true;
         }
         catch (JsonException ex)

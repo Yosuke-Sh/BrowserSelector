@@ -35,7 +35,7 @@ public class BrowserService : IBrowserService
         try
         {
             // レジストリからブラウザを検出
-            IEnumerable<Browser> registryBrowsers = await _registryService.DetectBrowsersFromRegistryAsync();
+            IEnumerable<Browser> registryBrowsers = await _registryService.DetectBrowsersFromRegistryAsync().ConfigureAwait(false);
             _browsers.Clear();
 
             // 自動検出されたブラウザにアイコンを設定
@@ -50,7 +50,7 @@ public class BrowserService : IBrowserService
             _browsers.AddRange(registryBrowsers);
 
             // カスタムブラウザを追加（設定から読み込み）
-            List<Browser> customBrowsers = await LoadCustomBrowsersAsync();
+            List<Browser> customBrowsers = await LoadCustomBrowsersAsync().ConfigureAwait(false);
             _browsers.AddRange(customBrowsers);
 
             // Traceレベルで詳細なブラウザ情報を出力
@@ -84,7 +84,7 @@ public class BrowserService : IBrowserService
             }
 
             // URLを正規化
-            string normalizedUrl = await _urlService.NormalizeUrlAsync(url);
+            string normalizedUrl = await _urlService.NormalizeUrlAsync(url).ConfigureAwait(false);
             _logService.LogDebug($"正規化されたURL - {normalizedUrl}", nameof(BrowserService));
 
             if (string.IsNullOrEmpty(normalizedUrl))
@@ -94,7 +94,7 @@ public class BrowserService : IBrowserService
             }
 
             // URLを検証
-            bool isValidUrl = await _urlService.ValidateUrlAsync(normalizedUrl);
+            bool isValidUrl = await _urlService.ValidateUrlAsync(normalizedUrl).ConfigureAwait(false);
             _logService.LogDebug($"URL検証結果 - {isValidUrl}", nameof(BrowserService));
 
             if (!isValidUrl)
@@ -137,7 +137,7 @@ public class BrowserService : IBrowserService
 
                 // 使用回数を増加
                 browser.IncrementUseCount();
-                await SaveBrowserUsageAsync(browser);
+                await SaveBrowserUsageAsync(browser).ConfigureAwait(false);
                 return true;
             }
 
@@ -170,7 +170,7 @@ public class BrowserService : IBrowserService
             browser.DisplayOrder = _browsers.Count + 1;
             _browsers.Add(browser);
 
-            await SaveCustomBrowsersAsync();
+            await SaveCustomBrowsersAsync().ConfigureAwait(false);
             return true;
         }
         catch (Exception ex)
@@ -195,7 +195,7 @@ public class BrowserService : IBrowserService
             existingBrowser.ExecutablePath = browser.ExecutablePath;
             existingBrowser.DisplayOrder = browser.DisplayOrder;
 
-            await SaveCustomBrowsersAsync();
+            await SaveCustomBrowsersAsync().ConfigureAwait(false);
             return true;
         }
         catch (Exception ex)
@@ -253,7 +253,7 @@ public class BrowserService : IBrowserService
                 b.IsDefault = b.Id == browserId;
             }
 
-            await SaveDefaultBrowserAsync(browser);
+            await SaveDefaultBrowserAsync(browser).ConfigureAwait(false);
             return true;
         }
         catch (Exception ex)
@@ -274,7 +274,7 @@ public class BrowserService : IBrowserService
             }
 
             // 設定から読み込み
-            return await LoadDefaultBrowserAsync();
+            return await LoadDefaultBrowserAsync().ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -287,7 +287,7 @@ public class BrowserService : IBrowserService
     {
         try
         {
-            await SaveBrowserUsageAsync(browser);
+            await SaveBrowserUsageAsync(browser).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -302,7 +302,7 @@ public class BrowserService : IBrowserService
             Browser? browser = _browsers.FirstOrDefault(b => b.Id == browserId);
             if (browser != null)
             {
-                await SaveBrowserUsageAsync(browser);
+                await SaveBrowserUsageAsync(browser).ConfigureAwait(false);
             }
         }
         catch (Exception ex)

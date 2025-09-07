@@ -1,0 +1,366 @@
+2025/09/07 23:34:26 にビルドを開始しました。
+     1>ノード 1 上のプロジェクト "D:\Project\BrowserSelector\BrowserSelector.WPF.sln" (Restore ターゲット)。
+     1>ValidateSolutionConfiguration:
+         ソリューション構成 "Debug|Any CPU" をビルドしています。
+       _GetAllRestoreProjectPathItems:
+         復元対象のプロジェクトを決定しています...
+       Restore:
+         X.509 証明書チェーンの検証では、コード署名のために .NET によって選択された既定の信頼ストアが使用されます。
+         X.509 証明書チェーンの検証では、タイムスタンプに .NET によって選択された既定の信頼ストアが使用されます。
+         アセット ファイルは変更されていません。アセット ファイルの書き込みを省略します。パス: D:\Project\BrowserSelector\src\BrowserSelector.Core\obj\project.assets.json
+         アセット ファイルは変更されていません。アセット ファイルの書き込みを省略します。パス: D:\Project\BrowserSelector\src\BrowserSelector.Library\BrowserSelector.Library.Infrastructure\obj\project.assets.json
+         アセット ファイルは変更されていません。アセット ファイルの書き込みを省略します。パス: D:\Project\BrowserSelector\src\BrowserSelector.Presentation\obj\project.assets.json
+         アセット ファイルは変更されていません。アセット ファイルの書き込みを省略します。パス: D:\Project\BrowserSelector\tests\BrowserSelector.PerformanceTests\obj\project.assets.json
+         アセット ファイルは変更されていません。アセット ファイルの書き込みを省略します。パス: D:\Project\BrowserSelector\tests\BrowserSelector.E2ETests\obj\project.assets.json
+         アセット ファイルは変更されていません。アセット ファイルの書き込みを省略します。パス: D:\Project\BrowserSelector\src\BrowserSelector.Library\BrowserSelector.Library.Core\obj\project.assets.json
+         アセット ファイルは変更されていません。アセット ファイルの書き込みを省略します。パス: D:\Project\BrowserSelector\tests\BrowserSelector.UITests\obj\project.assets.json
+         アセット ファイルは変更されていません。アセット ファイルの書き込みを省略します。パス: D:\Project\BrowserSelector\tests\BrowserSelector.CoreTests\obj\project.assets.json
+         アセット ファイルは変更されていません。アセット ファイルの書き込みを省略します。パス: D:\Project\BrowserSelector\src\BrowserSelector.Library\BrowserSelector.Library.Presentation\obj\project.assets.json
+         アセット ファイルは変更されていません。アセット ファイルの書き込みを省略します。パス: D:\Project\BrowserSelector\tests\BrowserSelector.InfrastructureTests\obj\project.assets.json
+         アセット ファイルは変更されていません。アセット ファイルの書き込みを省略します。パス: D:\Project\BrowserSelector\tests\BrowserSelector.LibraryTests\obj\project.assets.json
+         アセット ファイルは変更されていません。アセット ファイルの書き込みを省略します。パス: D:\Project\BrowserSelector\tests\BrowserSelector.IntegrationTests\obj\project.assets.json
+         アセット ファイルは変更されていません。アセット ファイルの書き込みを省略します。パス: D:\Project\BrowserSelector\tests\BrowserSelector.UnitTests\obj\project.assets.json
+         アセット ファイルは変更されていません。アセット ファイルの書き込みを省略します。パス: D:\Project\BrowserSelector\tests\BrowserSelector.SecurityTests\obj\project.assets.json
+         アセット ファイルは変更されていません。アセット ファイルの書き込みを省略します。パス: D:\Project\BrowserSelector\src\BrowserSelector.App\obj\project.assets.json
+         アセット ファイルは変更されていません。アセット ファイルの書き込みを省略します。パス: D:\Project\BrowserSelector\tests\BrowserSelector.AppTests\obj\project.assets.json
+         D:\Project\BrowserSelector\tests\BrowserSelector.SecurityTests\BrowserSelector.SecurityTests.csproj を復元しました (51 ミリ秒)。
+         D:\Project\BrowserSelector\src\BrowserSelector.Presentation\BrowserSelector.Presentation.csproj を復元しました (50 ミリ秒)。
+         D:\Project\BrowserSelector\tests\BrowserSelector.AppTests\BrowserSelector.AppTests.csproj を復元しました (50 ミリ秒)。
+         D:\Project\BrowserSelector\tests\BrowserSelector.UnitTests\BrowserSelector.UnitTests.csproj を復元しました (50 ミリ秒)。
+         D:\Project\BrowserSelector\tests\BrowserSelector.UITests\BrowserSelector.UITests.csproj を復元しました (50 ミリ秒)。
+         D:\Project\BrowserSelector\src\BrowserSelector.Core\BrowserSelector.Core.csproj を復元しました (50 ミリ秒)。
+         D:\Project\BrowserSelector\src\BrowserSelector.Library\BrowserSelector.Library.Infrastructure\BrowserSelector.Library.Infrastructure.csproj を復元しました (50 ミリ秒)。
+         D:\Project\BrowserSelector\tests\BrowserSelector.InfrastructureTests\BrowserSelector.InfrastructureTests.csproj を復元しました (50 ミリ秒)。
+         D:\Project\BrowserSelector\tests\BrowserSelector.E2ETests\BrowserSelector.E2ETests.csproj を復元しました (50 ミリ秒)。
+         D:\Project\BrowserSelector\src\BrowserSelector.App\BrowserSelector.App.csproj を復元しました (50 ミリ秒)。
+         D:\Project\BrowserSelector\src\BrowserSelector.Library\BrowserSelector.Library.Presentation\BrowserSelector.Library.Presentation.csproj を復元しました (50 ミリ秒)。
+         D:\Project\BrowserSelector\src\BrowserSelector.Library\BrowserSelector.Library.Core\BrowserSelector.Library.Core.csproj を復元しました (50 ミリ秒)。
+         D:\Project\BrowserSelector\tests\BrowserSelector.PerformanceTests\BrowserSelector.PerformanceTests.csproj を復元しました (50 ミリ秒)。
+         D:\Project\BrowserSelector\tests\BrowserSelector.IntegrationTests\BrowserSelector.IntegrationTests.csproj を復元しました (50 ミリ秒)。
+         D:\Project\BrowserSelector\tests\BrowserSelector.LibraryTests\BrowserSelector.LibraryTests.csproj を復元しました (50 ミリ秒)。
+         D:\Project\BrowserSelector\tests\BrowserSelector.CoreTests\BrowserSelector.CoreTests.csproj を復元しました (50 ミリ秒)。
+         アセット ファイルは変更されていません。アセット ファイルの書き込みを省略します。パス: D:\Project\BrowserSelector\src\BrowserSelector.Infrastructure\obj\project.assets.json
+         D:\Project\BrowserSelector\src\BrowserSelector.Infrastructure\BrowserSelector.Infrastructure.csproj を復元しました (0.6 ミリ秒)。
+         
+         使用されている NuGet Config ファイル:
+             C:\Users\shio\AppData\Roaming\NuGet\NuGet.Config
+             C:\Program Files (x86)\NuGet\Config\Microsoft.VisualStudio.FallbackLocation.config
+             C:\Program Files (x86)\NuGet\Config\Microsoft.VisualStudio.Offline.config
+         
+         使用されているフィード:
+             https://api.nuget.org/v3/index.json
+             C:\Program Files (x86)\Microsoft SDKs\NuGetPackages\
+         復元対象のすべてのプロジェクトは最新です。
+     1>プロジェクト "D:\Project\BrowserSelector\BrowserSelector.WPF.sln" (Restore ターゲット) のビルドが完了しました。
+   1:2>ノード 1 上のプロジェクト "D:\Project\BrowserSelector\BrowserSelector.WPF.sln" (既定のターゲット)。
+     1>ValidateSolutionConfiguration:
+         ソリューション構成 "Debug|Any CPU" をビルドしています。
+   1:2>プロジェクト "D:\Project\BrowserSelector\BrowserSelector.WPF.sln" (1:2) は、ノード 2 上に "D:\Project\BrowserSelector\tests\BrowserSelector.PerformanceTests\BrowserSelector.PerformanceTests.csproj" (3:6) をビルドしています (既定のターゲット)。
+     3>GenerateTargetFrameworkMonikerAttribute:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateTargetFrameworkMonikerAttribute" を省略します。
+       CoreGenerateAssemblyInfo:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "CoreGenerateAssemblyInfo" を省略します。
+       _GenerateSourceLinkFile:
+         Source Link ファイル 'obj\Debug\net8.0\BrowserSelector.PerformanceTests.sourcelink.json' は最新です。
+       CoreCompile:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "CoreCompile" を省略します。
+       _CreateAppHost:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "_CreateAppHost" を省略します。
+       _CopyOutOfDateSourceItemsToOutputDirectory:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "_CopyOutOfDateSourceItemsToOutputDirectory" を省略します。
+       GenerateBuildDependencyFile:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateBuildDependencyFile" を省略します。
+       GenerateBuildRuntimeConfigurationFiles:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateBuildRuntimeConfigurationFiles" を省略します。
+       CopyFilesToOutputDirectory:
+         BrowserSelector.PerformanceTests -> D:\Project\BrowserSelector\tests\BrowserSelector.PerformanceTests\bin\Debug\net8.0\BrowserSelector.PerformanceTests.dll
+     3>プロジェクト "D:\Project\BrowserSelector\tests\BrowserSelector.PerformanceTests\BrowserSelector.PerformanceTests.csproj" (既定のターゲット) のビルドが完了しました。
+   1:2>プロジェクト "D:\Project\BrowserSelector\BrowserSelector.WPF.sln" (1:2) は、ノード 1 上に "D:\Project\BrowserSelector\src\BrowserSelector.Core\BrowserSelector.Core.csproj" (18:18) をビルドしています (既定のターゲット)。
+    18>GenerateTargetFrameworkMonikerAttribute:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateTargetFrameworkMonikerAttribute" を省略します。
+       CoreGenerateAssemblyInfo:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "CoreGenerateAssemblyInfo" を省略します。
+       _GenerateSourceLinkFile:
+         Source Link ファイル 'obj\Debug\net8.0-windows\BrowserSelector.Core.sourcelink.json' は最新です。
+       CoreCompile:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "CoreCompile" を省略します。
+       GenerateBuildDependencyFile:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateBuildDependencyFile" を省略します。
+       CopyFilesToOutputDirectory:
+         BrowserSelector.Core -> D:\Project\BrowserSelector\src\BrowserSelector.Core\bin\Debug\net8.0-windows\BrowserSelector.Core.dll
+    18>プロジェクト "D:\Project\BrowserSelector\src\BrowserSelector.Core\BrowserSelector.Core.csproj" (既定のターゲット) のビルドが完了しました。
+   1:2>プロジェクト "D:\Project\BrowserSelector\BrowserSelector.WPF.sln" (1:2) は、ノード 8 上に "D:\Project\BrowserSelector\src\BrowserSelector.Library\BrowserSelector.Library.Core\BrowserSelector.Library.Core.csproj" (11:9) をビルドしています (既定のターゲット)。
+    11>GenerateTargetFrameworkMonikerAttribute:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateTargetFrameworkMonikerAttribute" を省略します。
+       CoreGenerateAssemblyInfo:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "CoreGenerateAssemblyInfo" を省略します。
+   1:2>プロジェクト "D:\Project\BrowserSelector\BrowserSelector.WPF.sln" (1:2) は、ノード 7 上に "D:\Project\BrowserSelector\src\BrowserSelector.Infrastructure\BrowserSelector.Infrastructure.csproj" (14:16) をビルドしています (既定のターゲット)。
+    14>CoreResGen:
+         古いリソースは、それらのソース ファイルに対して存在しません。リソース生成を省略します。
+       GenerateTargetFrameworkMonikerAttribute:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateTargetFrameworkMonikerAttribute" を省略します。
+    11>_GenerateSourceLinkFile:
+         Source Link ファイル 'obj\Debug\net8.0-windows\BrowserSelector.Library.Core.sourcelink.json' は最新です。
+       CoreCompile:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "CoreCompile" を省略します。
+    14>CoreGenerateAssemblyInfo:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "CoreGenerateAssemblyInfo" を省略します。
+   1:2>プロジェクト "D:\Project\BrowserSelector\BrowserSelector.WPF.sln" (1:2) は、ノード 5 上に "D:\Project\BrowserSelector\tests\BrowserSelector.CoreTests\BrowserSelector.CoreTests.csproj" (9:6) をビルドしています (既定のターゲット)。
+     9>GenerateTargetFrameworkMonikerAttribute:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateTargetFrameworkMonikerAttribute" を省略します。
+       CoreGenerateAssemblyInfo:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "CoreGenerateAssemblyInfo" を省略します。
+    11>GenerateBuildDependencyFile:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateBuildDependencyFile" を省略します。
+    14>_GenerateSourceLinkFile:
+         Source Link ファイル 'obj\Debug\net8.0-windows\BrowserSelector.Infrastructure.sourcelink.json' は最新です。
+       CoreCompile:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "CoreCompile" を省略します。
+    11>CopyFilesToOutputDirectory:
+         BrowserSelector.Library.Core -> D:\Project\BrowserSelector\src\BrowserSelector.Library\BrowserSelector.Library.Core\bin\Debug\net8.0-windows\BrowserSelector.Library.Core.dll
+     9>_GenerateSourceLinkFile:
+         Source Link ファイル 'obj\Debug\net8.0-windows\BrowserSelector.CoreTests.sourcelink.json' は最新です。
+    11>プロジェクト "D:\Project\BrowserSelector\src\BrowserSelector.Library\BrowserSelector.Library.Core\BrowserSelector.Library.Core.csproj" (既定のターゲット) のビルドが完了しました。
+     9>CoreCompile:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "CoreCompile" を省略します。
+    14>CoreGenerateSatelliteAssemblies:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "CoreGenerateSatelliteAssemblies" を省略します。
+       GenerateBuildDependencyFile:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateBuildDependencyFile" を省略します。
+       CopyFilesToOutputDirectory:
+         BrowserSelector.Infrastructure -> D:\Project\BrowserSelector\src\BrowserSelector.Infrastructure\bin\Debug\net8.0-windows\BrowserSelector.Infrastructure.dll
+    14>プロジェクト "D:\Project\BrowserSelector\src\BrowserSelector.Infrastructure\BrowserSelector.Infrastructure.csproj" (既定のターゲット) のビルドが完了しました。
+     9>_CopyOutOfDateSourceItemsToOutputDirectory:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "_CopyOutOfDateSourceItemsToOutputDirectory" を省略します。
+       GenerateBuildDependencyFile:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateBuildDependencyFile" を省略します。
+       GenerateBuildRuntimeConfigurationFiles:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateBuildRuntimeConfigurationFiles" を省略します。
+       CopyFilesToOutputDirectory:
+         BrowserSelector.CoreTests -> D:\Project\BrowserSelector\tests\BrowserSelector.CoreTests\bin\Debug\net8.0-windows\BrowserSelector.CoreTests.dll
+     9>プロジェクト "D:\Project\BrowserSelector\tests\BrowserSelector.CoreTests\BrowserSelector.CoreTests.csproj" (既定のターゲット) のビルドが完了しました。
+   1:2>プロジェクト "D:\Project\BrowserSelector\BrowserSelector.WPF.sln" (1:2) は、ノード 15 上に "D:\Project\BrowserSelector\src\BrowserSelector.Library\BrowserSelector.Library.Infrastructure\BrowserSelector.Library.Infrastructure.csproj" (13:8) をビルドしています (既定のターゲット)。
+    13>GenerateTargetFrameworkMonikerAttribute:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateTargetFrameworkMonikerAttribute" を省略します。
+   1:2>プロジェクト "D:\Project\BrowserSelector\BrowserSelector.WPF.sln" (1:2) は、ノード 12 上に "D:\Project\BrowserSelector\src\BrowserSelector.Presentation\BrowserSelector.Presentation.csproj" (15:14) をビルドしています (既定のターゲット)。
+    15>MainResourcesGeneration:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "MainResourcesGeneration" を省略します。
+    13>CoreGenerateAssemblyInfo:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "CoreGenerateAssemblyInfo" を省略します。
+   1:2>プロジェクト "D:\Project\BrowserSelector\BrowserSelector.WPF.sln" (1:2) は、ノード 3 上に "D:\Project\BrowserSelector\tests\BrowserSelector.InfrastructureTests\BrowserSelector.InfrastructureTests.csproj" (7:6) をビルドしています (既定のターゲット)。
+     7>GenerateTargetFrameworkMonikerAttribute:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateTargetFrameworkMonikerAttribute" を省略します。
+       CoreGenerateAssemblyInfo:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "CoreGenerateAssemblyInfo" を省略します。
+    15>GenerateTargetFrameworkMonikerAttribute:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateTargetFrameworkMonikerAttribute" を省略します。
+    13>_GenerateSourceLinkFile:
+         Source Link ファイル 'obj\Debug\net8.0-windows\BrowserSelector.Library.Infrastructure.sourcelink.json' は最新です。
+       CoreCompile:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "CoreCompile" を省略します。
+    15>CoreGenerateAssemblyInfo:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "CoreGenerateAssemblyInfo" を省略します。
+    13>GenerateBuildDependencyFile:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateBuildDependencyFile" を省略します。
+       CopyFilesToOutputDirectory:
+         BrowserSelector.Library.Infrastructure -> D:\Project\BrowserSelector\src\BrowserSelector.Library\BrowserSelector.Library.Infrastructure\bin\Debug\net8.0-windows\BrowserSelector.Library.Infrastructure.dll
+    15>_GenerateSourceLinkFile:
+         Source Link ファイル 'obj\Debug\net8.0-windows\BrowserSelector.Presentation.sourcelink.json' は最新です。
+       CoreCompile:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "CoreCompile" を省略します。
+       _CreateAppHost:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "_CreateAppHost" を省略します。
+     7>_GenerateSourceLinkFile:
+         Source Link ファイル 'obj\Debug\net8.0-windows\BrowserSelector.InfrastructureTests.sourcelink.json' は最新です。
+    13>プロジェクト "D:\Project\BrowserSelector\src\BrowserSelector.Library\BrowserSelector.Library.Infrastructure\BrowserSelector.Library.Infrastructure.csproj" (既定のターゲット) のビルドが完了しました。
+     7>CoreCompile:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "CoreCompile" を省略します。
+    15>_CopyOutOfDateSourceItemsToOutputDirectory:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "_CopyOutOfDateSourceItemsToOutputDirectory" を省略します。
+       GenerateBuildDependencyFile:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateBuildDependencyFile" を省略します。
+     7>_CopyOutOfDateSourceItemsToOutputDirectory:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "_CopyOutOfDateSourceItemsToOutputDirectory" を省略します。
+    15>GenerateBuildRuntimeConfigurationFiles:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateBuildRuntimeConfigurationFiles" を省略します。
+       CopyFilesToOutputDirectory:
+         BrowserSelector.Presentation -> D:\Project\BrowserSelector\src\BrowserSelector.Presentation\bin\Debug\net8.0-windows\BrowserSelector.Presentation.dll
+     7>GenerateBuildDependencyFile:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateBuildDependencyFile" を省略します。
+       GenerateBuildRuntimeConfigurationFiles:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateBuildRuntimeConfigurationFiles" を省略します。
+       CopyFilesToOutputDirectory:
+         BrowserSelector.InfrastructureTests -> D:\Project\BrowserSelector\tests\BrowserSelector.InfrastructureTests\bin\Debug\net8.0-windows\BrowserSelector.InfrastructureTests.dll
+    15>プロジェクト "D:\Project\BrowserSelector\src\BrowserSelector.Presentation\BrowserSelector.Presentation.csproj" (既定のターゲット) のビルドが完了しました。
+     7>プロジェクト "D:\Project\BrowserSelector\tests\BrowserSelector.InfrastructureTests\BrowserSelector.InfrastructureTests.csproj" (既定のターゲット) のビルドが完了しました。
+   1:2>プロジェクト "D:\Project\BrowserSelector\BrowserSelector.WPF.sln" (1:2) は、ノード 10 上に "D:\Project\BrowserSelector\src\BrowserSelector.App\BrowserSelector.App.csproj" (8:10) をビルドしています (既定のターゲット)。
+     8>MainResourcesGeneration:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "MainResourcesGeneration" を省略します。
+   1:2>プロジェクト "D:\Project\BrowserSelector\BrowserSelector.WPF.sln" (1:2) は、ノード 11 上に "D:\Project\BrowserSelector\src\BrowserSelector.Library\BrowserSelector.Library.Presentation\BrowserSelector.Library.Presentation.csproj" (2:7) をビルドしています (既定のターゲット)。
+     2>GenerateTargetFrameworkMonikerAttribute:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateTargetFrameworkMonikerAttribute" を省略します。
+   1:2>プロジェクト "D:\Project\BrowserSelector\BrowserSelector.WPF.sln" (1:2) は、ノード 5 上に "D:\Project\BrowserSelector\tests\BrowserSelector.SecurityTests\BrowserSelector.SecurityTests.csproj" (17:6) をビルドしています (既定のターゲット)。
+    17>GenerateTargetFrameworkMonikerAttribute:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateTargetFrameworkMonikerAttribute" を省略します。
+     2>CoreGenerateAssemblyInfo:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "CoreGenerateAssemblyInfo" を省略します。
+    17>CoreGenerateAssemblyInfo:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "CoreGenerateAssemblyInfo" を省略します。
+     2>_GenerateSourceLinkFile:
+         Source Link ファイル 'obj\Debug\net8.0-windows\BrowserSelector.Library.Presentation.sourcelink.json' は最新です。
+     8>GenerateTargetFrameworkMonikerAttribute:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateTargetFrameworkMonikerAttribute" を省略します。
+     2>CoreCompile:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "CoreCompile" を省略します。
+     8>CoreGenerateAssemblyInfo:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "CoreGenerateAssemblyInfo" を省略します。
+     2>_CopyOutOfDateSourceItemsToOutputDirectory:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "_CopyOutOfDateSourceItemsToOutputDirectory" を省略します。
+       GenerateBuildDependencyFile:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateBuildDependencyFile" を省略します。
+       CopyFilesToOutputDirectory:
+         BrowserSelector.Library.Presentation -> D:\Project\BrowserSelector\src\BrowserSelector.Library\BrowserSelector.Library.Presentation\bin\Debug\net8.0-windows\BrowserSelector.Library.Presentation.dll
+     2>プロジェクト "D:\Project\BrowserSelector\src\BrowserSelector.Library\BrowserSelector.Library.Presentation\BrowserSelector.Library.Presentation.csproj" (既定のターゲット) のビルドが完了しました。
+     8>_GenerateSourceLinkFile:
+         Source Link ファイル 'obj\Debug\net8.0-windows\BrowserSelector.App.sourcelink.json' は最新です。
+       CoreCompile:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "CoreCompile" を省略します。
+       _CreateAppHost:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "_CreateAppHost" を省略します。
+   1:2>プロジェクト "D:\Project\BrowserSelector\BrowserSelector.WPF.sln" (1:2) は、ノード 6 上に "D:\Project\BrowserSelector\tests\BrowserSelector.IntegrationTests\BrowserSelector.IntegrationTests.csproj" (4:6) をビルドしています (既定のターゲット)。
+     4>GenerateTargetFrameworkMonikerAttribute:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateTargetFrameworkMonikerAttribute" を省略します。
+     8>_CopyOutOfDateSourceItemsToOutputDirectory:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "_CopyOutOfDateSourceItemsToOutputDirectory" を省略します。
+     4>CoreGenerateAssemblyInfo:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "CoreGenerateAssemblyInfo" を省略します。
+     8>GenerateBuildDependencyFile:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateBuildDependencyFile" を省略します。
+       GenerateBuildRuntimeConfigurationFiles:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateBuildRuntimeConfigurationFiles" を省略します。
+    17>_GenerateSourceLinkFile:
+         Source Link ファイル 'obj\Debug\net8.0-windows\BrowserSelector.SecurityTests.sourcelink.json' は最新です。
+     8>CopyFilesToOutputDirectory:
+         BrowserSelector.App -> D:\Project\BrowserSelector\src\BrowserSelector.App\bin\Debug\net8.0-windows\BrowserSelector.App.dll
+    17>CoreCompile:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "CoreCompile" を省略します。
+     8>プロジェクト "D:\Project\BrowserSelector\src\BrowserSelector.App\BrowserSelector.App.csproj" (既定のターゲット) のビルドが完了しました。
+    17>_CopyOutOfDateSourceItemsToOutputDirectory:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "_CopyOutOfDateSourceItemsToOutputDirectory" を省略します。
+       GenerateBuildDependencyFile:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateBuildDependencyFile" を省略します。
+       GenerateBuildRuntimeConfigurationFiles:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateBuildRuntimeConfigurationFiles" を省略します。
+       CopyFilesToOutputDirectory:
+         BrowserSelector.SecurityTests -> D:\Project\BrowserSelector\tests\BrowserSelector.SecurityTests\bin\Debug\net8.0-windows\BrowserSelector.SecurityTests.dll
+     4>_GenerateSourceLinkFile:
+         Source Link ファイル 'obj\Debug\net8.0-windows\BrowserSelector.IntegrationTests.sourcelink.json' は最新です。
+       CoreCompile:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "CoreCompile" を省略します。
+    17>プロジェクト "D:\Project\BrowserSelector\tests\BrowserSelector.SecurityTests\BrowserSelector.SecurityTests.csproj" (既定のターゲット) のビルドが完了しました。
+     4>_CopyOutOfDateSourceItemsToOutputDirectory:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "_CopyOutOfDateSourceItemsToOutputDirectory" を省略します。
+       GenerateBuildDependencyFile:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateBuildDependencyFile" を省略します。
+       GenerateBuildRuntimeConfigurationFiles:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateBuildRuntimeConfigurationFiles" を省略します。
+       CopyFilesToOutputDirectory:
+         BrowserSelector.IntegrationTests -> D:\Project\BrowserSelector\tests\BrowserSelector.IntegrationTests\bin\Debug\net8.0-windows\BrowserSelector.IntegrationTests.dll
+     4>プロジェクト "D:\Project\BrowserSelector\tests\BrowserSelector.IntegrationTests\BrowserSelector.IntegrationTests.csproj" (既定のターゲット) のビルドが完了しました。
+   1:2>プロジェクト "D:\Project\BrowserSelector\BrowserSelector.WPF.sln" (1:2) は、ノード 16 上に "D:\Project\BrowserSelector\tests\BrowserSelector.LibraryTests\BrowserSelector.LibraryTests.csproj" (5:6) をビルドしています (既定のターゲット)。
+     5>GenerateTargetFrameworkMonikerAttribute:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateTargetFrameworkMonikerAttribute" を省略します。
+   1:2>プロジェクト "D:\Project\BrowserSelector\BrowserSelector.WPF.sln" (1:2) は、ノード 4 上に "D:\Project\BrowserSelector\tests\BrowserSelector.UITests\BrowserSelector.UITests.csproj" (16:6) をビルドしています (既定のターゲット)。
+    16>GenerateTargetFrameworkMonikerAttribute:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateTargetFrameworkMonikerAttribute" を省略します。
+   1:2>プロジェクト "D:\Project\BrowserSelector\BrowserSelector.WPF.sln" (1:2) は、ノード 9 上に "D:\Project\BrowserSelector\tests\BrowserSelector.AppTests\BrowserSelector.AppTests.csproj" (12:6) をビルドしています (既定のターゲット)。
+    12>GenerateTargetFrameworkMonikerAttribute:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateTargetFrameworkMonikerAttribute" を省略します。
+     5>CoreGenerateAssemblyInfo:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "CoreGenerateAssemblyInfo" を省略します。
+   1:2>プロジェクト "D:\Project\BrowserSelector\BrowserSelector.WPF.sln" (1:2) は、ノード 13 上に "D:\Project\BrowserSelector\tests\BrowserSelector.UnitTests\BrowserSelector.UnitTests.csproj" (10:6) をビルドしています (既定のターゲット)。
+    10>GenerateTargetFrameworkMonikerAttribute:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateTargetFrameworkMonikerAttribute" を省略します。
+    16>CoreGenerateAssemblyInfo:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "CoreGenerateAssemblyInfo" を省略します。
+    10>CoreGenerateAssemblyInfo:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "CoreGenerateAssemblyInfo" を省略します。
+    12>CoreGenerateAssemblyInfo:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "CoreGenerateAssemblyInfo" を省略します。
+    16>_GenerateSourceLinkFile:
+         Source Link ファイル 'obj\Debug\net8.0-windows\BrowserSelector.UITests.sourcelink.json' は最新です。
+       CoreCompile:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "CoreCompile" を省略します。
+     5>_GenerateSourceLinkFile:
+         Source Link ファイル 'obj\Debug\net8.0-windows\BrowserSelector.LibraryTests.sourcelink.json' は最新です。
+       CoreCompile:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "CoreCompile" を省略します。
+    12>_GenerateSourceLinkFile:
+         Source Link ファイル 'obj\Debug\net8.0-windows\BrowserSelector.AppTests.sourcelink.json' は最新です。
+       CoreCompile:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "CoreCompile" を省略します。
+    10>_GenerateSourceLinkFile:
+         Source Link ファイル 'obj\Debug\net8.0-windows\BrowserSelector.UnitTests.sourcelink.json' は最新です。
+       CoreCompile:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "CoreCompile" を省略します。
+     5>_CopyOutOfDateSourceItemsToOutputDirectory:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "_CopyOutOfDateSourceItemsToOutputDirectory" を省略します。
+    12>_CopyOutOfDateSourceItemsToOutputDirectory:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "_CopyOutOfDateSourceItemsToOutputDirectory" を省略します。
+     5>GenerateBuildDependencyFile:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateBuildDependencyFile" を省略します。
+    12>GenerateBuildDependencyFile:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateBuildDependencyFile" を省略します。
+     5>GenerateBuildRuntimeConfigurationFiles:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateBuildRuntimeConfigurationFiles" を省略します。
+    12>GenerateBuildRuntimeConfigurationFiles:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateBuildRuntimeConfigurationFiles" を省略します。
+    10>_CopyOutOfDateSourceItemsToOutputDirectory:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "_CopyOutOfDateSourceItemsToOutputDirectory" を省略します。
+     5>CopyFilesToOutputDirectory:
+         BrowserSelector.LibraryTests -> D:\Project\BrowserSelector\tests\BrowserSelector.LibraryTests\bin\Debug\net8.0-windows\BrowserSelector.LibraryTests.dll
+    12>CopyFilesToOutputDirectory:
+         BrowserSelector.AppTests -> D:\Project\BrowserSelector\tests\BrowserSelector.AppTests\bin\Debug\net8.0-windows\BrowserSelector.AppTests.dll
+   1:2>プロジェクト "D:\Project\BrowserSelector\BrowserSelector.WPF.sln" (1:2) は、ノード 14 上に "D:\Project\BrowserSelector\tests\BrowserSelector.E2ETests\BrowserSelector.E2ETests.csproj" (6:6) をビルドしています (既定のターゲット)。
+     6>GenerateTargetFrameworkMonikerAttribute:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateTargetFrameworkMonikerAttribute" を省略します。
+    10>GenerateBuildDependencyFile:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateBuildDependencyFile" を省略します。
+       GenerateBuildRuntimeConfigurationFiles:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateBuildRuntimeConfigurationFiles" を省略します。
+       CopyFilesToOutputDirectory:
+         BrowserSelector.UnitTests -> D:\Project\BrowserSelector\tests\BrowserSelector.UnitTests\bin\Debug\net8.0-windows\BrowserSelector.UnitTests.dll
+     6>CoreGenerateAssemblyInfo:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "CoreGenerateAssemblyInfo" を省略します。
+    12>プロジェクト "D:\Project\BrowserSelector\tests\BrowserSelector.AppTests\BrowserSelector.AppTests.csproj" (既定のターゲット) のビルドが完了しました。
+    16>_CopyOutOfDateSourceItemsToOutputDirectory:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "_CopyOutOfDateSourceItemsToOutputDirectory" を省略します。
+       GenerateBuildDependencyFile:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateBuildDependencyFile" を省略します。
+       GenerateBuildRuntimeConfigurationFiles:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateBuildRuntimeConfigurationFiles" を省略します。
+     5>プロジェクト "D:\Project\BrowserSelector\tests\BrowserSelector.LibraryTests\BrowserSelector.LibraryTests.csproj" (既定のターゲット) のビルドが完了しました。
+     6>_GenerateSourceLinkFile:
+         Source Link ファイル 'obj\Debug\net8.0-windows\BrowserSelector.E2ETests.sourcelink.json' は最新です。
+    16>CopyFilesToOutputDirectory:
+         BrowserSelector.UITests -> D:\Project\BrowserSelector\tests\BrowserSelector.UITests\bin\Debug\net8.0-windows\BrowserSelector.UITests.dll
+     6>CoreCompile:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "CoreCompile" を省略します。
+    10>プロジェクト "D:\Project\BrowserSelector\tests\BrowserSelector.UnitTests\BrowserSelector.UnitTests.csproj" (既定のターゲット) のビルドが完了しました。
+    16>プロジェクト "D:\Project\BrowserSelector\tests\BrowserSelector.UITests\BrowserSelector.UITests.csproj" (既定のターゲット) のビルドが完了しました。
+     6>_CopyOutOfDateSourceItemsToOutputDirectory:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "_CopyOutOfDateSourceItemsToOutputDirectory" を省略します。
+       GenerateBuildDependencyFile:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateBuildDependencyFile" を省略します。
+       GenerateBuildRuntimeConfigurationFiles:
+       すべての出力ファイルが入力ファイルに対して最新なので、ターゲット "GenerateBuildRuntimeConfigurationFiles" を省略します。
+       CopyFilesToOutputDirectory:
+         BrowserSelector.E2ETests -> D:\Project\BrowserSelector\tests\BrowserSelector.E2ETests\bin\Debug\net8.0-windows\BrowserSelector.E2ETests.dll
+     6>プロジェクト "D:\Project\BrowserSelector\tests\BrowserSelector.E2ETests\BrowserSelector.E2ETests.csproj" (既定のターゲット) のビルドが完了しました。
+     1>プロジェクト "D:\Project\BrowserSelector\BrowserSelector.WPF.sln" (既定のターゲット) のビルドが完了しました。
+
+ビルドに成功しました。
+    0 個の警告
+    0 エラー
+
+経過時間 00:00:01.37

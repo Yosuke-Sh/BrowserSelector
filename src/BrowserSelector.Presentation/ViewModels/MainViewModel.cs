@@ -224,7 +224,7 @@ public partial class MainViewModel : ObservableObject
         try
         {
             // 既存のブラウザデータがある場合は読み込みのみ
-            IEnumerable<Browser> existingBrowsers = await _browserService.GetAllBrowsersAsync();
+            IEnumerable<Browser> existingBrowsers = await _browserService.GetAllBrowsersAsync().ConfigureAwait(false);
             if (existingBrowsers.Any())
             {
                 Browsers.Clear();
@@ -240,7 +240,7 @@ public partial class MainViewModel : ObservableObject
             IsLoading = true;
             StatusMessage = LocalizedLogHelper.GetString("MainWindow.DetectingBrowsers");
 
-            IEnumerable<Browser> browsers = await _browserService.DetectBrowsersAsync();
+            IEnumerable<Browser> browsers = await _browserService.DetectBrowsersAsync().ConfigureAwait(false);
 
             Browsers.Clear();
             foreach (Browser? browser in browsers.Where(b => b.IsEnabled))
@@ -287,17 +287,17 @@ public partial class MainViewModel : ObservableObject
 
             StatusMessage = $"ブラウザ {browser.Name} を起動中...";
 
-            bool success = await _browserService.LaunchBrowserAsync(browser, Url);
+            bool success = await _browserService.LaunchBrowserAsync(browser, Url).ConfigureAwait(false);
 
             if (success)
             {
-                await _browserService.UpdateUsageAsync(browser);
+                await _browserService.UpdateUsageAsync(browser).ConfigureAwait(false);
                 browser.IncrementUseCount();
                 StatusMessage = $"ブラウザ {browser.Name} を起動しました";
                 _logService?.LogInformation($"ブラウザ起動成功: {browser.Name}", "MainViewModel");
 
                 // ブラウザ起動後のアプリ終了設定が有効な場合
-                AppSettings appSettings = await _settingsService.LoadAppSettingsAsync();
+                AppSettings appSettings = await _settingsService.LoadAppSettingsAsync().ConfigureAwait(false);
                 if (appSettings.CloseAfterUrlRuleMatch)
                 {
                     _logService?.LogInformation("ブラウザ起動後のアプリ終了", "MainViewModel");
@@ -379,7 +379,7 @@ public partial class MainViewModel : ObservableObject
         {
             _logService?.LogDebug("視覚設定の再読み込み開始", "MainViewModel");
 
-            VisualSettings visualSettings = await _settingsService.LoadVisualSettingsAsync();
+            VisualSettings visualSettings = await _settingsService.LoadVisualSettingsAsync().ConfigureAwait(false);
             _logService?.LogDebug($"視覚設定読み込み完了: BackgroundColor={visualSettings.BackgroundColor}", "MainViewModel");
 
             // メイン画面に視覚設定を適用
@@ -481,7 +481,7 @@ public partial class MainViewModel : ObservableObject
         {
             _logService?.LogInformation($"URLルール適用開始: {url}", "MainViewModel");
 
-            Browser? matchingBrowser = await _urlRuleService.FindMatchingBrowserAsync(url, Browsers);
+            Browser? matchingBrowser = await _urlRuleService.FindMatchingBrowserAsync(url, Browsers).ConfigureAwait(false);
             if (matchingBrowser != null)
             {
                 SelectedBrowser = matchingBrowser;
@@ -489,7 +489,7 @@ public partial class MainViewModel : ObservableObject
                 StatusMessage = $"URLルールにより {matchingBrowser.Name} が自動選択されました";
 
                 // 自動起動（LaunchBrowserAsync内でアプリ終了処理も実行される）
-                await LaunchBrowserAsync(matchingBrowser);
+                await LaunchBrowserAsync(matchingBrowser).ConfigureAwait(false);
             }
             else
             {

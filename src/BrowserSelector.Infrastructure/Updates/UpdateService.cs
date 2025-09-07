@@ -32,7 +32,7 @@ public class UpdateService : IUpdateService
     {
         try
         {
-            string response = await _httpClient.GetStringAsync(_updateCheckUrl);
+            string response = await _httpClient.GetStringAsync(_updateCheckUrl).ConfigureAwait(false);
             UpdateInfo? updateInfo = JsonSerializer.Deserialize<UpdateInfo>(response);
 
             if (updateInfo != null && IsNewerVersion(updateInfo.Version))
@@ -57,21 +57,21 @@ public class UpdateService : IUpdateService
         try
         {
             string tempPath = Path.GetTempFileName();
-            HttpResponseMessage response = await _httpClient.GetAsync(updateInfo.DownloadUrl, HttpCompletionOption.ResponseHeadersRead);
+            HttpResponseMessage response = await _httpClient.GetAsync(updateInfo.DownloadUrl, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
             _ = response.EnsureSuccessStatusCode();
 
             long totalBytes = response.Content.Headers.ContentLength ?? 0;
             long downloadedBytes = 0L;
 
-            using Stream contentStream = await response.Content.ReadAsStreamAsync();
+            using Stream contentStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
             using FileStream fileStream = new(tempPath, FileMode.Create, FileAccess.Write, FileShare.None);
 
             byte[] buffer = new byte[8192];
             int bytesRead;
 
-            while ((bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+            while ((bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false)) > 0)
             {
-                await fileStream.WriteAsync(buffer, 0, bytesRead);
+                await fileStream.WriteAsync(buffer, 0, bytesRead).ConfigureAwait(false);
                 downloadedBytes += bytesRead;
 
                 if (totalBytes > 0 && progress != null)
@@ -117,7 +117,7 @@ public class UpdateService : IUpdateService
             if (result)
             {
                 // アプリケーションを終了
-                await Task.Delay(1000); // インストーラーが起動するまで少し待機
+                await Task.Delay(1000).ConfigureAwait(false); // インストーラーが起動するまで少し待機
                 return true;
             }
 
@@ -162,7 +162,7 @@ public class UpdateService : IUpdateService
                 bool result = process.Start();
                 if (result)
                 {
-                    await Task.Delay(1000);
+                    await Task.Delay(1000).ConfigureAwait(false);
                     return true;
                 }
             }

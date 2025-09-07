@@ -33,11 +33,11 @@ public class TestSettingsService : ISettingsService
             if (!File.Exists(_appSettingsPath))
             {
                 AppSettings defaultSettings = new();
-                _ = await SaveAppSettingsAsync(defaultSettings);
+                _ = await SaveAppSettingsAsync(defaultSettings).ConfigureAwait(false);
                 return defaultSettings;
             }
 
-            string json = await File.ReadAllTextAsync(_appSettingsPath);
+            string json = await File.ReadAllTextAsync(_appSettingsPath).ConfigureAwait(false);
             AppSettings? settings = JsonSerializer.Deserialize<AppSettings>(json);
             AppSettings result = settings ?? new AppSettings();
 
@@ -58,7 +58,7 @@ public class TestSettingsService : ISettingsService
         {
             _ = Directory.CreateDirectory(_settingsDirectory);
             string json = JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true });
-            await File.WriteAllTextAsync(_appSettingsPath, json);
+            await File.WriteAllTextAsync(_appSettingsPath, json).ConfigureAwait(false);
 
             _logService?.LogTrace("アプリ設定保存完了", "TestSettingsService");
             return true;
@@ -78,11 +78,11 @@ public class TestSettingsService : ISettingsService
             if (!File.Exists(_visualSettingsPath))
             {
                 VisualSettings defaultSettings = new();
-                _ = await SaveVisualSettingsAsync(defaultSettings);
+                _ = await SaveVisualSettingsAsync(defaultSettings).ConfigureAwait(false);
                 return defaultSettings;
             }
 
-            string json = await File.ReadAllTextAsync(_visualSettingsPath);
+            string json = await File.ReadAllTextAsync(_visualSettingsPath).ConfigureAwait(false);
             VisualSettings? settings = JsonSerializer.Deserialize<VisualSettings>(json);
             VisualSettings result = settings ?? new VisualSettings();
 
@@ -103,7 +103,7 @@ public class TestSettingsService : ISettingsService
         {
             _ = Directory.CreateDirectory(_settingsDirectory);
             string json = JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true });
-            await File.WriteAllTextAsync(_visualSettingsPath, json);
+            await File.WriteAllTextAsync(_visualSettingsPath, json).ConfigureAwait(false);
 
             _logService?.LogTrace("視覚設定保存完了", "TestSettingsService");
             return true;
@@ -123,11 +123,11 @@ public class TestSettingsService : ISettingsService
             if (!File.Exists(_logSettingsPath))
             {
                 LogSettings defaultSettings = new();
-                _ = await SaveLogSettingsAsync(defaultSettings);
+                _ = await SaveLogSettingsAsync(defaultSettings).ConfigureAwait(false);
                 return defaultSettings;
             }
 
-            string json = await File.ReadAllTextAsync(_logSettingsPath);
+            string json = await File.ReadAllTextAsync(_logSettingsPath).ConfigureAwait(false);
             LogSettings? settings = JsonSerializer.Deserialize<LogSettings>(json);
             LogSettings result = settings ?? new LogSettings();
 
@@ -148,7 +148,7 @@ public class TestSettingsService : ISettingsService
         {
             _ = Directory.CreateDirectory(_settingsDirectory);
             string json = JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true });
-            await File.WriteAllTextAsync(_logSettingsPath, json);
+            await File.WriteAllTextAsync(_logSettingsPath, json).ConfigureAwait(false);
 
             _logService?.LogTrace("ログ設定保存完了", "TestSettingsService");
             return true;

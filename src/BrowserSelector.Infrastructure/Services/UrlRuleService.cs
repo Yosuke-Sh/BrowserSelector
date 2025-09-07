@@ -61,7 +61,7 @@ public class UrlRuleService : IUrlRuleService
                 Debug.WriteLine($"UrlRuleService: ルールを追加しました - {rule.DisplayName}");
             }
 
-            await SaveRulesAsync();
+            await SaveRulesAsync().ConfigureAwait(false);
             return true;
         }
         catch (Exception ex)
@@ -95,7 +95,7 @@ public class UrlRuleService : IUrlRuleService
                 Debug.WriteLine($"UrlRuleService: ルールを更新しました - {rule.DisplayName}");
             }
 
-            await SaveRulesAsync();
+            await SaveRulesAsync().ConfigureAwait(false);
             return true;
         }
         catch (Exception ex)
@@ -122,7 +122,7 @@ public class UrlRuleService : IUrlRuleService
                 Debug.WriteLine($"UrlRuleService: ルールを削除しました - {rule.DisplayName}");
             }
 
-            await SaveRulesAsync();
+            await SaveRulesAsync().ConfigureAwait(false);
             return true;
         }
         catch (Exception ex)
@@ -150,7 +150,7 @@ public class UrlRuleService : IUrlRuleService
                 Debug.WriteLine($"UrlRuleService: ルールの状態を変更しました - {rule.DisplayName} -> {(isEnabled ? "有効" : "無効")}");
             }
 
-            await SaveRulesAsync();
+            await SaveRulesAsync().ConfigureAwait(false);
             return true;
         }
         catch (Exception ex)
@@ -215,7 +215,7 @@ public class UrlRuleService : IUrlRuleService
                 Debug.WriteLine($"UrlRuleService: ルールの優先度を変更しました - {rule.DisplayName} -> {newPriority}");
             }
 
-            await SaveRulesAsync();
+            await SaveRulesAsync().ConfigureAwait(false);
             return true;
         }
         catch (Exception ex)
@@ -247,7 +247,7 @@ public class UrlRuleService : IUrlRuleService
                 Debug.WriteLine($"UrlRuleService: {ruleIdList.Count} 個のルールの優先度を並び替えました");
             }
 
-            await SaveRulesAsync();
+            await SaveRulesAsync().ConfigureAwait(false);
             return true;
         }
         catch (Exception ex)
@@ -305,7 +305,7 @@ public class UrlRuleService : IUrlRuleService
             }
 
             string json = System.Text.Json.JsonSerializer.Serialize(rulesToSave, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
-            await File.WriteAllTextAsync(_rulesFilePath, json);
+            await File.WriteAllTextAsync(_rulesFilePath, json).ConfigureAwait(false);
 
             Debug.WriteLine($"UrlRuleService: {rulesToSave.Count} 個のルールを保存しました");
         }

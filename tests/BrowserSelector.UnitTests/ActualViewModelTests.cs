@@ -124,7 +124,7 @@ namespace BrowserSelector.UnitTests
             _settingsViewModel.VisualSettings.IconScale = 1.2;
 
             // Act - 実際の保存コマンドロジックを実行
-            await _settingsViewModel.SaveSettingsCommand.ExecuteAsync(null);
+            await _settingsViewModel.SaveSettingsCommand.ExecuteAsync(null).ConfigureAwait(false);
 
             // Assert - 実際のロジックが実行されたことを確認
             // 保存が成功したかどうかは実際のサービス実装に依存
@@ -138,7 +138,7 @@ namespace BrowserSelector.UnitTests
             _settingsViewModel.VisualSettings.ShowFocusIndicator = false;
 
             // Act - 実際のリセットコマンドロジックを実行
-            await _settingsViewModel.ResetSettingsCommand.ExecuteAsync(null);
+            await _settingsViewModel.ResetSettingsCommand.ExecuteAsync(null).ConfigureAwait(false);
 
             // Assert - 実際のロジックが実行されたことを確認
             // リセットが成功したかどうかは実際のサービス実装に依存

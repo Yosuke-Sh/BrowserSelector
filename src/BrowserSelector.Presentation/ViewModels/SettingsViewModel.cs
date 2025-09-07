@@ -64,8 +64,8 @@ public partial class SettingsViewModel : ObservableObject
             var culture = new System.Globalization.CultureInfo(value.CultureCode);
             _ = Task.Run(async () =>
             {
-                await _localizationService.SetLanguage(culture);
-                _ = await _settingsService.SaveAppSettingsAsync(AppSettings);
+                await _localizationService.SetLanguage(culture).ConfigureAwait(false);
+                _ = await _settingsService.SaveAppSettingsAsync(AppSettings).ConfigureAwait(false);
             });
 
             LocalizedLogHelper.LogLanguageChanged(LogService, "SettingsViewModel", value.CultureCode);
@@ -153,10 +153,10 @@ public partial class SettingsViewModel : ObservableObject
             LogService?.LogDebug("SettingsViewModel初期化開始", "SettingsViewModel");
 
             // 設定を読み込み
-            AppSettings = await _settingsService.LoadAppSettingsAsync();
+            AppSettings = await _settingsService.LoadAppSettingsAsync().ConfigureAwait(false);
             LogService?.LogDebug($"AppSettings読み込み完了: Language={AppSettings.Language}", "SettingsViewModel");
 
-            VisualSettings = await _settingsService.LoadVisualSettingsAsync();
+            VisualSettings = await _settingsService.LoadVisualSettingsAsync().ConfigureAwait(false);
 
             // グラデーション設定の初期化（デフォルト値の設定）
             LogService?.LogDebug($"初期化前のGradientDirection: {VisualSettings.GradientDirection}", "SettingsViewModel");
@@ -198,11 +198,11 @@ public partial class SettingsViewModel : ObservableObject
             LogService?.LogDebug("言語リスト初期化完了", "SettingsViewModel");
 
             // ブラウザリストを更新
-            await RefreshBrowsersAsync();
+            await RefreshBrowsersAsync().ConfigureAwait(false);
             LogService?.LogDebug("ブラウザリスト更新完了", "SettingsViewModel");
 
             // URLルールリストを更新
-            await RefreshUrlRulesAsync();
+            await RefreshUrlRulesAsync().ConfigureAwait(false);
             LogService?.LogDebug("URLルールリスト更新完了", "SettingsViewModel");
 
             // ログレベルの初期化（先に実行）
@@ -210,7 +210,7 @@ public partial class SettingsViewModel : ObservableObject
             LogService?.LogDebug("ログレベル初期化完了", "SettingsViewModel");
 
             // ログ設定の読み込み
-            await LoadLogSettingsAsync();
+            await LoadLogSettingsAsync().ConfigureAwait(false);
             LogService?.LogDebug("ログ設定読み込み完了", "SettingsViewModel");
 
             // プロパティ変更イベントを監視
@@ -235,7 +235,7 @@ public partial class SettingsViewModel : ObservableObject
             AvailableLanguages.Clear();
 
             // カスタム言語サービスから利用可能な言語を取得（ローカライズ不要の表示名）
-            IEnumerable<Core.Models.LanguageInfo> availableLanguages = await CustomLanguageService.GetAvailableLanguagesAsync();
+            IEnumerable<Core.Models.LanguageInfo> availableLanguages = await CustomLanguageService.GetAvailableLanguagesAsync().ConfigureAwait(false);
 
             foreach (Core.Models.LanguageInfo languageInfo in availableLanguages)
             {
@@ -266,7 +266,7 @@ public partial class SettingsViewModel : ObservableObject
     /// </summary>
     public async Task RefreshLanguagesAsync()
     {
-        await InitializeLanguagesAsync();
+        await InitializeLanguagesAsync().ConfigureAwait(false);
     }
 
     /// <summary>
@@ -287,7 +287,7 @@ public partial class SettingsViewModel : ObservableObject
             AvailableLanguages.Clear();
 
             // カスタム言語サービスから利用可能な言語を取得（ローカライズ不要の表示名）
-            IEnumerable<Core.Models.LanguageInfo> availableLanguages = await CustomLanguageService.GetAvailableLanguagesAsync();
+            IEnumerable<Core.Models.LanguageInfo> availableLanguages = await CustomLanguageService.GetAvailableLanguagesAsync().ConfigureAwait(false);
 
             foreach (Core.Models.LanguageInfo languageInfo in availableLanguages)
             {
@@ -330,7 +330,7 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
-            IEnumerable<Browser> browsers = await _browserService.GetAllBrowsersAsync();
+            IEnumerable<Browser> browsers = await _browserService.GetAllBrowsersAsync().ConfigureAwait(false);
             DetectedBrowsers.Clear();
             foreach (Browser browser in browsers)
             {
@@ -349,7 +349,7 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
-            IEnumerable<UrlRule> rules = await _urlRuleService.GetAllRulesAsync();
+            IEnumerable<UrlRule> rules = await _urlRuleService.GetAllRulesAsync().ConfigureAwait(false);
             UrlRules.Clear();
             foreach (UrlRule rule in rules)
             {
@@ -369,7 +369,7 @@ public partial class SettingsViewModel : ObservableObject
         try
         {
             // ログ設定を読み込み
-            LogSettings = await _settingsService.LoadLogSettingsAsync();
+            LogSettings = await _settingsService.LoadLogSettingsAsync().ConfigureAwait(false);
 
             // 現在のログファイルパスを設定
             CurrentLogFilePath = LogService.GetLogFilePath();
@@ -385,7 +385,7 @@ public partial class SettingsViewModel : ObservableObject
         catch (Exception)
         {
             // エラー時はデフォルト設定を使用
-            await RefreshLogSettingsAsync();
+            await RefreshLogSettingsAsync().ConfigureAwait(false);
         }
     }
 
@@ -486,7 +486,7 @@ public partial class SettingsViewModel : ObservableObject
                 }
             }
 
-            await UpdateVisualSettingsAsync();
+            await UpdateVisualSettingsAsync().ConfigureAwait(false);
         }
 
         // 言語変更時の処理
@@ -521,7 +521,7 @@ public partial class SettingsViewModel : ObservableObject
                 LogService?.LogDebug($"グラデーション設定詳細: 方向={VisualSettings.GradientDirection} (値={Convert.ToInt32(VisualSettings.GradientDirection)})", "SettingsViewModel");
             }
 
-            bool result = await _settingsService.SaveVisualSettingsAsync(VisualSettings);
+            bool result = await _settingsService.SaveVisualSettingsAsync(VisualSettings).ConfigureAwait(false);
             LogService?.LogDebug($"設定保存結果: {result}", "SettingsViewModel");
 
             if (result)
@@ -641,7 +641,7 @@ public partial class SettingsViewModel : ObservableObject
             LogService?.LogInformation("ブラウザ再検出開始", "SettingsViewModel");
 
             // 明示的にブラウザ検出を実行
-            IEnumerable<Browser> browsers = await _browserService.DetectBrowsersAsync();
+            IEnumerable<Browser> browsers = await _browserService.DetectBrowsersAsync().ConfigureAwait(false);
             DetectedBrowsers.Clear();
             foreach (Browser browser in browsers)
             {
@@ -676,10 +676,10 @@ public partial class SettingsViewModel : ObservableObject
                 Browser newBrowser = dialog.Browser;
                 newBrowser.DisplayOrder = DetectedBrowsers.Count + 1;
 
-                bool result = await _browserService.AddBrowserAsync(newBrowser);
+                bool result = await _browserService.AddBrowserAsync(newBrowser).ConfigureAwait(false);
                 if (result)
                 {
-                    await RefreshBrowsersAsync();
+                    await RefreshBrowsersAsync().ConfigureAwait(false);
                     LogService?.LogInformation("ブラウザ追加完了", "SettingsViewModel");
                     _ = LocalizedMessageBox.Show("ブラウザを追加しました。", "完了");
                 }
@@ -703,7 +703,7 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private async Task RefreshUrlRules()
     {
-        await RefreshUrlRulesAsync();
+        await RefreshUrlRulesAsync().ConfigureAwait(false);
     }
 
     /// <summary>
@@ -720,10 +720,10 @@ public partial class SettingsViewModel : ObservableObject
             if (dialog.ShowDialog() == true)
             {
                 UrlRule newRule = dialog.UrlRule;
-                bool result = await _urlRuleService.AddRuleAsync(newRule);
+                bool result = await _urlRuleService.AddRuleAsync(newRule).ConfigureAwait(false);
                 if (result)
                 {
-                    await RefreshUrlRulesAsync();
+                    await RefreshUrlRulesAsync().ConfigureAwait(false);
                     LogService?.LogInformation("URLルール追加完了", "SettingsViewModel");
                     _ = MessageBox.Show("URLルールを追加しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
@@ -755,10 +755,10 @@ public partial class SettingsViewModel : ObservableObject
             if (dialog.ShowDialog() == true)
             {
                 UrlRule updatedRule = dialog.UrlRule;
-                bool result = await _urlRuleService.UpdateRuleAsync(updatedRule);
+                bool result = await _urlRuleService.UpdateRuleAsync(updatedRule).ConfigureAwait(false);
                 if (result)
                 {
-                    await RefreshUrlRulesAsync();
+                    await RefreshUrlRulesAsync().ConfigureAwait(false);
                     LogService?.LogInformation("URLルール編集完了", "SettingsViewModel");
                     _ = MessageBox.Show("URLルールを更新しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
@@ -794,10 +794,10 @@ public partial class SettingsViewModel : ObservableObject
 
             if (result == MessageBoxResult.Yes)
             {
-                bool deleteResult = await _urlRuleService.DeleteRuleAsync(rule.Id);
+                bool deleteResult = await _urlRuleService.DeleteRuleAsync(rule.Id).ConfigureAwait(false);
                 if (deleteResult)
                 {
-                    await RefreshUrlRulesAsync();
+                    await RefreshUrlRulesAsync().ConfigureAwait(false);
                     LogService?.LogInformation("URLルール削除完了", "SettingsViewModel");
                     _ = MessageBox.Show("URLルールを削除しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
@@ -830,7 +830,7 @@ public partial class SettingsViewModel : ObservableObject
 
         try
         {
-            Browser? matchingBrowser = await _urlRuleService.FindMatchingBrowserAsync(TestUrl, DetectedBrowsers);
+            Browser? matchingBrowser = await _urlRuleService.FindMatchingBrowserAsync(TestUrl, DetectedBrowsers).ConfigureAwait(false);
             if (matchingBrowser != null)
             {
                 TestResult = LocalizedLogHelper.GetString("Settings.UrlRules.MatchFound", matchingBrowser.Name);
@@ -945,12 +945,12 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
-            bool result = await _settingsService.ResetSettingsAsync();
+            bool result = await _settingsService.ResetSettingsAsync().ConfigureAwait(false);
             if (result)
             {
                 // 設定を再読み込み
-                AppSettings = await _settingsService.LoadAppSettingsAsync();
-                VisualSettings = await _settingsService.LoadVisualSettingsAsync();
+                AppSettings = await _settingsService.LoadAppSettingsAsync().ConfigureAwait(false);
+                VisualSettings = await _settingsService.LoadVisualSettingsAsync().ConfigureAwait(false);
                 InitializeLanguages();
             }
         }
@@ -977,15 +977,15 @@ public partial class SettingsViewModel : ObservableObject
 
             if (openFileDialog.ShowDialog() == true)
             {
-                bool result = await _settingsService.ImportSettingsAsync(openFileDialog.FileName);
+                bool result = await _settingsService.ImportSettingsAsync(openFileDialog.FileName).ConfigureAwait(false);
                 if (result)
                 {
                     LogService?.LogInformation($"設定インポート完了: {openFileDialog.FileName}", "SettingsViewModel");
 
                     // 設定を再読み込み
-                    AppSettings = await _settingsService.LoadAppSettingsAsync();
-                    VisualSettings = await _settingsService.LoadVisualSettingsAsync();
-                    await InitializeLanguagesAsync();
+                    AppSettings = await _settingsService.LoadAppSettingsAsync().ConfigureAwait(false);
+                    VisualSettings = await _settingsService.LoadVisualSettingsAsync().ConfigureAwait(false);
+                    await InitializeLanguagesAsync().ConfigureAwait(false);
 
                     _ = LocalizedMessageBox.Show("設定ファイル群をインポートしました。", "完了");
                 }
@@ -1022,7 +1022,7 @@ public partial class SettingsViewModel : ObservableObject
 
             if (saveFileDialog.ShowDialog() == true)
             {
-                bool result = await _settingsService.ExportSettingsAsync(saveFileDialog.FileName);
+                bool result = await _settingsService.ExportSettingsAsync(saveFileDialog.FileName).ConfigureAwait(false);
                 if (result)
                 {
                     LogService?.LogInformation($"設定エクスポート完了: {saveFileDialog.FileName}", "SettingsViewModel");
@@ -1049,7 +1049,7 @@ public partial class SettingsViewModel : ObservableObject
     private async Task SaveSettings()
     {
         LogService?.LogDebug("SaveSettingsコマンド実行開始", "SettingsViewModel");
-        await SaveSettingsInternal();
+        await SaveSettingsInternal().ConfigureAwait(false);
     }
 
     private async Task SaveSettingsInternal()
@@ -1060,15 +1060,15 @@ public partial class SettingsViewModel : ObservableObject
             LogService?.LogDebug($"保存対象VisualSettings: BackgroundColor={VisualSettings.BackgroundColor}", "SettingsViewModel");
 
             // アプリケーション設定を保存
-            bool appSettingsResult = await _settingsService.SaveAppSettingsAsync(AppSettings);
+            bool appSettingsResult = await _settingsService.SaveAppSettingsAsync(AppSettings).ConfigureAwait(false);
             LogService?.LogDebug($"AppSettings保存結果: {appSettingsResult}", "SettingsViewModel");
 
             // 視覚設定を保存
-            bool visualSettingsResult = await _settingsService.SaveVisualSettingsAsync(VisualSettings);
+            bool visualSettingsResult = await _settingsService.SaveVisualSettingsAsync(VisualSettings).ConfigureAwait(false);
             LogService?.LogDebug($"VisualSettings保存結果: {visualSettingsResult}", "SettingsViewModel");
 
             // ログ設定を保存
-            bool logSettingsResult = await _settingsService.SaveLogSettingsAsync(LogSettings);
+            bool logSettingsResult = await _settingsService.SaveLogSettingsAsync(LogSettings).ConfigureAwait(false);
             LogService?.LogDebug($"LogSettings保存結果: {logSettingsResult}", "SettingsViewModel");
 
             if (appSettingsResult && visualSettingsResult && logSettingsResult)
@@ -1255,10 +1255,10 @@ public partial class SettingsViewModel : ObservableObject
                     targetBrowser.Arguments = updatedBrowser.Arguments;
                     targetBrowser.IsEnabled = updatedBrowser.IsEnabled;
 
-                    bool result = await _browserService.UpdateBrowserAsync(targetBrowser);
+                    bool result = await _browserService.UpdateBrowserAsync(targetBrowser).ConfigureAwait(false);
                     if (result)
                     {
-                        await RefreshBrowsersAsync();
+                        await RefreshBrowsersAsync().ConfigureAwait(false);
                         LogService?.LogInformation($"システムブラウザ編集完了: {updatedBrowser.Name}", "SettingsViewModel");
                         _ = MessageBox.Show("ブラウザ設定を更新しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
@@ -1276,10 +1276,10 @@ public partial class SettingsViewModel : ObservableObject
             {
                 Browser updatedBrowser = dialog.Browser;
 
-                bool result = await _browserService.UpdateBrowserAsync(updatedBrowser);
+                bool result = await _browserService.UpdateBrowserAsync(updatedBrowser).ConfigureAwait(false);
                 if (result)
                 {
-                    await RefreshBrowsersAsync();
+                    await RefreshBrowsersAsync().ConfigureAwait(false);
                     LogService?.LogInformation($"ブラウザ編集完了: {updatedBrowser.Name}", "SettingsViewModel");
                     _ = MessageBox.Show("ブラウザを更新しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
@@ -1326,10 +1326,10 @@ public partial class SettingsViewModel : ObservableObject
 
             if (result == MessageBoxResult.Yes)
             {
-                bool deleteResult = await _browserService.RemoveBrowserAsync(targetBrowser.Id);
+                bool deleteResult = await _browserService.RemoveBrowserAsync(targetBrowser.Id).ConfigureAwait(false);
                 if (deleteResult)
                 {
-                    await RefreshBrowsersAsync();
+                    await RefreshBrowsersAsync().ConfigureAwait(false);
                     if (SelectedBrowser == targetBrowser)
                     {
                         SelectedBrowser = null;
@@ -1371,8 +1371,8 @@ public partial class SettingsViewModel : ObservableObject
                 DetectedBrowsers.Move(currentIndex, currentIndex - 1);
 
                 // サービスに保存
-                _ = await _browserService.UpdateBrowserAsync(browser);
-                _ = await _browserService.UpdateBrowserAsync(previousBrowser);
+                _ = await _browserService.UpdateBrowserAsync(browser).ConfigureAwait(false);
+                _ = await _browserService.UpdateBrowserAsync(previousBrowser).ConfigureAwait(false);
 
                 LogService?.LogInformation($"ブラウザ順序変更: {browser.Name} を上に移動", "SettingsViewModel");
             }
@@ -1403,8 +1403,8 @@ public partial class SettingsViewModel : ObservableObject
                 DetectedBrowsers.Move(currentIndex, currentIndex + 1);
 
                 // サービスに保存
-                _ = await _browserService.UpdateBrowserAsync(browser);
-                _ = await _browserService.UpdateBrowserAsync(nextBrowser);
+                _ = await _browserService.UpdateBrowserAsync(browser).ConfigureAwait(false);
+                _ = await _browserService.UpdateBrowserAsync(nextBrowser).ConfigureAwait(false);
 
                 LogService?.LogInformation($"ブラウザ順序変更: {browser.Name} を下に移動", "SettingsViewModel");
             }

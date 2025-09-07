@@ -14,7 +14,7 @@ public partial class LanguageManagementDialog : Window
         DataContext = viewModel;
 
         // 初期化
-        Loaded += async (s, e) => await viewModel.InitializeAsync();
+        Loaded += async (s, e) => await viewModel.InitializeAsync().ConfigureAwait(false);
     }
 
     private void CloseButton_Click(object sender, RoutedEventArgs e)

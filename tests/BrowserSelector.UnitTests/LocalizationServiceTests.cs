@@ -69,7 +69,7 @@ public class LocalizationServiceTests
         service.LanguageChanged += (sender, e) => languageChanged = true;
 
         // Act
-        await service.SetLanguage(japaneseCulture);
+        await service.SetLanguage(japaneseCulture).ConfigureAwait(false);
 
         // Assert
         _ = service.CurrentCulture.Should().Be(japaneseCulture);

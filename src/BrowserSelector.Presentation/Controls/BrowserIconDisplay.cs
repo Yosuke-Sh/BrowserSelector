@@ -115,7 +115,7 @@ public class BrowserIconDisplay : Control
             // 実行ファイルからアイコンを抽出
             else if (!string.IsNullOrEmpty(Browser.ExecutablePath) && System.IO.File.Exists(Browser.ExecutablePath))
             {
-                ImageSource? iconFromExe = await LoadIconFromExecutableAsync(Browser.ExecutablePath);
+                ImageSource? iconFromExe = await LoadIconFromExecutableAsync(Browser.ExecutablePath).ConfigureAwait(false);
                 IconSource = iconFromExe ?? GetDefaultIcon();
             }
             // デフォルトアイコンを使用
@@ -187,7 +187,7 @@ public class BrowserIconDisplay : Control
             }
 
             return GetDefaultIcon();
-        });
+        }).ConfigureAwait(false);
     }
 
     /// <summary>

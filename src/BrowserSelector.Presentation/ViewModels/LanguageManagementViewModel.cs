@@ -169,7 +169,7 @@ public partial class LanguageManagementViewModel : ObservableObject
     {
         try
         {
-            await RefreshLanguagesAsync();
+            await RefreshLanguagesAsync().ConfigureAwait(false);
             _logService?.LogDebug("LanguageManagementViewModel初期化完了", "LanguageManagementViewModel");
         }
         catch (Exception ex)
@@ -188,7 +188,7 @@ public partial class LanguageManagementViewModel : ObservableObject
         try
         {
             AvailableLanguages.Clear();
-            IEnumerable<Core.Models.LanguageInfo> languages = await _customLanguageService.GetAvailableLanguagesAsync();
+            IEnumerable<Core.Models.LanguageInfo> languages = await _customLanguageService.GetAvailableLanguagesAsync().ConfigureAwait(false);
 
             foreach (Core.Models.LanguageInfo language in languages)
             {
@@ -233,14 +233,14 @@ public partial class LanguageManagementViewModel : ObservableObject
                 return;
             }
 
-            bool success = await _customLanguageService.GenerateLanguageTemplateAsync(NewLanguageCode, NewLanguageName);
+            bool success = await _customLanguageService.GenerateLanguageTemplateAsync(NewLanguageCode, NewLanguageName).ConfigureAwait(false);
 
             if (success)
             {
                 StatusMessage = $"言語テンプレートを生成しました: {NewLanguageName} ({NewLanguageCode})";
                 NewLanguageCode = string.Empty;
                 NewLanguageName = string.Empty;
-                await RefreshLanguagesAsync();
+                await RefreshLanguagesAsync().ConfigureAwait(false);
                 _logService?.LogInformation($"言語テンプレートを生成しました: {NewLanguageCode} - {NewLanguageName}", "LanguageManagementViewModel");
             }
             else
@@ -280,12 +280,12 @@ public partial class LanguageManagementViewModel : ObservableObject
 
         try
         {
-            bool success = await _customLanguageService.RemoveCustomLanguageAsync(SelectedLanguage.CultureCode);
+            bool success = await _customLanguageService.RemoveCustomLanguageAsync(SelectedLanguage.CultureCode).ConfigureAwait(false);
 
             if (success)
             {
                 StatusMessage = $"言語を削除しました: {SelectedLanguage.DisplayName}";
-                await RefreshLanguagesAsync();
+                await RefreshLanguagesAsync().ConfigureAwait(false);
                 _logService?.LogInformation($"カスタム言語を削除しました: {SelectedLanguage.CultureCode}", "LanguageManagementViewModel");
             }
             else
@@ -349,7 +349,7 @@ public partial class LanguageManagementViewModel : ObservableObject
                 return;
             }
 
-            bool isValid = await _customLanguageService.ValidateLanguageFileAsync(filePath);
+            bool isValid = await _customLanguageService.ValidateLanguageFileAsync(filePath).ConfigureAwait(false);
 
             StatusMessage = isValid ? $"言語ファイルは有効です: {SelectedLanguage.DisplayName}" : $"言語ファイルに問題があります: {SelectedLanguage.DisplayName}";
         }

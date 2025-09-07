@@ -40,7 +40,7 @@ public partial class UrlRuleEditDialog : Window
     {
         try
         {
-            IEnumerable<Browser> browsers = await _browserService.GetAllBrowsersAsync();
+            IEnumerable<Browser> browsers = await _browserService.GetAllBrowsersAsync().ConfigureAwait(false);
             AvailableBrowsers.Clear();
             foreach (Browser? browser in browsers.Where(b => b.IsEnabled))
             {

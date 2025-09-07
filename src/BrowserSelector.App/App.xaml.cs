@@ -35,7 +35,7 @@ public partial class App : Application
                 .Build();
 
             // ホストの開始
-            await _host.StartAsync();
+            await _host.StartAsync().ConfigureAwait(false);
 
             // ログサービスの取得
             _logService = _host.Services.GetRequiredService<ILogService>();
@@ -51,9 +51,9 @@ public partial class App : Application
 
             // 設定された言語を適用
             ISettingsService settingsService = _host.Services.GetRequiredService<ISettingsService>();
-            Core.Models.AppSettings appSettings = await settingsService.LoadAppSettingsAsync();
+            Core.Models.AppSettings appSettings = await settingsService.LoadAppSettingsAsync().ConfigureAwait(false);
             System.Globalization.CultureInfo culture = new(appSettings.Language);
-            await localizationService.SetLanguage(culture);
+            await localizationService.SetLanguage(culture).ConfigureAwait(false);
 
             // 不足アイコンの作成
             try
@@ -118,7 +118,7 @@ public partial class App : Application
             try
             {
                 ISettingsService settingsSvc = _host.Services.GetRequiredService<ISettingsService>();
-                Core.Models.VisualSettings v = await settingsSvc.LoadVisualSettingsAsync();
+                Core.Models.VisualSettings v = await settingsSvc.LoadVisualSettingsAsync().ConfigureAwait(false);
                 _logService.LogDebug($"Startup.VisualSettings.Load.Success BackgroundColor={v.BackgroundColor}, UseBackgroundGradient={v.UseBackgroundGradient}, GradientDirection={v.GradientDirection}", "App");
 
                 // 起動時即座に背景色設定を実行
@@ -253,7 +253,7 @@ public partial class App : Application
 
             if (_host != null)
             {
-                await _host.StopAsync();
+                await _host.StopAsync().ConfigureAwait(false);
                 _host.Dispose();
             }
 

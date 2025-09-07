@@ -81,19 +81,19 @@ public class CoreProjectCoverageTests
         ICustomLanguageService customLanguageService = _serviceProvider.GetRequiredService<ICustomLanguageService>();
 
         // Act & Assert - 各サービスのメソッドを実行してカバレッジを向上
-        IEnumerable<Browser> browsers = await browserService.DetectBrowsersAsync();
+        IEnumerable<Browser> browsers = await browserService.DetectBrowsersAsync().ConfigureAwait(false);
         _ = browsers.Should().NotBeNull();
 
-        AppSettings appSettings = await settingsService.LoadAppSettingsAsync();
+        AppSettings appSettings = await settingsService.LoadAppSettingsAsync().ConfigureAwait(false);
         _ = appSettings.Should().NotBeNull();
 
-        VisualSettings visualSettings = await settingsService.LoadVisualSettingsAsync();
+        VisualSettings visualSettings = await settingsService.LoadVisualSettingsAsync().ConfigureAwait(false);
         _ = visualSettings.Should().NotBeNull();
 
-        string normalizedUrl = await urlService.NormalizeUrlAsync("https://example.com");
+        string normalizedUrl = await urlService.NormalizeUrlAsync("https://example.com").ConfigureAwait(false);
         _ = normalizedUrl.Should().NotBeNullOrEmpty();
 
-        bool isValidUrl = await urlService.ValidateUrlAsync("https://example.com");
+        bool isValidUrl = await urlService.ValidateUrlAsync("https://example.com").ConfigureAwait(false);
         _ = isValidUrl.Should().BeTrue();
 
         string domain = urlService.ExtractDomain("https://www.example.com/path");
@@ -102,13 +102,13 @@ public class CoreProjectCoverageTests
         string urlWithProtocol = urlService.AddProtocolIfNeeded("example.com");
         _ = urlWithProtocol.Should().Be("https://example.com");
 
-        IEnumerable<UrlRule> urlRules = await urlRuleService.GetAllRulesAsync();
+        IEnumerable<UrlRule> urlRules = await urlRuleService.GetAllRulesAsync().ConfigureAwait(false);
         _ = urlRules.Should().NotBeNull();
 
-        IEnumerable<UrlRule> enabledRules = await urlRuleService.GetEnabledRulesAsync();
+        IEnumerable<UrlRule> enabledRules = await urlRuleService.GetEnabledRulesAsync().ConfigureAwait(false);
         _ = enabledRules.Should().NotBeNull();
 
-        IEnumerable<LanguageInfo> availableLanguages = await customLanguageService.GetAvailableLanguagesAsync();
+        IEnumerable<LanguageInfo> availableLanguages = await customLanguageService.GetAvailableLanguagesAsync().ConfigureAwait(false);
         _ = availableLanguages.Should().NotBeNull();
 
         string customLanguageFolder = customLanguageService.GetCustomLanguageFolder();
@@ -324,13 +324,13 @@ public class CoreProjectCoverageTests
         ICustomLanguageService customLanguageService = _serviceProvider.GetRequiredService<ICustomLanguageService>();
 
         // Act & Assert - エッジケースのテスト
-        string emptyUrl = await urlService.NormalizeUrlAsync("");
+        string emptyUrl = await urlService.NormalizeUrlAsync("").ConfigureAwait(false);
         _ = emptyUrl.Should().BeEmpty();
 
-        string whitespaceUrl = await urlService.NormalizeUrlAsync("   ");
+        string whitespaceUrl = await urlService.NormalizeUrlAsync("   ").ConfigureAwait(false);
         _ = whitespaceUrl.Should().BeEmpty();
 
-        bool invalidUrl = await urlService.ValidateUrlAsync("invalid-url");
+        bool invalidUrl = await urlService.ValidateUrlAsync("invalid-url").ConfigureAwait(false);
         _ = invalidUrl.Should().BeFalse();
 
         string emptyDomain = urlService.ExtractDomain("");
@@ -340,16 +340,16 @@ public class CoreProjectCoverageTests
         _ = urlWithProtocol.Should().Be("http://example.com");
 
         // 設定のリセット
-        _ = await settingsService.ResetSettingsAsync();
-        AppSettings resetAppSettings = await settingsService.LoadAppSettingsAsync();
+        _ = await settingsService.ResetSettingsAsync().ConfigureAwait(false);
+        AppSettings resetAppSettings = await settingsService.LoadAppSettingsAsync().ConfigureAwait(false);
         _ = resetAppSettings.Should().NotBeNull();
 
         // カスタム言語ファイルの検証
-        bool isValidFile = await customLanguageService.ValidateLanguageFileAsync("nonexistent.json");
+        bool isValidFile = await customLanguageService.ValidateLanguageFileAsync("nonexistent.json").ConfigureAwait(false);
         _ = isValidFile.Should().BeFalse();
 
         // カスタム言語の削除
-        bool removeResult = await customLanguageService.RemoveCustomLanguageAsync("nonexistent");
+        bool removeResult = await customLanguageService.RemoveCustomLanguageAsync("nonexistent").ConfigureAwait(false);
         _ = removeResult.Should().BeFalse();
     }
 }

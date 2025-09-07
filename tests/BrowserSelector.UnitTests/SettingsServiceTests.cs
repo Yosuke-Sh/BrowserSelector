@@ -38,15 +38,15 @@ public class SettingsServiceTests
 
         _ = Directory.CreateDirectory(languagesPath);
 
-        await File.WriteAllTextAsync(appSettingsPath, "{}");
-        await File.WriteAllTextAsync(visualSettingsPath, "{}");
-        await File.WriteAllTextAsync(logSettingsPath, "{}");
-        await File.WriteAllTextAsync(urlRulesPath, "[]");
-        await File.WriteAllTextAsync(Path.Combine(languagesPath, "en-US.json"), "{}");
-        await File.WriteAllTextAsync(Path.Combine(languagesPath, "ja-JP.json"), "{}");
+        await File.WriteAllTextAsync(appSettingsPath, "{}").ConfigureAwait(false);
+        await File.WriteAllTextAsync(visualSettingsPath, "{}").ConfigureAwait(false);
+        await File.WriteAllTextAsync(logSettingsPath, "{}").ConfigureAwait(false);
+        await File.WriteAllTextAsync(urlRulesPath, "[]").ConfigureAwait(false);
+        await File.WriteAllTextAsync(Path.Combine(languagesPath, "en-US.json"), "{}").ConfigureAwait(false);
+        await File.WriteAllTextAsync(Path.Combine(languagesPath, "ja-JP.json"), "{}").ConfigureAwait(false);
 
         // Act
-        bool result = await _settingsService.ExportSettingsAsync(zipFilePath);
+        bool result = await _settingsService.ExportSettingsAsync(zipFilePath).ConfigureAwait(false);
 
         // Assert
         _ = result.Should().BeTrue();
@@ -77,18 +77,18 @@ public class SettingsServiceTests
             ZipArchiveEntry appSettingsEntry = archive.CreateEntry("appsettings.json");
             using (StreamWriter writer = new(appSettingsEntry.Open()))
             {
-                await writer.WriteAsync("{\"Language\":\"ja-JP\"}");
+                await writer.WriteAsync("{\"Language\":\"ja-JP\"}").ConfigureAwait(false);
             }
 
             ZipArchiveEntry visualSettingsEntry = archive.CreateEntry("visualsettings.json");
             using (StreamWriter writer = new(visualSettingsEntry.Open()))
             {
-                await writer.WriteAsync("{\"BackgroundColor\":\"#FF0000\"}");
+                await writer.WriteAsync("{\"BackgroundColor\":\"#FF0000\"}").ConfigureAwait(false);
             }
         }
 
         // Act
-        bool result = await _settingsService.ImportSettingsAsync(zipFilePath);
+        bool result = await _settingsService.ImportSettingsAsync(zipFilePath).ConfigureAwait(false);
 
         // Assert
         _ = result.Should().BeTrue();
@@ -106,10 +106,10 @@ public class SettingsServiceTests
             "CloseAfterUrlRuleMatch": false
         }
         """;
-        await File.WriteAllTextAsync(jsonFilePath, jsonContent);
+        await File.WriteAllTextAsync(jsonFilePath, jsonContent).ConfigureAwait(false);
 
         // Act
-        bool result = await _settingsService.ImportSettingsAsync(jsonFilePath);
+        bool result = await _settingsService.ImportSettingsAsync(jsonFilePath).ConfigureAwait(false);
 
         // Assert
         _ = result.Should().BeTrue();
@@ -122,7 +122,7 @@ public class SettingsServiceTests
         string nonExistentPath = Path.Combine(_testDirectory, "non_existent.zip");
 
         // Act
-        bool result = await _settingsService.ImportSettingsAsync(nonExistentPath);
+        bool result = await _settingsService.ImportSettingsAsync(nonExistentPath).ConfigureAwait(false);
 
         // Assert
         _ = result.Should().BeFalse();

@@ -43,7 +43,7 @@ public class InfrastructureServicesTests
             .ReturnsAsync(expectedBrowsers);
 
         // Act
-        var result = await browserService.DetectBrowsersAsync();
+        var result = await browserService.DetectBrowsersAsync().ConfigureAwait(false);
 
         // Assert
         result.Should().HaveCount(2);
@@ -63,7 +63,7 @@ public class InfrastructureServicesTests
             .ReturnsAsync(new List<Browser>());
 
         // Act
-        var result = await browserService.DetectBrowsersAsync();
+        var result = await browserService.DetectBrowsersAsync().ConfigureAwait(false);
 
         // Assert
         result.Should().BeEmpty();
@@ -82,7 +82,7 @@ public class InfrastructureServicesTests
             .ThrowsAsync(new Exception("Test exception"));
 
         // Act
-        var result = await browserService.DetectBrowsersAsync();
+        var result = await browserService.DetectBrowsersAsync().ConfigureAwait(false);
 
         // Assert
         result.Should().BeEmpty();
@@ -100,7 +100,7 @@ public class InfrastructureServicesTests
             .ReturnsAsync(new AppSettings());
 
         // Act
-        var result = await urlService.NormalizeUrlAsync("example.com");
+        var result = await urlService.NormalizeUrlAsync("example.com").ConfigureAwait(false);
 
         // Assert
         result.Should().Be("https://example.com");
@@ -118,7 +118,7 @@ public class InfrastructureServicesTests
             .ReturnsAsync(new AppSettings());
 
         // Act
-        var result = await urlService.NormalizeUrlAsync("http://example.com");
+        var result = await urlService.NormalizeUrlAsync("http://example.com").ConfigureAwait(false);
 
         // Assert
         result.Should().Be("http://example.com");
@@ -136,7 +136,7 @@ public class InfrastructureServicesTests
             .ReturnsAsync(new AppSettings());
 
         // Act
-        var result = await urlService.NormalizeUrlAsync("https://example.com");
+        var result = await urlService.NormalizeUrlAsync("https://example.com").ConfigureAwait(false);
 
         // Assert
         result.Should().Be("https://example.com");
@@ -154,7 +154,7 @@ public class InfrastructureServicesTests
             .ReturnsAsync(new AppSettings());
 
         // Act
-        var result = await urlService.NormalizeUrlAsync("");
+        var result = await urlService.NormalizeUrlAsync("").ConfigureAwait(false);
 
         // Assert
         result.Should().Be("");
@@ -172,7 +172,7 @@ public class InfrastructureServicesTests
             .ReturnsAsync(new AppSettings());
 
         // Act
-        var result = await urlService.NormalizeUrlAsync("invalid-url");
+        var result = await urlService.NormalizeUrlAsync("invalid-url").ConfigureAwait(false);
 
         // Assert
         result.Should().Be("https://invalid-url");
