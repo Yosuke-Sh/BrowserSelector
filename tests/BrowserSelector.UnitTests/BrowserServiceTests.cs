@@ -46,7 +46,7 @@ public class BrowserServiceTests
             .ReturnsAsync(expectedBrowsers);
 
         // Act
-        IEnumerable<Browser> result = await _browserService.DetectBrowsersAsync().ConfigureAwait(false);
+        IEnumerable<Browser> result = await _browserService.DetectBrowsersAsync();
 
         // Assert
         _ = result.Should().HaveCount(2);
@@ -62,7 +62,7 @@ public class BrowserServiceTests
             .ReturnsAsync([]);
 
         // Act
-        IEnumerable<Browser> result = await _browserService.DetectBrowsersAsync().ConfigureAwait(false);
+        IEnumerable<Browser> result = await _browserService.DetectBrowsersAsync();
 
         // Assert
         _ = result.Should().BeEmpty();
@@ -77,7 +77,7 @@ public class BrowserServiceTests
             .ThrowsAsync(new Exception("Test exception"));
 
         // Act
-        IEnumerable<Browser> result = await _browserService.DetectBrowsersAsync().ConfigureAwait(false);
+        IEnumerable<Browser> result = await _browserService.DetectBrowsersAsync();
 
         // Assert
         _ = result.Should().BeEmpty();
@@ -161,7 +161,7 @@ public class BrowserServiceTests
             .Setup(x => x.DetectBrowsersFromRegistryAsync())
             .ReturnsAsync([browser]);
 
-        _ = await _browserService.DetectBrowsersAsync().ConfigureAwait(false);
+        _ = await _browserService.DetectBrowsersAsync();
 
         // Act
         bool result = await _browserService.RemoveBrowserAsync(browser.Id);
@@ -195,8 +195,8 @@ public class BrowserServiceTests
             .ReturnsAsync(browsers);
 
         // Act - まずブラウザを検出してから取得
-        _ = await _browserService.DetectBrowsersAsync().ConfigureAwait(false);
-        IEnumerable<Browser> result = await _browserService.GetAllBrowsersAsync().ConfigureAwait(false);
+        _ = await _browserService.DetectBrowsersAsync();
+        IEnumerable<Browser> result = await _browserService.GetAllBrowsersAsync();
 
         // Assert
         _ = result.Should().HaveCount(2);

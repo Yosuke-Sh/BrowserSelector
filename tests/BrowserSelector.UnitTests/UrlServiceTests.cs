@@ -28,7 +28,7 @@ public class UrlServiceTests
             .ReturnsAsync(new BrowserSelector.Core.Models.AppSettings());
 
         // Act
-        string result = await _urlService.NormalizeUrlAsync(inputUrl).ConfigureAwait(false);
+        string result = await _urlService.NormalizeUrlAsync(inputUrl);
 
         // Assert
         _ = result.Should().Be(expectedUrl);
@@ -45,7 +45,7 @@ public class UrlServiceTests
             .ReturnsAsync(new BrowserSelector.Core.Models.AppSettings());
 
         // Act
-        string result = await _urlService.NormalizeUrlAsync(inputUrl).ConfigureAwait(false);
+        string result = await _urlService.NormalizeUrlAsync(inputUrl);
 
         // Assert
         _ = result.Should().Be(inputUrl);
@@ -62,7 +62,7 @@ public class UrlServiceTests
             .ReturnsAsync(new BrowserSelector.Core.Models.AppSettings());
 
         // Act
-        string result = await _urlService.NormalizeUrlAsync(inputUrl).ConfigureAwait(false);
+        string result = await _urlService.NormalizeUrlAsync(inputUrl);
 
         // Assert
         _ = result.Should().Be(inputUrl);
@@ -79,7 +79,7 @@ public class UrlServiceTests
             .ReturnsAsync(new BrowserSelector.Core.Models.AppSettings());
 
         // Act
-        string result = await _urlService.NormalizeUrlAsync(inputUrl).ConfigureAwait(false);
+        string result = await _urlService.NormalizeUrlAsync(inputUrl);
 
         // Assert
         _ = result.Should().BeEmpty();
@@ -109,7 +109,7 @@ public class UrlServiceTests
         string url = "http://example.com";
 
         // Act
-        bool result = await _urlService.ValidateUrlAsync(url).ConfigureAwait(false);
+        bool result = await _urlService.ValidateUrlAsync(url);
 
         // Assert
         _ = result.Should().BeTrue();
@@ -122,7 +122,7 @@ public class UrlServiceTests
         string url = "https://example.com";
 
         // Act
-        bool result = await _urlService.ValidateUrlAsync(url).ConfigureAwait(false);
+        bool result = await _urlService.ValidateUrlAsync(url);
 
         // Assert
         _ = result.Should().BeTrue();
@@ -135,7 +135,7 @@ public class UrlServiceTests
         string url = "invalid-url";
 
         // Act
-        bool result = await _urlService.ValidateUrlAsync(url).ConfigureAwait(false);
+        bool result = await _urlService.ValidateUrlAsync(url);
 
         // Assert
         _ = result.Should().BeFalse();
@@ -148,7 +148,7 @@ public class UrlServiceTests
         string url = "";
 
         // Act
-        bool result = await _urlService.ValidateUrlAsync(url).ConfigureAwait(false);
+        bool result = await _urlService.ValidateUrlAsync(url);
 
         // Assert
         _ = result.Should().BeFalse();
