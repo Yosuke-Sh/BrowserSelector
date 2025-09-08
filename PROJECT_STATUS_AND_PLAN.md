@@ -448,6 +448,61 @@ BrowserSelector.WPF/
 - **developer**: 直接プッシュ禁止、プルリクエスト必須、レビュー推奨
 - **feature/***: 自由にプッシュ可能、developerへのマージ時にプルリクエスト必須
 
+## 🛠 警告是正計画（優先度・コミット単位）
+
+本プロジェクトでは「警告は原則すべて解消」を方針とし、無効化は行いません（正当理由がある場合のみ最小スコープで抑制）[[memory:8434273]]。また、警告種別ごとにコミットをバッチ化します（例: CA1707を一括対応の単一コミット）[[memory:8434267]]。
+
+### 優先度定義
+- P0: ビルド安定性/設計品質に直結（例外・Dispose・テスト不備）
+- P1: 可読性/規約順守（命名・レイアウト・構文スタイル）
+- P2: パフォーマンス/ベストプラクティス改善
+- P3: コンフィグ/解析設定の是正
+
+### 現状（要約）
+- テスト系での命名規約 CA1707 が多数
+- StyleCop の整形系（SA1122/SA1515/SA1513/SA1518/SA1010/SA1124）
+- 例外/Dispose パターン（CA1031/CA1063/CA1816）
+- Sonar のアサーション不足 S2699、TODO 残存 S1135
+- null 検証 CA1062、例外型の特定 CA2201
+- パフォーマンス系（CA1869/CA1849/CA1851）
+- コレクションAPI最適化（S6602/S6605）
+- XMLコメント解析設定（SA0001）
+
+### 対応計画（順序・コミット単位）
+1) P0: テスト品質/設計のクリティカル
+- Commit: test-assertions-fix (S2699) — すべてのテストに最低1つのアサーション追加
+- Commit: dispose-pattern-fix (CA1063/CA1816/S3881) — テストクラスのDisposeパターン是正、GC.SuppressFinalize追加
+- Commit: exception-handling-fix (CA1031/CA2201) — 汎用Exception排除、catchの粒度見直し、再スロー適正化
+
+2) P1: 命名・スタイル整形（自動修正優先）
+- Commit: test-name-underscore-fix (CA1707) — テストメソッドのアンダースコア排除規約へ揃え
+- Commit: stylecop-formatting-fix (SA1122/SA1515/SA1513/SA1518/SA1010/SA1124) — 自動整形中心で一括修正
+- Commit: todo-cleanup (S1135) — TODOの解消/Issue化とリンク明記
+
+3) P2: ベストプラクティス/性能
+- Commit: json-options-caching (CA1869) — JsonSerializerOptionsのキャッシュ化
+- Commit: async-io-and-enumeration (CA1849/CA1851) — 同期I/OのAsync化、複数列挙の回避
+- Commit: collection-api-usage (S6602/S6605) — Find/Exists等のコレクション専用APIへ置換
+- Commit: parameter-null-checks (CA1062) — 公開メソッドの引数ガード（ThrowIfNull）
+
+4) P3: 解析設定
+- Commit: analyzer-config-update (SA0001) — XMLコメント解析が有効になるよう設定の見直し（必要ならDocコメントを追加）
+
+### 実施方法
+- 自動整形: `dotnet format analyzers` を先行（整形系の差分削減）
+- 手動対応: クリティカルなP0→P1→P2→P3の順で修正
+- CI: `-warnaserror`、`dotnet format --verify-no-changes` を有効化
+- 抑制: やむを得ない場合のみ、行/メソッド単位で抑制し理由をコメントに明記（恒久化は避ける）[[memory:8434272]]
+
+### コミット方針
+- 種別ごとの「単一コミット」にバッチング（例: “CA1707: テストメソッド命名修正 一括”）[[memory:8434260]]
+- 範囲は tests/ を中心に、対象規約単位でファイル横断
+- 各コミットに: 概要、代表例、影響範囲、動作確認（テスト成功）をメッセージに記載
+
+### 完了条件
+- ビルド成功かつ警告0（または残存分は正当な抑制の理由を明示）
+- テスト全成功、CI品質ゲート通過
+
 ---
 
 **最終更新**: 2025年9月7日  
