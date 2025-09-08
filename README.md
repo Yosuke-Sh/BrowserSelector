@@ -175,6 +175,11 @@ BrowserSelectorは自動更新機能を搭載しています：
 - テスト: 新機能にはテストを追加
 - ドキュメント: 変更には適切なドキュメント更新
 
+### ブランチ戦略（簡易）
+- ブランチ: `main`（安定版）、`developer`（統合）、`feature/*`、`hotfix/*`、`release/*`
+- フロー: `feature/*` → `developer` → `release/*` → `main`
+- ルール: `main`/`developer`はPR必須・直接プッシュ禁止
+
 ## 📞 サポート
 
 - **Issues**: [GitHub Issues](https://github.com/Yosuke-Sh/BrowserSelector/issues)
@@ -309,6 +314,11 @@ Pull requests and issue reports are welcome.
 - Warnings: Maintain zero build warnings
 - Testing: Add tests for new features
 - Documentation: Update documentation for changes
+
+#### Branch Strategy (Quick)
+- Branches: `main` (stable), `developer` (integration), `feature/*`, `hotfix/*`, `release/*`
+- Flow: `feature/*` → `developer` → `release/*` → `main`
+- Rules: PR required, no direct push to `main`/`developer`
 
 ### 📞 Support
 
