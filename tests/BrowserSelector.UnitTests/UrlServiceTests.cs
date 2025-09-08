@@ -96,7 +96,7 @@ public class UrlServiceTests
             .ReturnsAsync(new BrowserSelector.Core.Models.AppSettings());
 
         // Act
-        string result = await _urlService.NormalizeUrlAsync(inputUrl).ConfigureAwait(false);
+        string result = await _urlService.NormalizeUrlAsync(inputUrl);
 
         // Assert
         _ = result.Should().BeEmpty();

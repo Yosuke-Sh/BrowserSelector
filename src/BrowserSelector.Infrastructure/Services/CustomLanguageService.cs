@@ -149,7 +149,7 @@ public class CustomLanguageService : ICustomLanguageService
     {
         try
         {
-            CustomLanguageFile? languageFile = await LoadLanguageFileAsync(languageFilePath);
+            CustomLanguageFile? languageFile = await LoadLanguageFileAsync(languageFilePath).ConfigureAwait(false);
             if (languageFile == null)
             {
                 return false;
@@ -395,9 +395,9 @@ public class CustomLanguageService : ICustomLanguageService
                     }
 
                     // ファイルが存在する場合は軽量チェック
-                    if (await ShouldUpdateLanguageFileAsync(assembly, cultureCode, targetPath))
+                    if (await ShouldUpdateLanguageFileAsync(assembly, cultureCode, targetPath).ConfigureAwait(false))
                     {
-                        await CopyEmbeddedLanguageFileAsync(cultureCode, targetPath);
+                        await CopyEmbeddedLanguageFileAsync(cultureCode, targetPath).ConfigureAwait(false);
                         _logService?.LogDebug($"言語ファイルを更新: {cultureCode}", "CustomLanguageService");
                     }
                     else
@@ -577,7 +577,7 @@ public class CustomLanguageService : ICustomLanguageService
     {
         try
         {
-            string json = await System.IO.File.ReadAllTextAsync(filePath);
+            string json = await System.IO.File.ReadAllTextAsync(filePath).ConfigureAwait(false);
             CustomLanguageFile? languageFile = JsonSerializer.Deserialize<CustomLanguageFile>(json);
             return languageFile;
         }

@@ -196,8 +196,8 @@ public class ServiceIntegrationTests : IDisposable
         };
 
         // Act
-        await settingsService.SaveLogSettingsAsync(logSettings).ConfigureAwait(false);
-        var loadedSettings = await settingsService.LoadLogSettingsAsync().ConfigureAwait(false);
+        await settingsService.SaveLogSettingsAsync(logSettings);
+        var loadedSettings = await settingsService.LoadLogSettingsAsync();
 
         // Assert
         loadedSettings.Should().NotBeNull("ログ設定がnullでないこと");
