@@ -493,7 +493,7 @@ public partial class SettingsViewModel : ObservableObject
         if (e.PropertyName == nameof(SelectedLanguage) && SelectedLanguage != null)
         {
             AppSettings.Language = SelectedLanguage.CultureCode;
-            _ = Task.Run(async () => await _localizationService.SetLanguage(new System.Globalization.CultureInfo(SelectedLanguage.CultureCode)));
+            _ = Task.Run(async () => await _localizationService.SetLanguage(new System.Globalization.CultureInfo(SelectedLanguage.CultureCode)).ConfigureAwait(false));
         }
 
         // ログ設定の変更時の処理

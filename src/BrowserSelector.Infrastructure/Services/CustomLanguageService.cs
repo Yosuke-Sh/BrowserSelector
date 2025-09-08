@@ -489,7 +489,7 @@ public class CustomLanguageService : ICustomLanguageService
             }
 
             using System.IO.FileStream fileStream = new(targetPath, System.IO.FileMode.Create);
-            await stream.CopyToAsync(fileStream);
+            await stream.CopyToAsync(fileStream).ConfigureAwait(false);
 
             _logService?.LogDebug($"言語ファイルを配置しました: {targetPath}", "CustomLanguageService");
         }

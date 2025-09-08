@@ -120,3 +120,6 @@ dotnet_diagnostic.SA1413.severity = none  # Use trailing comma in multi-line ini
 dotnet_diagnostic.SA1208.severity = none  # System using directives should be placed before other using directives
 dotnet_diagnostic.SA1633.severity = none  # File should have header
 dotnet_diagnostic.SA1200.severity = none  # Using directive should appear within a namespace declaration
+
+[tests/**.cs]
+dotnet_diagnostic.CA2007.severity = none

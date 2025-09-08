@@ -467,7 +467,7 @@ public partial class MainViewModel : ObservableObject
             _logService?.LogInformation($"初期URLを設定: {url}", "MainViewModel");
 
             // URLルールに基づいてブラウザを自動選択
-            await ApplyUrlRulesAsync(url);
+            await ApplyUrlRulesAsync(url).ConfigureAwait(false);
         }
     }
 

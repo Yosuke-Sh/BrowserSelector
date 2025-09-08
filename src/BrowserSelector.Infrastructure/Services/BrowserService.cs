@@ -220,7 +220,7 @@ public class BrowserService : IBrowserService
             //     return false;
 
             _ = _browsers.Remove(browser);
-            await SaveCustomBrowsersAsync();
+            await SaveCustomBrowsersAsync().ConfigureAwait(false);
             return true;
         }
         catch (Exception ex)
