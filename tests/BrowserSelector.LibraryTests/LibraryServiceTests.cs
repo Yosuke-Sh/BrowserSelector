@@ -34,7 +34,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateBrowserAsync(browser).ConfigureAwait(false);
+        var result = await libraryService.ValidateBrowserAsync(browser);
 
         // Assert
         result.Should().BeTrue();
@@ -53,7 +53,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateBrowserAsync(browser).ConfigureAwait(false);
+        var result = await libraryService.ValidateBrowserAsync(browser);
 
         // Assert
         result.Should().BeFalse();
@@ -72,7 +72,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateBrowserAsync(browser).ConfigureAwait(false);
+        var result = await libraryService.ValidateBrowserAsync(browser);
 
         // Assert
         result.Should().BeFalse();
@@ -91,7 +91,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateBrowserAsync(browser).ConfigureAwait(false);
+        var result = await libraryService.ValidateBrowserAsync(browser);
 
         // Assert
         result.Should().BeFalse();
@@ -106,7 +106,7 @@ public class LibraryServiceTests
         string expectedUrl = "https://example.com";
 
         // Act
-        var result = await libraryService.NormalizeUrlAsync(inputUrl).ConfigureAwait(false);
+        var result = await libraryService.NormalizeUrlAsync(inputUrl);
 
         // Assert
         result.Should().Be(expectedUrl);
@@ -120,7 +120,7 @@ public class LibraryServiceTests
         string inputUrl = "http://example.com";
 
         // Act
-        var result = await libraryService.NormalizeUrlAsync(inputUrl).ConfigureAwait(false);
+        var result = await libraryService.NormalizeUrlAsync(inputUrl);
 
         // Assert
         result.Should().Be(inputUrl);
@@ -134,7 +134,7 @@ public class LibraryServiceTests
         string inputUrl = "https://example.com";
 
         // Act
-        var result = await libraryService.NormalizeUrlAsync(inputUrl).ConfigureAwait(false);
+        var result = await libraryService.NormalizeUrlAsync(inputUrl);
 
         // Assert
         result.Should().Be(inputUrl);
@@ -148,7 +148,7 @@ public class LibraryServiceTests
         string inputUrl = "";
 
         // Act
-        var result = await libraryService.NormalizeUrlAsync(inputUrl).ConfigureAwait(false);
+        var result = await libraryService.NormalizeUrlAsync(inputUrl);
 
         // Assert
         result.Should().Be("");
@@ -162,7 +162,7 @@ public class LibraryServiceTests
         string inputUrl = "invalid-url-with-spaces and special chars!@#";
 
         // Act
-        var result = await libraryService.NormalizeUrlAsync(inputUrl).ConfigureAwait(false);
+        var result = await libraryService.NormalizeUrlAsync(inputUrl);
 
         // Assert
         result.Should().Be(inputUrl);
@@ -181,7 +181,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateSettingsAsync(settings).ConfigureAwait(false);
+        var result = await libraryService.ValidateSettingsAsync(settings);
 
         // Assert
         result.Should().BeTrue();
@@ -199,7 +199,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateSettingsAsync(settings).ConfigureAwait(false);
+        var result = await libraryService.ValidateSettingsAsync(settings);
 
         // Assert
         result.Should().BeFalse();
@@ -217,7 +217,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateSettingsAsync(settings).ConfigureAwait(false);
+        var result = await libraryService.ValidateSettingsAsync(settings);
 
         // Assert
         result.Should().BeFalse();
@@ -236,7 +236,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateVisualSettingsAsync(settings).ConfigureAwait(false);
+        var result = await libraryService.ValidateVisualSettingsAsync(settings);
 
         // Assert
         result.Should().BeTrue();
@@ -254,7 +254,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateVisualSettingsAsync(settings).ConfigureAwait(false);
+        var result = await libraryService.ValidateVisualSettingsAsync(settings);
 
         // Assert
         result.Should().BeFalse();
@@ -272,7 +272,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateVisualSettingsAsync(settings).ConfigureAwait(false);
+        var result = await libraryService.ValidateVisualSettingsAsync(settings);
 
         // Assert
         result.Should().BeFalse();
@@ -294,7 +294,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateVisualSettingsAsync(settings).ConfigureAwait(false);
+        var result = await libraryService.ValidateVisualSettingsAsync(settings);
 
         // Assert
         result.Should().BeFalse();
@@ -314,7 +314,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateUrlRuleAsync(rule).ConfigureAwait(false);
+        var result = await libraryService.ValidateUrlRuleAsync(rule);
 
         // Assert
         result.Should().BeTrue();
@@ -333,7 +333,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateUrlRuleAsync(rule).ConfigureAwait(false);
+        var result = await libraryService.ValidateUrlRuleAsync(rule);
 
         // Assert
         result.Should().BeFalse();
@@ -352,7 +352,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateUrlRuleAsync(rule).ConfigureAwait(false);
+        var result = await libraryService.ValidateUrlRuleAsync(rule);
 
         // Assert
         result.Should().BeFalse();
@@ -372,7 +372,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateLogSettingsAsync(settings).ConfigureAwait(false);
+        var result = await libraryService.ValidateLogSettingsAsync(settings);
 
         // Assert
         result.Should().BeTrue();
@@ -391,7 +391,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateLogSettingsAsync(settings).ConfigureAwait(false);
+        var result = await libraryService.ValidateLogSettingsAsync(settings);
 
         // Assert
         result.Should().BeFalse();
@@ -410,7 +410,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateLogSettingsAsync(settings).ConfigureAwait(false);
+        var result = await libraryService.ValidateLogSettingsAsync(settings);
 
         // Assert
         result.Should().BeFalse();
@@ -424,7 +424,7 @@ public class LibraryServiceTests
         Browser browser = null!;
 
         // Act
-        var result = await libraryService.ValidateBrowserAsync(browser).ConfigureAwait(false);
+        var result = await libraryService.ValidateBrowserAsync(browser);
 
         // Assert
         result.Should().BeFalse();
@@ -438,7 +438,7 @@ public class LibraryServiceTests
         AppSettings settings = null!;
 
         // Act
-        var result = await libraryService.ValidateSettingsAsync(settings).ConfigureAwait(false);
+        var result = await libraryService.ValidateSettingsAsync(settings);
 
         // Assert
         result.Should().BeFalse();
@@ -452,7 +452,7 @@ public class LibraryServiceTests
         VisualSettings settings = null!;
 
         // Act
-        var result = await libraryService.ValidateVisualSettingsAsync(settings).ConfigureAwait(false);
+        var result = await libraryService.ValidateVisualSettingsAsync(settings);
 
         // Assert
         result.Should().BeFalse();
@@ -466,7 +466,7 @@ public class LibraryServiceTests
         UrlRule rule = null!;
 
         // Act
-        var result = await libraryService.ValidateUrlRuleAsync(rule).ConfigureAwait(false);
+        var result = await libraryService.ValidateUrlRuleAsync(rule);
 
         // Assert
         result.Should().BeFalse();
@@ -480,7 +480,7 @@ public class LibraryServiceTests
         LogSettings settings = null!;
 
         // Act
-        var result = await libraryService.ValidateLogSettingsAsync(settings).ConfigureAwait(false);
+        var result = await libraryService.ValidateLogSettingsAsync(settings);
 
         // Assert
         result.Should().BeFalse();
@@ -499,7 +499,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateBrowserAsync(browser).ConfigureAwait(false);
+        var result = await libraryService.ValidateBrowserAsync(browser);
 
         // Assert
         result.Should().BeFalse();
@@ -518,7 +518,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateBrowserAsync(browser).ConfigureAwait(false);
+        var result = await libraryService.ValidateBrowserAsync(browser);
 
         // Assert
         result.Should().BeFalse();
@@ -537,7 +537,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateBrowserAsync(browser).ConfigureAwait(false);
+        var result = await libraryService.ValidateBrowserAsync(browser);
 
         // Assert
         result.Should().BeFalse();
@@ -551,7 +551,7 @@ public class LibraryServiceTests
         string inputUrl = "   ";
 
         // Act
-        var result = await libraryService.NormalizeUrlAsync(inputUrl).ConfigureAwait(false);
+        var result = await libraryService.NormalizeUrlAsync(inputUrl);
 
         // Assert
         result.Should().Be("");
@@ -565,7 +565,7 @@ public class LibraryServiceTests
         string inputUrl = "ftp://example.com";
 
         // Act
-        var result = await libraryService.NormalizeUrlAsync(inputUrl).ConfigureAwait(false);
+        var result = await libraryService.NormalizeUrlAsync(inputUrl);
 
         // Assert
         result.Should().Be(inputUrl);
@@ -579,7 +579,7 @@ public class LibraryServiceTests
         string inputUrl = "file:///C:/test.html";
 
         // Act
-        var result = await libraryService.NormalizeUrlAsync(inputUrl).ConfigureAwait(false);
+        var result = await libraryService.NormalizeUrlAsync(inputUrl);
 
         // Assert
         result.Should().Be(inputUrl);
@@ -597,7 +597,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateSettingsAsync(settings).ConfigureAwait(false);
+        var result = await libraryService.ValidateSettingsAsync(settings);
 
         // Assert
         result.Should().BeFalse();
@@ -615,7 +615,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateSettingsAsync(settings).ConfigureAwait(false);
+        var result = await libraryService.ValidateSettingsAsync(settings);
 
         // Assert
         result.Should().BeFalse();
@@ -633,7 +633,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateSettingsAsync(settings).ConfigureAwait(false);
+        var result = await libraryService.ValidateSettingsAsync(settings);
 
         // Assert
         result.Should().BeTrue();
@@ -651,7 +651,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateSettingsAsync(settings).ConfigureAwait(false);
+        var result = await libraryService.ValidateSettingsAsync(settings);
 
         // Assert
         result.Should().BeTrue();
@@ -669,7 +669,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateSettingsAsync(settings).ConfigureAwait(false);
+        var result = await libraryService.ValidateSettingsAsync(settings);
 
         // Assert
         result.Should().BeTrue();
@@ -690,7 +690,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateVisualSettingsAsync(settings).ConfigureAwait(false);
+        var result = await libraryService.ValidateVisualSettingsAsync(settings);
 
         // Assert
         result.Should().BeTrue();
@@ -711,7 +711,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateVisualSettingsAsync(settings).ConfigureAwait(false);
+        var result = await libraryService.ValidateVisualSettingsAsync(settings);
 
         // Assert
         result.Should().BeTrue();
@@ -729,7 +729,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateVisualSettingsAsync(settings).ConfigureAwait(false);
+        var result = await libraryService.ValidateVisualSettingsAsync(settings);
 
         // Assert
         result.Should().BeTrue();
@@ -747,7 +747,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateVisualSettingsAsync(settings).ConfigureAwait(false);
+        var result = await libraryService.ValidateVisualSettingsAsync(settings);
 
         // Assert
         result.Should().BeTrue();
@@ -765,7 +765,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateVisualSettingsAsync(settings).ConfigureAwait(false);
+        var result = await libraryService.ValidateVisualSettingsAsync(settings);
 
         // Assert
         result.Should().BeTrue();
@@ -783,7 +783,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateVisualSettingsAsync(settings).ConfigureAwait(false);
+        var result = await libraryService.ValidateVisualSettingsAsync(settings);
 
         // Assert
         result.Should().BeTrue();
@@ -802,7 +802,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateUrlRuleAsync(rule).ConfigureAwait(false);
+        var result = await libraryService.ValidateUrlRuleAsync(rule);
 
         // Assert
         result.Should().BeFalse();
@@ -821,7 +821,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateUrlRuleAsync(rule).ConfigureAwait(false);
+        var result = await libraryService.ValidateUrlRuleAsync(rule);
 
         // Assert
         result.Should().BeFalse();
@@ -840,7 +840,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateUrlRuleAsync(rule).ConfigureAwait(false);
+        var result = await libraryService.ValidateUrlRuleAsync(rule);
 
         // Assert
         result.Should().BeTrue();
@@ -859,7 +859,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateUrlRuleAsync(rule).ConfigureAwait(false);
+        var result = await libraryService.ValidateUrlRuleAsync(rule);
 
         // Assert
         result.Should().BeTrue();
@@ -878,7 +878,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateUrlRuleAsync(rule).ConfigureAwait(false);
+        var result = await libraryService.ValidateUrlRuleAsync(rule);
 
         // Assert
         result.Should().BeFalse();
@@ -897,7 +897,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateLogSettingsAsync(settings).ConfigureAwait(false);
+        var result = await libraryService.ValidateLogSettingsAsync(settings);
 
         // Assert
         result.Should().BeTrue();
@@ -916,7 +916,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateLogSettingsAsync(settings).ConfigureAwait(false);
+        var result = await libraryService.ValidateLogSettingsAsync(settings);
 
         // Assert
         result.Should().BeTrue();
@@ -935,7 +935,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateLogSettingsAsync(settings).ConfigureAwait(false);
+        var result = await libraryService.ValidateLogSettingsAsync(settings);
 
         // Assert
         result.Should().BeTrue();
@@ -954,7 +954,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateLogSettingsAsync(settings).ConfigureAwait(false);
+        var result = await libraryService.ValidateLogSettingsAsync(settings);
 
         // Assert
         result.Should().BeTrue();
@@ -973,7 +973,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateLogSettingsAsync(settings).ConfigureAwait(false);
+        var result = await libraryService.ValidateLogSettingsAsync(settings);
 
         // Assert
         result.Should().BeFalse();
@@ -992,7 +992,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateLogSettingsAsync(settings).ConfigureAwait(false);
+        var result = await libraryService.ValidateLogSettingsAsync(settings);
 
         // Assert
         result.Should().BeFalse();
@@ -1011,7 +1011,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateLogSettingsAsync(settings).ConfigureAwait(false);
+        var result = await libraryService.ValidateLogSettingsAsync(settings);
 
         // Assert
         result.Should().BeTrue();
@@ -1030,7 +1030,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateLogSettingsAsync(settings).ConfigureAwait(false);
+        var result = await libraryService.ValidateLogSettingsAsync(settings);
 
         // Assert
         result.Should().BeTrue();
@@ -1050,7 +1050,7 @@ public class LibraryServiceTests
         };
 
         // Act
-        var result = await libraryService.ValidateBrowserAsync(browser).ConfigureAwait(false);
+        var result = await libraryService.ValidateBrowserAsync(browser);
 
         // Assert
         result.Should().BeFalse();
@@ -1064,7 +1064,7 @@ public class LibraryServiceTests
         var url = "ftp://example.com/file.txt";
 
         // Act
-        var result = await libraryService.NormalizeUrlAsync(url).ConfigureAwait(false);
+        var result = await libraryService.NormalizeUrlAsync(url);
 
         // Assert
         result.Should().Be(url);
@@ -1078,7 +1078,7 @@ public class LibraryServiceTests
         var url = "file:///C:/path/to/file.txt";
 
         // Act
-        var result = await libraryService.NormalizeUrlAsync(url).ConfigureAwait(false);
+        var result = await libraryService.NormalizeUrlAsync(url);
 
         // Assert
         result.Should().Be(url);

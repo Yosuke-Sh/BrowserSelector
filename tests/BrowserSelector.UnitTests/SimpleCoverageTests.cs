@@ -297,19 +297,19 @@ public class SimpleCoverageTests
         ICustomLanguageService customLanguageService = serviceProvider.GetRequiredService<ICustomLanguageService>();
 
         // 基本的なメソッドの実行
-        IEnumerable<Browser> browsers = await browserService.DetectBrowsersAsync().ConfigureAwait(false);
+        IEnumerable<Browser> browsers = await browserService.DetectBrowsersAsync();
         _ = browsers.Should().NotBeNull();
 
-        AppSettings appSettings = await settingsService.LoadAppSettingsAsync().ConfigureAwait(false);
+        AppSettings appSettings = await settingsService.LoadAppSettingsAsync();
         _ = appSettings.Should().NotBeNull();
 
-        VisualSettings visualSettings = await settingsService.LoadVisualSettingsAsync().ConfigureAwait(false);
+        VisualSettings visualSettings = await settingsService.LoadVisualSettingsAsync();
         _ = visualSettings.Should().NotBeNull();
 
-        string normalizedUrl = await urlService.NormalizeUrlAsync("https://example.com").ConfigureAwait(false);
+        string normalizedUrl = await urlService.NormalizeUrlAsync("https://example.com");
         _ = normalizedUrl.Should().NotBeNullOrEmpty();
 
-        bool isValidUrl = await urlService.ValidateUrlAsync("https://example.com").ConfigureAwait(false);
+        bool isValidUrl = await urlService.ValidateUrlAsync("https://example.com");
         _ = isValidUrl.Should().BeTrue();
 
         string domain = urlService.ExtractDomain("https://www.example.com/path");
@@ -318,13 +318,13 @@ public class SimpleCoverageTests
         string urlWithProtocol = urlService.AddProtocolIfNeeded("example.com");
         _ = urlWithProtocol.Should().Be("https://example.com");
 
-        IEnumerable<UrlRule> urlRules = await urlRuleService.GetAllRulesAsync().ConfigureAwait(false);
+        IEnumerable<UrlRule> urlRules = await urlRuleService.GetAllRulesAsync();
         _ = urlRules.Should().NotBeNull();
 
-        IEnumerable<UrlRule> enabledRules = await urlRuleService.GetEnabledRulesAsync().ConfigureAwait(false);
+        IEnumerable<UrlRule> enabledRules = await urlRuleService.GetEnabledRulesAsync();
         _ = enabledRules.Should().NotBeNull();
 
-        IEnumerable<LanguageInfo> availableLanguages = await customLanguageService.GetAvailableLanguagesAsync().ConfigureAwait(false);
+        IEnumerable<LanguageInfo> availableLanguages = await customLanguageService.GetAvailableLanguagesAsync();
         _ = availableLanguages.Should().NotBeNull();
 
         string customLanguageFolder = customLanguageService.GetCustomLanguageFolder();

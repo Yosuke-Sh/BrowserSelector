@@ -180,7 +180,7 @@ public class SettingsViewModelTests
             .ReturnsAsync(testBrowsers);
 
         // Act
-        await _viewModel.RefreshBrowsersCommand.ExecuteAsync(null).ConfigureAwait(false);
+        await _viewModel.RefreshBrowsersCommand.ExecuteAsync(null);
 
         // Assert - RefreshBrowsersはDetectBrowsersAsyncを呼び出す
         _mockBrowserService.Verify(x => x.DetectBrowsersAsync(), Times.Once);
@@ -196,7 +196,7 @@ public class SettingsViewModelTests
             .ReturnsAsync(true);
 
         // Act
-        await _viewModel.ResetSettingsCommand.ExecuteAsync(null).ConfigureAwait(false);
+        await _viewModel.ResetSettingsCommand.ExecuteAsync(null);
 
         // Assert
         _mockSettingsService.Verify(x => x.ResetSettingsAsync(), Times.Once);
@@ -215,7 +215,7 @@ public class SettingsViewModelTests
             .ReturnsAsync(true);
 
         // Act
-        await _viewModel.SaveSettingsCommand.ExecuteAsync(null).ConfigureAwait(false);
+        await _viewModel.SaveSettingsCommand.ExecuteAsync(null);
 
         // Assert
         _mockSettingsService.Verify(x => x.SaveAppSettingsAsync(It.IsAny<AppSettings>()), Times.Once);

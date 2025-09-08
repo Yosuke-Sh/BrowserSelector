@@ -26,8 +26,8 @@ public class LocalizationService : ILocalizationService
         // 初期化時にJSONリソースとカスタムリソースを読み込み
         _ = Task.Run(async () =>
         {
-            await LoadJsonResourcesAsync(CurrentCulture.Name);
-            await LoadCustomLanguageResourcesAsync(CurrentCulture.Name);
+            await LoadJsonResourcesAsync(CurrentCulture.Name).ConfigureAwait(false);
+            await LoadCustomLanguageResourcesAsync(CurrentCulture.Name).ConfigureAwait(false);
         });
     }
 
@@ -79,10 +79,10 @@ public class LocalizationService : ILocalizationService
         CurrentCulture = culture;
 
         // JSONリソースを読み込み
-        await LoadJsonResourcesAsync(culture.Name);
+        await LoadJsonResourcesAsync(culture.Name).ConfigureAwait(false);
 
         // カスタム言語リソースを読み込み
-        await LoadCustomLanguageResourcesAsync(culture.Name);
+        await LoadCustomLanguageResourcesAsync(culture.Name).ConfigureAwait(false);
 
         LanguageChanged?.Invoke(this, new LanguageChangedEventArgs(oldCulture, culture));
         _logService?.LogInformation($"言語を {oldCulture.Name} から {culture.Name} に変更しました", "LocalizationService");
@@ -96,7 +96,7 @@ public class LocalizationService : ILocalizationService
 
         try
         {
-            IEnumerable<LanguageInfo> availableLanguages = await _customLanguageService.GetAvailableLanguagesAsync();
+            IEnumerable<LanguageInfo> availableLanguages = await _customLanguageService.GetAvailableLanguagesAsync().ConfigureAwait(false);
 
             foreach (LanguageInfo languageInfo in availableLanguages)
             {
@@ -150,7 +150,7 @@ public class LocalizationService : ILocalizationService
             }
 
             using System.IO.StreamReader reader = new(stream);
-            string json = await reader.ReadToEndAsync();
+            string json = await reader.ReadToEndAsync().ConfigureAwait(false);
 
             CustomLanguageFile? languageFile = System.Text.Json.JsonSerializer.Deserialize<CustomLanguageFile>(json);
             if (languageFile?.Resources != null)
@@ -212,7 +212,7 @@ public class LocalizationService : ILocalizationService
 
             // すべての言語でカスタムリソースを読み込み（デフォルト言語も含む）
 
-            Dictionary<string, string>? customResources = await _customLanguageService.LoadCustomLanguageAsync(cultureCode);
+            Dictionary<string, string>? customResources = await _customLanguageService.LoadCustomLanguageAsync(cultureCode).ConfigureAwait(false);
             if (customResources != null)
             {
                 _customResources = customResources;

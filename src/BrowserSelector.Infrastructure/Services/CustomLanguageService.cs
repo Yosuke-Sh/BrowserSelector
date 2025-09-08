@@ -31,7 +31,7 @@ public class CustomLanguageService : ICustomLanguageService
         }
 
         // 初期起動時にデフォルト言語ファイルを配置
-        _ = Task.Run(EnsureDefaultLanguageFilesAsync);
+        _ = Task.Run(async () => await EnsureDefaultLanguageFilesAsync().ConfigureAwait(false));
     }
 
     public async Task<IEnumerable<LanguageInfo>> GetAvailableLanguagesAsync()
@@ -49,7 +49,7 @@ public class CustomLanguageService : ICustomLanguageService
                 {
                     try
                     {
-                        CustomLanguageFile? languageFile = await LoadLanguageFileAsync(filePath);
+                        CustomLanguageFile? languageFile = await LoadLanguageFileAsync(filePath).ConfigureAwait(false);
                         if (languageFile != null)
                         {
                             // 表示名はローカライズ不要（英語はEnglish、日本語は日本語）
@@ -92,14 +92,14 @@ public class CustomLanguageService : ICustomLanguageService
             }
 
             // ファイルの検証
-            if (!await ValidateLanguageFileAsync(languageFilePath))
+            if (!await ValidateLanguageFileAsync(languageFilePath).ConfigureAwait(false))
             {
                 _logService?.LogWarning($"無効な言語ファイルです: {languageFilePath}", "CustomLanguageService");
                 return false;
             }
 
             // 言語ファイルを読み込み
-            CustomLanguageFile? languageFile = await LoadLanguageFileAsync(languageFilePath);
+            CustomLanguageFile? languageFile = await LoadLanguageFileAsync(languageFilePath).ConfigureAwait(false);
             if (languageFile == null)
             {
                 return false;
@@ -213,7 +213,7 @@ public class CustomLanguageService : ICustomLanguageService
                 return null;
             }
 
-            CustomLanguageFile? languageFile = await LoadLanguageFileAsync(filePath);
+            CustomLanguageFile? languageFile = await LoadLanguageFileAsync(filePath).ConfigureAwait(false);
             return languageFile?.Resources;
         }
         catch (Exception ex)
@@ -244,7 +244,7 @@ public class CustomLanguageService : ICustomLanguageService
                 Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
             });
 
-            await System.IO.File.WriteAllTextAsync(filePath, json);
+            await System.IO.File.WriteAllTextAsync(filePath, json).ConfigureAwait(false);
 
             _logService?.LogInformation($"カスタム言語ファイルを保存しました: {cultureCode} - {displayName}", "CustomLanguageService");
             return true;
@@ -261,7 +261,7 @@ public class CustomLanguageService : ICustomLanguageService
         try
         {
             // 既存のリソースキーを取得
-            IEnumerable<string> resourceKeys = await GetAvailableResourceKeysAsync();
+            IEnumerable<string> resourceKeys = await GetAvailableResourceKeysAsync().ConfigureAwait(false);
 
             // テンプレート用のリソース辞書を作成（英語のデフォルト値を埋め込み）
             Dictionary<string, string> templateResources = [];
@@ -306,7 +306,7 @@ public class CustomLanguageService : ICustomLanguageService
                 Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
             });
 
-            await System.IO.File.WriteAllTextAsync(filePath, json);
+            await System.IO.File.WriteAllTextAsync(filePath, json).ConfigureAwait(false);
 
             _logService?.LogInformation($"言語ファイルテンプレートを生成しました: {cultureCode} - {displayName}", "CustomLanguageService");
             return true;
@@ -360,7 +360,7 @@ public class CustomLanguageService : ICustomLanguageService
         try
         {
             // 高速同期処理
-            await SyncLanguageFilesFastAsync();
+            await SyncLanguageFilesFastAsync().ConfigureAwait(false);
             _logService?.LogDebug("言語ファイルの高速同期完了", "CustomLanguageService");
         }
         catch (Exception ex)
@@ -389,7 +389,7 @@ public class CustomLanguageService : ICustomLanguageService
                     // ファイルが存在しない場合は即座にコピー
                     if (!System.IO.File.Exists(targetPath))
                     {
-                        await CopyEmbeddedLanguageFileAsync(cultureCode, targetPath);
+                        await CopyEmbeddedLanguageFileAsync(cultureCode, targetPath).ConfigureAwait(false);
                         _logService?.LogDebug($"言語ファイルを新規配置: {cultureCode}", "CustomLanguageService");
                         return;
                     }
@@ -411,7 +411,7 @@ public class CustomLanguageService : ICustomLanguageService
                 }
             });
 
-            await Task.WhenAll(tasks);
+            await Task.WhenAll(tasks).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -530,11 +530,11 @@ public class CustomLanguageService : ICustomLanguageService
                 return false;
             }
 
-            byte[] embeddedHash = await ComputeStreamHashAsync(embeddedStream);
+            byte[] embeddedHash = await ComputeStreamHashAsync(embeddedStream).ConfigureAwait(false);
 
             // 既存ファイルのハッシュを計算
             using System.IO.FileStream fileStream = new(targetPath, System.IO.FileMode.Open, System.IO.FileAccess.Read);
-            byte[] existingHash = await ComputeStreamHashAsync(fileStream);
+            byte[] existingHash = await ComputeStreamHashAsync(fileStream).ConfigureAwait(false);
 
             bool isDifferent = !embeddedHash.SequenceEqual(existingHash);
             if (isDifferent)
@@ -557,7 +557,7 @@ public class CustomLanguageService : ICustomLanguageService
     private async Task<byte[]> ComputeStreamHashAsync(System.IO.Stream stream)
     {
         using System.Security.Cryptography.SHA256 sha256 = System.Security.Cryptography.SHA256.Create();
-        return await Task.Run(() => sha256.ComputeHash(stream));
+        return await Task.Run(() => sha256.ComputeHash(stream)).ConfigureAwait(false);
     }
 
     /// <summary>

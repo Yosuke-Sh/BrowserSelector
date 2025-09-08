@@ -98,7 +98,7 @@ public class BrowserServiceTests
             .ReturnsAsync([]);
 
         // Act
-        bool result = await _browserService.AddBrowserAsync(browser).ConfigureAwait(false);
+        bool result = await _browserService.AddBrowserAsync(browser);
 
         // Assert
         _ = result.Should().BeTrue();
@@ -116,7 +116,7 @@ public class BrowserServiceTests
         };
 
         // Act
-        bool result = await _browserService.AddBrowserAsync(browser).ConfigureAwait(false);
+        bool result = await _browserService.AddBrowserAsync(browser);
 
         // Assert
         _ = result.Should().BeFalse();
@@ -137,10 +137,10 @@ public class BrowserServiceTests
             .Setup(x => x.DetectBrowsersFromRegistryAsync())
             .ReturnsAsync([]);
 
-        _ = await _browserService.AddBrowserAsync(browser).ConfigureAwait(false);
+        _ = await _browserService.AddBrowserAsync(browser);
 
         // Act
-        bool result = await _browserService.RemoveBrowserAsync(browser.Id).ConfigureAwait(false);
+        bool result = await _browserService.RemoveBrowserAsync(browser.Id);
 
         // Assert
         _ = result.Should().BeTrue();
@@ -164,7 +164,7 @@ public class BrowserServiceTests
         _ = await _browserService.DetectBrowsersAsync().ConfigureAwait(false);
 
         // Act
-        bool result = await _browserService.RemoveBrowserAsync(browser.Id).ConfigureAwait(false);
+        bool result = await _browserService.RemoveBrowserAsync(browser.Id);
 
         // Assert - 現在の実装ではシステムブラウザも削除可能
         _ = result.Should().BeTrue();

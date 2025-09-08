@@ -64,7 +64,7 @@ namespace BrowserSelector.UnitTests
         public async Task BrowserService_DetectBrowsersAsync_ShouldExecuteActualLogic()
         {
             // Act - 実際のブラウザ検出ロジックを実行
-            IEnumerable<Browser> browsers = await _browserService.DetectBrowsersAsync().ConfigureAwait(false);
+            IEnumerable<Browser> browsers = await _browserService.DetectBrowsersAsync();
 
             // Assert - 実際のロジックが実行されたことを確認
             _ = browsers.Should().NotBeNull();
@@ -86,7 +86,7 @@ namespace BrowserSelector.UnitTests
             };
 
             // Act - 実際のブラウザ追加ロジックを実行
-            bool result = await _browserService.AddBrowserAsync(customBrowser).ConfigureAwait(false);
+            bool result = await _browserService.AddBrowserAsync(customBrowser);
 
             // Assert - 実際のロジックが実行されたことを確認
             _ = result.Should().BeTrue();
@@ -96,7 +96,7 @@ namespace BrowserSelector.UnitTests
         public async Task SettingsService_LoadAppSettingsAsync_ShouldExecuteActualLogic()
         {
             // Act - 実際の設定読み込みロジックを実行
-            AppSettings settings = await _settingsService.LoadAppSettingsAsync().ConfigureAwait(false);
+            AppSettings settings = await _settingsService.LoadAppSettingsAsync();
 
             // Assert - 実際のロジックが実行されたことを確認
             _ = settings.Should().NotBeNull();
@@ -122,7 +122,7 @@ namespace BrowserSelector.UnitTests
             };
 
             // Act - 実際の設定保存ロジックを実行
-            bool result = await _settingsService.SaveAppSettingsAsync(settings).ConfigureAwait(false);
+            bool result = await _settingsService.SaveAppSettingsAsync(settings);
 
             // Assert - 実際のロジックが実行されたことを確認
             // TestSettingsServiceを使用するため、保存が正常に動作する
@@ -136,7 +136,7 @@ namespace BrowserSelector.UnitTests
             string testUrl = "https://www.example.com";
 
             // Act - 実際のURL正規化ロジックを実行
-            string result = await _urlService.NormalizeUrlAsync(testUrl).ConfigureAwait(false);
+            string result = await _urlService.NormalizeUrlAsync(testUrl);
 
             // Assert - 実際のロジックが実行されたことを確認
             _ = result.Should().NotBeNull();
@@ -151,8 +151,8 @@ namespace BrowserSelector.UnitTests
             string invalidUrl = "invalid-url";
 
             // Act - 実際のURL検証ロジックを実行
-            bool validResult = await _urlService.ValidateUrlAsync(validUrl).ConfigureAwait(false);
-            bool invalidResult = await _urlService.ValidateUrlAsync(invalidUrl).ConfigureAwait(false);
+            bool validResult = await _urlService.ValidateUrlAsync(validUrl);
+            bool invalidResult = await _urlService.ValidateUrlAsync(invalidUrl);
 
             // Assert - 実際のロジックが実行されたことを確認
             _ = validResult.Should().BeTrue();
@@ -163,7 +163,7 @@ namespace BrowserSelector.UnitTests
         public async Task UrlRuleService_GetAllRulesAsync_ShouldExecuteActualLogic()
         {
             // Act - 実際のURLルール取得ロジックを実行
-            IEnumerable<UrlRule> rules = await _urlRuleService.GetAllRulesAsync().ConfigureAwait(false);
+            IEnumerable<UrlRule> rules = await _urlRuleService.GetAllRulesAsync();
 
             // Assert - 実際のロジックが実行されたことを確認
             _ = rules.Should().NotBeNull();
@@ -184,7 +184,7 @@ namespace BrowserSelector.UnitTests
             };
 
             // Act - 実際のURLルール追加ロジックを実行
-            bool result = await _urlRuleService.AddRuleAsync(rule).ConfigureAwait(false);
+            bool result = await _urlRuleService.AddRuleAsync(rule);
 
             // Assert - 実際のロジックが実行されたことを確認
             // TestSettingsServiceを使用するため、保存が正常に動作する
@@ -195,7 +195,7 @@ namespace BrowserSelector.UnitTests
         public async Task CustomLanguageService_GetAvailableLanguagesAsync_ShouldExecuteActualLogic()
         {
             // Act - 実際のカスタム言語取得ロジックを実行
-            IEnumerable<LanguageInfo> languages = await _customLanguageService.GetAvailableLanguagesAsync().ConfigureAwait(false);
+            IEnumerable<LanguageInfo> languages = await _customLanguageService.GetAvailableLanguagesAsync();
 
             // Assert - 実際のロジックが実行されたことを確認
             _ = languages.Should().NotBeNull();
@@ -217,7 +217,7 @@ namespace BrowserSelector.UnitTests
             };
 
             // Act - 実際のカスタム言語追加ロジックを実行
-            bool result = await _customLanguageService.AddCustomLanguageAsync(languageFile.CultureCode).ConfigureAwait(false);
+            bool result = await _customLanguageService.AddCustomLanguageAsync(languageFile.CultureCode);
 
             // Assert - 実際のロジックが実行されたことを確認
             // テスト環境では無効なパスのためfalseが返される可能性がある
@@ -228,7 +228,7 @@ namespace BrowserSelector.UnitTests
         public async Task SettingsService_LoadVisualSettingsAsync_ShouldExecuteActualLogic()
         {
             // Act - 実際の視覚設定読み込みロジックを実行
-            VisualSettings settings = await _settingsService.LoadVisualSettingsAsync().ConfigureAwait(false);
+            VisualSettings settings = await _settingsService.LoadVisualSettingsAsync();
 
             // Assert - 実際のロジックが実行されたことを確認
             _ = settings.Should().NotBeNull();
@@ -253,7 +253,7 @@ namespace BrowserSelector.UnitTests
             };
 
             // Act - 実際の視覚設定保存ロジックを実行
-            bool result = await _settingsService.SaveVisualSettingsAsync(settings).ConfigureAwait(false);
+            bool result = await _settingsService.SaveVisualSettingsAsync(settings);
 
             // Assert - 実際のロジックが実行されたことを確認
             // TestSettingsServiceを使用するため、保存が正常に動作する

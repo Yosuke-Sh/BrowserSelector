@@ -57,11 +57,11 @@ public class SettingsService : ISettingsService
             if (!File.Exists(_appSettingsPath))
             {
                 AppSettings defaultSettings = new();
-                _ = await SaveAppSettingsAsync(defaultSettings);
+                _ = await SaveAppSettingsAsync(defaultSettings).ConfigureAwait(false);
                 return defaultSettings;
             }
 
-            string json = await File.ReadAllTextAsync(_appSettingsPath);
+            string json = await File.ReadAllTextAsync(_appSettingsPath).ConfigureAwait(false);
             AppSettings? settings = JsonSerializer.Deserialize<AppSettings>(json);
             AppSettings result = settings ?? new AppSettings();
 
@@ -87,7 +87,7 @@ public class SettingsService : ISettingsService
             };
 
             string json = JsonSerializer.Serialize(settings, options);
-            await File.WriteAllTextAsync(_appSettingsPath, json);
+            await File.WriteAllTextAsync(_appSettingsPath, json).ConfigureAwait(false);
             return true;
         }
         catch (Exception ex)
@@ -105,11 +105,11 @@ public class SettingsService : ISettingsService
             if (!File.Exists(_visualSettingsPath))
             {
                 VisualSettings defaultSettings = new();
-                _ = await SaveVisualSettingsAsync(defaultSettings);
+                _ = await SaveVisualSettingsAsync(defaultSettings).ConfigureAwait(false);
                 return defaultSettings;
             }
 
-            string json = await File.ReadAllTextAsync(_visualSettingsPath);
+            string json = await File.ReadAllTextAsync(_visualSettingsPath).ConfigureAwait(false);
             VisualSettings? settings = JsonSerializer.Deserialize<VisualSettings>(json);
             VisualSettings result = settings ?? new VisualSettings();
 
@@ -135,7 +135,7 @@ public class SettingsService : ISettingsService
             };
 
             string json = JsonSerializer.Serialize(settings, options);
-            await File.WriteAllTextAsync(_visualSettingsPath, json);
+            await File.WriteAllTextAsync(_visualSettingsPath, json).ConfigureAwait(false);
             return true;
         }
         catch (Exception ex)
@@ -166,8 +166,8 @@ public class SettingsService : ISettingsService
             }
 
             // デフォルト設定を作成
-            _ = await SaveAppSettingsAsync(new AppSettings());
-            _ = await SaveVisualSettingsAsync(new VisualSettings());
+            _ = await SaveAppSettingsAsync(new AppSettings()).ConfigureAwait(false);
+            _ = await SaveVisualSettingsAsync(new VisualSettings()).ConfigureAwait(false);
 
             return true;
         }
@@ -192,12 +192,12 @@ public class SettingsService : ISettingsService
             // ZIPファイルかどうかを判定
             if (Path.GetExtension(filePath).ToLower() == ".zip")
             {
-                return await ImportSettingsFromZipAsync(filePath);
+                return await ImportSettingsFromZipAsync(filePath).ConfigureAwait(false);
             }
             else
             {
                 // 従来のJSONファイル形式（後方互換性）
-                return await ImportSettingsFromJsonAsync(filePath);
+                return await ImportSettingsFromJsonAsync(filePath).ConfigureAwait(false);
             }
         }
         catch (Exception ex)
@@ -243,7 +243,7 @@ public class SettingsService : ISettingsService
                 // ファイルを展開
                 using Stream entryStream = entry.Open();
                 using FileStream targetStream = new(targetPath, FileMode.Create, FileAccess.Write);
-                await entryStream.CopyToAsync(targetStream);
+                await entryStream.CopyToAsync(targetStream).ConfigureAwait(false);
 
                 importedFiles.Add(entry.FullName);
                 _logService?.LogDebug($"インポート完了: {entry.FullName} -> {targetPath}", "SettingsService");
@@ -281,7 +281,7 @@ public class SettingsService : ISettingsService
     /// </summary>
     private async Task<bool> ImportSettingsFromJsonAsync(string filePath)
     {
-        string json = await File.ReadAllTextAsync(filePath);
+        string json = await File.ReadAllTextAsync(filePath).ConfigureAwait(false);
         Dictionary<string, object>? importedData = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
 
         if (importedData == null)
@@ -296,7 +296,7 @@ public class SettingsService : ISettingsService
             AppSettings? appSettings = JsonSerializer.Deserialize<AppSettings>(json);
             if (appSettings != null)
             {
-                _ = await SaveAppSettingsAsync(appSettings);
+                _ = await SaveAppSettingsAsync(appSettings).ConfigureAwait(false);
             }
         }
 
@@ -306,7 +306,7 @@ public class SettingsService : ISettingsService
             VisualSettings? visualSettings = JsonSerializer.Deserialize<VisualSettings>(json);
             if (visualSettings != null)
             {
-                _ = await SaveVisualSettingsAsync(visualSettings);
+                _ = await SaveVisualSettingsAsync(visualSettings).ConfigureAwait(false);
             }
         }
 
@@ -320,7 +320,7 @@ public class SettingsService : ISettingsService
             _logService?.LogInformation("設定ファイル群のエクスポート開始", "SettingsService");
 
             // ZIPファイルとして設定ファイル群をエクスポート
-            await ExportSettingsAsZipAsync(filePath);
+            await ExportSettingsAsZipAsync(filePath).ConfigureAwait(false);
 
             _logService?.LogInformation($"設定ファイル群のエクスポート完了: {filePath}", "SettingsService");
             return true;
@@ -341,13 +341,13 @@ public class SettingsService : ISettingsService
         using ZipArchive archive = new(fileStream, ZipArchiveMode.Create);
 
         // 設定ファイルをZIPに追加
-        await AddFileToZipAsync(archive, _appSettingsPath, "appsettings.json");
-        await AddFileToZipAsync(archive, _visualSettingsPath, "visualsettings.json");
-        await AddFileToZipAsync(archive, _logSettingsPath, "logsettings.json");
+        await AddFileToZipAsync(archive, _appSettingsPath, "appsettings.json").ConfigureAwait(false);
+        await AddFileToZipAsync(archive, _visualSettingsPath, "visualsettings.json").ConfigureAwait(false);
+        await AddFileToZipAsync(archive, _logSettingsPath, "logsettings.json").ConfigureAwait(false);
 
         // URLルールファイルを追加
         string urlRulesPath = Path.Combine(_settingsDirectory, "urlrules.json");
-        await AddFileToZipAsync(archive, urlRulesPath, "urlrules.json");
+        await AddFileToZipAsync(archive, urlRulesPath, "urlrules.json").ConfigureAwait(false);
 
         // 言語ファイルを追加
         string languagesPath = Path.Combine(_settingsDirectory, "Languages");
@@ -358,7 +358,7 @@ public class SettingsService : ISettingsService
             {
                 string fileName = Path.GetFileName(languageFile);
                 string zipEntryName = Path.Combine("Languages", fileName);
-                await AddFileToZipAsync(archive, languageFile, zipEntryName);
+                await AddFileToZipAsync(archive, languageFile, zipEntryName).ConfigureAwait(false);
             }
         }
 
@@ -375,7 +375,7 @@ public class SettingsService : ISettingsService
         ZipArchiveEntry exportInfoEntry = archive.CreateEntry("export-info.json");
         using Stream exportInfoStream = exportInfoEntry.Open();
         using StreamWriter exportInfoWriter = new(exportInfoStream);
-        await exportInfoWriter.WriteAsync(exportInfoJson);
+        await exportInfoWriter.WriteAsync(exportInfoJson).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -388,7 +388,7 @@ public class SettingsService : ISettingsService
             ZipArchiveEntry entry = archive.CreateEntry(entryName);
             using Stream entryStream = entry.Open();
             using FileStream fileStream = new(filePath, FileMode.Open, FileAccess.Read);
-            await fileStream.CopyToAsync(entryStream);
+            await fileStream.CopyToAsync(entryStream).ConfigureAwait(false);
             _logService?.LogDebug($"ZIPに追加: {entryName}", "SettingsService");
         }
         else
@@ -404,7 +404,7 @@ public class SettingsService : ISettingsService
         {
             if (File.Exists(_logSettingsPath))
             {
-                string json = await File.ReadAllTextAsync(_logSettingsPath);
+                string json = await File.ReadAllTextAsync(_logSettingsPath).ConfigureAwait(false);
                 LogSettings? settings = JsonSerializer.Deserialize<LogSettings>(json);
                 LogSettings result = settings ?? new LogSettings();
 
@@ -434,7 +434,7 @@ public class SettingsService : ISettingsService
             {
                 WriteIndented = true
             });
-            await File.WriteAllTextAsync(_logSettingsPath, json);
+            await File.WriteAllTextAsync(_logSettingsPath, json).ConfigureAwait(false);
             return true;
         }
         catch (Exception ex)
