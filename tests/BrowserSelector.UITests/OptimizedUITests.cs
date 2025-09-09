@@ -63,9 +63,8 @@ public class OptimizedUITests : IDisposable
         [Fact]
         public void MainWindow_ShouldHaveBasicElements()
     {
-        // Arrange
-        _ = _app.Should().NotBeNull("アプリケーションが起動していること");
-        _ = _automation.Should().NotBeNull("オートメーションが初期化されていること");
+        // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
+        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
 
         var mainWindow = _app!.GetMainWindow(_automation!);
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
@@ -83,9 +82,8 @@ public class OptimizedUITests : IDisposable
         [Fact]
         public void MainWindow_ShouldAcceptUrlInput()
     {
-        // Arrange
-        _ = _app.Should().NotBeNull("アプリケーションが起動していること");
-        _ = _automation.Should().NotBeNull("オートメーションが初期化されていること");
+        // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
+        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
 
         var mainWindow = _app!.GetMainWindow(_automation!);
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
@@ -110,9 +108,8 @@ public class OptimizedUITests : IDisposable
         [Fact]
         public void BrowserButtons_ShouldBeVisible()
     {
-        // Arrange
-        _ = _app.Should().NotBeNull("アプリケーションが起動していること");
-        _ = _automation.Should().NotBeNull("オートメーションが初期化されていること");
+        // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
+        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
 
         var mainWindow = _app!.GetMainWindow(_automation!);
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");

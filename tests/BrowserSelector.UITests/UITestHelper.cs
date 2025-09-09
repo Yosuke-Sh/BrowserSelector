@@ -231,54 +231,108 @@ public static class UITestHelper
     }
 
     /// <summary>
-    /// テスト用のアプリケーションを起動します（STAスレッド対応・並列実行対応）
+    /// テスト用のアプリケーションを起動します（STAスレッド対応）
     /// </summary>
     /// <param name="appPath">アプリケーションのパス</param>
     /// <returns>起動されたアプリケーション</returns>
     public static Application LaunchTestApplication(string appPath)
     {
-        // テスト用の環境変数を設定
-        Environment.SetEnvironmentVariable("BROWSERSELECTOR_TEST_MODE", "true");
+        Application? app = null;
+        Exception? exception = null;
         
-        // 並列実行時のポート競合を避けるため、ランダムなポートを設定
-        int testPort = new Random().Next(50000, 60000);
-        Environment.SetEnvironmentVariable("BROWSERSELECTOR_TEST_PORT", testPort.ToString());
-        
-        // プロセス起動情報を設定
-        var startInfo = new ProcessStartInfo
+        // STAスレッドでアプリケーションを起動
+        var thread = new Thread(() =>
         {
-            FileName = appPath,
-            Arguments = $"--test-mode --port={testPort}",
-            UseShellExecute = false,
-            CreateNoWindow = true
-        };
+            try
+            {
+                // STAスレッドとして設定
+                Thread.CurrentThread.SetApartmentState(ApartmentState.STA);
+                
+                // テスト用の環境変数を設定
+                Environment.SetEnvironmentVariable("BROWSERSELECTOR_TEST_MODE", "true");
+                
+                // ポート競合を避けるため、固定ポートを設定
+                int testPort = 50001;
+                Environment.SetEnvironmentVariable("BROWSERSELECTOR_TEST_PORT", testPort.ToString());
+                
+                // プロセス起動情報を設定
+                var startInfo = new ProcessStartInfo
+                {
+                    FileName = appPath,
+                    Arguments = $"--test-mode --port={testPort}",
+                    UseShellExecute = false,
+                    CreateNoWindow = false, // ウィンドウを表示してデバッグしやすくする
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true
+                };
+                
+                // テストモード用の環境変数を設定
+                startInfo.EnvironmentVariables["TestMode"] = "true";
+                startInfo.EnvironmentVariables["BROWSERSELECTOR_TEST_MODE"] = "true";
+                startInfo.EnvironmentVariables["BROWSERSELECTOR_TEST_PORT"] = testPort.ToString();
+                
+                Console.WriteLine($"アプリケーション起動開始: {appPath}");
+                Console.WriteLine($"引数: {startInfo.Arguments}");
+                
+                // プロセスを起動
+                var process = Process.Start(startInfo);
+                if (process == null)
+                {
+                    throw new InvalidOperationException("アプリケーションの起動に失敗しました");
+                }
+                
+                Console.WriteLine($"プロセス起動完了: PID={process.Id}");
+                
+                // プロセスが起動するまで少し待機
+                Thread.Sleep(3000);
+                
+                // プロセスが終了していないかチェック
+                if (process.HasExited)
+                {
+                    string errorOutput = process.StandardError.ReadToEnd();
+                    string standardOutput = process.StandardOutput.ReadToEnd();
+                    throw new InvalidOperationException($"アプリケーションが起動直後に終了しました。エラー: {errorOutput}, 出力: {standardOutput}");
+                }
+                
+                // FlaUIのApplication.Attachを使用してアプリケーションに接続
+                app = Application.Attach(process);
+                
+                // メインウィンドウが利用可能になるまで待機
+                using var automation = new FlaUI.UIA3.UIA3Automation();
+                var mainWindow = app.GetMainWindow(automation, TimeSpan.FromSeconds(15));
+                if (mainWindow == null)
+                {
+                    throw new InvalidOperationException("メインウィンドウの取得に失敗しました");
+                }
+
+                Console.WriteLine($"メインウィンドウ取得完了: {mainWindow.Name}");
+            }
+            catch (Exception ex)
+            {
+                exception = ex;
+            }
+        });
         
-        // テストモード用の環境変数を設定
-        startInfo.EnvironmentVariables["TestMode"] = "true";
-        startInfo.EnvironmentVariables["BROWSERSELECTOR_TEST_MODE"] = "true";
-        startInfo.EnvironmentVariables["BROWSERSELECTOR_TEST_PORT"] = testPort.ToString();
+        thread.SetApartmentState(ApartmentState.STA);
+        thread.Start();
         
-        // プロセスを起動
-        var process = Process.Start(startInfo);
-        if (process == null)
+        // スレッドの完了を待機
+        if (!thread.Join(30000)) // 30秒でタイムアウト
+        {
+            thread.Abort();
+            throw new TimeoutException("アプリケーションの起動がタイムアウトしました");
+        }
+        
+        if (exception != null)
+        {
+            throw new InvalidOperationException($"アプリケーションの起動に失敗しました: {exception.Message}", exception);
+        }
+        
+        if (app == null)
         {
             throw new InvalidOperationException("アプリケーションの起動に失敗しました");
         }
         
-        // プロセスが起動するまで少し待機（並列実行時は短縮）
-        Thread.Sleep(1000);
-        
-        // FlaUIのApplication.Attachを使用してアプリケーションに接続
-        var app = Application.Attach(process);
-        
-        // メインウィンドウが利用可能になるまで待機（タイムアウトを短縮）
-        using var automation = new FlaUI.UIA3.UIA3Automation();
-        var mainWindow = app.GetMainWindow(automation, TimeSpan.FromSeconds(5));
-        if (mainWindow == null)
-        {
-            throw new InvalidOperationException("メインウィンドウの取得に失敗しました");
-        }
-
         return app;
     }
 

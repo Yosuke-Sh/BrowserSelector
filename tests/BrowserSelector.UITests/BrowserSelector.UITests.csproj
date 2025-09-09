@@ -7,20 +7,20 @@
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
     <UseWPF>true</UseWPF>
-    <!-- UIテストの並列実行を有効化（パフォーマンス向上） -->
-    <MSTestParallelize>true</MSTestParallelize>
-    <MSTestWorkers>4</MSTestWorkers>
-    <MSTestParallelizeWorkers>4</MSTestParallelizeWorkers>
-    <MSTestParallelizeScope>MethodLevel</MSTestParallelizeScope>
-    <!-- 追加の並列実行有効化設定 -->
-    <MSTestV2Parallelize>true</MSTestV2Parallelize>
-    <MSTestV2Workers>4</MSTestV2Workers>
-    <MSTestV2ParallelizeWorkers>4</MSTestV2ParallelizeWorkers>
-    <MSTestV2ParallelizeScope>MethodLevel</MSTestV2ParallelizeScope>
-    <!-- 並列実行有効化 -->
-    <Parallelize>true</Parallelize>
-    <MaxParallelThreads>4</MaxParallelThreads>
-    <DisableParallelization>false</DisableParallelization>
+    <!-- UIテストの並列実行を無効化（STAスレッド問題の解決） -->
+    <MSTestParallelize>false</MSTestParallelize>
+    <MSTestWorkers>1</MSTestWorkers>
+    <MSTestParallelizeWorkers>1</MSTestParallelizeWorkers>
+    <MSTestParallelizeScope>ClassLevel</MSTestParallelizeScope>
+    <!-- 追加の並列実行無効化設定 -->
+    <MSTestV2Parallelize>false</MSTestV2Parallelize>
+    <MSTestV2Workers>1</MSTestV2Workers>
+    <MSTestV2ParallelizeWorkers>1</MSTestV2ParallelizeWorkers>
+    <MSTestV2ParallelizeScope>ClassLevel</MSTestV2ParallelizeScope>
+    <!-- 並列実行無効化 -->
+    <Parallelize>false</Parallelize>
+    <MaxParallelThreads>1</MaxParallelThreads>
+    <DisableParallelization>true</DisableParallelization>
     <!-- UIテスト専用のカバレッジ測定 -->
     <CollectCoverage>true</CollectCoverage>
     <CoverletOutputFormat>cobertura</CoverletOutputFormat>

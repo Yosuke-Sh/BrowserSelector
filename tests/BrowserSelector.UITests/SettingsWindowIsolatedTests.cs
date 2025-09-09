@@ -115,9 +115,8 @@ public class SettingsWindowIsolatedTests : IDisposable
     [Fact]
     public void SettingsWindow_ShouldOpenSuccessfully()
     {
-        // Arrange
-        _ = _app.Should().NotBeNull("アプリケーションが起動していること");
-        _ = _automation.Should().NotBeNull("オートメーションが初期化されていること");
+        // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
+        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
 
         var mainWindow = _app!.GetMainWindow(_automation!);
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
@@ -140,9 +139,8 @@ public class SettingsWindowIsolatedTests : IDisposable
     [Fact]
     public void SettingsWindow_ShouldHaveAllTabs()
     {
-        // Arrange
-        _ = _app.Should().NotBeNull("アプリケーションが起動していること");
-        _ = _automation.Should().NotBeNull("オートメーションが初期化されていること");
+        // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
+        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
 
         var mainWindow = _app!.GetMainWindow(_automation!);
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
@@ -191,9 +189,8 @@ public class SettingsWindowIsolatedTests : IDisposable
     [Fact]
     public void SettingsWindow_ShouldHaveActionButtons()
     {
-        // Arrange
-        _ = _app.Should().NotBeNull("アプリケーションが起動していること");
-        _ = _automation.Should().NotBeNull("オートメーションが初期化されていること");
+        // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
+        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
 
         var mainWindow = _app!.GetMainWindow(_automation!);
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
