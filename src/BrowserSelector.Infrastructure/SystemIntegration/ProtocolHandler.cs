@@ -119,15 +119,6 @@ public class ProtocolHandler : IProtocolHandler
     }
 
     /// <summary>
-    /// プロトコルURLを生成.
-    /// </summary>
-    /// <returns></returns>
-    public string CreateProtocolUrl(string url)
-    {
-        return $"{ProtocolName}://{url}";
-    }
-
-    /// <summary>
     /// プロトコルURLからパラメータを抽出（Uri版）.
     /// </summary>
     /// <returns></returns>
@@ -135,6 +126,15 @@ public class ProtocolHandler : IProtocolHandler
     {
         var result = ExtractUrlFromProtocol(protocolUrl?.ToString() ?? string.Empty);
         return result != null && Uri.TryCreate(result, UriKind.Absolute, out var uri) ? uri : null;
+    }
+
+    /// <summary>
+    /// プロトコルURLを生成.
+    /// </summary>
+    /// <returns></returns>
+    public string CreateProtocolUrl(string url)
+    {
+        return $"{ProtocolName}://{url}";
     }
 
     /// <summary>

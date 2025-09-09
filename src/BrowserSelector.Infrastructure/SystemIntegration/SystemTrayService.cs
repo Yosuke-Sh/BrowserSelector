@@ -14,29 +14,15 @@ public class SystemTrayService : ISystemTrayService, IDisposable
     private ContextMenuStrip? _contextMenu;
     private bool _disposed;
 
-    private static Icon LoadIcon(string iconPath)
-    {
-        try
-        {
-            if (System.IO.File.Exists(iconPath))
-            {
-                return new Icon(iconPath);
-            }
-        }
-        catch (Exception ex) when (ex is System.IO.FileNotFoundException or UnauthorizedAccessException or System.IO.IOException)
-        {
-            // アイコン読み込みエラーは無視
-        }
-
-        return SystemIcons.Application;
-    }
-
     /// <inheritdoc/>
     public event EventHandler<SystemTrayEventArgs>? SystemTrayAction;
 
     /// <summary>
     /// システムトレイアイコンを初期化.
     /// </summary>
+    /// <param name="iconPath">iconPath.</param>
+    /// <param name="tooltipText">tooltipText.</param>
+    /// <exception cref="InvalidOperationException">InvalidOperationException.</exception>
     public void InitializeSystemTray(string iconPath, string tooltipText)
     {
         try
@@ -91,6 +77,10 @@ public class SystemTrayService : ISystemTrayService, IDisposable
     /// <summary>
     /// バルーンティップを表示.
     /// </summary>
+    /// <param name="title">title.</param>
+    /// <param name="text">text.</param>
+    /// <param name="icon">icon.</param>
+    /// <param name="timeout">timeout.</param>
     public void ShowBalloonTip(string title, string text, System.Windows.Forms.ToolTipIcon icon = System.Windows.Forms.ToolTipIcon.Info, int timeout = 3000)
     {
         _notifyIcon?.ShowBalloonTip(timeout, title, text, icon);
@@ -99,6 +89,7 @@ public class SystemTrayService : ISystemTrayService, IDisposable
     /// <summary>
     /// コンテキストメニューを更新.
     /// </summary>
+    /// <param name="menuItems">menuItems.</param>
     public void UpdateContextMenu(SystemTrayMenuItems menuItems)
     {
         ArgumentNullException.ThrowIfNull(menuItems);
@@ -107,6 +98,43 @@ public class SystemTrayService : ISystemTrayService, IDisposable
             _contextMenu.Items.Clear();
             CreateMenuItems(_contextMenu.Items, menuItems);
         }
+    }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Dispose.
+    /// </summary>
+    /// <param name="disposing">disposing.</param>
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed && disposing)
+        {
+            DisposeNotifyIcon();
+            _disposed = true;
+        }
+    }
+
+    private static Icon LoadIcon(string iconPath)
+    {
+        try
+        {
+            if (System.IO.File.Exists(iconPath))
+            {
+                return new Icon(iconPath);
+            }
+        }
+        catch (Exception ex) when (ex is System.IO.FileNotFoundException or UnauthorizedAccessException or System.IO.IOException)
+        {
+            // アイコン読み込みエラーは無視
+        }
+
+        return SystemIcons.Application;
     }
 
     private void CreateContextMenu()
@@ -162,22 +190,6 @@ public class SystemTrayService : ISystemTrayService, IDisposable
 
                 _ = items.Add(menuItem);
             }
-        }
-    }
-
-    /// <inheritdoc/>
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!_disposed && disposing)
-        {
-            DisposeNotifyIcon();
-            _disposed = true;
         }
     }
 

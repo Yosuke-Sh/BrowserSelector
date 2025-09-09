@@ -21,7 +21,6 @@ public partial class MainViewModel : ObservableObject
     private readonly IUrlRuleService _urlRuleService;
     private readonly ILogService _logService;
 
-
     [ObservableProperty]
     private ObservableCollection<Browser> _browsers = [];
 
@@ -46,82 +45,15 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private VisualSettings _visualSettings = new();
 
-    partial void OnVisualSettingsChanged(VisualSettings value)
-    {
-        // VisualSettingsの変更を監視してPropertyChangedイベントを購読
-        if (value != null)
-        {
-            value.PropertyChanged += OnVisualSettingsPropertyChanged;
-        }
-    }
-
-    /// <summary>
-    /// VisualSettingsのプロパティ変更を監視.
-    /// </summary>
-    private void OnVisualSettingsPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-        // ブラウザボタン設定の変更を即座に反映
-        if (e.PropertyName?.StartsWith("BrowserButton", StringComparison.Ordinal) == true || e.PropertyName == "ShowBrowserName" || e.PropertyName == "BrowserIconSize")
-        {
-            // UIの更新を強制
-            OnPropertyChanged(nameof(VisualSettings));
-        }
-    }
-
-    /// <summary>
-    /// 設定変更通知を受け取る.
-    /// </summary>
-    public void OnSettingsChanged(object? sender, SettingsChangedEventArgs e)
-    {
-        if (e.SettingType == "VisualSettings" && e.NewValue is VisualSettings newVisualSettings)
-        {
-            // VisualSettingsを更新
-            VisualSettings = newVisualSettings;
-
-            // ウィンドウサイズの即座変更
-            if (Application.Current.MainWindow is Views.MainWindow mainWindow)
-            {
-                ApplyWindowSizeChanges(mainWindow, newVisualSettings);
-            }
-        }
-    }
-
-    /// <summary>
-    /// ウィンドウサイズの変更を適用.
-    /// </summary>
-    private void ApplyWindowSizeChanges(Views.MainWindow mainWindow, VisualSettings visualSettings)
-    {
-        try
-        {
-            // 最小・最大サイズの制限
-            double width = Math.Max(400, Math.Min(2000, visualSettings.InitialWindowWidth));
-            double height = Math.Max(300, Math.Min(1500, visualSettings.InitialWindowHeight));
-
-            // ウィンドウサイズを変更
-            mainWindow.Width = width;
-            mainWindow.Height = height;
-
-            // ウィンドウ位置を中央に調整
-            mainWindow.Left = (SystemParameters.PrimaryScreenWidth - width) / 2;
-            mainWindow.Top = (SystemParameters.PrimaryScreenHeight - height) / 2;
-
-            _logService?.LogInformation($"ウィンドウサイズを即座に変更: {width}x{height}", "MainViewModel");
-        }
-        catch (Exception ex)
-        {
-            _logService?.LogError($"ウィンドウサイズ変更エラー: {ex.Message}", "MainViewModel", ex);
-        }
-    }
-
     /// <summary>
     /// Initializes a new instance of the <see cref="MainViewModel"/> class.
     /// </summary>
-    /// <param name="browserService"></param>
-    /// <param name="settingsService"></param>
-    /// <param name="localizationService"></param>
-    /// <param name="customLanguageService"></param>
-    /// <param name="urlRuleService"></param>
-    /// <param name="logService"></param>
+    /// <param name="browserService">browserService.</param>
+    /// <param name="settingsService">settingsService.</param>
+    /// <param name="localizationService">localizationService.</param>
+    /// <param name="customLanguageService">customLanguageService.</param>
+    /// <param name="urlRuleService">urlRuleService.</param>
+    /// <param name="logService">logService.</param>
     public MainViewModel(
         IBrowserService browserService,
         ISettingsService settingsService,
@@ -202,14 +134,14 @@ public partial class MainViewModel : ObservableObject
     }
 
     /// <summary>
-    /// Gets ブラウザ一覧を読み込み.
-    /// </summary>
-    public IAsyncRelayCommand LoadBrowsersCommand { get; }
-
-    /// <summary>
     /// Gets ブラウザを起動.
     /// </summary>
     public IAsyncRelayCommand<Browser> LaunchBrowserCommand { get; }
+
+    /// <summary>
+    /// Gets ブラウザ一覧を読み込み.
+    /// </summary>
+    public IAsyncRelayCommand LoadBrowsersCommand { get; }
 
     /// <summary>
     /// Gets 設定を開く.
@@ -225,6 +157,103 @@ public partial class MainViewModel : ObservableObject
     /// Gets uRLをクリア.
     /// </summary>
     public IRelayCommand ClearUrlCommand { get; }
+
+    /// <summary>
+    /// 設定変更通知を受け取る.
+    /// </summary>
+    /// <param name="sender">sender.</param>
+    /// <param name="e">e.</param>
+    public void OnSettingsChanged(object? sender, SettingsChangedEventArgs e)
+    {
+        if (e.SettingType == "VisualSettings" && e.NewValue is VisualSettings newVisualSettings)
+        {
+            // VisualSettingsを更新
+            VisualSettings = newVisualSettings;
+
+            // ウィンドウサイズの即座変更
+            if (Application.Current.MainWindow is Views.MainWindow mainWindow)
+            {
+                ApplyWindowSizeChanges(mainWindow, newVisualSettings);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 起動引数で指定されたURLを設定.
+    /// </summary>
+    /// <param name="url">設定するURL.</param>
+    public async void SetInitialUrl(Uri url)
+    {
+        if (url != null)
+        {
+            SetInitialUrl(url.ToString());
+        }
+    }
+
+    /// <summary>
+    /// 起動引数で指定されたURLを設定.
+    /// </summary>
+    /// <param name="url">設定するURL.</param>
+    public async void SetInitialUrl(string url)
+    {
+        if (!string.IsNullOrWhiteSpace(url))
+        {
+            Url = url;
+            _logService?.LogInformation($"初期URLを設定: {url}", "MainViewModel");
+
+            // URLルールに基づいてブラウザを自動選択
+            await ApplyUrlRulesAsync(url).ConfigureAwait(false);
+        }
+    }
+
+    partial void OnVisualSettingsChanged(VisualSettings value)
+    {
+        // VisualSettingsの変更を監視してPropertyChangedイベントを購読
+        if (value != null)
+        {
+            value.PropertyChanged += OnVisualSettingsPropertyChanged;
+        }
+    }
+
+    /// <summary>
+    /// VisualSettingsのプロパティ変更を監視.
+    /// </summary>
+    private void OnVisualSettingsPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        // ブラウザボタン設定の変更を即座に反映
+        if (e.PropertyName?.StartsWith("BrowserButton", StringComparison.Ordinal) == true || e.PropertyName == "ShowBrowserName" || e.PropertyName == "BrowserIconSize")
+        {
+            // UIの更新を強制
+            OnPropertyChanged(nameof(VisualSettings));
+        }
+    }
+
+    /// <summary>
+    /// ウィンドウサイズの変更を適用.
+    /// </summary>
+    private void ApplyWindowSizeChanges(Views.MainWindow mainWindow, VisualSettings visualSettings)
+    {
+        try
+        {
+            // 最小・最大サイズの制限
+            double width = Math.Max(400, Math.Min(2000, visualSettings.InitialWindowWidth));
+            double height = Math.Max(300, Math.Min(1500, visualSettings.InitialWindowHeight));
+
+            // ウィンドウサイズを変更
+            mainWindow.Width = width;
+            mainWindow.Height = height;
+
+            // ウィンドウ位置を中央に調整
+            mainWindow.Left = (SystemParameters.PrimaryScreenWidth - width) / 2;
+            mainWindow.Top = (SystemParameters.PrimaryScreenHeight - height) / 2;
+
+            _logService?.LogInformation($"ウィンドウサイズを即座に変更: {width}x{height}", "MainViewModel");
+        }
+        catch (Exception ex)
+        {
+            _logService?.LogError($"ウィンドウサイズ変更エラー: {ex.Message}", "MainViewModel", ex);
+        }
+    }
 
     /// <summary>
     /// ブラウザ一覧を読み込み.
@@ -463,34 +492,6 @@ public partial class MainViewModel : ObservableObject
     private void ClearUrl()
     {
         Url = string.Empty;
-    }
-
-    /// <summary>
-    /// 起動引数で指定されたURLを設定.
-    /// </summary>
-    /// <param name="url">設定するURL.</param>
-    public async void SetInitialUrl(Uri url)
-    {
-        if (url != null)
-        {
-            SetInitialUrl(url.ToString());
-        }
-    }
-
-    /// <summary>
-    /// 起動引数で指定されたURLを設定.
-    /// </summary>
-    /// <param name="url">設定するURL.</param>
-    public async void SetInitialUrl(string url)
-    {
-        if (!string.IsNullOrWhiteSpace(url))
-        {
-            Url = url;
-            _logService?.LogInformation($"初期URLを設定: {url}", "MainViewModel");
-
-            // URLルールに基づいてブラウザを自動選択
-            await ApplyUrlRulesAsync(url).ConfigureAwait(false);
-        }
     }
 
     /// <summary>

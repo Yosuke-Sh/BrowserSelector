@@ -21,6 +21,44 @@ public class WindowsRegistryService : IRegistryService
         _logService = logService;
     }
 
+    private IEnumerable<Browser> DetectBrave
+    {
+        get
+        {
+            List<Browser> browsers = [];
+
+            try
+            {
+                // Brave
+                string bravePath = GetRegistryValue(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\brave.exe", string.Empty);
+                if (!string.IsNullOrEmpty(bravePath) && File.Exists(bravePath))
+                {
+                    browsers.Add(new Browser
+                    {
+                        Name = "Brave Browser",
+                        ExecutablePath = bravePath,
+                        Type = BrowserType.Brave,
+                        DisplayOrder = 7
+                    });
+                }
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                _logService?.LogError($"Brave検出エラー（アクセス権限なし）: {ex.Message}", "WindowsRegistryService", ex);
+            }
+            catch (System.Security.SecurityException ex)
+            {
+                _logService?.LogError($"Brave検出エラー（セキュリティ例外）: {ex.Message}", "WindowsRegistryService", ex);
+            }
+            catch (ArgumentException ex)
+            {
+                _logService?.LogError($"Brave検出エラー（引数例外）: {ex.Message}", "WindowsRegistryService", ex);
+            }
+
+            return browsers;
+        }
+    }
+
     /// <inheritdoc/>
     public Task<IEnumerable<Browser>> DetectBrowsersFromRegistryAsync()
     {
@@ -72,13 +110,14 @@ public class WindowsRegistryService : IRegistryService
             .Select(g => g.First())
             .OrderBy(b => b.DisplayOrder);
 
-        _logService?.LogDebug($"重複除去後のブラウザ数: {uniqueBrowsers.Count()}", "WindowsRegistryService");
-        foreach (Browser? browser in uniqueBrowsers)
+        var browsersList = uniqueBrowsers.ToList();
+        _logService?.LogDebug($"重複除去後のブラウザ数: {browsersList.Count}", "WindowsRegistryService");
+        foreach (Browser? browser in browsersList)
         {
             _logService?.LogDebug($"重複除去後: {browser.Name}, ID: {browser.Id}, パス: {browser.ExecutablePath}", "WindowsRegistryService");
         }
 
-        return Task.FromResult<IEnumerable<Browser>>(uniqueBrowsers);
+        return Task.FromResult<IEnumerable<Browser>>(browsersList);
     }
 
     private IEnumerable<Browser> DetectChrome()
@@ -269,44 +308,6 @@ public class WindowsRegistryService : IRegistryService
         }
 
         return browsers;
-    }
-
-    private IEnumerable<Browser> DetectBrave
-    {
-        get
-        {
-            List<Browser> browsers = [];
-
-            try
-            {
-                // Brave
-                string bravePath = GetRegistryValue(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\brave.exe", string.Empty);
-                if (!string.IsNullOrEmpty(bravePath) && File.Exists(bravePath))
-                {
-                    browsers.Add(new Browser
-                    {
-                        Name = "Brave Browser",
-                        ExecutablePath = bravePath,
-                        Type = BrowserType.Brave,
-                        DisplayOrder = 7
-                    });
-                }
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                _logService?.LogError($"Brave検出エラー（アクセス権限なし）: {ex.Message}", "WindowsRegistryService", ex);
-            }
-            catch (System.Security.SecurityException ex)
-            {
-                _logService?.LogError($"Brave検出エラー（セキュリティ例外）: {ex.Message}", "WindowsRegistryService", ex);
-            }
-            catch (ArgumentException ex)
-            {
-                _logService?.LogError($"Brave検出エラー（引数例外）: {ex.Message}", "WindowsRegistryService", ex);
-            }
-
-            return browsers;
-        }
     }
 
     private IEnumerable<Browser> DetectVivaldi()

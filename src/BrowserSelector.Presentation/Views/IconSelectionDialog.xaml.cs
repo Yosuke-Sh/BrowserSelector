@@ -18,14 +18,10 @@ public partial class IconSelectionDialog : Window
     private readonly ILogService? _logService;
     private string? _currentSelectedPath;
 
-    public string? SelectedIconPath { get; private set; }
-
-    public int SelectedIconIndex { get; private set; } = -1;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="IconSelectionDialog"/> class.
     /// </summary>
-    /// <param name="logService"></param>
+    /// <param name="logService">logService.</param>
     public IconSelectionDialog(ILogService? logService = null)
     {
         _logService = logService;
@@ -33,6 +29,16 @@ public partial class IconSelectionDialog : Window
         LoadSystemIcons();
         LoadRecentIcons();
     }
+
+    /// <summary>
+    /// Gets selectedIconPath.
+    /// </summary>
+    public string? SelectedIconPath { get; private set; }
+
+    /// <summary>
+    /// Gets selectedIconIndex.
+    /// </summary>
+    public int SelectedIconIndex { get; private set; } = -1;
 
     /// <summary>
     /// 特定の実行ファイルからアイコンを抽出して表示.
@@ -63,6 +69,11 @@ public partial class IconSelectionDialog : Window
             // 実行ファイルアイコン読み込みエラーは無視
         }
     }
+
+    #region Win32 API
+    [DllImport("shell32.dll", CharSet = CharSet.Auto)]
+    private static extern int ExtractIconEx(string szFileName, int nIconIndex, IntPtr[] phiconLarge, IntPtr[] phiconSmall, int nIcons);
+    #endregion
 
     /// <summary>
     /// 実行ファイルから複数のアイコンを抽出.
@@ -420,11 +431,6 @@ public partial class IconSelectionDialog : Window
         DialogResult = false;
         Close();
     }
-
-    #region Win32 API
-    [DllImport("shell32.dll", CharSet = CharSet.Auto)]
-    private static extern int ExtractIconEx(string szFileName, int nIconIndex, IntPtr[] phiconLarge, IntPtr[] phiconSmall, int nIcons);
-    #endregion
 }
 
 /// <summary>
@@ -432,11 +438,23 @@ public partial class IconSelectionDialog : Window
 /// </summary>
 public class IconInfo
 {
+    /// <summary>
+    /// Gets or sets icon.
+    /// </summary>
     public System.Drawing.Icon? Icon { get; set; }
 
+    /// <summary>
+    /// Gets or sets index.
+    /// </summary>
     public int Index { get; set; }
 
+    /// <summary>
+    /// Gets or sets path.
+    /// </summary>
     public string Path { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Gets or sets name.
+    /// </summary>
     public string Name { get; set; } = string.Empty;
 }

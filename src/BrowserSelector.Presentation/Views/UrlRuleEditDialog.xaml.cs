@@ -17,8 +17,8 @@ public partial class UrlRuleEditDialog : Window
     /// <summary>
     /// Initializes a new instance of the <see cref="UrlRuleEditDialog"/> class.
     /// </summary>
-    /// <param name="browserService"></param>
-    /// <param name="logService"></param>
+    /// <param name="browserService">browserService.</param>
+    /// <param name="logService">logService.</param>
     public UrlRuleEditDialog(IBrowserService browserService, ILogService logService)
     {
         InitializeComponent();
@@ -30,24 +30,33 @@ public partial class UrlRuleEditDialog : Window
         LoadBrowsers();
     }
 
-    public UrlRule UrlRule { get; set; } = new();
-
-    public ObservableCollection<Browser> AvailableBrowsers { get; } = new();
-
-    public Browser? SelectedBrowser { get; set; }
-
     /// <summary>
     /// Initializes a new instance of the <see cref="UrlRuleEditDialog"/> class.
     /// </summary>
-    /// <param name="urlRule"></param>
-    /// <param name="browserService"></param>
-    /// <param name="logService"></param>
+    /// <param name="urlRule">urlRule.</param>
+    /// <param name="browserService">browserService.</param>
+    /// <param name="logService">logService.</param>
     public UrlRuleEditDialog(UrlRule urlRule, IBrowserService browserService, ILogService logService)
         : this(browserService, logService)
     {
         UrlRule = urlRule;
         SelectedBrowser = AvailableBrowsers.FirstOrDefault(b => b.Name == urlRule.BrowserName);
     }
+
+    /// <summary>
+    /// Gets or sets urlRule.
+    /// </summary>
+    public UrlRule UrlRule { get; set; } = new();
+
+    /// <summary>
+    /// Gets availableBrowsers.
+    /// </summary>
+    public ObservableCollection<Browser> AvailableBrowsers { get; } = new();
+
+    /// <summary>
+    /// Gets or sets selectedBrowser.
+    /// </summary>
+    public Browser? SelectedBrowser { get; set; }
 
     private async void LoadBrowsers()
     {

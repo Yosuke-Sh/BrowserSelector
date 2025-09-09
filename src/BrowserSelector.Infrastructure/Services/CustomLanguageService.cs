@@ -18,7 +18,7 @@ public class CustomLanguageService : ICustomLanguageService
     /// <summary>
     /// Initializes a new instance of the <see cref="CustomLanguageService"/> class.
     /// </summary>
-    /// <param name="logService"></param>
+    /// <param name="logService">logService.</param>
     public CustomLanguageService(ILogService? logService = null)
     {
         _logService = logService;
@@ -367,6 +367,21 @@ public class CustomLanguageService : ICustomLanguageService
     }
 
     /// <summary>
+    /// 言語選択コンボボックス用の表示名を取得（ローカライズ不要）.
+    /// </summary>
+    private static string GetLocalizedDisplayName(string cultureCode, string originalDisplayName)
+    {
+        // 言語選択コンボボックスはローカライズ不要
+        // 英語は「English」、日本語は「日本語」と表示
+        return cultureCode switch
+        {
+            "en-US" => "English",
+            "ja-JP" => "日本語",
+            _ => originalDisplayName // その他の言語は元の表示名を使用
+        };
+    }
+
+    /// <summary>
     /// デフォルト言語ファイルが存在しない場合に配置する（高速版）.
     /// </summary>
     private async Task EnsureDefaultLanguageFilesAsync()
@@ -506,21 +521,6 @@ public class CustomLanguageService : ICustomLanguageService
         {
             _logService?.LogError($"言語ファイルのコピーに失敗しました: {cultureCode} -> {targetPath} - {ex.Message}", "CustomLanguageService", ex);
         }
-    }
-
-    /// <summary>
-    /// 言語選択コンボボックス用の表示名を取得（ローカライズ不要）.
-    /// </summary>
-    private static string GetLocalizedDisplayName(string cultureCode, string originalDisplayName)
-    {
-        // 言語選択コンボボックスはローカライズ不要
-        // 英語は「English」、日本語は「日本語」と表示
-        return cultureCode switch
-        {
-            "en-US" => "English",
-            "ja-JP" => "日本語",
-            _ => originalDisplayName // その他の言語は元の表示名を使用
-        };
     }
 
     /// <summary>

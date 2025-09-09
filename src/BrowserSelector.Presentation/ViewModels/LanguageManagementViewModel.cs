@@ -39,6 +39,36 @@ public partial class LanguageManagementViewModel : ObservableObject
     [ObservableProperty]
     private string _statusMessage = string.Empty;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LanguageManagementViewModel"/> class.
+    /// </summary>
+    /// <param name="customLanguageService">customLanguageService.</param>
+    /// <param name="logService">logService.</param>
+    public LanguageManagementViewModel(ICustomLanguageService customLanguageService, ILogService? logService = null)
+    {
+        _customLanguageService = customLanguageService;
+        _logService = logService;
+        InitializeLanguageCodes();
+    }
+
+    /// <summary>
+    /// 初期化.
+    /// </summary>
+    /// <returns> representing the asynchronous operation.</returns>
+    public async Task InitializeAsync()
+    {
+        try
+        {
+            await RefreshLanguagesAsync().ConfigureAwait(false);
+            _logService?.LogDebug("LanguageManagementViewModel初期化完了", "LanguageManagementViewModel");
+        }
+        catch (Exception ex)
+        {
+            _logService?.LogError($"言語管理の初期化に失敗しました: {ex.Message}", "LanguageManagementViewModel", ex);
+            StatusMessage = $"初期化エラー: {ex.Message}";
+        }
+    }
+
     partial void OnSelectedLanguageCodeChanged(LanguageCodeInfo? value)
     {
         if (value != null)
@@ -46,18 +76,6 @@ public partial class LanguageManagementViewModel : ObservableObject
             NewLanguageCode = value.Code;
             NewLanguageName = value.NativeName;
         }
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="LanguageManagementViewModel"/> class.
-    /// </summary>
-    /// <param name="customLanguageService"></param>
-    /// <param name="logService"></param>
-    public LanguageManagementViewModel(ICustomLanguageService customLanguageService, ILogService? logService = null)
-    {
-        _customLanguageService = customLanguageService;
-        _logService = logService;
-        InitializeLanguageCodes();
     }
 
     /// <summary>
@@ -164,24 +182,6 @@ public partial class LanguageManagementViewModel : ObservableObject
         foreach (LanguageCodeInfo? lang in languageCodes)
         {
             AvailableLanguageCodes.Add(lang);
-        }
-    }
-
-    /// <summary>
-    /// 初期化.
-    /// </summary>
-    /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
-    public async Task InitializeAsync()
-    {
-        try
-        {
-            await RefreshLanguagesAsync().ConfigureAwait(false);
-            _logService?.LogDebug("LanguageManagementViewModel初期化完了", "LanguageManagementViewModel");
-        }
-        catch (Exception ex)
-        {
-            _logService?.LogError($"言語管理の初期化に失敗しました: {ex.Message}", "LanguageManagementViewModel", ex);
-            StatusMessage = $"初期化エラー: {ex.Message}";
         }
     }
 

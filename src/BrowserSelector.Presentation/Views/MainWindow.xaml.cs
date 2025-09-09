@@ -16,8 +16,8 @@ public partial class MainWindow : Window
     /// <summary>
     /// Initializes a new instance of the <see cref="MainWindow"/> class.
     /// </summary>
-    /// <param name="viewModel"></param>
-    /// <param name="logService"></param>
+    /// <param name="viewModel">viewModel.</param>
+    /// <param name="logService">logService.</param>
     public MainWindow(MainViewModel viewModel, ILogService logService)
     {
         _logService = logService;
@@ -37,6 +37,22 @@ public partial class MainWindow : Window
         // ウィンドウを確実に表示（App.xaml.csでShow()が呼ばれるため削除）
         // this.Show();
         BringIntoView();
+    }
+
+    /// <summary>
+    /// DataContext変更時の処理.
+    /// </summary>
+    /// <param name="e">e.</param>
+    protected override void OnSourceInitialized(EventArgs e)
+    {
+        base.OnSourceInitialized(e);
+
+        // DataContext変更の監視を開始
+        if (DataContext is INotifyPropertyChanged notifyPropertyChanged)
+        {
+            notifyPropertyChanged.PropertyChanged += OnDataContextPropertyChanged;
+            _logService?.LogDebug("MainWindow: DataContext変更監視を開始しました", "MainWindow");
+        }
     }
 
     /// <summary>
@@ -111,21 +127,6 @@ public partial class MainWindow : Window
         catch (Exception ex)
         {
             _logService?.LogError($"MainWindow_Loaded エラー: {ex.Message}", "MainWindow", ex);
-        }
-    }
-
-    /// <summary>
-    /// DataContext変更時の処理.
-    /// </summary>
-    protected override void OnSourceInitialized(EventArgs e)
-    {
-        base.OnSourceInitialized(e);
-
-        // DataContext変更の監視を開始
-        if (DataContext is INotifyPropertyChanged notifyPropertyChanged)
-        {
-            notifyPropertyChanged.PropertyChanged += OnDataContextPropertyChanged;
-            _logService?.LogDebug("MainWindow: DataContext変更監視を開始しました", "MainWindow");
         }
     }
 

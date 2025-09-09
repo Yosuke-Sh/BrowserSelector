@@ -11,14 +11,6 @@ namespace BrowserSelector.Infrastructure.Updates;
 /// </summary>
 public class UpdateService : IUpdateService
 {
-    private static string GetBackupPath()
-    {
-        string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-        string backupDir = Path.Combine(appDataPath, "BrowserSelector", "Backup");
-        _ = Directory.CreateDirectory(backupDir);
-        return Path.Combine(backupDir, "BrowserSelector.exe.backup");
-    }
-
     private readonly HttpClient _httpClient;
     private readonly string _updateCheckUrl;
     private readonly string _currentVersion;
@@ -27,6 +19,8 @@ public class UpdateService : IUpdateService
     /// Initializes a new instance of the <see cref="UpdateService"/> class.
     /// アップデートサービスを初期化.
     /// </summary>
+    /// <param name="updateCheckUrl">updateCheckUrl.</param>
+    /// <param name="currentVersion">currentVersion.</param>
     public UpdateService(Uri updateCheckUrl, string currentVersion)
     {
         ArgumentNullException.ThrowIfNull(updateCheckUrl);
@@ -41,6 +35,8 @@ public class UpdateService : IUpdateService
     /// Initializes a new instance of the <see cref="UpdateService"/> class.
     /// アップデートサービスを初期化.
     /// </summary>
+    /// <param name="updateCheckUrl">updateCheckUrl.</param>
+    /// <param name="currentVersion">currentVersion.</param>
     public UpdateService(string updateCheckUrl, string currentVersion)
     {
         _updateCheckUrl = updateCheckUrl;
@@ -55,7 +51,8 @@ public class UpdateService : IUpdateService
     /// <summary>
     /// アップデートをチェック.
     /// </summary>
-    /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
+    /// <returns>bool.</returns>
+    /// <exception cref="UpdateException">UpdateException.</exception>
     public async Task<UpdateInfo?> CheckForUpdatesAsync()
     {
         try
@@ -80,7 +77,10 @@ public class UpdateService : IUpdateService
     /// <summary>
     /// アップデートをダウンロード.
     /// </summary>
-    /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
+    /// <param name="updateInfo">updateInfo.</param>
+    /// <param name="progress">progress.</param>
+    /// <returns>bool.</returns>
+    /// <exception cref="UpdateException">UpdateException.</exception>
     public async Task<bool> DownloadUpdateAsync(UpdateInfo updateInfo, IProgress<int>? progress = null)
     {
         ArgumentNullException.ThrowIfNull(updateInfo);
@@ -123,7 +123,9 @@ public class UpdateService : IUpdateService
     /// <summary>
     /// アップデートをインストール.
     /// </summary>
-    /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
+    /// <param name="updateInfo">updateInfo.</param>
+    /// <returns>bool.</returns>
+    /// <exception cref="UpdateException">UpdateException.</exception>
     public async Task<bool> InstallUpdateAsync(UpdateInfo updateInfo)
     {
         ArgumentNullException.ThrowIfNull(updateInfo);
@@ -162,9 +164,10 @@ public class UpdateService : IUpdateService
     }
 
     /// <summary>
-    /// アップデートをロールバック.
+    /// Task.
     /// </summary>
-    /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
+    /// <returns>bool.</returns>
+    /// <exception cref="UpdateException">UpdateException.</exception>
     public async Task<bool> RollbackUpdateAsync()
     {
         try
@@ -211,7 +214,7 @@ public class UpdateService : IUpdateService
     /// <summary>
     /// バックアップを作成.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>bool.</returns>
     public bool CreateBackup()
     {
         try
@@ -231,6 +234,33 @@ public class UpdateService : IUpdateService
         {
             throw new UpdateException($"バックアップの作成に失敗しました: {ex.Message}", ex);
         }
+    }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// リソースを解放します.
+    /// </summary>
+    /// <param name="disposing">マネージドリソースを解放するかどうか.</param>
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _httpClient?.Dispose();
+        }
+    }
+
+    private static string GetBackupPath()
+    {
+        string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        string backupDir = Path.Combine(appDataPath, "BrowserSelector", "Backup");
+        _ = Directory.CreateDirectory(backupDir);
+        return Path.Combine(backupDir, "BrowserSelector.exe.backup");
     }
 
     private bool IsNewerVersion(string newVersion)
@@ -257,25 +287,6 @@ public class UpdateService : IUpdateService
             return false;
         }
     }
-
-    /// <inheritdoc/>
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    /// <summary>
-    /// リソースを解放します.
-    /// </summary>
-    /// <param name="disposing">マネージドリソースを解放するかどうか.</param>
-    protected virtual void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            _httpClient?.Dispose();
-        }
-    }
 }
 
 /// <summary>
@@ -286,7 +297,7 @@ public class UpdateException : Exception
     /// <summary>
     /// Initializes a new instance of the <see cref="UpdateException"/> class.
     /// </summary>
-    /// <param name="message"></param>
+    /// <param name="message">message.</param>
     public UpdateException(string message)
         : base(message)
     {
@@ -295,8 +306,8 @@ public class UpdateException : Exception
     /// <summary>
     /// Initializes a new instance of the <see cref="UpdateException"/> class.
     /// </summary>
-    /// <param name="message"></param>
-    /// <param name="innerException"></param>
+    /// <param name="message">message.</param>
+    /// <param name="innerException">innerException.</param>
     public UpdateException(string message, Exception innerException)
         : base(message, innerException)
     {

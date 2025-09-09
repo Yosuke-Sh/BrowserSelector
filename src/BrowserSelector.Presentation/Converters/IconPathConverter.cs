@@ -11,11 +11,6 @@ namespace BrowserSelector.Presentation.Converters;
 /// </summary>
 public class IconPathConverter : IMultiValueConverter
 {
-    #region Win32 API
-    [DllImport("shell32.dll", CharSet = CharSet.Auto)]
-    private static extern int ExtractIconEx(string szFileName, int nIconIndex, out IntPtr phiconLarge, out IntPtr phiconSmall, int nIcons);
-    #endregion
-
     /// <inheritdoc/>
     public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
     {
@@ -25,7 +20,6 @@ public class IconPathConverter : IMultiValueConverter
             string? iconPath = values[0] as string;
             string? executablePath = values[1] as string;
             string? name = values[2] as string;
-
 
             // 1. IconPathが設定されている場合はそれを優先
             if (!string.IsNullOrEmpty(iconPath) && File.Exists(iconPath))
@@ -95,6 +89,9 @@ public class IconPathConverter : IMultiValueConverter
         throw new NotImplementedException();
     }
 
+    [DllImport("shell32.dll", CharSet = CharSet.Auto)]
+    private static extern int ExtractIconEx(string szFileName, int nIconIndex, out IntPtr phiconLarge, out IntPtr phiconSmall, int nIcons);
+
     /// <summary>
     /// 高解像度アイコンを抽出します.
     /// </summary>
@@ -119,7 +116,7 @@ public class IconPathConverter : IMultiValueConverter
                     System.Drawing.Size originalSize = icon.Size;
 
                     // リサイズせずに元のアイコンをそのまま使用
-                    BitmapImage bitmap = ConvertIconToHighQualityBitmapImage(icon, originalSize);
+                    BitmapImage bitmap = ConvertIconToHighQualityBitmapImage(icon);
                     return bitmap;
                 }
             }
@@ -131,7 +128,7 @@ public class IconPathConverter : IMultiValueConverter
                 {
                     // リサイズせずに元のアイコンをそのまま使用
                     System.Drawing.Size originalSize = icon.Size;
-                    BitmapImage bitmap = ConvertIconToHighQualityBitmapImage(icon, originalSize);
+                    BitmapImage bitmap = ConvertIconToHighQualityBitmapImage(icon);
                     return bitmap;
                 }
             }
@@ -144,13 +141,12 @@ public class IconPathConverter : IMultiValueConverter
         return null;
     }
 
-
     /// <summary>
     /// アイコンを高品質なBitmapImageに変換.
     /// </summary>
     /// <param name="icon">変換するアイコン.</param>
     /// <returns>高品質なBitmapImage.</returns>
-    private BitmapImage ConvertIconToHighQualityBitmapImage(System.Drawing.Icon icon, System.Drawing.Size size)
+    private BitmapImage ConvertIconToHighQualityBitmapImage(System.Drawing.Icon icon)
     {
         try
         {

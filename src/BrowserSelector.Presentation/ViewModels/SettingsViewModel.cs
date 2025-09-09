@@ -56,45 +56,8 @@ public partial class SettingsViewModel : ObservableObject
     private readonly ILocalizationService _localizationService;
     private readonly IUrlRuleService _urlRuleService;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="SettingsViewModel"/> class.
-    /// </summary>
-    /// <param name="settingsService">設定サービス.</param>
-    /// <param name="browserService">ブラウザサービス.</param>
-    /// <param name="localizationService">ローカライゼーションサービス.</param>
-    /// <param name="customLanguageService">カスタム言語サービス.</param>
-    /// <param name="urlRuleService">URLルールサービス.</param>
-    /// <param name="logService">ログサービス.</param>
-    public SettingsViewModel(
-        ISettingsService settingsService,
-        IBrowserService browserService,
-        ILocalizationService localizationService,
-        ICustomLanguageService customLanguageService,
-        IUrlRuleService urlRuleService,
-        ILogService logService)
-    {
-        _settingsService = settingsService;
-        _browserService = browserService;
-        _localizationService = localizationService;
-        CustomLanguageService = customLanguageService;
-        _urlRuleService = urlRuleService;
-        LogService = logService;
-
-        // 初期化処理
-        _ = Task.Run(InitializeAsync);
-    }
-
-    /// <summary>
-    /// アプリケーション設定.
-    /// </summary>
     [ObservableProperty]
-    private AppSettings _appSettings = new();
-
-    /// <summary>
-    /// 視覚設定.
-    /// </summary>
-    [ObservableProperty]
-    private VisualSettings _visualSettings = new();
+    private bool _showFocusIndicator = true;
 
     /// <summary>
     /// 検出されたブラウザ一覧.
@@ -114,24 +77,17 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     private LanguageInfo? _selectedLanguage;
 
-    partial void OnSelectedLanguageChanged(LanguageInfo? value)
-    {
-        if (value != null && value.CultureCode != AppSettings.Language)
-        {
-            // 言語設定を更新
-            AppSettings.Language = value.CultureCode;
+    /// <summary>
+    /// アプリケーション設定.
+    /// </summary>
+    [ObservableProperty]
+    private AppSettings _appSettings = new();
 
-            // ローカライゼーションサービスに言語変更を通知（非同期で実行）
-            var culture = new System.Globalization.CultureInfo(value.CultureCode);
-            _ = Task.Run(async () =>
-            {
-                await _localizationService.SetLanguage(culture).ConfigureAwait(false);
-                _ = await _settingsService.SaveAppSettingsAsync(AppSettings).ConfigureAwait(false);
-            });
-
-            LocalizedLogHelper.LogLanguageChanged(LogService, "SettingsViewModel", value.CultureCode);
-        }
-    }
+    /// <summary>
+    /// 視覚設定.
+    /// </summary>
+    [ObservableProperty]
+    private VisualSettings _visualSettings = new();
 
     [ObservableProperty]
     private ObservableCollection<LogLevelInfo> _availableLogLevels = new();
@@ -141,14 +97,6 @@ public partial class SettingsViewModel : ObservableObject
 
     [ObservableProperty]
     private LogSettings _logSettings = new();
-
-    /// <summary>
-    /// 設定変更通知イベント
-    /// </summary>
-    public event EventHandler<SettingsChangedEventArgs>? SettingsChanged;
-
-    [ObservableProperty]
-    private bool _showFocusIndicator = true;
 
     [ObservableProperty]
     private Color _focusColor = Colors.Black;
@@ -182,8 +130,84 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     private bool _isBrowserDialogOpen = false;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SettingsViewModel"/> class.
+    /// </summary>
+    /// <param name="settingsService">設定サービス.</param>
+    /// <param name="browserService">ブラウザサービス.</param>
+    /// <param name="localizationService">ローカライゼーションサービス.</param>
+    /// <param name="customLanguageService">カスタム言語サービス.</param>
+    /// <param name="urlRuleService">URLルールサービス.</param>
+    /// <param name="logService">ログサービス.</param>
+    public SettingsViewModel(
+        ISettingsService settingsService,
+        IBrowserService browserService,
+        ILocalizationService localizationService,
+        ICustomLanguageService customLanguageService,
+        IUrlRuleService urlRuleService,
+        ILogService logService)
+    {
+        _settingsService = settingsService;
+        _browserService = browserService;
+        _localizationService = localizationService;
+        CustomLanguageService = customLanguageService;
+        _urlRuleService = urlRuleService;
+        LogService = logService;
 
+        // 初期化処理
+        _ = Task.Run(InitializeAsync);
+    }
 
+    /// <summary>
+    /// 設定変更通知イベント
+    /// </summary>
+    public event EventHandler<SettingsChangedEventArgs>? SettingsChanged;
+
+    /// <summary>
+    /// Gets the custom language service.
+    /// </summary>
+    public ICustomLanguageService CustomLanguageService { get; }
+
+    /// <summary>
+    /// Gets the log service.
+    /// </summary>
+    public ILogService LogService { get; }
+
+    /// <summary>
+    /// 言語一覧を更新（外部から呼び出し可能）.
+    /// </summary>
+    /// <returns>representing the asynchronous operation.</returns>
+    public async Task RefreshLanguagesAsync()
+    {
+        await InitializeLanguagesAsync().ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// 言語一覧を更新（同期版）.
+    /// </summary>
+    public void RefreshLanguages()
+    {
+        _ = Task.Run(InitializeLanguagesAsync);
+    }
+
+    partial void OnSelectedLanguageChanged(LanguageInfo? value)
+    {
+        if (value != null && value.CultureCode != AppSettings.Language)
+        {
+            // 言語設定を更新
+            AppSettings.Language = value.CultureCode;
+
+            // ローカライゼーションサービスに言語変更を通知（非同期で実行）
+            var culture = new System.Globalization.CultureInfo(value.CultureCode);
+            _ = Task.Run(async () =>
+            {
+                await _localizationService.SetLanguage(culture).ConfigureAwait(false);
+                _ = await _settingsService.SaveAppSettingsAsync(AppSettings).ConfigureAwait(false);
+            });
+
+            LocalizedLogHelper.LogLanguageChanged(LogService, "SettingsViewModel", value.CultureCode);
+        }
+    }
 
     /// <summary>
     /// 初期化処理.
@@ -304,23 +328,6 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     /// <summary>
-    /// 言語一覧を更新（外部から呼び出し可能）.
-    /// </summary>
-    /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
-    public async Task RefreshLanguagesAsync()
-    {
-        await InitializeLanguagesAsync().ConfigureAwait(false);
-    }
-
-    /// <summary>
-    /// 言語一覧を更新（同期版）.
-    /// </summary>
-    public void RefreshLanguages()
-    {
-        _ = Task.Run(InitializeLanguagesAsync);
-    }
-
-    /// <summary>
     /// 言語リストを初期化（非同期版）.
     /// </summary>
     private async Task InitializeLanguagesAsync()
@@ -355,16 +362,6 @@ public partial class SettingsViewModel : ObservableObject
                               ?? AvailableLanguages.First();
         }
     }
-
-    /// <summary>
-    /// Gets the custom language service.
-    /// </summary>
-    public ICustomLanguageService CustomLanguageService { get; }
-
-    /// <summary>
-    /// Gets the log service.
-    /// </summary>
-    public ILogService LogService { get; }
 
     /// <summary>
     /// ブラウザリストを更新.
@@ -1467,16 +1464,6 @@ public partial class SettingsViewModel : ObservableObject
 public class LanguageInfo
 {
     /// <summary>
-    /// Gets or sets the culture code.
-    /// </summary>
-    public string CultureCode { get; set; }
-
-    /// <summary>
-    /// Gets or sets the display name.
-    /// </summary>
-    public string DisplayName { get; set; }
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="LanguageInfo"/> class.
     /// </summary>
     /// <param name="cultureCode">カルチャーコード.</param>
@@ -1486,6 +1473,17 @@ public class LanguageInfo
         CultureCode = cultureCode;
         DisplayName = displayName;
     }
+
+    /// <summary>
+    /// Gets or sets the culture code.
+    /// </summary>
+    public string CultureCode { get; set; }
+
+    /// <summary>
+    /// Gets or sets the display name.
+    /// </summary>
+    public string DisplayName { get; set; }
+
 }
 
 
@@ -1494,16 +1492,6 @@ public class LanguageInfo
 /// </summary>
 public class LogLevelInfo
 {
-    /// <summary>
-    /// Gets or sets the log level.
-    /// </summary>
-    public LogLevel LogLevel { get; set; }
-
-    /// <summary>
-    /// Gets or sets the display name.
-    /// </summary>
-    public string DisplayName { get; set; }
-
     /// <summary>
     /// Initializes a new instance of the <see cref="LogLevelInfo"/> class.
     /// </summary>
@@ -1514,4 +1502,15 @@ public class LogLevelInfo
         LogLevel = logLevel;
         DisplayName = displayName;
     }
+
+    /// <summary>
+    /// Gets or sets the log level.
+    /// </summary>
+    public LogLevel LogLevel { get; set; }
+
+    /// <summary>
+    /// Gets or sets the display name.
+    /// </summary>
+    public string DisplayName { get; set; }
+
 }

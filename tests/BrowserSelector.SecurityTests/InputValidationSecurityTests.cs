@@ -36,6 +36,7 @@ public class InputValidationSecurityTests
     /// <summary>
     /// URL入力のXSS攻撃検証テスト（Uri版）.
     /// </summary>
+    /// <param name="maliciousUrl">maliciousUrl.</param>
     public void UrlInputShouldRejectXSSAttacksUri(Uri maliciousUrl)
     {
         UrlInputShouldRejectXSSAttacks(maliciousUrl.ToString());
@@ -63,6 +64,7 @@ public class InputValidationSecurityTests
     /// <summary>
     /// URL入力のSQLインジェクション攻撃検証テスト（Uri版）.
     /// </summary>
+    /// <param name="maliciousUrl">maliciousUrl.</param>
     public void UrlInputShouldRejectSQLInjectionAttacksUri(Uri maliciousUrl)
     {
         UrlInputShouldRejectSQLInjectionAttacks(maliciousUrl.ToString());
@@ -89,6 +91,7 @@ public class InputValidationSecurityTests
     /// <summary>
     /// URL入力のパストラバーサル攻撃検証テスト（Uri版）.
     /// </summary>
+    /// <param name="maliciousUrl">maliciousUrl.</param>
     public void UrlInputShouldRejectPathTraversalAttacksUri(Uri maliciousUrl)
     {
         UrlInputShouldRejectPathTraversalAttacks(maliciousUrl.ToString());
@@ -97,6 +100,7 @@ public class InputValidationSecurityTests
     /// <summary>
     /// URL入力のコマンドインジェクション攻撃検証テスト.
     /// </summary>
+    /// <param name="maliciousUrl">maliciousUrl.</param>
     [Theory]
     [InlineData("https://example.com; rm -rf /")]
     [InlineData("https://example.com | del /f /q C:\\")]
@@ -115,6 +119,7 @@ public class InputValidationSecurityTests
     /// <summary>
     /// URL入力のコマンドインジェクション攻撃検証テスト（Uri版）.
     /// </summary>
+    /// <param name="maliciousUrl">maliciousUrl.</param>
     public void UrlInputShouldRejectCommandInjectionAttacksUri(Uri maliciousUrl)
     {
         UrlInputShouldRejectCommandInjectionAttacks(maliciousUrl.ToString());
@@ -123,6 +128,7 @@ public class InputValidationSecurityTests
     /// <summary>
     /// 有効なURLの検証テスト.
     /// </summary>
+    /// <param name="validUrl">validUrl.</param>
     [Theory]
     [InlineData("https://www.google.com")]
     [InlineData("http://www.microsoft.com")]
@@ -146,6 +152,7 @@ public class InputValidationSecurityTests
     /// <summary>
     /// 有効なURLの検証テスト（Uri版）.
     /// </summary>
+    /// <param name="validUrl">validUrl.</param>
     public void UrlInputShouldAcceptValidUrlsUri(Uri validUrl)
     {
         UrlInputShouldAcceptValidUrls(validUrl.ToString());
@@ -170,6 +177,7 @@ public class InputValidationSecurityTests
     /// <summary>
     /// 特殊文字を含むURLの検証テスト.
     /// </summary>
+    /// <param name="urlWithSpecialChars">urlWithSpecialChars.</param>
     [Theory]
     [InlineData("https://example.com/path with spaces")]
     [InlineData("https://example.com/path\twith\ttabs")]
@@ -188,6 +196,7 @@ public class InputValidationSecurityTests
     /// <summary>
     /// 特殊文字を含むURLの検証テスト（Uri版）.
     /// </summary>
+    /// <param name="urlWithSpecialChars">urlWithSpecialChars.</param>
     public void UrlInputShouldRejectUrlsWithSpecialCharactersUri(Uri urlWithSpecialChars)
     {
         UrlInputShouldRejectUrlsWithSpecialCharacters(urlWithSpecialChars.ToString());
@@ -196,6 +205,7 @@ public class InputValidationSecurityTests
     /// <summary>
     /// ブラウザ名入力の検証テスト.
     /// </summary>
+    /// <param name="browserName">browserName.</param>
     [Theory]
     [InlineData("Chrome")]
     [InlineData("Firefox")]
@@ -215,6 +225,7 @@ public class InputValidationSecurityTests
     /// <summary>
     /// ブラウザ名入力の悪意のある文字列検証テスト.
     /// </summary>
+    /// <param name="maliciousName">maliciousName.</param>
     [Theory]
     [InlineData("Chrome<script>alert('XSS')</script>")]
     [InlineData("Firefox'; DROP TABLE browsers; --")]
@@ -234,6 +245,7 @@ public class InputValidationSecurityTests
     /// <summary>
     /// 設定値入力の検証テスト.
     /// </summary>
+    /// <param name="settingValue">settingValue.</param>
     [Theory]
     [InlineData("normal_setting_value")]
     [InlineData("setting-with-dashes")]
@@ -252,6 +264,7 @@ public class InputValidationSecurityTests
     /// <summary>
     /// 設定値入力の悪意のある文字列検証テスト.
     /// </summary>
+    /// <param name="maliciousValue">maliciousValue.</param>
     [Theory]
     [InlineData("setting<script>alert('XSS')</script>")]
     [InlineData("setting'; DROP TABLE settings; --")]
@@ -273,6 +286,7 @@ public class InputValidationSecurityTests
     /// <summary>
     /// URLが有効かどうかを検証するメソッド.
     /// </summary>
+    /// <param name="url">url.</param>
     private static bool IsValidUrl(string url)
     {
         if (string.IsNullOrWhiteSpace(url))
@@ -321,6 +335,7 @@ public class InputValidationSecurityTests
     /// <summary>
     /// ブラウザ名が有効かどうかを検証するメソッド.
     /// </summary>
+    /// <param name="name">name.</param>
     private static bool IsValidBrowserName(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -362,6 +377,7 @@ public class InputValidationSecurityTests
     /// <summary>
     /// 設定値が有効かどうかを検証するメソッド.
     /// </summary>
+    /// <param name="value">value.</param>
     private static bool IsValidSettingValue(string value)
     {
         if (string.IsNullOrWhiteSpace(value))

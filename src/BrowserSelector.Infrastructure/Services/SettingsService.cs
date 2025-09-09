@@ -18,18 +18,6 @@ public class SettingsService : ISettingsService
     private readonly ILogService? _logService;
 
     /// <summary>
-    /// JSONシリアライザーオプションを取得.
-    /// </summary>
-    private static JsonSerializerOptions GetJsonSerializerOptions()
-    {
-        return new JsonSerializerOptions
-        {
-            WriteIndented = true,
-            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-        };
-    }
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="SettingsService"/> class.
     /// </summary>
     /// <param name="logService">logService.</param>
@@ -245,6 +233,84 @@ public class SettingsService : ISettingsService
         }
     }
 
+    /// <inheritdoc/>
+    public async Task<bool> ExportSettingsAsync(string filePath)
+    {
+        try
+        {
+            _logService?.LogInformation("設定ファイル群のエクスポート開始", "SettingsService");
+
+            // ZIPファイルとして設定ファイル群をエクスポート
+            await ExportSettingsAsZipAsync(filePath).ConfigureAwait(false);
+
+            _logService?.LogInformation($"設定ファイル群のエクスポート完了: {filePath}", "SettingsService");
+            return true;
+        }
+        catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException or JsonException)
+        {
+            _logService?.LogError($"設定エクスポートエラー: {ex.Message}", "SettingsService", ex);
+            return false;
+        }
+    }
+
+    /// <inheritdoc/>
+    public async Task<LogSettings> LoadLogSettingsAsync()
+    {
+        _logService?.LogTrace("ログ設定読み込み開始", "SettingsService");
+        try
+        {
+            if (File.Exists(_logSettingsPath))
+            {
+                string json = await File.ReadAllTextAsync(_logSettingsPath).ConfigureAwait(false);
+                LogSettings? settings = JsonSerializer.Deserialize<LogSettings>(json);
+                LogSettings result = settings ?? new LogSettings();
+
+                // Traceレベルで詳細な設定情報を出力
+                _logService?.LogTrace($"ログ設定読み込み完了: EnableLogging={result.EnableLogging}, LogLevel={result.LogLevel}, EnableConsoleLogging={result.EnableConsoleLogging}, EnableFileLogging={result.EnableFileLogging}, LogOutputFolder={result.LogOutputFolder}", "SettingsService");
+                return result;
+            }
+            else
+            {
+                LogSettings defaultSettings = new();
+                _logService?.LogTrace("ログ設定ファイルが存在しないため、デフォルト設定を使用", "SettingsService");
+                return defaultSettings;
+            }
+        }
+        catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException or UnauthorizedAccessException or IOException or JsonException)
+        {
+            _logService?.LogError($"ログ設定読み込みエラー: {ex.Message}", "SettingsService", ex);
+            return new LogSettings();
+        }
+    }
+
+    /// <inheritdoc/>
+    public async Task<bool> SaveLogSettingsAsync(LogSettings settings)
+    {
+        try
+        {
+            string json = JsonSerializer.Serialize(settings, GetJsonSerializerOptions());
+            await File.WriteAllTextAsync(_logSettingsPath, json).ConfigureAwait(false);
+            return true;
+        }
+        catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException or JsonException)
+        {
+            _logService?.LogError($"ログ設定保存エラー: {ex.Message}", "SettingsService", ex);
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// JSONシリアライザーオプションを取得.
+    /// </summary>
+    private static JsonSerializerOptions GetJsonSerializerOptions()
+    {
+        return new JsonSerializerOptions
+        {
+            WriteIndented = true,
+            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        };
+    }
+
     /// <summary>
     /// ZIPファイルから設定ファイル群をインポート.
     /// </summary>
@@ -351,26 +417,6 @@ public class SettingsService : ISettingsService
         return true;
     }
 
-    /// <inheritdoc/>
-    public async Task<bool> ExportSettingsAsync(string filePath)
-    {
-        try
-        {
-            _logService?.LogInformation("設定ファイル群のエクスポート開始", "SettingsService");
-
-            // ZIPファイルとして設定ファイル群をエクスポート
-            await ExportSettingsAsZipAsync(filePath).ConfigureAwait(false);
-
-            _logService?.LogInformation($"設定ファイル群のエクスポート完了: {filePath}", "SettingsService");
-            return true;
-        }
-        catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException or JsonException)
-        {
-            _logService?.LogError($"設定エクスポートエラー: {ex.Message}", "SettingsService", ex);
-            return false;
-        }
-    }
-
     /// <summary>
     /// 設定ファイル群をZIP形式でエクスポート.
     /// </summary>
@@ -433,52 +479,6 @@ public class SettingsService : ISettingsService
         else
         {
             _logService?.LogDebug($"ファイルが存在しません（スキップ）: {filePath}", "SettingsService");
-        }
-    }
-
-    /// <inheritdoc/>
-    public async Task<LogSettings> LoadLogSettingsAsync()
-    {
-        _logService?.LogTrace("ログ設定読み込み開始", "SettingsService");
-        try
-        {
-            if (File.Exists(_logSettingsPath))
-            {
-                string json = await File.ReadAllTextAsync(_logSettingsPath).ConfigureAwait(false);
-                LogSettings? settings = JsonSerializer.Deserialize<LogSettings>(json);
-                LogSettings result = settings ?? new LogSettings();
-
-                // Traceレベルで詳細な設定情報を出力
-                _logService?.LogTrace($"ログ設定読み込み完了: EnableLogging={result.EnableLogging}, LogLevel={result.LogLevel}, EnableConsoleLogging={result.EnableConsoleLogging}, EnableFileLogging={result.EnableFileLogging}, LogOutputFolder={result.LogOutputFolder}", "SettingsService");
-                return result;
-            }
-            else
-            {
-                LogSettings defaultSettings = new();
-                _logService?.LogTrace("ログ設定ファイルが存在しないため、デフォルト設定を使用", "SettingsService");
-                return defaultSettings;
-            }
-        }
-        catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException or UnauthorizedAccessException or IOException or JsonException)
-        {
-            _logService?.LogError($"ログ設定読み込みエラー: {ex.Message}", "SettingsService", ex);
-            return new LogSettings();
-        }
-    }
-
-    /// <inheritdoc/>
-    public async Task<bool> SaveLogSettingsAsync(LogSettings settings)
-    {
-        try
-        {
-            string json = JsonSerializer.Serialize(settings, GetJsonSerializerOptions());
-            await File.WriteAllTextAsync(_logSettingsPath, json).ConfigureAwait(false);
-            return true;
-        }
-        catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException or JsonException)
-        {
-            _logService?.LogError($"ログ設定保存エラー: {ex.Message}", "SettingsService", ex);
-            return false;
         }
     }
 }

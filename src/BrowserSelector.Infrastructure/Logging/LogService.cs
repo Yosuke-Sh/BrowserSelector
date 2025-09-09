@@ -324,6 +324,51 @@ public class LogService : ILogService
     }
 
     /// <summary>
+    /// ログレベルの短縮形を取得.
+    /// </summary>
+    private static string GetLogLevelShortName(LogLevel level)
+    {
+        return level switch
+        {
+            LogLevel.Trace => "TRACE",
+            LogLevel.Debug => "DEBUG",
+            LogLevel.Information => "INFO",
+            LogLevel.Warning => "WARN",
+            LogLevel.Error => "ERROR",
+            LogLevel.Critical => "FATAL",
+            _ => level.ToString().ToUpperInvariant()
+        };
+    }
+
+    /// <summary>
+    /// コンソールにログを出力.
+    /// </summary>
+    private static void WriteToConsole(LogLevel level, string message)
+    {
+        ConsoleColor originalColor = Console.ForegroundColor;
+
+        try
+        {
+            Console.ForegroundColor = level switch
+            {
+                LogLevel.Trace => ConsoleColor.Gray,
+                LogLevel.Debug => ConsoleColor.DarkGray,
+                LogLevel.Information => ConsoleColor.White,
+                LogLevel.Warning => ConsoleColor.Yellow,
+                LogLevel.Error => ConsoleColor.Red,
+                LogLevel.Critical => ConsoleColor.DarkRed,
+                _ => ConsoleColor.White
+            };
+
+            Console.WriteLine(message);
+        }
+        finally
+        {
+            Console.ForegroundColor = originalColor;
+        }
+    }
+
+    /// <summary>
     /// 設定ファイルからログ設定を読み込み.
     /// </summary>
     private void LoadSettingsFromFile()
@@ -425,51 +470,6 @@ public class LogService : ILogService
     private string GetNextEventId()
     {
         return $"EVT{Interlocked.Increment(ref _eventCounter):D6}";
-    }
-
-    /// <summary>
-    /// ログレベルの短縮形を取得.
-    /// </summary>
-    private static string GetLogLevelShortName(LogLevel level)
-    {
-        return level switch
-        {
-            LogLevel.Trace => "TRACE",
-            LogLevel.Debug => "DEBUG",
-            LogLevel.Information => "INFO",
-            LogLevel.Warning => "WARN",
-            LogLevel.Error => "ERROR",
-            LogLevel.Critical => "FATAL",
-            _ => level.ToString().ToUpperInvariant()
-        };
-    }
-
-    /// <summary>
-    /// コンソールにログを出力.
-    /// </summary>
-    private static void WriteToConsole(LogLevel level, string message)
-    {
-        ConsoleColor originalColor = Console.ForegroundColor;
-
-        try
-        {
-            Console.ForegroundColor = level switch
-            {
-                LogLevel.Trace => ConsoleColor.Gray,
-                LogLevel.Debug => ConsoleColor.DarkGray,
-                LogLevel.Information => ConsoleColor.White,
-                LogLevel.Warning => ConsoleColor.Yellow,
-                LogLevel.Error => ConsoleColor.Red,
-                LogLevel.Critical => ConsoleColor.DarkRed,
-                _ => ConsoleColor.White
-            };
-
-            Console.WriteLine(message);
-        }
-        finally
-        {
-            Console.ForegroundColor = originalColor;
-        }
     }
 
     /// <summary>
