@@ -23,7 +23,7 @@ public partial class MainViewModel : ObservableObject
 
 
     [ObservableProperty]
-    private ObservableCollection<Browser> _browsers =[];
+    private ObservableCollection<Browser> _browsers = [];
 
     [ObservableProperty]
     private Browser? _selectedBrowser;
@@ -454,6 +454,18 @@ public partial class MainViewModel : ObservableObject
     private void ClearUrl()
     {
         Url = string.Empty;
+    }
+
+    /// <summary>
+    /// 起動引数で指定されたURLを設定.
+    /// </summary>
+    /// <param name="url">設定するURL.</param>
+    public async void SetInitialUrl(Uri url)
+    {
+        if (url != null)
+        {
+            SetInitialUrl(url.ToString());
+        }
     }
 
     /// <summary>

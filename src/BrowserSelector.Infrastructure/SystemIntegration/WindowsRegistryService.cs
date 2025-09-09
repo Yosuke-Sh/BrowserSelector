@@ -20,7 +20,7 @@ public class WindowsRegistryService : IRegistryService
     /// <inheritdoc/>
     public Task<IEnumerable<Browser>> DetectBrowsersFromRegistryAsync()
     {
-        List<Browser> browsers =[];
+        List<Browser> browsers = [];
 
         try
         {
@@ -79,7 +79,7 @@ public class WindowsRegistryService : IRegistryService
 
     private IEnumerable<Browser> DetectChrome()
     {
-        List<Browser> browsers =[];
+        List<Browser> browsers = [];
 
         try
         {
@@ -143,7 +143,7 @@ public class WindowsRegistryService : IRegistryService
 
     private IEnumerable<Browser> DetectFirefox()
     {
-        List<Browser> browsers =[];
+        List<Browser> browsers = [];
 
         try
         {
@@ -191,7 +191,7 @@ public class WindowsRegistryService : IRegistryService
 
     private IEnumerable<Browser> DetectEdge()
     {
-        List<Browser> browsers =[];
+        List<Browser> browsers = [];
 
         try
         {
@@ -234,7 +234,7 @@ public class WindowsRegistryService : IRegistryService
 
     private IEnumerable<Browser> DetectOpera()
     {
-        List<Browser> browsers =[];
+        List<Browser> browsers = [];
 
         try
         {
@@ -269,7 +269,7 @@ public class WindowsRegistryService : IRegistryService
 
     private IEnumerable<Browser> DetectBrave()
     {
-        List<Browser> browsers =[];
+        List<Browser> browsers = [];
 
         try
         {
@@ -304,7 +304,7 @@ public class WindowsRegistryService : IRegistryService
 
     private IEnumerable<Browser> DetectVivaldi()
     {
-        List<Browser> browsers =[];
+        List<Browser> browsers = [];
 
         try
         {

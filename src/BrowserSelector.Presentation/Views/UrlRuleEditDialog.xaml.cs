@@ -14,12 +14,6 @@ public partial class UrlRuleEditDialog : Window
     private readonly IBrowserService _browserService;
     private readonly ILogService _logService;
 
-    public UrlRule UrlRule { get; set; } = new();
-
-    public ObservableCollection<Browser> AvailableBrowsers { get; } = new();
-
-    public Browser? SelectedBrowser { get; set; }
-
     public UrlRuleEditDialog(IBrowserService browserService, ILogService logService)
     {
         InitializeComponent();
@@ -30,6 +24,12 @@ public partial class UrlRuleEditDialog : Window
 
         LoadBrowsers();
     }
+
+    public UrlRule UrlRule { get; set; } = new();
+
+    public ObservableCollection<Browser> AvailableBrowsers { get; } = new();
+
+    public Browser? SelectedBrowser { get; set; }
 
     public UrlRuleEditDialog(UrlRule urlRule, IBrowserService browserService, ILogService logService)
         : this(browserService, logService)

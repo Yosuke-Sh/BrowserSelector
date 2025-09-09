@@ -10,7 +10,7 @@ namespace BrowserSelector.Infrastructure.Services;
 /// </summary>
 public class UrlRuleService : IUrlRuleService
 {
-    private readonly List<UrlRule> _rules =[];
+    private readonly List<UrlRule> _rules = [];
     private readonly string _rulesFilePath;
     private readonly object _lockObject = new();
     private readonly ILogService? _logService;

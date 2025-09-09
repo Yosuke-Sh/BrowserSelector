@@ -14,8 +14,8 @@ public class LocalizationService : ILocalizationService
     private readonly ResourceManager _resourceManager;
     private readonly ICustomLanguageService _customLanguageService;
     private readonly ILogService? _logService;
-    private Dictionary<string, string> _customResources =[];
-    private Dictionary<string, string> _jsonResources =[];
+    private Dictionary<string, string> _customResources = [];
+    private Dictionary<string, string> _jsonResources = [];
 
     public LocalizationService(ICustomLanguageService customLanguageService, ILogService? logService = null)
     {
@@ -31,6 +31,19 @@ public class LocalizationService : ILocalizationService
             await LoadCustomLanguageResourcesAsync(CurrentCulture.Name).ConfigureAwait(false);
         });
     }
+
+    /// <inheritdoc/>
+    public event EventHandler<LanguageChangedEventArgs>? LanguageChanged;
+
+    /// <inheritdoc/>
+    public CultureInfo CurrentCulture { get; private set; }
+
+    /// <inheritdoc/>
+    public IEnumerable<CultureInfo> SupportedLanguages => new[]
+    {
+        new CultureInfo("en-US"),
+        new CultureInfo("ja-JP")
+    };
 
     /// <inheritdoc/>
     public string GetString(string key)
@@ -94,22 +107,9 @@ public class LocalizationService : ILocalizationService
     }
 
     /// <inheritdoc/>
-    public CultureInfo CurrentCulture { get; private set; }
-
-    /// <inheritdoc/>
-    public IEnumerable<CultureInfo> SupportedLanguages => new[]
-    {
-        new CultureInfo("en-US"),
-        new CultureInfo("ja-JP")
-    };
-
-    /// <inheritdoc/>
-    public event EventHandler<LanguageChangedEventArgs>? LanguageChanged;
-
-    /// <inheritdoc/>
     public async Task<IEnumerable<CultureInfo>> GetSupportedLanguagesAsync()
     {
-        List<CultureInfo> languages =[];
+        List<CultureInfo> languages = [];
 
         try
         {

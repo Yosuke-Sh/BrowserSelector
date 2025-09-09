@@ -18,6 +18,17 @@ public class UpdateService : IUpdateService
     /// <summary>
     /// アップデートサービスを初期化.
     /// </summary>
+    public UpdateService(Uri updateCheckUrl, string currentVersion)
+    {
+        _updateCheckUrl = updateCheckUrl.ToString();
+        _currentVersion = currentVersion;
+        _httpClient = new HttpClient();
+        _httpClient.DefaultRequestHeaders.Add("User-Agent", "BrowserSelector-UpdateChecker");
+    }
+
+    /// <summary>
+    /// アップデートサービスを初期化.
+    /// </summary>
     public UpdateService(string updateCheckUrl, string currentVersion)
     {
         _updateCheckUrl = updateCheckUrl;
@@ -37,7 +48,7 @@ public class UpdateService : IUpdateService
     {
         try
         {
-            string response = await _httpClient.GetStringAsync(_updateCheckUrl).ConfigureAwait(false);
+            string response = await _httpClient.GetStringAsync(new Uri(_updateCheckUrl)).ConfigureAwait(false);
             UpdateInfo? updateInfo = JsonSerializer.Deserialize<UpdateInfo>(response);
 
             if (updateInfo != null && IsNewerVersion(updateInfo.Version))
@@ -64,7 +75,7 @@ public class UpdateService : IUpdateService
         try
         {
             string tempPath = Path.GetTempFileName();
-            HttpResponseMessage response = await _httpClient.GetAsync(updateInfo.DownloadUrl, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
+            HttpResponseMessage response = await _httpClient.GetAsync(new Uri(updateInfo.DownloadUrl), HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
             _ = response.EnsureSuccessStatusCode();
 
             long totalBytes = response.Content.Headers.ContentLength ?? 0;

@@ -149,7 +149,7 @@ public class SystemTrayService : ISystemTrayService, IDisposable
         }
     }
 
-    private Icon LoadIcon(string iconPath)
+    private static Icon LoadIcon(string iconPath)
     {
         try
         {

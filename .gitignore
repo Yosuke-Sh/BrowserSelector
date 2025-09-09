@@ -6,3 +6,4 @@ TestResults
 coverage-integrated
 coverage-results
 BenchmarkDotNet.Artifacts
+/tmp

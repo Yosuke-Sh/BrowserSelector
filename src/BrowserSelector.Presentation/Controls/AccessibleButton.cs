@@ -73,15 +73,6 @@ public class AccessibleButton : Button
         set => SetValue(ShowFocusIndicatorProperty, value);
     }
 
-    /// <summary>
-    /// Gets or sets a value indicating whether 高コントラストモード.
-    /// </summary>
-    public bool HighContrastMode
-    {
-        get => (bool)GetValue(HighContrastModeProperty);
-        set => SetValue(HighContrastModeProperty, value);
-    }
-
     static AccessibleButton()
     {
         DefaultStyleKeyProperty.OverrideMetadata(typeof(AccessibleButton),
@@ -98,11 +89,15 @@ public class AccessibleButton : Button
         // キーボードナビゲーションを有効にする
         Focusable = true;
         TabIndex = 0;
+    }
 
-        // キーボードイベントを処理
-        KeyDown += OnKeyDown;
-        GotFocus += OnGotFocus;
-        LostFocus += OnLostFocus;
+    /// <summary>
+    /// Gets or sets a value indicating whether 高コントラストモード.
+    /// </summary>
+    public bool HighContrastMode
+    {
+        get => (bool)GetValue(HighContrastModeProperty);
+        set => SetValue(HighContrastModeProperty, value);
     }
 
     /// <inheritdoc/>

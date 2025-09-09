@@ -237,7 +237,7 @@ public class SettingsService : ISettingsService
         using FileStream fileStream = new(zipFilePath, FileMode.Open, FileAccess.Read);
         using ZipArchive archive = new(fileStream, ZipArchiveMode.Read);
 
-        List<string> importedFiles =[];
+        List<string> importedFiles = [];
 
         // ZIP内の各ファイルを処理
         foreach (ZipArchiveEntry entry in archive.Entries)

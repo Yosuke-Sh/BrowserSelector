@@ -11,17 +11,17 @@ public static class LocalizedFormatHelper
     private static ILocalizationService? _localizationService;
 
     /// <summary>
+    /// Gets 現在のカルチャーを取得.
+    /// </summary>
+    public static CultureInfo CurrentCulture => _localizationService?.CurrentCulture ?? CultureInfo.CurrentCulture;
+
+    /// <summary>
     /// ローカライゼーションサービスを設定.
     /// </summary>
     public static void SetLocalizationService(ILocalizationService localizationService)
     {
         _localizationService = localizationService;
     }
-
-    /// <summary>
-    /// Gets 現在のカルチャーを取得.
-    /// </summary>
-    public static CultureInfo CurrentCulture => _localizationService?.CurrentCulture ?? CultureInfo.CurrentCulture;
 
     /// <summary>
     /// 数値を現在のカルチャーでフォーマット.

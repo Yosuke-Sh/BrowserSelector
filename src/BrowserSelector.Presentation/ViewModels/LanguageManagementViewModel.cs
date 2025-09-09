@@ -16,7 +16,7 @@ public partial class LanguageManagementViewModel : ObservableObject
     private readonly ILogService? _logService;
 
     [ObservableProperty]
-    private ObservableCollection<LanguageInfo> _availableLanguages =[];
+    private ObservableCollection<LanguageInfo> _availableLanguages = [];
 
     [ObservableProperty]
     private LanguageInfo? _selectedLanguage;
@@ -28,10 +28,13 @@ public partial class LanguageManagementViewModel : ObservableObject
     private string _newLanguageName = string.Empty;
 
     [ObservableProperty]
-    private ObservableCollection<LanguageCodeInfo> _availableLanguageCodes =[];
+    private ObservableCollection<LanguageCodeInfo> _availableLanguageCodes = [];
 
     [ObservableProperty]
     private LanguageCodeInfo? _selectedLanguageCode;
+
+    [ObservableProperty]
+    private bool _isGeneratingTemplate;
 
     partial void OnSelectedLanguageCodeChanged(LanguageCodeInfo? value)
     {
@@ -41,9 +44,6 @@ public partial class LanguageManagementViewModel : ObservableObject
             NewLanguageName = value.NativeName;
         }
     }
-
-    [ObservableProperty]
-    private bool _isGeneratingTemplate;
 
     [ObservableProperty]
     private string _statusMessage = string.Empty;

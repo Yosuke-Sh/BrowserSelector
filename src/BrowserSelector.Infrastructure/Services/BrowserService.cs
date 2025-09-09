@@ -17,7 +17,7 @@ public class BrowserService : IBrowserService
     private readonly IRegistryService _registryService;
     private readonly IUrlService _urlService;
     private readonly ILogService _logService;
-    private readonly List<Browser> _browsers =[];
+    private readonly List<Browser> _browsers = [];
 
     // 後方互換: 旧シグネチャ用コンストラクタ（テスト等）
     public BrowserService(IRegistryService registryService, IUrlService urlService)
@@ -327,31 +327,31 @@ public class BrowserService : IBrowserService
         }
     }
 
-    private Task<List<Browser>> LoadCustomBrowsersAsync()
+    private static Task<List<Browser>> LoadCustomBrowsersAsync()
     {
         // TODO: 設定ファイルからカスタムブラウザを読み込み
         return Task.FromResult(new List<Browser>());
     }
 
-    private Task SaveCustomBrowsersAsync()
+    private static Task SaveCustomBrowsersAsync()
     {
         // TODO: カスタムブラウザを設定ファイルに保存
         return Task.CompletedTask;
     }
 
-    private Task SaveBrowserUsageAsync(Browser browser)
+    private static Task SaveBrowserUsageAsync(Browser browser)
     {
         // TODO: ブラウザ使用統計を保存
         return Task.CompletedTask;
     }
 
-    private Task SaveDefaultBrowserAsync(Browser browser)
+    private static Task SaveDefaultBrowserAsync(Browser browser)
     {
         // TODO: デフォルトブラウザ設定を保存
         return Task.CompletedTask;
     }
 
-    private Task<Browser?> LoadDefaultBrowserAsync()
+    private static Task<Browser?> LoadDefaultBrowserAsync()
     {
         // TODO: 設定ファイルからデフォルトブラウザを読み込み
         return Task.FromResult<Browser?>(null);
@@ -360,7 +360,7 @@ public class BrowserService : IBrowserService
     /// <summary>
     /// ブラウザタイプに応じた起動引数を取得.
     /// </summary>
-    private string GetBrowserArguments(BrowserType browserType, string url)
+    private static string GetBrowserArguments(BrowserType browserType, string url)
     {
         return browserType switch
         {

@@ -38,7 +38,7 @@ public class CustomLanguageService : ICustomLanguageService
     /// <inheritdoc/>
     public async Task<IEnumerable<LanguageInfo>> GetAvailableLanguagesAsync()
     {
-        List<LanguageInfo> languages =[];
+        List<LanguageInfo> languages = [];
 
         try
         {
@@ -273,7 +273,7 @@ public class CustomLanguageService : ICustomLanguageService
             IEnumerable<string> resourceKeys = await GetAvailableResourceKeysAsync().ConfigureAwait(false);
 
             // テンプレート用のリソース辞書を作成（英語のデフォルト値を埋め込み）
-            Dictionary<string, string> templateResources =[];
+            Dictionary<string, string> templateResources = [];
 
             // 英語リソースを取得してデフォルト値として使用
             ResourceManager englishResourceManager = new("BrowserSelector.Infrastructure.Localization.Resources", typeof(CustomLanguageService).Assembly);
@@ -336,7 +336,7 @@ public class CustomLanguageService : ICustomLanguageService
             ResourceManager resourceManager = new("BrowserSelector.Infrastructure.Localization.Resources", typeof(CustomLanguageService).Assembly);
             CultureInfo englishCulture = new("en-US");
 
-            List<string> resourceKeys =[];
+            List<string> resourceKeys = [];
 
             // リソースファイルからキーを抽出（リフレクションを使用）
             ResourceSet? resourceSet = resourceManager.GetResourceSet(englishCulture, true, true);
@@ -511,7 +511,7 @@ public class CustomLanguageService : ICustomLanguageService
     /// <summary>
     /// 言語選択コンボボックス用の表示名を取得（ローカライズ不要）.
     /// </summary>
-    private string GetLocalizedDisplayName(string cultureCode, string originalDisplayName)
+    private static string GetLocalizedDisplayName(string cultureCode, string originalDisplayName)
     {
         // 言語選択コンボボックスはローカライズ不要
         // 英語は「English」、日本語は「日本語」と表示
@@ -526,7 +526,7 @@ public class CustomLanguageService : ICustomLanguageService
     /// <summary>
     /// ストリームのハッシュ値を計算.
     /// </summary>
-    private async Task<byte[]> ComputeStreamHashAsync(System.IO.Stream stream)
+    private static async Task<byte[]> ComputeStreamHashAsync(System.IO.Stream stream)
     {
         using System.Security.Cryptography.SHA256 sha256 = System.Security.Cryptography.SHA256.Create();
         return await Task.Run(() => sha256.ComputeHash(stream)).ConfigureAwait(false);

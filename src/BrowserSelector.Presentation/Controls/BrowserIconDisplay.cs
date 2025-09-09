@@ -61,15 +61,6 @@ public class BrowserIconDisplay : Control
         set => SetValue(ShowIconProperty, value);
     }
 
-    /// <summary>
-    /// Gets or sets アイコンのソース.
-    /// </summary>
-    public ImageSource? IconSource
-    {
-        get => (ImageSource?)GetValue(IconSourceProperty);
-        set => SetValue(IconSourceProperty, value);
-    }
-
     static BrowserIconDisplay()
     {
         DefaultStyleKeyProperty.OverrideMetadata(typeof(BrowserIconDisplay),
@@ -78,9 +69,16 @@ public class BrowserIconDisplay : Control
 
     public BrowserIconDisplay()
     {
-        // アクセシビリティプロパティを設定
-        SetValue(AutomationProperties.NameProperty, "BrowserIconDisplay");
-        SetValue(AutomationProperties.HelpTextProperty, "ブラウザアイコン表示");
+        // InitializeComponent();
+    }
+
+    /// <summary>
+    /// Gets or sets アイコンのソース.
+    /// </summary>
+    public ImageSource? IconSource
+    {
+        get => (ImageSource?)GetValue(IconSourceProperty);
+        set => SetValue(IconSourceProperty, value);
     }
 
     private static void OnBrowserChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
