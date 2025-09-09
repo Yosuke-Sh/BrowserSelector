@@ -159,6 +159,12 @@ public class BrowserService : IBrowserService
     }
 
     /// <inheritdoc/>
+    public async Task<bool> LaunchBrowserAsync(Browser browser, Uri url)
+    {
+        return await LaunchBrowserAsync(browser, url.ToString()).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
     public async Task<bool> AddBrowserAsync(Browser browser)
     {
         ArgumentNullException.ThrowIfNull(browser);
@@ -228,8 +234,6 @@ public class BrowserService : IBrowserService
             }
 
             // システム検出ブラウザも削除可能にする
-            // if (browser.Type != BrowserType.Custom)
-            //     return false;
             _ = _browsers.Remove(browser);
             await SaveCustomBrowsersAsync().ConfigureAwait(false);
             return true;

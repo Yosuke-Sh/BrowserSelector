@@ -60,6 +60,14 @@ public interface IUrlRuleService
     Task<Browser?> FindMatchingBrowserAsync(string url, IEnumerable<Browser> browsers);
 
     /// <summary>
+    /// 謖・ｮ壹＆繧後◆URL縺ｫ繝槭ャ繝√☆繧九ヶ繝ｩ繧ｦ繧ｶ繧呈､懃ｴ｢（Uri版）.
+    /// </summary>
+    /// <param name="url">讀懃ｴ｢蟇ｾ雎｡縺ｮURL.</param>
+    /// <param name="browsers">蛻ｩ逕ｨ蜿ｯ閭ｽ縺ｪ繝悶Λ繧ｦ繧ｶ縺ｮ荳隕ｧ.</param>
+    /// <returns>繝槭ャ繝√☆繧九ヶ繝ｩ繧ｦ繧ｶ・郁ｦ九▽縺九ｉ縺ｪ縺・ｴ蜷医・null・・/returns>.
+    Task<Browser?> FindMatchingBrowserAsync(Uri url, IEnumerable<Browser> browsers);
+
+    /// <summary>
     /// 繝ｫ繝ｼ繝ｫ縺ｮ蜆ｪ蜈亥ｺｦ繧貞､画峩.
     /// </summary>
     /// <param name="ruleId">蟇ｾ雎｡繝ｫ繝ｼ繝ｫ縺ｮID.</param>

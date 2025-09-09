@@ -42,7 +42,14 @@ public class UrlService : IUrlService
             url = url.Trim();
 
             // プロトコルを追加
-            url = AddProtocolIfNeeded(url);
+            if (Uri.TryCreate(url, UriKind.Absolute, out var uri))
+            {
+                url = AddProtocolIfNeeded(uri);
+            }
+            else
+            {
+                url = AddProtocolIfNeeded(url);
+            }
 
             _logService?.LogTrace($"URL正規化処理完了: '{originalUrl}' -> '{url}' (プロトコル追加: {originalUrl != url})", "UrlService");
             return Task.FromResult(url);
@@ -123,9 +130,16 @@ public class UrlService : IUrlService
             }
 
             // プロトコルを追加（必要に応じて）
-            url = AddProtocolIfNeeded(url);
+            if (Uri.TryCreate(url, UriKind.Absolute, out var uri))
+            {
+                url = AddProtocolIfNeeded(uri);
+            }
+            else
+            {
+                url = AddProtocolIfNeeded(url);
+            }
 
-            return Uri.TryCreate(url, UriKind.Absolute, out Uri? uri) ? uri.Host : string.Empty;
+            return Uri.TryCreate(url, UriKind.Absolute, out Uri? resultUri) ? resultUri?.Host ?? string.Empty : string.Empty;
         }
         catch (Exception ex) when (ex is UriFormatException or ArgumentException)
         {

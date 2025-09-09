@@ -249,7 +249,20 @@ public class UpdateService : IUpdateService
     /// <inheritdoc/>
     public void Dispose()
     {
-        _httpClient?.Dispose();
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// リソースを解放します.
+    /// </summary>
+    /// <param name="disposing">マネージドリソースを解放するかどうか.</param>
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _httpClient?.Dispose();
+        }
     }
 
     private static string GetBackupPath()

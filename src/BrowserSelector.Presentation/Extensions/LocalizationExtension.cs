@@ -15,11 +15,6 @@ public class LocalizationExtension : MarkupExtension
     /// </summary>
     public string Key { get; set; } = string.Empty;
 
-    /// <summary>
-    /// Gets パラメータ（文字列フォーマット用）.
-    /// </summary>
-    public IList<object>? Parameters { get; }
-
     public LocalizationExtension()
     {
     }
@@ -27,6 +22,19 @@ public class LocalizationExtension : MarkupExtension
     public LocalizationExtension(string key)
     {
         Key = key;
+    }
+
+    /// <summary>
+    /// Gets パラメータ（文字列フォーマット用）.
+    /// </summary>
+    public IList<object>? Parameters { get; }
+
+    /// <summary>
+    /// ローカライゼーションサービスを設定.
+    /// </summary>
+    public static void SetLocalizationService(ILocalizationService localizationService)
+    {
+        _localizationService = localizationService;
     }
 
     /// <inheritdoc/>
@@ -54,13 +62,5 @@ public class LocalizationExtension : MarkupExtension
         {
             return Key;
         }
-    }
-
-    /// <summary>
-    /// ローカライゼーションサービスを設定.
-    /// </summary>
-    public static void SetLocalizationService(ILocalizationService localizationService)
-    {
-        _localizationService = localizationService;
     }
 }

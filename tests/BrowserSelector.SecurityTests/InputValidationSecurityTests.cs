@@ -34,6 +34,14 @@ public class InputValidationSecurityTests
     }
 
     /// <summary>
+    /// URL入力のXSS攻撃検証テスト（Uri版）.
+    /// </summary>
+    public void UrlInputShouldRejectXSSAttacksUri(Uri maliciousUrl)
+    {
+        UrlInputShouldRejectXSSAttacks(maliciousUrl.ToString());
+    }
+
+    /// <summary>
     /// URL入力のSQLインジェクション攻撃検証テスト.
     /// </summary>
     [Theory]
@@ -50,6 +58,14 @@ public class InputValidationSecurityTests
 
         // Act & Assert
         isValidUrl.Should().BeFalse($"SQLインジェクション攻撃URL '{maliciousUrl}' は拒否されるべきです");
+    }
+
+    /// <summary>
+    /// URL入力のSQLインジェクション攻撃検証テスト（Uri版）.
+    /// </summary>
+    public void UrlInputShouldRejectSQLInjectionAttacksUri(Uri maliciousUrl)
+    {
+        UrlInputShouldRejectSQLInjectionAttacks(maliciousUrl.ToString());
     }
 
     /// <summary>
@@ -71,6 +87,14 @@ public class InputValidationSecurityTests
     }
 
     /// <summary>
+    /// URL入力のパストラバーサル攻撃検証テスト（Uri版）.
+    /// </summary>
+    public void UrlInputShouldRejectPathTraversalAttacksUri(Uri maliciousUrl)
+    {
+        UrlInputShouldRejectPathTraversalAttacks(maliciousUrl.ToString());
+    }
+
+    /// <summary>
     /// URL入力のコマンドインジェクション攻撃検証テスト.
     /// </summary>
     [Theory]
@@ -86,6 +110,14 @@ public class InputValidationSecurityTests
 
         // Act & Assert
         isValidUrl.Should().BeFalse($"コマンドインジェクション攻撃URL '{maliciousUrl}' は拒否されるべきです");
+    }
+
+    /// <summary>
+    /// URL入力のコマンドインジェクション攻撃検証テスト（Uri版）.
+    /// </summary>
+    public void UrlInputShouldRejectCommandInjectionAttacksUri(Uri maliciousUrl)
+    {
+        UrlInputShouldRejectCommandInjectionAttacks(maliciousUrl.ToString());
     }
 
     /// <summary>
@@ -109,6 +141,14 @@ public class InputValidationSecurityTests
 
         // Act & Assert
         isValidUrl.Should().BeTrue($"有効なURL '{validUrl}' は受け入れられるべきです");
+    }
+
+    /// <summary>
+    /// 有効なURLの検証テスト（Uri版）.
+    /// </summary>
+    public void UrlInputShouldAcceptValidUrlsUri(Uri validUrl)
+    {
+        UrlInputShouldAcceptValidUrls(validUrl.ToString());
     }
 
     /// <summary>
@@ -143,6 +183,14 @@ public class InputValidationSecurityTests
 
         // Act & Assert
         isValidUrl.Should().BeFalse($"特殊文字を含むURL '{urlWithSpecialChars}' は拒否されるべきです");
+    }
+
+    /// <summary>
+    /// 特殊文字を含むURLの検証テスト（Uri版）.
+    /// </summary>
+    public void UrlInputShouldRejectUrlsWithSpecialCharactersUri(Uri urlWithSpecialChars)
+    {
+        UrlInputShouldRejectUrlsWithSpecialCharacters(urlWithSpecialChars.ToString());
     }
 
     /// <summary>

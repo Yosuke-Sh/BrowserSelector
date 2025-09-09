@@ -11,6 +11,10 @@ namespace BrowserSelector.Presentation.Converters;
 /// </summary>
 public class IconPathConverter : IMultiValueConverter
 {
+    #region Win32 API
+    [DllImport("shell32.dll", CharSet = CharSet.Auto)]
+    private static extern int ExtractIconEx(string szFileName, int nIconIndex, out IntPtr phiconLarge, out IntPtr phiconSmall, int nIcons);
+    #endregion
     /// <inheritdoc/>
     public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
     {
@@ -179,8 +183,4 @@ public class IconPathConverter : IMultiValueConverter
         return "/BrowserSelector.Presentation;component/Resources/Images/Icon_Browser.png";
     }
 
-    #region Win32 API
-    [DllImport("shell32.dll", CharSet = CharSet.Auto)]
-    private static extern int ExtractIconEx(string szFileName, int nIconIndex, out IntPtr phiconLarge, out IntPtr phiconSmall, int nIcons);
-    #endregion
 }

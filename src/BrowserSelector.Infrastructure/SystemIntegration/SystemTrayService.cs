@@ -13,7 +13,7 @@ public class SystemTrayService : ISystemTrayService, IDisposable
 {
     private NotifyIcon? _notifyIcon;
     private ContextMenuStrip? _contextMenu;
-    private bool _disposed = false;
+    private bool _disposed;
 
     /// <inheritdoc/>
     public event EventHandler<SystemTrayEventArgs>? SystemTrayAction;

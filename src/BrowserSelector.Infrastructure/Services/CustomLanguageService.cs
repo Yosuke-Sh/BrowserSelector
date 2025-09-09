@@ -38,7 +38,7 @@ public class CustomLanguageService : ICustomLanguageService
     /// <inheritdoc/>
     public async Task<IEnumerable<LanguageInfo>> GetAvailableLanguagesAsync()
     {
-        List<LanguageInfo> languages = [];
+        List<LanguageInfo> languages=[];
 
         try
         {
@@ -273,7 +273,7 @@ public class CustomLanguageService : ICustomLanguageService
             IEnumerable<string> resourceKeys = await GetAvailableResourceKeysAsync().ConfigureAwait(false);
 
             // テンプレート用のリソース辞書を作成（英語のデフォルト値を埋め込み）
-            Dictionary<string, string> templateResources = [];
+            Dictionary<string, string> templateResources=[];
 
             // 英語リソースを取得してデフォルト値として使用
             ResourceManager englishResourceManager = new("BrowserSelector.Infrastructure.Localization.Resources", typeof(CustomLanguageService).Assembly);
@@ -336,7 +336,7 @@ public class CustomLanguageService : ICustomLanguageService
             ResourceManager resourceManager = new("BrowserSelector.Infrastructure.Localization.Resources", typeof(CustomLanguageService).Assembly);
             CultureInfo englishCulture = new("en-US");
 
-            List<string> resourceKeys = [];
+            List<string> resourceKeys=[];
 
             // リソースファイルからキーを抽出（リフレクションを使用）
             ResourceSet? resourceSet = resourceManager.GetResourceSet(englishCulture, true, true);

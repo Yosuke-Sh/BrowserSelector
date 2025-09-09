@@ -24,6 +24,12 @@ public interface IBrowserService
     Task<bool> LaunchBrowserAsync(Browser browser, string url);
 
     /// <summary>
+    /// ブラウザを起動（Uri版）.
+    /// </summary>
+    /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
+    Task<bool> LaunchBrowserAsync(Browser browser, Uri url);
+
+    /// <summary>
     /// ブラウザを追加.
     /// </summary>
     /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>

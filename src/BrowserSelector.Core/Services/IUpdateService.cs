@@ -25,7 +25,7 @@ public interface IUpdateService : IDisposable
     /// 繧｢繝・・繝・・繝医ｒ繝繧ｦ繝ｳ繝ｭ繝ｼ繝・.
     /// </summary>
     /// <param name="updateInfo">繧｢繝・・繝・・繝域ュ蝣ｱ.</param>
-    /// 
+    ///
     /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns><param name="progress">騾ｲ謐怜ｱ蜻・/param>.
     /// <returns>繝繧ｦ繝ｳ繝ｭ繝ｼ繝峨′謌仙粥縺励◆縺九←縺・°</returns>
     Task<bool> DownloadUpdateAsync(UpdateInfo updateInfo, IProgress<int>? progress = null);

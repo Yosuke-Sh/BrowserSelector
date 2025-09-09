@@ -151,5 +151,15 @@ namespace BrowserSelector.Core.Models
             string desc = string.IsNullOrWhiteSpace(Description) ? "説明なし" : Description;
             return $"パターン: {Pattern}\nブラウザ: {BrowserName}\n優先度: {Priority}\n状態: {status}\n説明: {desc}";
         }
+
+        /// <summary>
+        /// URLがパターンにマッチするかどうかを判定（Uri版）.
+        /// </summary>
+        /// <param name="url">判定対象のURL.</param>
+        /// <returns>マッチする場合true.</returns>
+        public bool IsMatch(Uri url)
+        {
+            return IsMatch(url?.ToString() ?? string.Empty);
+        }
     }
 }

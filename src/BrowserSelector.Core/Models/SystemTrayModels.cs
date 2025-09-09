@@ -73,7 +73,7 @@ namespace BrowserSelector.Core.Models
         /// <summary>
         /// メニューアイテムリスト.
         /// </summary>
-        public List<SystemTrayMenuItem> Items { get; set; } = [];
+        public List<SystemTrayMenuItem> Items { get; set; } =[];
     }
 
     /// <summary>

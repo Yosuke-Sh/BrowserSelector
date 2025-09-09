@@ -37,11 +37,25 @@ public interface IProtocolHandler
     string? ExtractUrlFromProtocol(string protocolUrl);
 
     /// <summary>
+    /// 繝励Ο繝医さ繝ｫURL縺九ｉ繝代Λ繝｡繝ｼ繧ｿ繧呈歓蜃ｺ（Uri版）.
+    /// </summary>
+    /// <param name="protocolUrl">繝励Ο繝医さ繝ｫURL.</param>
+    /// <returns>謚ｽ蜃ｺ縺輔ｌ縺欟RL.</returns>
+    Uri? ExtractUrlFromProtocol(Uri protocolUrl);
+
+    /// <summary>
     /// 繝励Ο繝医さ繝ｫURL繧堤函謌・.
     /// </summary>
     /// <param name="url">蜈・・URL.</param>
     /// <returns>繝励Ο繝医さ繝ｫURL.</returns>
     string CreateProtocolUrl(string url);
+
+    /// <summary>
+    /// 繝励Ο繝医さ繝ｫURL繧堤函謌・（Uri版）.
+    /// </summary>
+    /// <param name="url">蜈・・URL.</param>
+    /// <returns>繝励Ο繝医さ繝ｫURL.</returns>
+    Uri CreateProtocolUrl(Uri url);
 
     /// <summary>
     /// 繝励Ο繝医さ繝ｫ逋ｻ骭ｲ諠・ｱ繧貞叙蠕・.

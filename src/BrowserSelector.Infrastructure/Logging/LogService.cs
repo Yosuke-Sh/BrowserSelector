@@ -16,7 +16,7 @@ public class LogService : ILogService
     private readonly object _lockObject = new();
     private readonly string _defaultLogFolder;
     private LogSettings _settings;
-    private int _eventCounter = 0;
+    private int _eventCounter;
 
     public LogService()
     {

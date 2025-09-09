@@ -248,7 +248,7 @@ public class TestUrlRuleService : IUrlRuleService
 
                 foreach (UrlRule? rule in enabledRules)
                 {
-                    if (rule.IsMatch(url))
+                    if (Uri.TryCreate(url, UriKind.Absolute, out var uri) ? rule.IsMatch(uri) : rule.IsMatch(url))
                     {
                         Browser? browser = browsers.FirstOrDefault(b => b.Name == rule.BrowserName);
                         if (browser != null)
@@ -268,6 +268,12 @@ public class TestUrlRuleService : IUrlRuleService
             _logService?.LogError($"URLマッチングエラー: {ex.Message}", "TestUrlRuleService", ex);
             return Task.FromResult<Browser?>(null);
         }
+    }
+
+    /// <inheritdoc/>
+    public Task<Browser?> FindMatchingBrowserAsync(Uri url, IEnumerable<Browser> browsers)
+    {
+        return FindMatchingBrowserAsync(url?.ToString() ?? string.Empty, browsers);
     }
 
     /// <inheritdoc/>

@@ -10,7 +10,7 @@ namespace BrowserSelector.Infrastructure.Services;
 /// </summary>
 public class UrlRuleService : IUrlRuleService
 {
-    private readonly List<UrlRule> _rules = [];
+    private readonly List<UrlRule> _rules= [];
     private readonly string _rulesFilePath;
     private readonly object _lockObject = new();
     private readonly ILogService? _logService;
@@ -270,6 +270,12 @@ public class UrlRuleService : IUrlRuleService
             _logService?.LogError($"ブラウザ検索エラー（無効な操作例外） - {ex.Message}", "UrlRuleService", ex);
             return Task.FromResult<Browser?>(null);
         }
+    }
+
+    /// <inheritdoc/>
+    public Task<Browser?> FindMatchingBrowserAsync(Uri url, IEnumerable<Browser> browsers)
+    {
+        return FindMatchingBrowserAsync(url?.ToString() ?? string.Empty, browsers);
     }
 
     /// <inheritdoc/>

@@ -12,14 +12,14 @@ namespace BrowserSelector.Core.Services;
 public interface ILocalizationService
 {
     /// <summary>
-    /// Gets 現在の言語を取得.
-    /// </summary>
-    CultureInfo CurrentCulture { get; }
-
-    /// <summary>
     /// 言語変更イベント
     /// </summary>
     event EventHandler<LanguageChangedEventArgs>? LanguageChanged;
+
+    /// <summary>
+    /// Gets 現在の言語を取得.
+    /// </summary>
+    CultureInfo CurrentCulture { get; }
 
     /// <summary>
     /// Gets サポートされている言語の一覧を取得.

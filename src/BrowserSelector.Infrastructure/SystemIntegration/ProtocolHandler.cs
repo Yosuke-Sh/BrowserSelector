@@ -128,6 +128,25 @@ public class ProtocolHandler : IProtocolHandler
     }
 
     /// <summary>
+    /// プロトコルURLからパラメータを抽出（Uri版）.
+    /// </summary>
+    /// <returns></returns>
+    public Uri? ExtractUrlFromProtocol(Uri protocolUrl)
+    {
+        var result = ExtractUrlFromProtocol(protocolUrl?.ToString() ?? string.Empty);
+        return result != null && Uri.TryCreate(result, UriKind.Absolute, out var uri) ? uri : null;
+    }
+
+    /// <summary>
+    /// プロトコルURLを生成（Uri版）.
+    /// </summary>
+    /// <returns></returns>
+    public Uri CreateProtocolUrl(Uri url)
+    {
+        return new Uri($"{ProtocolName}://{url}");
+    }
+
+    /// <summary>
     /// プロトコル登録情報を取得.
     /// </summary>
     /// <returns></returns>
