@@ -18,6 +18,19 @@ namespace BrowserSelector.Presentation.ViewModels;
 public class SettingsChangedEventArgs : EventArgs
 {
     /// <summary>
+    /// Initializes a new instance of the <see cref="SettingsChangedEventArgs"/> class.
+    /// </summary>
+    /// <param name="settingType">設定タイプ.</param>
+    /// <param name="oldValue">古い値.</param>
+    /// <param name="newValue">新しい値.</param>
+    public SettingsChangedEventArgs(string settingType, object? oldValue, object? newValue)
+    {
+        SettingType = settingType;
+        OldValue = oldValue;
+        NewValue = newValue;
+    }
+
+    /// <summary>
     /// Gets the setting type.
     /// </summary>
     public string SettingType { get; }
@@ -31,19 +44,6 @@ public class SettingsChangedEventArgs : EventArgs
     /// Gets the new value.
     /// </summary>
     public object? NewValue { get; }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="SettingsChangedEventArgs"/> class.
-    /// </summary>
-    /// <param name="settingType">設定タイプ.</param>
-    /// <param name="oldValue">古い値.</param>
-    /// <param name="newValue">新しい値.</param>
-    public SettingsChangedEventArgs(string settingType, object? oldValue, object? newValue)
-    {
-        SettingType = settingType;
-        OldValue = oldValue;
-        NewValue = newValue;
-    }
 }
 
 /// <summary>

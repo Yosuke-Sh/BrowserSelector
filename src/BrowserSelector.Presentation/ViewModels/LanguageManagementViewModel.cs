@@ -36,6 +36,9 @@ public partial class LanguageManagementViewModel : ObservableObject
     [ObservableProperty]
     private bool _isGeneratingTemplate;
 
+    [ObservableProperty]
+    private string _statusMessage = string.Empty;
+
     partial void OnSelectedLanguageCodeChanged(LanguageCodeInfo? value)
     {
         if (value != null)
@@ -44,9 +47,6 @@ public partial class LanguageManagementViewModel : ObservableObject
             NewLanguageName = value.NativeName;
         }
     }
-
-    [ObservableProperty]
-    private string _statusMessage = string.Empty;
 
     public LanguageManagementViewModel(ICustomLanguageService customLanguageService, ILogService? logService = null)
     {

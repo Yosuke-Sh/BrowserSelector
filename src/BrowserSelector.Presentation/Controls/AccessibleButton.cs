@@ -64,6 +64,12 @@ public class AccessibleButton : Button
         set => SetValue(FocusBorderThicknessProperty, value);
     }
 
+    static AccessibleButton()
+    {
+        DefaultStyleKeyProperty.OverrideMetadata(typeof(AccessibleButton),
+            new FrameworkPropertyMetadata(typeof(AccessibleButton)));
+    }
+
     /// <summary>
     /// Gets or sets a value indicating whether フォーカスインジケーターを表示するかどうか.
     /// </summary>
@@ -71,12 +77,6 @@ public class AccessibleButton : Button
     {
         get => (bool)GetValue(ShowFocusIndicatorProperty);
         set => SetValue(ShowFocusIndicatorProperty, value);
-    }
-
-    static AccessibleButton()
-    {
-        DefaultStyleKeyProperty.OverrideMetadata(typeof(AccessibleButton),
-            new FrameworkPropertyMetadata(typeof(AccessibleButton)));
     }
 
     public AccessibleButton()

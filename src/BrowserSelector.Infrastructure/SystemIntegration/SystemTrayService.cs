@@ -11,6 +11,10 @@ namespace BrowserSelector.Infrastructure.SystemIntegration;
 /// </summary>
 public class SystemTrayService : ISystemTrayService, IDisposable
 {
+    private NotifyIcon? _notifyIcon;
+    private ContextMenuStrip? _contextMenu;
+    private bool _disposed;
+
     private static Icon LoadIcon(string iconPath)
     {
         try
@@ -27,10 +31,6 @@ public class SystemTrayService : ISystemTrayService, IDisposable
 
         return SystemIcons.Application;
     }
-
-    private NotifyIcon? _notifyIcon;
-    private ContextMenuStrip? _contextMenu;
-    private bool _disposed;
 
     /// <inheritdoc/>
     public event EventHandler<SystemTrayEventArgs>? SystemTrayAction;

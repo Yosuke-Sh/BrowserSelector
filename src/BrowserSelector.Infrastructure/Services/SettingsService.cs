@@ -11,6 +11,12 @@ namespace BrowserSelector.Infrastructure.Services;
 /// </summary>
 public class SettingsService : ISettingsService
 {
+    private readonly string _settingsDirectory;
+    private readonly string _appSettingsPath;
+    private readonly string _visualSettingsPath;
+    private readonly string _logSettingsPath;
+    private readonly ILogService? _logService;
+
     /// <summary>
     /// JSONシリアライザーオプションを取得.
     /// </summary>
@@ -22,12 +28,6 @@ public class SettingsService : ISettingsService
             Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
         };
     }
-
-    private readonly string _settingsDirectory;
-    private readonly string _appSettingsPath;
-    private readonly string _visualSettingsPath;
-    private readonly string _logSettingsPath;
-    private readonly ILogService? _logService;
 
     public SettingsService(ILogService? logService = null)
     {

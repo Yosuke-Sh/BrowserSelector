@@ -75,7 +75,7 @@ public class UpdateService : IUpdateService
         try
         {
             string tempPath = Path.GetTempFileName();
-            HttpResponseMessage response = await _httpClient.GetAsync(new Uri(updateInfo.DownloadUrl), HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
+            HttpResponseMessage response = await _httpClient.GetAsync(updateInfo.DownloadUrl, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
             _ = response.EnsureSuccessStatusCode();
 
             long totalBytes = response.Content.Headers.ContentLength ?? 0;

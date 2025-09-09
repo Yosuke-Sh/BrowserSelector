@@ -15,12 +15,12 @@ namespace BrowserSelector.Presentation.Views;
 /// </summary>
 public partial class IconSelectionDialog : Window
 {
+    private readonly ILogService? _logService;
+    private string? _currentSelectedPath;
+
     public string? SelectedIconPath { get; private set; }
 
     public int SelectedIconIndex { get; private set; } = -1;
-
-    private readonly ILogService? _logService;
-    private string? _currentSelectedPath;
 
     public IconSelectionDialog(ILogService? logService = null)
     {

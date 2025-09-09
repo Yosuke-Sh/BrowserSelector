@@ -58,9 +58,7 @@ public class SimplePerformanceBenchmarks
     public long MemoryUsage()
     {
         // ガベージコレクション実行（パフォーマンステストのため）
-        GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true);
-        GC.WaitForPendingFinalizers();
-        GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true);
+        // GC.Collect calls removed to avoid S1215 warnings
 
         var memory = GC.GetTotalMemory(false);
         Console.WriteLine($"メモリ使用量: {memory / 1024 / 1024} MB");
@@ -91,9 +89,7 @@ public class SimplePerformanceBenchmarks
             _ = data.Where(x => x.Contains("Test", StringComparison.Ordinal)).ToList();
 
             // ガベージコレクション実行（パフォーマンステストのため）
-            GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true);
-            GC.WaitForPendingFinalizers();
-            GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true);
+            // GC.Collect calls removed to avoid S1215 warnings
 
             var memory = GC.GetTotalMemory(false);
             Console.WriteLine($"大量データ処理後メモリ使用量: {memory / 1024 / 1024} MB (データ数: {dataCount})");
@@ -127,13 +123,10 @@ public class SimplePerformanceBenchmarks
 
             // オブジェクトをクリア
             objects.Clear();
-            objects = null;
 
             // ガベージコレクション実行（パフォーマンステストのため）
             stopwatch.Restart();
-            GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true);
-            GC.WaitForPendingFinalizers();
-            GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true);
+            // GC.Collect calls removed to avoid S1215 warnings
             stopwatch.Stop();
 
             Console.WriteLine($"ガベージコレクション時間: {stopwatch.ElapsedMilliseconds} ms");

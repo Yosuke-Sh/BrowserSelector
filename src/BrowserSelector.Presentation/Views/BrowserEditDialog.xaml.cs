@@ -12,11 +12,11 @@ namespace BrowserSelector.Presentation.Views;
 /// </summary>
 public partial class BrowserEditDialog : Window
 {
-    public Browser Browser { get; private set; }
-
     private readonly bool _isNewBrowser;
     private readonly bool _isSystemBrowser;
     private readonly ILogService? _logService;
+
+    public Browser Browser { get; private set; }
 
     public BrowserEditDialog(Browser? browser = null, bool isSystemBrowser = false, ILogService? logService = null)
     {

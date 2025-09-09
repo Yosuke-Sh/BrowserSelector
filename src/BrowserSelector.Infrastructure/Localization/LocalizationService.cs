@@ -14,8 +14,8 @@ public class LocalizationService : ILocalizationService
     private readonly ResourceManager _resourceManager;
     private readonly ICustomLanguageService _customLanguageService;
     private readonly ILogService? _logService;
-    private Dictionary<string, string> _customResources= [];
-    private Dictionary<string, string> _jsonResources= [];
+    private Dictionary<string, string> _customResources = [];
+    private Dictionary<string, string> _jsonResources = [];
 
     public LocalizationService(ICustomLanguageService customLanguageService, ILogService? logService = null)
     {
