@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Quality gates with 85% coverage threshold
 - Security testing suite
 - Performance benchmarking with BenchmarkDotNet
+- STA-friendly testing: Introduced Xunit.StaFact and MSTest.STAExtensions
+- Coverage: Enabled AltCover alongside Coverlet and integrated reports
 
 ### Changed
 - Improved UI test stability

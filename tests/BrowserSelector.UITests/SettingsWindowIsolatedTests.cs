@@ -1,32 +1,49 @@
 using FlaUI.Core;
 using FlaUI.UIA3;
 using FluentAssertions;
+using Xunit;
+using Xunit.Sdk;
 
 namespace BrowserSelector.UITests;
 
 /// <summary>
 /// 設定画面の独立テスト（並列実行を避けるため分離）
 /// </summary>
-[TestClass]
-[DoNotParallelize]
-public class SettingsWindowIsolatedTests
+[Collection("UI Tests")]
+public class SettingsWindowIsolatedTests : IDisposable
 {
     private Application? _app = null;
     private UIA3Automation? _automation = null;
 
-    [TestInitialize]
-    public void Setup()
+    /// <summary>
+    /// UI要素を待機して取得するヘルパーメソッド
+    /// </summary>
+    private T? WaitForElement<T>(Func<T?> findElement, int timeoutMs = 5000) where T : class
+    {
+        var startTime = DateTime.Now;
+        while ((DateTime.Now - startTime).TotalMilliseconds < timeoutMs)
+        {
+            var element = findElement();
+            if (element != null)
+                return element;
+            
+            Thread.Sleep(100);
+        }
+        return null;
+    }
+
+    public SettingsWindowIsolatedTests()
     {
         try
         {
             string appPath = UITestHelper.GetApplicationPath();
             if (string.IsNullOrEmpty(appPath))
             {
-                Assert.Inconclusive("アプリケーションが見つかりません");
                 return;
             }
 
-            _app = Application.Launch(appPath);
+            // テスト用アプリケーションを起動
+            _app = UITestHelper.LaunchTestApplication(appPath);
             _automation = new UIA3Automation();
 
             // アプリケーションの起動を待機
@@ -34,12 +51,10 @@ public class SettingsWindowIsolatedTests
         }
         catch (Exception ex)
         {
-            Assert.Inconclusive($"UIテスト用アプリケーション起動に失敗: {ex.Message}");
         }
     }
 
-    [TestCleanup]
-    public void Cleanup()
+    public void Dispose()
     {
         _automation?.Dispose();
         _app?.Close();
@@ -97,7 +112,7 @@ public class SettingsWindowIsolatedTests
         return null;
     }
 
-    [TestMethod]
+    [Fact]
     public void SettingsWindow_ShouldOpenSuccessfully()
     {
         // Arrange
@@ -108,7 +123,7 @@ public class SettingsWindowIsolatedTests
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
 
         // Act - 設定ボタンをクリック
-        var settingsButton = mainWindow.FindFirstDescendant(cf => cf.ByName("SettingsButton"));
+        var settingsButton = WaitForElement(() => mainWindow.FindFirstDescendant(cf => cf.ByName("SettingsButton")));
         _ = settingsButton.Should().NotBeNull("設定ボタンが存在すること");
 
         settingsButton!.Click();
@@ -122,7 +137,7 @@ public class SettingsWindowIsolatedTests
         Console.WriteLine($"設定ウィンドウ検出成功: Name='{settingsWindow!.Name}', ClassName='{settingsWindow.Properties.ClassName.Value}'");
     }
 
-    [TestMethod]
+    [Fact]
     public void SettingsWindow_ShouldHaveAllTabs()
     {
         // Arrange
@@ -133,7 +148,7 @@ public class SettingsWindowIsolatedTests
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
 
         // Act - 設定ボタンをクリック
-        var settingsButton = mainWindow.FindFirstDescendant(cf => cf.ByName("SettingsButton"));
+        var settingsButton = WaitForElement(() => mainWindow.FindFirstDescendant(cf => cf.ByName("SettingsButton")));
         _ = settingsButton.Should().NotBeNull("設定ボタンが存在すること");
 
         settingsButton!.Click();
@@ -173,7 +188,7 @@ public class SettingsWindowIsolatedTests
         _ = logTab.Should().NotBeNull("ログ設定タブが存在すること");
     }
 
-    [TestMethod]
+    [Fact]
     public void SettingsWindow_ShouldHaveActionButtons()
     {
         // Arrange
@@ -184,7 +199,7 @@ public class SettingsWindowIsolatedTests
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
 
         // Act - 設定ボタンをクリック
-        var settingsButton = mainWindow.FindFirstDescendant(cf => cf.ByName("SettingsButton"));
+        var settingsButton = WaitForElement(() => mainWindow.FindFirstDescendant(cf => cf.ByName("SettingsButton")));
         _ = settingsButton.Should().NotBeNull("設定ボタンが存在すること");
 
         settingsButton!.Click();

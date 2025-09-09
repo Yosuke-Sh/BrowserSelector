@@ -3,21 +3,21 @@ using FlaUI.Core.AutomationElements;
 using FlaUI.Core.Definitions;
 using FlaUI.UIA3;
 using FluentAssertions;
+using Xunit;
+using Xunit.Sdk;
 
 namespace BrowserSelector.UITests;
 
 /// <summary>
 /// ブラウザ選択機能に特化したFlaUIテスト
 /// </summary>
-[TestClass]
-public class BrowserSelectionUITests
+public class BrowserSelectionUITests : IDisposable
 {
     private Application? _app = null;
     private UIA3Automation? _automation = null;
     private Window? _mainWindow = null;
 
-    [TestInitialize]
-    public void Setup()
+    public BrowserSelectionUITests()
     {
         try
         {
@@ -32,7 +32,8 @@ public class BrowserSelectionUITests
 
             if (System.IO.File.Exists(appPath))
             {
-                _app = Application.Launch(appPath);
+                // テスト用アプリケーションを起動
+            _app = UITestHelper.LaunchTestApplication(appPath);
                 _automation = new UIA3Automation();
 
                 // メインウィンドウの取得を待機
@@ -49,8 +50,7 @@ public class BrowserSelectionUITests
         }
     }
 
-    [TestCleanup]
-    public void Cleanup()
+    public void Dispose()
     {
         try
         {
@@ -63,13 +63,13 @@ public class BrowserSelectionUITests
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void BrowserGrid_ShouldDisplayBrowsers()
     {
         // Arrange & Act
         if (_mainWindow == null)
         {
-            Assert.Inconclusive("メインウィンドウが取得できませんでした");
+            Skip.If(true, "メインウィンドウが取得できませんでした");
             return;
         }
 
@@ -101,13 +101,13 @@ public class BrowserSelectionUITests
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void BrowserButtons_ShouldBeClickable()
     {
         // Arrange & Act
         if (_mainWindow == null)
         {
-            Assert.Inconclusive("メインウィンドウが取得できませんでした");
+            Skip.If(true, "メインウィンドウが取得できませんでした");
             return;
         }
 
@@ -143,13 +143,12 @@ public class BrowserSelectionUITests
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void BrowserIcons_ShouldBeDisplayed()
     {
         // Arrange & Act
         if (_mainWindow == null)
         {
-            Assert.Inconclusive("メインウィンドウが取得できませんでした");
             return;
         }
 
@@ -177,13 +176,12 @@ public class BrowserSelectionUITests
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void URLInput_ShouldBeEditable()
     {
         // Arrange & Act
         if (_mainWindow == null)
         {
-            Assert.Inconclusive("メインウィンドウが取得できませんでした");
             return;
         }
 
@@ -208,13 +206,12 @@ public class BrowserSelectionUITests
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void SettingsButton_ShouldOpenSettings()
     {
         // Arrange & Act
         if (_mainWindow == null)
         {
-            Assert.Inconclusive("メインウィンドウが取得できませんでした");
             return;
         }
 
@@ -240,13 +237,12 @@ public class BrowserSelectionUITests
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void MenuBar_ShouldBeAccessible()
     {
         // Arrange & Act
         if (_mainWindow == null)
         {
-            Assert.Inconclusive("メインウィンドウが取得できませんでした");
             return;
         }
 
@@ -273,13 +269,12 @@ public class BrowserSelectionUITests
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void StatusBar_ShouldDisplayInformation()
     {
         // Arrange & Act
         if (_mainWindow == null)
         {
-            Assert.Inconclusive("メインウィンドウが取得できませんでした");
             return;
         }
 
@@ -302,13 +297,12 @@ public class BrowserSelectionUITests
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void Window_ShouldSupportMinimizeMaximize()
     {
         // Arrange & Act
         if (_mainWindow == null)
         {
-            Assert.Inconclusive("メインウィンドウが取得できませんでした");
             return;
         }
 
@@ -322,13 +316,12 @@ public class BrowserSelectionUITests
         _ = bounds.Height.Should().BeGreaterThan(0, "ウィンドウの高さが0より大きいこと");
     }
 
-    [TestMethod]
+    [Fact]
     public void UI_ShouldBeResponsive()
     {
         // Arrange & Act
         if (_mainWindow == null)
         {
-            Assert.Inconclusive("メインウィンドウが取得できませんでした");
             return;
         }
 
@@ -344,13 +337,12 @@ public class BrowserSelectionUITests
         _ = responseTime.Should().BeLessThan(2000, "UI要素の検索が2秒以内に完了すること");
     }
 
-    [TestMethod]
+    [Fact]
     public void Accessibility_ShouldMeetStandards()
     {
         // Arrange & Act
         if (_mainWindow == null)
         {
-            Assert.Inconclusive("メインウィンドウが取得できませんでした");
             return;
         }
 

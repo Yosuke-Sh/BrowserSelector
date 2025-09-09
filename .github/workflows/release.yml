@@ -123,3 +123,5 @@ jobs:
         asset_path: ./release-artifacts/BrowserSelector-Portable.zip
         asset_name: BrowserSelector-Portable.zip
         asset_content_type: application/zip
+
+

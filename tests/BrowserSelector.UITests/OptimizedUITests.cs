@@ -1,32 +1,48 @@
 using FlaUI.Core;
 using FlaUI.UIA3;
 using FluentAssertions;
+using Xunit;
 
 namespace BrowserSelector.UITests;
 
 /// <summary>
 /// 最適化されたUIテスト（実用的なテストのみ）
 /// </summary>
-[TestClass]
-[DoNotParallelize]
-public class OptimizedUITests
+[Collection("UI Tests")]
+public class OptimizedUITests : IDisposable
 {
     private Application? _app = null;
     private UIA3Automation? _automation = null;
 
-    [TestInitialize]
-    public void Setup()
+    /// <summary>
+    /// UI要素を待機して取得するヘルパーメソッド
+    /// </summary>
+    private T? WaitForElement<T>(Func<T?> findElement, int timeoutMs = 5000) where T : class
+    {
+        var startTime = DateTime.Now;
+        while ((DateTime.Now - startTime).TotalMilliseconds < timeoutMs)
+        {
+            var element = findElement();
+            if (element != null)
+                return element;
+            
+            Thread.Sleep(100);
+        }
+        return null;
+    }
+
+    public OptimizedUITests()
     {
         try
         {
             string appPath = UITestHelper.GetApplicationPath();
             if (string.IsNullOrEmpty(appPath))
             {
-                Assert.Inconclusive("アプリケーションが見つかりません");
-                return;
+                throw new InvalidOperationException("アプリケーションが見つかりません");
             }
 
-            _app = Application.Launch(appPath);
+            // テスト用アプリケーションを起動
+            _app = UITestHelper.LaunchTestApplication(appPath);
             _automation = new UIA3Automation();
 
             // アプリケーションの起動を待機
@@ -34,19 +50,18 @@ public class OptimizedUITests
         }
         catch (Exception ex)
         {
-            Assert.Inconclusive($"UIテスト用アプリケーション起動に失敗: {ex.Message}");
+            throw new InvalidOperationException($"UIテスト用アプリケーション起動に失敗: {ex.Message}", ex);
         }
     }
 
-    [TestCleanup]
-    public void Cleanup()
+    public void Dispose()
     {
         _automation?.Dispose();
         _app?.Close();
     }
 
-    [TestMethod]
-    public void MainWindow_ShouldHaveBasicElements()
+        [Fact]
+        public void MainWindow_ShouldHaveBasicElements()
     {
         // Arrange
         _ = _app.Should().NotBeNull("アプリケーションが起動していること");
@@ -56,17 +71,17 @@ public class OptimizedUITests
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
 
         // Assert - 基本的なUI要素が存在すること
-        var urlInput = mainWindow.FindFirstDescendant(cf => cf.ByName("UrlInputTextBox"));
-        var browserContainer = mainWindow.FindFirstDescendant(cf => cf.ByName("BrowserButtonsContainer"));
-        var settingsButton = mainWindow.FindFirstDescendant(cf => cf.ByName("SettingsButton"));
+        var urlInput = WaitForElement(() => mainWindow.FindFirstDescendant(cf => cf.ByName("UrlInputTextBox")));
+        var browserContainer = WaitForElement(() => mainWindow.FindFirstDescendant(cf => cf.ByName("BrowserButtonsContainer")));
+        var settingsButton = WaitForElement(() => mainWindow.FindFirstDescendant(cf => cf.ByName("SettingsButton")));
 
         _ = urlInput.Should().NotBeNull("URL入力テキストボックスが存在すること");
         _ = browserContainer.Should().NotBeNull("ブラウザボタンコンテナが存在すること");
         _ = settingsButton.Should().NotBeNull("設定ボタンが存在すること");
     }
 
-    [TestMethod]
-    public void MainWindow_ShouldAcceptUrlInput()
+        [Fact]
+        public void MainWindow_ShouldAcceptUrlInput()
     {
         // Arrange
         _ = _app.Should().NotBeNull("アプリケーションが起動していること");
@@ -76,7 +91,7 @@ public class OptimizedUITests
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
 
         // Act - URLを入力
-        var urlInput = mainWindow.FindFirstDescendant(cf => cf.ByName("UrlInputTextBox"));
+        var urlInput = WaitForElement(() => mainWindow.FindFirstDescendant(cf => cf.ByName("UrlInputTextBox")));
         _ = urlInput.Should().NotBeNull("URL入力テキストボックスが存在すること");
 
         urlInput!.Click();
@@ -92,8 +107,8 @@ public class OptimizedUITests
     }
 
 
-    [TestMethod]
-    public void BrowserButtons_ShouldBeVisible()
+        [Fact]
+        public void BrowserButtons_ShouldBeVisible()
     {
         // Arrange
         _ = _app.Should().NotBeNull("アプリケーションが起動していること");
@@ -103,7 +118,7 @@ public class OptimizedUITests
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
 
         // Act - URLを設定してブラウザボタンを有効化
-        var urlInput = mainWindow.FindFirstDescendant(cf => cf.ByName("UrlInputTextBox"));
+        var urlInput = WaitForElement(() => mainWindow.FindFirstDescendant(cf => cf.ByName("UrlInputTextBox")));
         _ = urlInput.Should().NotBeNull("URL入力テキストボックスが存在すること");
 
         urlInput!.Click();

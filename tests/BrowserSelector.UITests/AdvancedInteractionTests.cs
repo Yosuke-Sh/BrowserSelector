@@ -3,21 +3,22 @@ using FlaUI.Core.AutomationElements;
 using FlaUI.Core.Definitions;
 using FlaUI.UIA3;
 using FluentAssertions;
+using Xunit;
+using Xunit.Sdk;
 
 namespace BrowserSelector.UITests;
 
 /// <summary>
 /// 高度なインタラクションテスト（キーボード・マウス操作）
 /// </summary>
-[TestClass]
-public class AdvancedInteractionTests
+[Collection("UI Tests")]
+public class AdvancedInteractionTests : IDisposable
 {
     private Application? _app = null;
     private UIA3Automation? _automation = null;
     private Window? _mainWindow = null;
 
-    [TestInitialize]
-    public void Setup()
+    public AdvancedInteractionTests()
     {
         try
         {
@@ -32,7 +33,8 @@ public class AdvancedInteractionTests
 
             if (System.IO.File.Exists(appPath))
             {
-                _app = Application.Launch(appPath);
+                // テスト用アプリケーションを起動
+            _app = UITestHelper.LaunchTestApplication(appPath);
                 _automation = new UIA3Automation();
 
                 // メインウィンドウの取得を待機
@@ -49,8 +51,7 @@ public class AdvancedInteractionTests
         }
     }
 
-    [TestCleanup]
-    public void Cleanup()
+    public void Dispose()
     {
         try
         {
@@ -63,13 +64,12 @@ public class AdvancedInteractionTests
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void KeyboardNavigation_ShouldWorkCorrectly()
     {
         // Arrange & Act
         if (_mainWindow == null)
         {
-            Assert.Inconclusive("メインウィンドウが取得できませんでした");
             return;
         }
 
@@ -108,13 +108,12 @@ public class AdvancedInteractionTests
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void TabNavigation_ShouldWorkCorrectly()
     {
         // Arrange & Act
         if (_mainWindow == null)
         {
-            Assert.Inconclusive("メインウィンドウが取得できませんでした");
             return;
         }
 
@@ -149,13 +148,12 @@ public class AdvancedInteractionTests
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void MouseInteraction_ShouldWorkCorrectly()
     {
         // Arrange & Act
         if (_mainWindow == null)
         {
-            Assert.Inconclusive("メインウィンドウが取得できませんでした");
             return;
         }
 
@@ -186,13 +184,12 @@ public class AdvancedInteractionTests
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void ContextMenu_ShouldBeAccessible()
     {
         // Arrange & Act
         if (_mainWindow == null)
         {
-            Assert.Inconclusive("メインウィンドウが取得できませんでした");
             return;
         }
 
@@ -219,13 +216,12 @@ public class AdvancedInteractionTests
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void DragAndDrop_ShouldBeSupported()
     {
         // Arrange & Act
         if (_mainWindow == null)
         {
-            Assert.Inconclusive("メインウィンドウが取得できませんでした");
             return;
         }
 
@@ -257,13 +253,12 @@ public class AdvancedInteractionTests
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void ScrollableElements_ShouldWorkCorrectly()
     {
         // Arrange & Act
         if (_mainWindow == null)
         {
-            Assert.Inconclusive("メインウィンドウが取得できませんでした");
             return;
         }
 
@@ -290,13 +285,12 @@ public class AdvancedInteractionTests
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void WindowManagement_ShouldWorkCorrectly()
     {
         // Arrange & Act
         if (_mainWindow == null)
         {
-            Assert.Inconclusive("メインウィンドウが取得できませんでした");
             return;
         }
 
@@ -324,13 +318,12 @@ public class AdvancedInteractionTests
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void Tooltip_ShouldBeDisplayed()
     {
         // Arrange & Act
         if (_mainWindow == null)
         {
-            Assert.Inconclusive("メインウィンドウが取得できませんでした");
             return;
         }
 
@@ -357,13 +350,12 @@ public class AdvancedInteractionTests
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void Accessibility_ShouldSupportScreenReader()
     {
         // Arrange & Act
         if (_mainWindow == null)
         {
-            Assert.Inconclusive("メインウィンドウが取得できませんでした");
             return;
         }
 
@@ -399,13 +391,12 @@ public class AdvancedInteractionTests
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void HighContrast_ShouldBeSupported()
     {
         // Arrange & Act
         if (_mainWindow == null)
         {
-            Assert.Inconclusive("メインウィンドウが取得できませんでした");
             return;
         }
 

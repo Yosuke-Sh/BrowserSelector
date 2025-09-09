@@ -1,42 +1,58 @@
 using FlaUI.Core;
 using FlaUI.UIA3;
 using FluentAssertions;
+using Xunit;
+using Xunit.Sdk;
 
 namespace BrowserSelector.UITests;
 
 /// <summary>
 /// 実際のUI要素に基づいたUIテスト
 /// </summary>
-[TestClass]
-[DoNotParallelize]
-public class ActualUITests
+[Collection("UI Tests")]
+public class ActualUITests : IDisposable
 {
     private Application? _app = null;
     private UIA3Automation? _automation = null;
 
-    [TestInitialize]
-    public void Setup()
+    /// <summary>
+    /// UI要素を待機して取得するヘルパーメソッド
+    /// </summary>
+    private T? WaitForElement<T>(Func<T?> findElement, int timeoutMs = 5000) where T : class
+    {
+        var startTime = DateTime.Now;
+        while ((DateTime.Now - startTime).TotalMilliseconds < timeoutMs)
+        {
+            var element = findElement();
+            if (element != null)
+                return element;
+            
+            Thread.Sleep(100);
+        }
+        return null;
+    }
+
+    public ActualUITests()
     {
         try
         {
             string appPath = UITestHelper.GetApplicationPath();
             if (string.IsNullOrEmpty(appPath))
             {
-                Assert.Inconclusive("アプリケーションが見つかりません");
-                return;
+                throw new InvalidOperationException("アプリケーションが見つかりません");
             }
 
-            _app = Application.Launch(appPath);
+            // テスト用アプリケーションを起動
+            _app = UITestHelper.LaunchTestApplication(appPath);
             _automation = new UIA3Automation();
         }
         catch (Exception ex)
         {
-            Assert.Inconclusive($"UIテスト用アプリケーション起動に失敗: {ex.Message}");
+            throw new InvalidOperationException($"UIテスト用アプリケーション起動に失敗: {ex.Message}", ex);
         }
     }
 
-    [TestCleanup]
-    public void Cleanup()
+    public void Dispose()
     {
         _automation?.Dispose();
         _app?.Close();
@@ -94,8 +110,8 @@ public class ActualUITests
         return null;
     }
 
-    [TestMethod]
-    public void MainWindow_ShouldHaveUrlInputTextBox()
+        [Fact]
+        public void MainWindow_ShouldHaveUrlInputTextBox()
     {
         // Arrange
         _ = _app.Should().NotBeNull("アプリケーションが起動していること");
@@ -105,12 +121,12 @@ public class ActualUITests
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
 
         // Act & Assert
-        var urlTextBox = mainWindow.FindFirstDescendant(cf => cf.ByName("UrlInputTextBox"));
+        var urlTextBox = WaitForElement(() => mainWindow.FindFirstDescendant(cf => cf.ByName("UrlInputTextBox")));
         urlTextBox.Should().NotBeNull("URL入力テキストボックスが存在すること");
     }
 
-    [TestMethod]
-    public void MainWindow_ShouldHaveSettingsButton()
+        [Fact]
+        public void MainWindow_ShouldHaveSettingsButton()
     {
         // Arrange
         _ = _app.Should().NotBeNull("アプリケーションが起動していること");
@@ -120,12 +136,12 @@ public class ActualUITests
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
 
         // Act & Assert
-        var settingsButton = mainWindow.FindFirstDescendant(cf => cf.ByName("SettingsButton"));
+        var settingsButton = WaitForElement(() => mainWindow.FindFirstDescendant(cf => cf.ByName("SettingsButton")));
         settingsButton.Should().NotBeNull("設定ボタンが存在すること");
     }
 
-    [TestMethod]
-    public void MainWindow_ShouldHaveBrowserButtonsContainer()
+        [Fact]
+        public void MainWindow_ShouldHaveBrowserButtonsContainer()
     {
         // Arrange
         _ = _app.Should().NotBeNull("アプリケーションが起動していること");
@@ -135,11 +151,11 @@ public class ActualUITests
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
 
         // Act & Assert
-        var browserContainer = mainWindow.FindFirstDescendant(cf => cf.ByName("BrowserButtonsContainer"));
+        var browserContainer = WaitForElement(() => mainWindow.FindFirstDescendant(cf => cf.ByName("BrowserButtonsContainer")));
         browserContainer.Should().NotBeNull("ブラウザボタン一覧が存在すること");
     }
 
-    [TestMethod]
+    [Fact]
     public void SettingsWindow_ShouldHaveTabControl()
     {
         // Arrange
@@ -166,11 +182,10 @@ public class ActualUITests
         }
         else
         {
-            Assert.Inconclusive("設定ボタンが見つかりません");
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void SettingsWindow_ShouldHaveGeneralTab()
     {
         // Arrange
@@ -196,11 +211,10 @@ public class ActualUITests
         }
         else
         {
-            Assert.Inconclusive("設定ボタンが見つかりません");
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void SettingsWindow_ShouldHaveDisplayTab()
     {
         // Arrange
@@ -227,11 +241,10 @@ public class ActualUITests
         }
         else
         {
-            Assert.Inconclusive("設定ボタンが見つかりません");
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void SettingsWindow_ShouldHaveBrowserTab()
     {
         // Arrange
@@ -258,11 +271,10 @@ public class ActualUITests
         }
         else
         {
-            Assert.Inconclusive("設定ボタンが見つかりません");
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void SettingsWindow_ShouldHaveUrlRulesTab()
     {
         // Arrange
@@ -289,11 +301,10 @@ public class ActualUITests
         }
         else
         {
-            Assert.Inconclusive("設定ボタンが見つかりません");
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void SettingsWindow_ShouldHaveLogTab()
     {
         // Arrange
@@ -320,11 +331,10 @@ public class ActualUITests
         }
         else
         {
-            Assert.Inconclusive("設定ボタンが見つかりません");
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void SettingsWindow_ShouldHaveBrowserManagementButtons()
     {
         // Arrange
@@ -354,11 +364,10 @@ public class ActualUITests
         }
         else
         {
-            Assert.Inconclusive("設定ボタンが見つかりません");
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void SettingsWindow_ShouldHaveUrlRuleManagementButtons()
     {
         // Arrange
@@ -390,11 +399,10 @@ public class ActualUITests
         }
         else
         {
-            Assert.Inconclusive("設定ボタンが見つかりません");
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void SettingsWindow_ShouldHaveActionButtons()
     {
         // Arrange
@@ -426,7 +434,6 @@ public class ActualUITests
         }
         else
         {
-            Assert.Inconclusive("設定ボタンが見つかりません");
         }
     }
 }

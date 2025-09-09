@@ -7,20 +7,20 @@
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
     <UseWPF>true</UseWPF>
-    <!-- UIテストの並列実行を無効化 -->
-    <MSTestParallelize>false</MSTestParallelize>
-    <MSTestWorkers>1</MSTestWorkers>
-    <MSTestParallelizeWorkers>1</MSTestParallelizeWorkers>
-    <MSTestParallelizeScope>ClassLevel</MSTestParallelizeScope>
-    <!-- 追加の並列実行無効化設定 -->
-    <MSTestV2Parallelize>false</MSTestV2Parallelize>
-    <MSTestV2Workers>1</MSTestV2Workers>
-    <MSTestV2ParallelizeWorkers>1</MSTestV2ParallelizeWorkers>
-    <MSTestV2ParallelizeScope>ClassLevel</MSTestV2ParallelizeScope>
-    <!-- 完全な並列実行無効化 -->
-    <Parallelize>false</Parallelize>
-    <MaxParallelThreads>1</MaxParallelThreads>
-    <DisableParallelization>true</DisableParallelization>
+    <!-- UIテストの並列実行を有効化（パフォーマンス向上） -->
+    <MSTestParallelize>true</MSTestParallelize>
+    <MSTestWorkers>4</MSTestWorkers>
+    <MSTestParallelizeWorkers>4</MSTestParallelizeWorkers>
+    <MSTestParallelizeScope>MethodLevel</MSTestParallelizeScope>
+    <!-- 追加の並列実行有効化設定 -->
+    <MSTestV2Parallelize>true</MSTestV2Parallelize>
+    <MSTestV2Workers>4</MSTestV2Workers>
+    <MSTestV2ParallelizeWorkers>4</MSTestV2ParallelizeWorkers>
+    <MSTestV2ParallelizeScope>MethodLevel</MSTestV2ParallelizeScope>
+    <!-- 並列実行有効化 -->
+    <Parallelize>true</Parallelize>
+    <MaxParallelThreads>4</MaxParallelThreads>
+    <DisableParallelization>false</DisableParallelization>
     <!-- UIテスト専用のカバレッジ測定 -->
     <CollectCoverage>true</CollectCoverage>
     <CoverletOutputFormat>cobertura</CoverletOutputFormat>
@@ -50,8 +50,16 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="3.2.2" />
     <PackageReference Include="MSTest.TestFramework" Version="3.2.2" />
+    <PackageReference Include="xunit" Version="2.6.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="coverlet.collector" Version="6.0.2">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="AltCover" Version="8.9.57">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="FlaUI.Core" Version="4.0.0" />

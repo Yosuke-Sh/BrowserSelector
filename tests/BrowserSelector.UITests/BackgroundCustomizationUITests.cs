@@ -1,47 +1,48 @@
 using FlaUI.Core;
 using FlaUI.UIA3;
 using FluentAssertions;
+using Xunit;
+using Xunit.Sdk;
 
 namespace BrowserSelector.UITests;
 
 /// <summary>
 /// 背景カスタマイズ機能のUIテスト
 /// </summary>
-[TestClass]
-public class BackgroundCustomizationUITests
+[Collection("UI Tests")]
+public class BackgroundCustomizationUITests : IDisposable
 {
     private Application? _app = null;
     private UIA3Automation? _automation = null;
 
-    [TestInitialize]
-    public void Setup()
+    public BackgroundCustomizationUITests()
     {
         try
         {
             string appPath = UITestHelper.GetApplicationPath();
             if (string.IsNullOrEmpty(appPath))
             {
-                Assert.Inconclusive("アプリケーションが見つかりません");
+                Skip.If(true, "アプリケーションが見つかりません");
                 return;
             }
 
-            _app = Application.Launch(appPath);
+            // テスト用アプリケーションを起動
+            _app = UITestHelper.LaunchTestApplication(appPath);
             _automation = new UIA3Automation();
         }
         catch (Exception ex)
         {
-            Assert.Inconclusive($"UIテスト用アプリケーション起動に失敗: {ex.Message}");
+            Skip.If(true, $"UIテスト用アプリケーション起動に失敗: {ex.Message}");
         }
     }
 
-    [TestCleanup]
-    public void Cleanup()
+    public void Dispose()
     {
         _automation?.Dispose();
         _app?.Close();
     }
 
-    [TestMethod]
+    [Fact]
     public void BackgroundSettings_ShouldHaveColorSelection()
     {
         // Arrange
@@ -80,16 +81,16 @@ public class BackgroundCustomizationUITests
             }
             else
             {
-                Assert.Inconclusive("表示タブが見つかりません");
+                Skip.If(true,"表示タブが見つかりません");
             }
         }
         else
         {
-            Assert.Inconclusive("設定ボタンが見つかりません");
+            Skip.If(true,"設定ボタンが見つかりません");
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void BackgroundSettings_ShouldHaveGradientOptions()
     {
         // Arrange
@@ -131,16 +132,16 @@ public class BackgroundCustomizationUITests
             }
             else
             {
-                Assert.Inconclusive("表示タブが見つかりません");
+                Skip.If(true,"表示タブが見つかりません");
             }
         }
         else
         {
-            Assert.Inconclusive("設定ボタンが見つかりません");
+            Skip.If(true,"設定ボタンが見つかりません");
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void BackgroundSettings_ShouldHaveGradientDirectionOptions()
     {
         // Arrange
@@ -187,16 +188,16 @@ public class BackgroundCustomizationUITests
             }
             else
             {
-                Assert.Inconclusive("表示タブが見つかりません");
+                Skip.If(true,"表示タブが見つかりません");
             }
         }
         else
         {
-            Assert.Inconclusive("設定ボタンが見つかりません");
+            Skip.If(true,"設定ボタンが見つかりません");
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void WindowSettings_ShouldHaveSizeConfiguration()
     {
         // Arrange
@@ -235,16 +236,16 @@ public class BackgroundCustomizationUITests
             }
             else
             {
-                Assert.Inconclusive("表示タブが見つかりません");
+                Skip.If(true,"表示タブが見つかりません");
             }
         }
         else
         {
-            Assert.Inconclusive("設定ボタンが見つかりません");
+            Skip.If(true,"設定ボタンが見つかりません");
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void WindowSettings_ShouldHaveLogoDisplayOption()
     {
         // Arrange
@@ -280,16 +281,16 @@ public class BackgroundCustomizationUITests
             }
             else
             {
-                Assert.Inconclusive("表示タブが見つかりません");
+                Skip.If(true,"表示タブが見つかりません");
             }
         }
         else
         {
-            Assert.Inconclusive("設定ボタンが見つかりません");
+            Skip.If(true,"設定ボタンが見つかりません");
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void WindowSettings_ShouldHaveUrlInputDisplayOption()
     {
         // Arrange
@@ -325,12 +326,12 @@ public class BackgroundCustomizationUITests
             }
             else
             {
-                Assert.Inconclusive("表示タブが見つかりません");
+                Skip.If(true,"表示タブが見つかりません");
             }
         }
         else
         {
-            Assert.Inconclusive("設定ボタンが見つかりません");
+            Skip.If(true,"設定ボタンが見つかりません");
         }
     }
 }

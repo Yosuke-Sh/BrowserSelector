@@ -1,4 +1,9 @@
 using System.IO;
+using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
+using FlaUI.Core;
+using FlaUI.Core.AutomationElements;
 
 namespace BrowserSelector.UITests;
 
@@ -159,6 +164,122 @@ public static class UITestHelper
             Console.WriteLine($"URL設定エラー: {ex.Message}");
             return false;
         }
+    }
+
+    /// <summary>
+    /// STAスレッドでアプリケーションを起動します
+    /// </summary>
+    /// <param name="appPath">アプリケーションのパス</param>
+    /// <returns>起動されたアプリケーション</returns>
+    public static Application LaunchApplicationInSTA(string appPath)
+    {
+        Application? app = null;
+        var tcs = new TaskCompletionSource<Application>();
+        var thread = new Thread(() =>
+        {
+            try
+            {
+                // STAスレッドでアプリケーションを起動
+                app = Application.Launch(appPath);
+                tcs.SetResult(app);
+            }
+            catch (Exception ex)
+            {
+                tcs.SetException(ex);
+            }
+        });
+
+        // STAスレッドとして設定
+        thread.SetApartmentState(ApartmentState.STA);
+        thread.Start();
+
+        // アプリケーションの起動を待機
+        if (!tcs.Task.Wait(30000)) // 30秒でタイムアウト
+        {
+            throw new TimeoutException("アプリケーションの起動がタイムアウトしました");
+        }
+
+        return tcs.Task.Result;
+    }
+
+    /// <summary>
+    /// プロセスを直接起動してSTAスレッドでアプリケーションを取得します
+    /// </summary>
+    /// <param name="appPath">アプリケーションのパス</param>
+    /// <returns>起動されたアプリケーション</returns>
+    public static Application LaunchApplicationWithProcess(string appPath)
+    {
+        var processStartInfo = new ProcessStartInfo
+        {
+            FileName = appPath,
+            UseShellExecute = false,
+            CreateNoWindow = false
+        };
+
+        var process = Process.Start(processStartInfo);
+        if (process == null)
+        {
+            throw new InvalidOperationException("プロセスの起動に失敗しました");
+        }
+
+        // プロセスが起動するまで少し待機
+        Thread.Sleep(2000);
+
+        // プロセスからアプリケーションを取得
+        var app = Application.Attach(process);
+        return app;
+    }
+
+    /// <summary>
+    /// テスト用のアプリケーションを起動します（STAスレッド対応・並列実行対応）
+    /// </summary>
+    /// <param name="appPath">アプリケーションのパス</param>
+    /// <returns>起動されたアプリケーション</returns>
+    public static Application LaunchTestApplication(string appPath)
+    {
+        // テスト用の環境変数を設定
+        Environment.SetEnvironmentVariable("BROWSERSELECTOR_TEST_MODE", "true");
+        
+        // 並列実行時のポート競合を避けるため、ランダムなポートを設定
+        int testPort = new Random().Next(50000, 60000);
+        Environment.SetEnvironmentVariable("BROWSERSELECTOR_TEST_PORT", testPort.ToString());
+        
+        // プロセス起動情報を設定
+        var startInfo = new ProcessStartInfo
+        {
+            FileName = appPath,
+            Arguments = $"--test-mode --port={testPort}",
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+        
+        // テストモード用の環境変数を設定
+        startInfo.EnvironmentVariables["TestMode"] = "true";
+        startInfo.EnvironmentVariables["BROWSERSELECTOR_TEST_MODE"] = "true";
+        startInfo.EnvironmentVariables["BROWSERSELECTOR_TEST_PORT"] = testPort.ToString();
+        
+        // プロセスを起動
+        var process = Process.Start(startInfo);
+        if (process == null)
+        {
+            throw new InvalidOperationException("アプリケーションの起動に失敗しました");
+        }
+        
+        // プロセスが起動するまで少し待機（並列実行時は短縮）
+        Thread.Sleep(1000);
+        
+        // FlaUIのApplication.Attachを使用してアプリケーションに接続
+        var app = Application.Attach(process);
+        
+        // メインウィンドウが利用可能になるまで待機（タイムアウトを短縮）
+        using var automation = new FlaUI.UIA3.UIA3Automation();
+        var mainWindow = app.GetMainWindow(automation, TimeSpan.FromSeconds(5));
+        if (mainWindow == null)
+        {
+            throw new InvalidOperationException("メインウィンドウの取得に失敗しました");
+        }
+
+        return app;
     }
 
     /// <summary>

@@ -24,7 +24,11 @@ public partial class App : Application
     {
         try
         {
-            _logService?.LogTrace($"アプリケーション起動処理開始: コマンドライン引数={string.Join(" ", e.Args)}", "App");
+            // テストモードの確認
+            bool isTestMode = e.Args.Contains("--test-mode") || 
+                             Environment.GetEnvironmentVariable("BROWSERSELECTOR_TEST_MODE") == "true";
+            
+            _logService?.LogTrace($"アプリケーション起動処理開始: コマンドライン引数={string.Join(" ", e.Args)}, テストモード={isTestMode}", "App");
             // ホストの構築
             _host = Host.CreateDefaultBuilder()
                 .ConfigureServices((context, services) =>
@@ -111,6 +115,7 @@ public partial class App : Application
                 mainViewModel.SetInitialUrl(initialUrl);
             }
 
+            _logService.LogInformation("テストモード: MainWindowを作成", "App");
             Presentation.Views.MainWindow mainWindow = new(mainViewModel, _logService);
             _logService.LogInformation("MainWindow作成完了", "App");
 
@@ -227,6 +232,10 @@ public partial class App : Application
         }
         catch (Exception ex)
         {
+            // テストモードの確認
+            bool isTestMode = e.Args.Contains("--test-mode") || 
+                             Environment.GetEnvironmentVariable("BROWSERSELECTOR_TEST_MODE") == "true";
+            
             if (_logService != null)
             {
                 _logService.LogCritical($"アプリケーション起動で致命的エラーが発生: {ex.Message}", "App", ex);
@@ -239,6 +248,13 @@ public partial class App : Application
                 File.AppendAllText(logPath, $"スタックトレース: {ex.StackTrace}\n");
             }
 
+            // テストモードの場合は例外を再スロー（メッセージボックスを表示しない）
+            if (isTestMode)
+            {
+                throw new InvalidOperationException($"アプリケーションの起動に失敗しました: {ex.Message}", ex);
+            }
+            
+            // 通常モードではメッセージボックスを表示
             _ = MessageBox.Show($"アプリケーションの起動に失敗しました: {ex.Message}",
                           "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
             Shutdown();

@@ -34,6 +34,18 @@ dotnet test tests/BrowserSelector.UITests --collect:"XPlat Code Coverage" --resu
 Write-Host "`n=== 4. Generate Integrated Coverage Report ===" -ForegroundColor Cyan
 reportgenerator -reports:"$TestResultsDir\**\coverage.cobertura.xml" -targetdir:"$CoverageReportDir" -reporttypes:"Html"
 
+Write-Host "`n=== AltCover (optional) ===" -ForegroundColor Cyan
+try {
+    dotnet test tests/BrowserSelector.UnitTests /p:AltCover=true --results-directory "./$TestResultsDir/UnitTests.AltCover" --verbosity normal
+    dotnet test tests/BrowserSelector.AppTests   /p:AltCover=true --results-directory "./$TestResultsDir/AppTests.AltCover"   --verbosity normal
+    dotnet test tests/BrowserSelector.UITests    /p:AltCover=true --results-directory "./$TestResultsDir/UITests.AltCover"    --verbosity normal
+} catch {
+    Write-Warning "AltCover execution failed: $($_.Exception.Message)"
+}
+
+Write-Host "`n=== 4b. Merge AltCover reports (if any) ===" -ForegroundColor Cyan
+reportgenerator -reports:"$TestResultsDir\**\coverage.cobertura.xml;$TestResultsDir\**\coverage.xml" -targetdir:"$CoverageReportDir" -reporttypes:"Html"
+
 Write-Host "`n=== 5. Check Results ===" -ForegroundColor Cyan
 
 # Check coverage files

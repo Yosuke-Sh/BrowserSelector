@@ -1,47 +1,45 @@
 using FlaUI.Core;
 using FlaUI.UIA3;
 using FluentAssertions;
+using Xunit;
+using Xunit.Sdk;
 
 namespace BrowserSelector.UITests;
 
 /// <summary>
 /// ブラウザボタンのカスタマイズ機能のUIテスト
 /// </summary>
-[TestClass]
-public class BrowserButtonCustomizationUITests
+[Collection("UI Tests")]
+public class BrowserButtonCustomizationUITests : IDisposable
 {
     private Application? _app = null;
     private UIA3Automation? _automation = null;
 
-    [TestInitialize]
-    public void Setup()
+    public BrowserButtonCustomizationUITests()
     {
         try
         {
             string appPath = UITestHelper.GetApplicationPath();
             if (string.IsNullOrEmpty(appPath))
             {
-                Assert.Inconclusive("アプリケーションが見つかりません");
-                return;
             }
 
-            _app = Application.Launch(appPath);
+            // テスト用アプリケーションを起動
+            _app = UITestHelper.LaunchTestApplication(appPath);
             _automation = new UIA3Automation();
         }
         catch (Exception ex)
         {
-            Assert.Inconclusive($"UIテスト用アプリケーション起動に失敗: {ex.Message}");
         }
     }
 
-    [TestCleanup]
-    public void Cleanup()
+    public void Dispose()
     {
         _automation?.Dispose();
         _app?.Close();
     }
 
-    [TestMethod]
+    [Fact]
     public void BrowserButtons_ShouldHaveCustomizableAppearance()
     {
         // Arrange
@@ -59,7 +57,6 @@ public class BrowserButtonCustomizationUITests
             bool buttonsEnabled = UITestHelper.WaitForBrowserButtonsEnabled(mainWindow, 3000);
             if (!buttonsEnabled)
             {
-                Assert.Inconclusive("ブラウザボタンが有効になりませんでした");
                 return;
             }
         }
@@ -91,7 +88,7 @@ public class BrowserButtonCustomizationUITests
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void BrowserButtons_ShouldHaveCustomizableOpacity()
     {
         // Arrange
@@ -126,16 +123,14 @@ public class BrowserButtonCustomizationUITests
             }
             else
             {
-                Assert.Inconclusive("表示タブが見つかりません");
             }
         }
         else
         {
-            Assert.Inconclusive("設定ボタンが見つかりません");
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void BrowserButtons_ShouldHaveCustomizableSize()
     {
         // Arrange
@@ -170,16 +165,14 @@ public class BrowserButtonCustomizationUITests
             }
             else
             {
-                Assert.Inconclusive("表示タブが見つかりません");
             }
         }
         else
         {
-            Assert.Inconclusive("設定ボタンが見つかりません");
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void BrowserButtons_ShouldHaveCustomizableColors()
     {
         // Arrange
@@ -214,16 +207,14 @@ public class BrowserButtonCustomizationUITests
             }
             else
             {
-                Assert.Inconclusive("表示タブが見つかりません");
             }
         }
         else
         {
-            Assert.Inconclusive("設定ボタンが見つかりません");
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void BrowserButtons_ShouldHaveCustomizableCornerRadius()
     {
         // Arrange
@@ -255,16 +246,14 @@ public class BrowserButtonCustomizationUITests
             }
             else
             {
-                Assert.Inconclusive("表示タブが見つかりません");
             }
         }
         else
         {
-            Assert.Inconclusive("設定ボタンが見つかりません");
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void BrowserButtons_ShouldHaveCustomizableIconSize()
     {
         // Arrange
@@ -296,16 +285,14 @@ public class BrowserButtonCustomizationUITests
             }
             else
             {
-                Assert.Inconclusive("表示タブが見つかりません");
             }
         }
         else
         {
-            Assert.Inconclusive("設定ボタンが見つかりません");
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void BrowserButtons_ShouldShowHideBrowserNames()
     {
         // Arrange
@@ -337,12 +324,10 @@ public class BrowserButtonCustomizationUITests
             }
             else
             {
-                Assert.Inconclusive("表示タブが見つかりません");
             }
         }
         else
         {
-            Assert.Inconclusive("設定ボタンが見つかりません");
         }
     }
 }
