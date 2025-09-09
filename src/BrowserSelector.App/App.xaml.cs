@@ -119,7 +119,7 @@ public partial class App : Application
                 }
                 else
                 {
-                    mainViewModel.SetInitialUrl(initialUrl);
+                    mainViewModel.SetInitialUrl(new Uri(initialUrl));
                 }
             }
 

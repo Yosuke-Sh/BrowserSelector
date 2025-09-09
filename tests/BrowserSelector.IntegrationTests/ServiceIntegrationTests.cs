@@ -103,8 +103,8 @@ public class ServiceIntegrationTests : IDisposable
         string testUrl = "https://www.google.com";
 
         // Act
-        string normalizedUrl = await urlService.NormalizeUrlAsync(testUrl);
-        bool isValid = await urlService.ValidateUrlAsync(testUrl);
+        string normalizedUrl = await urlService.NormalizeUrlAsync(new Uri(testUrl));
+        bool isValid = await urlService.ValidateUrlAsync(new Uri(testUrl));
 
         // Assert
         _ = normalizedUrl.Should().NotBeNullOrEmpty("URL正規化が正常に動作すること");
@@ -157,8 +157,8 @@ public class ServiceIntegrationTests : IDisposable
         // Act & Assert
         foreach (string invalidUrl in invalidUrls)
         {
-            string normalizedUrl = await urlService.NormalizeUrlAsync(invalidUrl);
-            bool isValid = await urlService.ValidateUrlAsync(invalidUrl);
+            string normalizedUrl = await urlService.NormalizeUrlAsync(new Uri(invalidUrl));
+            bool isValid = await urlService.ValidateUrlAsync(new Uri(invalidUrl));
 
             normalizedUrl.Should().NotBeNull($"無効なURL '{invalidUrl}' の正規化結果がnullでないこと");
             isValid.Should().BeFalse($"無効なURL '{invalidUrl}' が正しく無効と判定されること");
@@ -223,8 +223,8 @@ public class ServiceIntegrationTests : IDisposable
         // Act & Assert
         foreach (string testUrl in testUrls)
         {
-            string normalizedUrl = await urlService.NormalizeUrlAsync(testUrl);
-            bool isValid = await urlService.ValidateUrlAsync(testUrl);
+            string normalizedUrl = await urlService.NormalizeUrlAsync(new Uri(testUrl));
+            bool isValid = await urlService.ValidateUrlAsync(new Uri(testUrl));
 
             normalizedUrl.Should().NotBeNullOrEmpty($"URL '{testUrl}' の正規化結果がnullでないこと");
             isValid.Should().BeTrue($"URL '{testUrl}' が有効と判定されること");

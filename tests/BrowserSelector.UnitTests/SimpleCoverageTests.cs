@@ -306,16 +306,16 @@ public class SimpleCoverageTests
         VisualSettings visualSettings = await settingsService.LoadVisualSettingsAsync();
         _ = visualSettings.Should().NotBeNull();
 
-        string normalizedUrl = await urlService.NormalizeUrlAsync("https://example.com");
+        string normalizedUrl = await urlService.NormalizeUrlAsync(new Uri("https://example.com"));
         _ = normalizedUrl.Should().NotBeNullOrEmpty();
 
-        bool isValidUrl = await urlService.ValidateUrlAsync("https://example.com");
+        bool isValidUrl = await urlService.ValidateUrlAsync(new Uri("https://example.com"));
         _ = isValidUrl.Should().BeTrue();
 
-        string domain = urlService.ExtractDomain("https://www.example.com/path");
+        string domain = urlService.ExtractDomain(new Uri("https://www.example.com/path"));
         _ = domain.Should().Be("www.example.com");
 
-        string urlWithProtocol = urlService.AddProtocolIfNeeded("example.com");
+        string urlWithProtocol = urlService.AddProtocolIfNeeded(new Uri("https://example.com"));
         _ = urlWithProtocol.Should().Be("https://example.com");
 
         IEnumerable<UrlRule> urlRules = await urlRuleService.GetAllRulesAsync();

@@ -17,14 +17,14 @@ public interface ILocalizationService
     CultureInfo CurrentCulture { get; }
 
     /// <summary>
-    /// Gets サポートされている言語の一覧を取得.
-    /// </summary>
-    IEnumerable<CultureInfo> SupportedLanguages { get; }
-
-    /// <summary>
     /// 言語変更イベント
     /// </summary>
     event EventHandler<LanguageChangedEventArgs>? LanguageChanged;
+
+    /// <summary>
+    /// Gets サポートされている言語の一覧を取得.
+    /// </summary>
+    IEnumerable<CultureInfo> SupportedLanguages { get; }
 
     /// <summary>
     /// 指定されたキーの文字列を取得.

@@ -107,8 +107,8 @@ public class BrowserSelectorE2ETests
 
             // URL処理のテスト（実際のブラウザ起動は行わない）
             IUrlService urlService = _serviceProvider!.GetRequiredService<IUrlService>();
-            string normalizedUrl = await urlService.NormalizeUrlAsync(testUrl);
-            bool isValid = await urlService.ValidateUrlAsync(testUrl);
+            string normalizedUrl = await urlService.NormalizeUrlAsync(new Uri(testUrl));
+            bool isValid = await urlService.ValidateUrlAsync(new Uri(testUrl));
             _ = normalizedUrl.Should().NotBeNullOrEmpty("URL正規化が正常に動作すること");
             _ = isValid.Should().BeTrue("URL検証が正常に動作すること");
         }

@@ -90,16 +90,16 @@ public class CoreProjectCoverageTests
         VisualSettings visualSettings = await settingsService.LoadVisualSettingsAsync();
         _ = visualSettings.Should().NotBeNull();
 
-        string normalizedUrl = await urlService.NormalizeUrlAsync("https://example.com");
+        string normalizedUrl = await urlService.NormalizeUrlAsync(new Uri("https://example.com"));
         _ = normalizedUrl.Should().NotBeNullOrEmpty();
 
-        bool isValidUrl = await urlService.ValidateUrlAsync("https://example.com");
+        bool isValidUrl = await urlService.ValidateUrlAsync(new Uri("https://example.com"));
         _ = isValidUrl.Should().BeTrue();
 
-        string domain = urlService.ExtractDomain("https://www.example.com/path");
+        string domain = urlService.ExtractDomain(new Uri("https://www.example.com/path"));
         _ = domain.Should().Be("www.example.com");
 
-        string urlWithProtocol = urlService.AddProtocolIfNeeded("example.com");
+        string urlWithProtocol = urlService.AddProtocolIfNeeded(new Uri("https://example.com"));
         _ = urlWithProtocol.Should().Be("https://example.com");
 
         IEnumerable<UrlRule> urlRules = await urlRuleService.GetAllRulesAsync();
@@ -324,19 +324,19 @@ public class CoreProjectCoverageTests
         ICustomLanguageService customLanguageService = _serviceProvider.GetRequiredService<ICustomLanguageService>();
 
         // Act & Assert - エッジケースのテスト
-        string emptyUrl = await urlService.NormalizeUrlAsync("");
+        string emptyUrl = await urlService.NormalizeUrlAsync(new Uri("https://example.com"));
         _ = emptyUrl.Should().BeEmpty();
 
-        string whitespaceUrl = await urlService.NormalizeUrlAsync("   ");
+        string whitespaceUrl = await urlService.NormalizeUrlAsync(new Uri("https://example.com"));
         _ = whitespaceUrl.Should().BeEmpty();
 
-        bool invalidUrl = await urlService.ValidateUrlAsync("invalid-url");
+        bool invalidUrl = await urlService.ValidateUrlAsync(new Uri("https://example.com"));
         _ = invalidUrl.Should().BeFalse();
 
-        string emptyDomain = urlService.ExtractDomain("");
+        string emptyDomain = urlService.ExtractDomain(new Uri("https://example.com"));
         _ = emptyDomain.Should().BeEmpty();
 
-        string urlWithProtocol = urlService.AddProtocolIfNeeded("http://example.com");
+        string urlWithProtocol = urlService.AddProtocolIfNeeded(new Uri("http://example.com"));
         _ = urlWithProtocol.Should().Be("http://example.com");
 
         // 設定のリセット

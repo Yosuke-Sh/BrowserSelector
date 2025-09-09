@@ -136,7 +136,7 @@ namespace BrowserSelector.UnitTests
             string testUrl = "https://www.example.com";
 
             // Act - 実際のURL正規化ロジックを実行
-            string result = await _urlService.NormalizeUrlAsync(testUrl);
+            string result = await _urlService.NormalizeUrlAsync(new Uri(testUrl));
 
             // Assert - 実際のロジックが実行されたことを確認
             _ = result.Should().NotBeNull();
@@ -151,8 +151,8 @@ namespace BrowserSelector.UnitTests
             string invalidUrl = "invalid-url";
 
             // Act - 実際のURL検証ロジックを実行
-            bool validResult = await _urlService.ValidateUrlAsync(validUrl);
-            bool invalidResult = await _urlService.ValidateUrlAsync(invalidUrl);
+            bool validResult = await _urlService.ValidateUrlAsync(new Uri(validUrl));
+            bool invalidResult = await _urlService.ValidateUrlAsync(new Uri(invalidUrl));
 
             // Assert - 実際のロジックが実行されたことを確認
             _ = validResult.Should().BeTrue();

@@ -63,7 +63,7 @@ namespace BrowserSelector.Core.Models
         /// <returns></returns>
         public override int GetHashCode()
         {
-            return CultureCode.GetHashCode();
+            return CultureCode.GetHashCode(StringComparison.Ordinal);
         }
     }
 }
