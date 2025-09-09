@@ -26,7 +26,7 @@ public class ActualUITests : IDisposable
             var element = findElement();
             if (element != null)
                 return element;
-            
+
             Thread.Sleep(100);
         }
         return null;

@@ -49,8 +49,10 @@ public class SettingsWindowIsolatedTests : IDisposable
             // アプリケーションの起動を待機
             System.Threading.Thread.Sleep(2000);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
+            // STAスレッドの問題により、UIテストをスキップします
+            Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
         }
     }
 

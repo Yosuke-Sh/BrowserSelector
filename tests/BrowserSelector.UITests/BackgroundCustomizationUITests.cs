@@ -28,7 +28,7 @@ public class BackgroundCustomizationUITests : IDisposable
             _app = UITestHelper.LaunchTestApplication(appPath);
             _automation = new UIA3Automation();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             Xunit.Assert.Fail("UIテスト用アプリケーション起動に失敗");
         }

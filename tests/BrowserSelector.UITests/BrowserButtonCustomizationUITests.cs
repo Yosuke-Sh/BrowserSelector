@@ -28,8 +28,10 @@ public class BrowserButtonCustomizationUITests : IDisposable
             _app = UITestHelper.LaunchTestApplication(appPath);
             _automation = new UIA3Automation();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
+            // STAスレッドの問題により、UIテストをスキップします
+            Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
         }
     }
 

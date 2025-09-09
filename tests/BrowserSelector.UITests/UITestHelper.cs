@@ -27,7 +27,7 @@ public static class UITestHelper
             // 現在のディレクトリからの別の相対パス
             Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "src", "BrowserSelector.App", "bin", "Debug", "net8.0-windows", "BrowserSelector.App.exe"),
             // 環境変数からのパス
-            Environment.GetEnvironmentVariable("BROWSERSELECTOR_APP_PATH") ?? ""
+            Environment.GetEnvironmentVariable("BROWSERSELECTOR_APP_PATH") ?? string.Empty
         };
 
         foreach (string candidate in pathCandidates)
