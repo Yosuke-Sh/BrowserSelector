@@ -5,7 +5,7 @@
 namespace BrowserSelector.Core.Enums
 {
     /// <summary>
-    /// グラデーションの方向を表す列挙型
+    /// グラデーションの方向を表す列挙型.
     /// </summary>
     public enum GradientDirection
     {

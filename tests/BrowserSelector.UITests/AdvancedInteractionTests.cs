@@ -65,10 +65,10 @@ public class AdvancedInteractionTests : IDisposable
     }
 
     [Fact]
-    public void KeyboardNavigation_ShouldWorkCorrectly()
+    public void KeyboardNavigationShouldWorkCorrectly()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         // フォーカス可能な要素を検索
         AutomationElement[] focusableElements = _mainWindow.FindAllChildren(cf =>
@@ -106,10 +106,10 @@ public class AdvancedInteractionTests : IDisposable
     }
 
     [Fact]
-    public void TabNavigation_ShouldWorkCorrectly()
+    public void TabNavigationShouldWorkCorrectly()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         // Tabキーでナビゲーション可能な要素を検索
         AutomationElement[] tabbableElements = _mainWindow.FindAllChildren(cf =>
@@ -143,10 +143,10 @@ public class AdvancedInteractionTests : IDisposable
     }
 
     [Fact]
-    public void MouseInteraction_ShouldWorkCorrectly()
+    public void MouseInteractionShouldWorkCorrectly()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         // クリック可能な要素を検索
         AutomationElement[] clickableElements = _mainWindow.FindAllChildren(cf =>
@@ -176,10 +176,10 @@ public class AdvancedInteractionTests : IDisposable
     }
 
     [Fact]
-    public void ContextMenu_ShouldBeAccessible()
+    public void ContextMenuShouldBeAccessible()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         // コンテキストメニューが表示可能な要素を検索
         AutomationElement[] contextMenuElements = _mainWindow.FindAllChildren(cf =>
@@ -205,10 +205,10 @@ public class AdvancedInteractionTests : IDisposable
     }
 
     [Fact]
-    public void DragAndDrop_ShouldBeSupported()
+    public void DragAndDropShouldBeSupported()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         // ドラッグ可能な要素を検索
         AutomationElement[] draggableElements = _mainWindow.FindAllChildren(cf =>
@@ -239,10 +239,10 @@ public class AdvancedInteractionTests : IDisposable
     }
 
     [Fact]
-    public void ScrollableElements_ShouldWorkCorrectly()
+    public void ScrollableElementsShouldWorkCorrectly()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         // スクロール可能な要素を検索
         AutomationElement[] scrollableElements = _mainWindow.FindAllChildren(cf =>
@@ -268,10 +268,10 @@ public class AdvancedInteractionTests : IDisposable
     }
 
     [Fact]
-    public void WindowManagement_ShouldWorkCorrectly()
+    public void WindowManagementShouldWorkCorrectly()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         // ウィンドウ管理ボタンを検索
         AutomationElement[] windowButtons = _mainWindow.FindAllChildren(cf =>
@@ -298,10 +298,10 @@ public class AdvancedInteractionTests : IDisposable
     }
 
     [Fact]
-    public void Tooltip_ShouldBeDisplayed()
+    public void TooltipShouldBeDisplayed()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         // ツールチップが表示可能な要素を検索
         AutomationElement[] tooltipElements = _mainWindow.FindAllChildren(cf =>
@@ -327,10 +327,10 @@ public class AdvancedInteractionTests : IDisposable
     }
 
     [Fact]
-    public void Accessibility_ShouldSupportScreenReader()
+    public void AccessibilityShouldSupportScreenReader()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         // スクリーンリーダー対応の要素を検索
         AutomationElement[] accessibleElements = _mainWindow.FindAllChildren(cf =>
@@ -365,10 +365,10 @@ public class AdvancedInteractionTests : IDisposable
     }
 
     [Fact]
-    public void HighContrast_ShouldBeSupported()
+    public void HighContrastShouldBeSupported()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         // 高コントラスト対応の要素を検索
         AutomationElement[] highContrastElements = _mainWindow.FindAllChildren(cf =>

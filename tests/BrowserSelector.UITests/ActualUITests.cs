@@ -67,19 +67,19 @@ public class ActualUITests : IDisposable
 
         // 方法1: ウィンドウ名で検索
         var settingsWindow = _app.GetAllTopLevelWindows(_automation)
-            .FirstOrDefault(w => w.Name.Contains("設定") || w.Name.Contains("Settings") || w.Name == "SettingsWindow");
+            .FirstOrDefault(w => w.Name.Contains("設定", StringComparison.Ordinal) || w.Name.Contains("Settings", StringComparison.Ordinal) || w.Name == "SettingsWindow");
 
         if (settingsWindow != null) return settingsWindow;
 
         // 方法2: ウィンドウプロパティで検索
         settingsWindow = _app.GetAllTopLevelWindows(_automation)
-            .FirstOrDefault(w => w.Properties.Name.Value.Contains("設定") || w.Properties.Name.Value.Contains("Settings"));
+            .FirstOrDefault(w => w.Properties.Name.Value.Contains("設定", StringComparison.Ordinal) || w.Properties.Name.Value.Contains("Settings", StringComparison.Ordinal));
 
         if (settingsWindow != null) return settingsWindow;
 
         // 方法3: クラス名で検索
         settingsWindow = _app.GetAllTopLevelWindows(_automation)
-            .FirstOrDefault(w => w.Properties.ClassName.Value.Contains("SettingsWindow"));
+            .FirstOrDefault(w => w.Properties.ClassName.Value.Contains("SettingsWindow", StringComparison.Ordinal));
 
         if (settingsWindow != null) return settingsWindow;
 
@@ -95,8 +95,8 @@ public class ActualUITests : IDisposable
                 // デバッグ情報を出力
                 Console.WriteLine($"検出されたウィンドウ: Name='{name}', ClassName='{className}'");
 
-                if (name.Contains("設定") || name.Contains("Settings") ||
-                    className.Contains("SettingsWindow") || className.Contains("Window"))
+                if (name.Contains("設定", StringComparison.Ordinal) || name.Contains("Settings", StringComparison.Ordinal) ||
+                    className.Contains("SettingsWindow", StringComparison.Ordinal) || className.Contains("Window", StringComparison.Ordinal))
                 {
                     return window;
                 }
@@ -111,10 +111,10 @@ public class ActualUITests : IDisposable
     }
 
         [Fact]
-        public void MainWindow_ShouldHaveUrlInputTextBox()
+        public void MainWindowShouldHaveUrlInputTextBox()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         var mainWindow = _app!.GetMainWindow(_automation!);
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
@@ -125,10 +125,10 @@ public class ActualUITests : IDisposable
     }
 
         [Fact]
-        public void MainWindow_ShouldHaveSettingsButton()
+        public void MainWindowShouldHaveSettingsButton()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         var mainWindow = _app!.GetMainWindow(_automation!);
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
@@ -139,10 +139,10 @@ public class ActualUITests : IDisposable
     }
 
         [Fact]
-        public void MainWindow_ShouldHaveBrowserButtonsContainer()
+        public void MainWindowShouldHaveBrowserButtonsContainer()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         var mainWindow = _app!.GetMainWindow(_automation!);
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
@@ -153,10 +153,10 @@ public class ActualUITests : IDisposable
     }
 
     [Fact]
-    public void SettingsWindow_ShouldHaveTabControl()
+    public void SettingsWindowShouldHaveTabControl()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         var mainWindow = _app!.GetMainWindow(_automation!);
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
@@ -182,10 +182,10 @@ public class ActualUITests : IDisposable
     }
 
     [Fact]
-    public void SettingsWindow_ShouldHaveGeneralTab()
+    public void SettingsWindowShouldHaveGeneralTab()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         var mainWindow = _app!.GetMainWindow(_automation!);
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
@@ -210,10 +210,10 @@ public class ActualUITests : IDisposable
     }
 
     [Fact]
-    public void SettingsWindow_ShouldHaveDisplayTab()
+    public void SettingsWindowShouldHaveDisplayTab()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         var mainWindow = _app!.GetMainWindow(_automation!);
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
@@ -226,7 +226,7 @@ public class ActualUITests : IDisposable
             Thread.Sleep(1000);
 
             var settingsWindow = _app.GetAllTopLevelWindows(_automation)
-                .FirstOrDefault(w => w.Name.Contains("設定") || w.Name.Contains("Settings"));
+                .FirstOrDefault(w => w.Name.Contains("設定", StringComparison.Ordinal) || w.Name.Contains("Settings", StringComparison.Ordinal));
             settingsWindow.Should().NotBeNull("設定ウィンドウが開かれること");
 
             // Assert
@@ -239,10 +239,10 @@ public class ActualUITests : IDisposable
     }
 
     [Fact]
-    public void SettingsWindow_ShouldHaveBrowserTab()
+    public void SettingsWindowShouldHaveBrowserTab()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         var mainWindow = _app!.GetMainWindow(_automation!);
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
@@ -255,7 +255,7 @@ public class ActualUITests : IDisposable
             Thread.Sleep(1000);
 
             var settingsWindow = _app.GetAllTopLevelWindows(_automation)
-                .FirstOrDefault(w => w.Name.Contains("設定") || w.Name.Contains("Settings"));
+                .FirstOrDefault(w => w.Name.Contains("設定", StringComparison.Ordinal) || w.Name.Contains("Settings", StringComparison.Ordinal));
             settingsWindow.Should().NotBeNull("設定ウィンドウが開かれること");
 
             // Assert
@@ -268,10 +268,10 @@ public class ActualUITests : IDisposable
     }
 
     [Fact]
-    public void SettingsWindow_ShouldHaveUrlRulesTab()
+    public void SettingsWindowShouldHaveUrlRulesTab()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         var mainWindow = _app!.GetMainWindow(_automation!);
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
@@ -284,7 +284,7 @@ public class ActualUITests : IDisposable
             Thread.Sleep(1000);
 
             var settingsWindow = _app.GetAllTopLevelWindows(_automation)
-                .FirstOrDefault(w => w.Name.Contains("設定") || w.Name.Contains("Settings"));
+                .FirstOrDefault(w => w.Name.Contains("設定", StringComparison.Ordinal) || w.Name.Contains("Settings", StringComparison.Ordinal));
             settingsWindow.Should().NotBeNull("設定ウィンドウが開かれること");
 
             // Assert
@@ -297,10 +297,10 @@ public class ActualUITests : IDisposable
     }
 
     [Fact]
-    public void SettingsWindow_ShouldHaveLogTab()
+    public void SettingsWindowShouldHaveLogTab()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         var mainWindow = _app!.GetMainWindow(_automation!);
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
@@ -313,7 +313,7 @@ public class ActualUITests : IDisposable
             Thread.Sleep(1000);
 
             var settingsWindow = _app.GetAllTopLevelWindows(_automation)
-                .FirstOrDefault(w => w.Name.Contains("設定") || w.Name.Contains("Settings"));
+                .FirstOrDefault(w => w.Name.Contains("設定", StringComparison.Ordinal) || w.Name.Contains("Settings", StringComparison.Ordinal));
             settingsWindow.Should().NotBeNull("設定ウィンドウが開かれること");
 
             // Assert
@@ -326,10 +326,10 @@ public class ActualUITests : IDisposable
     }
 
     [Fact]
-    public void SettingsWindow_ShouldHaveBrowserManagementButtons()
+    public void SettingsWindowShouldHaveBrowserManagementButtons()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         var mainWindow = _app!.GetMainWindow(_automation!);
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
@@ -342,7 +342,7 @@ public class ActualUITests : IDisposable
             Thread.Sleep(1000);
 
             var settingsWindow = _app.GetAllTopLevelWindows(_automation)
-                .FirstOrDefault(w => w.Name.Contains("設定") || w.Name.Contains("Settings"));
+                .FirstOrDefault(w => w.Name.Contains("設定", StringComparison.Ordinal) || w.Name.Contains("Settings", StringComparison.Ordinal));
             settingsWindow.Should().NotBeNull("設定ウィンドウが開かれること");
 
             // Assert
@@ -358,10 +358,10 @@ public class ActualUITests : IDisposable
     }
 
     [Fact]
-    public void SettingsWindow_ShouldHaveUrlRuleManagementButtons()
+    public void SettingsWindowShouldHaveUrlRuleManagementButtons()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         var mainWindow = _app!.GetMainWindow(_automation!);
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
@@ -374,7 +374,7 @@ public class ActualUITests : IDisposable
             Thread.Sleep(1000);
 
             var settingsWindow = _app.GetAllTopLevelWindows(_automation)
-                .FirstOrDefault(w => w.Name.Contains("設定") || w.Name.Contains("Settings"));
+                .FirstOrDefault(w => w.Name.Contains("設定", StringComparison.Ordinal) || w.Name.Contains("Settings", StringComparison.Ordinal));
             settingsWindow.Should().NotBeNull("設定ウィンドウが開かれること");
 
             // Assert
@@ -392,10 +392,10 @@ public class ActualUITests : IDisposable
     }
 
     [Fact]
-    public void SettingsWindow_ShouldHaveActionButtons()
+    public void SettingsWindowShouldHaveActionButtons()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         var mainWindow = _app!.GetMainWindow(_automation!);
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
@@ -408,7 +408,7 @@ public class ActualUITests : IDisposable
             Thread.Sleep(1000);
 
             var settingsWindow = _app.GetAllTopLevelWindows(_automation)
-                .FirstOrDefault(w => w.Name.Contains("設定") || w.Name.Contains("Settings"));
+                .FirstOrDefault(w => w.Name.Contains("設定", StringComparison.Ordinal) || w.Name.Contains("Settings", StringComparison.Ordinal));
             settingsWindow.Should().NotBeNull("設定ウィンドウが開かれること");
 
             // Assert

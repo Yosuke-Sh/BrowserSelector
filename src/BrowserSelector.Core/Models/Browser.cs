@@ -7,7 +7,7 @@ namespace BrowserSelector.Core.Models
     using CommunityToolkit.Mvvm.ComponentModel;
 
     /// <summary>
-    /// ブラウザ情報を表すモデル
+    /// ブラウザ情報を表すモデル.
     /// </summary>
     public partial class Browser : ObservableObject
     {
@@ -39,27 +39,27 @@ namespace BrowserSelector.Core.Models
         private int _useCount;
 
         /// <summary>
-        /// ブラウザの一意識別子
+        /// Gets or sets ブラウザの一意識別子.
         /// </summary>
         public Guid Id { get; set; } = Guid.NewGuid();
 
         /// <summary>
-        /// ブラウザの種類
+        /// Gets or sets ブラウザの種類.
         /// </summary>
         public BrowserType Type { get; set; } = BrowserType.Custom;
 
         /// <summary>
-        /// ブラウザが有効かどうかを判定
+        /// Gets a value indicating whether ブラウザが有効かどうかを判定.
         /// </summary>
         public bool IsValid => !string.IsNullOrWhiteSpace(Name) && !string.IsNullOrWhiteSpace(ExecutablePath);
 
         /// <summary>
-        /// ブラウザの表示名を取得
+        /// Gets ブラウザの表示名を取得.
         /// </summary>
         public string DisplayName => string.IsNullOrWhiteSpace(Name) ? "Unknown Browser" : Name;
 
         /// <summary>
-        /// 使用回数を増加
+        /// 使用回数を増加.
         /// </summary>
         public void IncrementUseCount()
         {
@@ -68,8 +68,9 @@ namespace BrowserSelector.Core.Models
         }
 
         /// <summary>
-        /// ブラウザの複製を作成
+        /// ブラウザの複製を作成.
         /// </summary>
+        /// <returns></returns>
         public Browser Clone()
         {
             return new Browser
@@ -88,7 +89,7 @@ namespace BrowserSelector.Core.Models
     }
 
     /// <summary>
-    /// ブラウザの種類を表す列挙型
+    /// ブラウザの種類を表す列挙型.
     /// </summary>
     public enum BrowserType
     {

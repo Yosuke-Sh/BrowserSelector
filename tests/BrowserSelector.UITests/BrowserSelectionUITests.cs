@@ -64,10 +64,10 @@ public class BrowserSelectionUITests : IDisposable
     }
 
     [Fact]
-    public void BrowserGrid_ShouldDisplayBrowsers()
+    public void BrowserGridShouldDisplayBrowsers()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         // ブラウザグリッドまたはリストを検索
         AutomationElement browserContainer = _mainWindow.FindFirstChild(cf =>
@@ -98,10 +98,10 @@ public class BrowserSelectionUITests : IDisposable
     }
 
     [Fact]
-    public void BrowserButtons_ShouldBeClickable()
+    public void BrowserButtonsShouldBeClickable()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         // ブラウザボタンを検索
         AutomationElement[] browserButtons = _mainWindow.FindAllChildren(cf =>
@@ -136,10 +136,10 @@ public class BrowserSelectionUITests : IDisposable
     }
 
     [Fact]
-    public void BrowserIcons_ShouldBeDisplayed()
+    public void BrowserIconsShouldBeDisplayed()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         // アイコン要素を検索
         AutomationElement[] iconElements = _mainWindow.FindAllChildren(cf =>
@@ -166,10 +166,10 @@ public class BrowserSelectionUITests : IDisposable
     }
 
     [Fact]
-    public void URLInput_ShouldBeEditable()
+    public void URLInputShouldBeEditable()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         // URL入力フィールドを検索
         AutomationElement urlInput = _mainWindow.FindFirstChild(cf =>
@@ -193,10 +193,10 @@ public class BrowserSelectionUITests : IDisposable
     }
 
     [Fact]
-    public void SettingsButton_ShouldOpenSettings()
+    public void SettingsButtonShouldOpenSettings()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         // 設定ボタンを検索
         AutomationElement settingsButton = _mainWindow.FindFirstChild(cf =>
@@ -221,10 +221,10 @@ public class BrowserSelectionUITests : IDisposable
     }
 
     [Fact]
-    public void MenuBar_ShouldBeAccessible()
+    public void MenuBarShouldBeAccessible()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         // メニューバーを検索
         AutomationElement menuBar = _mainWindow.FindFirstChild(cf =>
@@ -250,10 +250,10 @@ public class BrowserSelectionUITests : IDisposable
     }
 
     [Fact]
-    public void StatusBar_ShouldDisplayInformation()
+    public void StatusBarShouldDisplayInformation()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         // ステータスバーを検索
         AutomationElement statusBar = _mainWindow.FindFirstChild(cf =>
@@ -275,10 +275,10 @@ public class BrowserSelectionUITests : IDisposable
     }
 
     [Fact]
-    public void Window_ShouldSupportMinimizeMaximize()
+    public void WindowShouldSupportMinimizeMaximize()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         // ウィンドウの状態を確認（FlaUIではWindowStateプロパティが利用できないため、基本プロパティを確認）
         bool isEnabled = _mainWindow.IsEnabled;
@@ -291,10 +291,10 @@ public class BrowserSelectionUITests : IDisposable
     }
 
     [Fact]
-    public void UI_ShouldBeResponsive()
+    public void UIShouldBeResponsive()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         // UI要素の応答性を確認
         DateTime startTime = DateTime.Now;
@@ -309,10 +309,10 @@ public class BrowserSelectionUITests : IDisposable
     }
 
     [Fact]
-    public void Accessibility_ShouldMeetStandards()
+    public void AccessibilityShouldMeetStandards()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         // アクセシビリティ要素を検索
         AutomationElement[] accessibleElements = _mainWindow.FindAllChildren(cf =>

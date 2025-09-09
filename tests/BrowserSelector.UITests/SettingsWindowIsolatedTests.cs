@@ -69,19 +69,19 @@ public class SettingsWindowIsolatedTests : IDisposable
 
         // 方法1: ウィンドウ名で検索
         var settingsWindow = _app.GetAllTopLevelWindows(_automation)
-            .FirstOrDefault(w => w.Name.Contains("設定") || w.Name.Contains("Settings") || w.Name == "SettingsWindow");
+            .FirstOrDefault(w => w.Name.Contains("設定", StringComparison.Ordinal) || w.Name.Contains("Settings", StringComparison.Ordinal) || w.Name == "SettingsWindow");
 
         if (settingsWindow != null) return settingsWindow;
 
         // 方法2: ウィンドウプロパティで検索
         settingsWindow = _app.GetAllTopLevelWindows(_automation)
-            .FirstOrDefault(w => w.Properties.Name.Value.Contains("設定") || w.Properties.Name.Value.Contains("Settings"));
+            .FirstOrDefault(w => w.Properties.Name.Value.Contains("設定", StringComparison.Ordinal) || w.Properties.Name.Value.Contains("Settings", StringComparison.Ordinal));
 
         if (settingsWindow != null) return settingsWindow;
 
         // 方法3: クラス名で検索
         settingsWindow = _app.GetAllTopLevelWindows(_automation)
-            .FirstOrDefault(w => w.Properties.ClassName.Value.Contains("SettingsWindow"));
+            .FirstOrDefault(w => w.Properties.ClassName.Value.Contains("SettingsWindow", StringComparison.Ordinal));
 
         if (settingsWindow != null) return settingsWindow;
 
@@ -97,8 +97,8 @@ public class SettingsWindowIsolatedTests : IDisposable
                 // デバッグ情報を出力
                 Console.WriteLine($"検出されたウィンドウ: Name='{name}', ClassName='{className}'");
 
-                if (name.Contains("設定") || name.Contains("Settings") ||
-                    className.Contains("SettingsWindow") || className.Contains("Window"))
+                if (name.Contains("設定", StringComparison.Ordinal) || name.Contains("Settings", StringComparison.Ordinal) ||
+                    className.Contains("SettingsWindow", StringComparison.Ordinal) || className.Contains("Window", StringComparison.Ordinal))
                 {
                     return window;
                 }
@@ -113,10 +113,10 @@ public class SettingsWindowIsolatedTests : IDisposable
     }
 
     [Fact]
-    public void SettingsWindow_ShouldOpenSuccessfully()
+    public void SettingsWindowShouldOpenSuccessfully()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         var mainWindow = _app!.GetMainWindow(_automation!);
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
@@ -137,10 +137,10 @@ public class SettingsWindowIsolatedTests : IDisposable
     }
 
     [Fact]
-    public void SettingsWindow_ShouldHaveAllTabs()
+    public void SettingsWindowShouldHaveAllTabs()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         var mainWindow = _app!.GetMainWindow(_automation!);
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
@@ -187,10 +187,10 @@ public class SettingsWindowIsolatedTests : IDisposable
     }
 
     [Fact]
-    public void SettingsWindow_ShouldHaveActionButtons()
+    public void SettingsWindowShouldHaveActionButtons()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         var mainWindow = _app!.GetMainWindow(_automation!);
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");

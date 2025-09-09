@@ -7,7 +7,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 namespace BrowserSelector.Core.Models
 {
     /// <summary>
-    /// アプリケーション全体の設定を表すモデル
+    /// アプリケーション全体の設定を表すモデル.
     /// </summary>
     public partial class AppSettings : ObservableObject
     {

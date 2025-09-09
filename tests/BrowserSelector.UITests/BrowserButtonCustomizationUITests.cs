@@ -40,10 +40,10 @@ public class BrowserButtonCustomizationUITests : IDisposable
     }
 
     [Fact]
-    public void BrowserButtons_ShouldHaveCustomizableAppearance()
+    public void BrowserButtonsShouldHaveCustomizableAppearance()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         var mainWindow = _app!.GetMainWindow(_automation!);
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
@@ -88,10 +88,10 @@ public class BrowserButtonCustomizationUITests : IDisposable
     }
 
     [Fact]
-    public void BrowserButtons_ShouldHaveCustomizableOpacity()
+    public void BrowserButtonsShouldHaveCustomizableOpacity()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         var mainWindow = _app!.GetMainWindow(_automation!);
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
@@ -129,10 +129,10 @@ public class BrowserButtonCustomizationUITests : IDisposable
     }
 
     [Fact]
-    public void BrowserButtons_ShouldHaveCustomizableSize()
+    public void BrowserButtonsShouldHaveCustomizableSize()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         var mainWindow = _app!.GetMainWindow(_automation!);
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
@@ -170,10 +170,10 @@ public class BrowserButtonCustomizationUITests : IDisposable
     }
 
     [Fact]
-    public void BrowserButtons_ShouldHaveCustomizableColors()
+    public void BrowserButtonsShouldHaveCustomizableColors()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         var mainWindow = _app!.GetMainWindow(_automation!);
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
@@ -211,10 +211,10 @@ public class BrowserButtonCustomizationUITests : IDisposable
     }
 
     [Fact]
-    public void BrowserButtons_ShouldHaveCustomizableCornerRadius()
+    public void BrowserButtonsShouldHaveCustomizableCornerRadius()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         var mainWindow = _app!.GetMainWindow(_automation!);
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
@@ -249,10 +249,10 @@ public class BrowserButtonCustomizationUITests : IDisposable
     }
 
     [Fact]
-    public void BrowserButtons_ShouldHaveCustomizableIconSize()
+    public void BrowserButtonsShouldHaveCustomizableIconSize()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         var mainWindow = _app!.GetMainWindow(_automation!);
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
@@ -287,10 +287,10 @@ public class BrowserButtonCustomizationUITests : IDisposable
     }
 
     [Fact]
-    public void BrowserButtons_ShouldShowHideBrowserNames()
+    public void BrowserButtonsShouldShowHideBrowserNames()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         var mainWindow = _app!.GetMainWindow(_automation!);
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");

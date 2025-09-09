@@ -5,7 +5,7 @@
 namespace BrowserSelector.Core.Enums
 {
     /// <summary>
-    /// ログレベルを定義する列挙型
+    /// ログレベルを定義する列挙型.
     /// </summary>
     public enum LogLevel
     {

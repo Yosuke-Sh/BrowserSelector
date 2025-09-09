@@ -21,7 +21,7 @@ public class BackgroundCustomizationUITests : IDisposable
             string appPath = UITestHelper.GetApplicationPath();
             if (string.IsNullOrEmpty(appPath))
             {
-                Xunit.Assert.True(false, "アプリケーションが見つかりません");
+                Xunit.Assert.Fail("アプリケーションが見つかりません");
             }
 
             // テスト用アプリケーションを起動
@@ -30,7 +30,7 @@ public class BackgroundCustomizationUITests : IDisposable
         }
         catch (Exception ex)
         {
-            Xunit.Assert.True(false, "UIテスト用アプリケーション起動に失敗");
+            Xunit.Assert.Fail("UIテスト用アプリケーション起動に失敗");
         }
     }
 
@@ -41,10 +41,10 @@ public class BackgroundCustomizationUITests : IDisposable
     }
 
     [Fact]
-    public void BackgroundSettings_ShouldHaveColorSelection()
+    public void BackgroundSettingsShouldHaveColorSelection()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         var mainWindow = _app!.GetMainWindow(_automation!);
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
@@ -78,20 +78,20 @@ public class BackgroundCustomizationUITests : IDisposable
             }
             else
             {
-                Xunit.Assert.True(false, "アプリケーションが見つかりません");
+                Xunit.Assert.Fail("アプリケーションが見つかりません");
             }
         }
         else
         {
-            Xunit.Assert.True(false, "UIテスト用アプリケーション起動に失敗");
+            Xunit.Assert.Fail("UIテスト用アプリケーション起動に失敗");
         }
     }
 
     [Fact]
-    public void BackgroundSettings_ShouldHaveGradientOptions()
+    public void BackgroundSettingsShouldHaveGradientOptions()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         var mainWindow = _app!.GetMainWindow(_automation!);
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
@@ -128,20 +128,20 @@ public class BackgroundCustomizationUITests : IDisposable
             }
             else
             {
-                Xunit.Assert.True(false, "アプリケーションが見つかりません");
+                Xunit.Assert.Fail("アプリケーションが見つかりません");
             }
         }
         else
         {
-            Xunit.Assert.True(false, "UIテスト用アプリケーション起動に失敗");
+            Xunit.Assert.Fail("UIテスト用アプリケーション起動に失敗");
         }
     }
 
     [Fact]
-    public void BackgroundSettings_ShouldHaveGradientDirectionOptions()
+    public void BackgroundSettingsShouldHaveGradientDirectionOptions()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         var mainWindow = _app!.GetMainWindow(_automation!);
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
@@ -183,20 +183,20 @@ public class BackgroundCustomizationUITests : IDisposable
             }
             else
             {
-                Xunit.Assert.True(false, "アプリケーションが見つかりません");
+                Xunit.Assert.Fail("アプリケーションが見つかりません");
             }
         }
         else
         {
-            Xunit.Assert.True(false, "UIテスト用アプリケーション起動に失敗");
+            Xunit.Assert.Fail("UIテスト用アプリケーション起動に失敗");
         }
     }
 
     [Fact]
-    public void WindowSettings_ShouldHaveSizeConfiguration()
+    public void WindowSettingsShouldHaveSizeConfiguration()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         var mainWindow = _app!.GetMainWindow(_automation!);
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
@@ -230,20 +230,20 @@ public class BackgroundCustomizationUITests : IDisposable
             }
             else
             {
-                Xunit.Assert.True(false, "アプリケーションが見つかりません");
+                Xunit.Assert.Fail("アプリケーションが見つかりません");
             }
         }
         else
         {
-            Xunit.Assert.True(false, "UIテスト用アプリケーション起動に失敗");
+            Xunit.Assert.Fail("UIテスト用アプリケーション起動に失敗");
         }
     }
 
     [Fact]
-    public void WindowSettings_ShouldHaveLogoDisplayOption()
+    public void WindowSettingsShouldHaveLogoDisplayOption()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         var mainWindow = _app!.GetMainWindow(_automation!);
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
@@ -274,20 +274,20 @@ public class BackgroundCustomizationUITests : IDisposable
             }
             else
             {
-                Xunit.Assert.True(false, "アプリケーションが見つかりません");
+                Xunit.Assert.Fail("アプリケーションが見つかりません");
             }
         }
         else
         {
-            Xunit.Assert.True(false, "UIテスト用アプリケーション起動に失敗");
+            Xunit.Assert.Fail("UIテスト用アプリケーション起動に失敗");
         }
     }
 
     [Fact]
-    public void WindowSettings_ShouldHaveUrlInputDisplayOption()
+    public void WindowSettingsShouldHaveUrlInputDisplayOption()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
-        Xunit.Assert.True(false, "STAスレッドの問題により、UIテストをスキップします");
+        Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
 
         var mainWindow = _app!.GetMainWindow(_automation!);
         _ = mainWindow.Should().NotBeNull("メインウィンドウが取得できること");
@@ -318,12 +318,12 @@ public class BackgroundCustomizationUITests : IDisposable
             }
             else
             {
-                Xunit.Assert.True(false, "アプリケーションが見つかりません");
+                Xunit.Assert.Fail("アプリケーションが見つかりません");
             }
         }
         else
         {
-            Xunit.Assert.True(false, "UIテスト用アプリケーション起動に失敗");
+            Xunit.Assert.Fail("UIテスト用アプリケーション起動に失敗");
         }
     }
 }
