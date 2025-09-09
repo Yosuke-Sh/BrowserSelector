@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
-    <NoWarn>SA1010</NoWarn>
+    <NoWarn>SA1010;SA1636;CA2227;CA1002;S1075;CA1819;CA1055;SA0001</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

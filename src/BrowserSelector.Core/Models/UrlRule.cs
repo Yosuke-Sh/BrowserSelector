@@ -62,61 +62,6 @@ namespace BrowserSelector.Core.Models
         /// </summary>
         public string DisplayName => $"{Pattern} → {BrowserName} (優先度: {Priority})";
 
-
-        /// <summary>
-        /// ワイルドカードパターンのマッチング.
-        /// </summary>
-        /// <param name="pattern">ワイルドカードを含むパターン.</param>
-        /// <param name="url">判定対象のURL.</param>
-        /// <returns>マッチする場合true.</returns>
-        private static bool IsWildcardMatch(string pattern, string url)
-        {
-            // パターンをワイルドカードで分割
-            string[] parts = pattern.Split('*', StringSplitOptions.RemoveEmptyEntries);
-
-            if (parts.Length == 0)
-            {
-                return true; // パターンが "*" のみの場合
-            }
-
-            if (parts.Length == 1)
-            {
-                // パターンが "*text" または "text*" の場合
-                if (pattern.StartsWith('*'))
-                {
-                    return url.EndsWith(parts[0], StringComparison.Ordinal);
-                }
-
-                if (pattern.EndsWith('*'))
-                {
-                    return url.StartsWith(parts[0], StringComparison.Ordinal);
-                }
-            }
-
-            // パターンが "text*" で終わる場合の特別処理
-            if (pattern.EndsWith('*') && parts.Length > 0)
-            {
-                string prefix = pattern[..^1];
-                return url.StartsWith(prefix, StringComparison.Ordinal);
-            }
-
-            // 複数のワイルドカードがある場合
-            int currentIndex = 0;
-            foreach (string part in parts)
-            {
-                int foundIndex = url.IndexOf(part, currentIndex, StringComparison.Ordinal);
-                if (foundIndex == -1)
-                {
-                    return false;
-                }
-
-                currentIndex = foundIndex + part.Length;
-            }
-
-            return true;
-        }
-
-
         /// <summary>
         /// ルールが指定されたURLにマッチするかを判定.
         /// </summary>
@@ -162,6 +107,59 @@ namespace BrowserSelector.Core.Models
             string status = IsEnabled ? "有効" : "無効";
             string desc = string.IsNullOrWhiteSpace(Description) ? "説明なし" : Description;
             return $"パターン: {Pattern}\nブラウザ: {BrowserName}\n優先度: {Priority}\n状態: {status}\n説明: {desc}";
+        }
+
+        /// <summary>
+        /// ワイルドカードパターンのマッチング.
+        /// </summary>
+        /// <param name="pattern">ワイルドカードを含むパターン.</param>
+        /// <param name="url">判定対象のURL.</param>
+        /// <returns>マッチする場合true.</returns>
+        private static bool IsWildcardMatch(string pattern, string url)
+        {
+            // パターンをワイルドカードで分割
+            string[] parts = pattern.Split('*', StringSplitOptions.RemoveEmptyEntries);
+
+            if (parts.Length == 0)
+            {
+                return true; // パターンが "*" のみの場合
+            }
+
+            if (parts.Length == 1)
+            {
+                // パターンが "*text" または "text*" の場合
+                if (pattern.StartsWith('*'))
+                {
+                    return url.EndsWith(parts[0], StringComparison.Ordinal);
+                }
+
+                if (pattern.EndsWith('*'))
+                {
+                    return url.StartsWith(parts[0], StringComparison.Ordinal);
+                }
+            }
+
+            // パターンが "text*" で終わる場合の特別処理
+            if (pattern.EndsWith('*'))
+            {
+                string prefix = pattern[..^1];
+                return url.StartsWith(prefix, StringComparison.Ordinal);
+            }
+
+            // 複数のワイルドカードがある場合
+            int currentIndex = 0;
+            foreach (string part in parts)
+            {
+                int foundIndex = url.IndexOf(part, currentIndex, StringComparison.Ordinal);
+                if (foundIndex == -1)
+                {
+                    return false;
+                }
+
+                currentIndex = foundIndex + part.Length;
+            }
+
+            return true;
         }
     }
 }

@@ -144,7 +144,7 @@ public class UrlService : IUrlService
                 url = AddProtocolIfNeeded(url);
             }
 
-            return Uri.TryCreate(url, UriKind.Absolute, out Uri? resultUri) ? resultUri?.Host ?? string.Empty : string.Empty;
+            return Uri.TryCreate(url, UriKind.Absolute, out Uri? resultUri) ? resultUri.Host : string.Empty;
         }
         catch (Exception ex) when (ex is UriFormatException or ArgumentException)
         {

@@ -32,7 +32,7 @@ public class SettingsService : ISettingsService
     /// <summary>
     /// Initializes a new instance of the <see cref="SettingsService"/> class.
     /// </summary>
-    /// <param name="logService"></param>
+    /// <param name="logService">logService.</param>
     public SettingsService(ILogService? logService = null)
     {
         _logService = logService;
@@ -416,7 +416,6 @@ public class SettingsService : ISettingsService
         using StreamWriter exportInfoWriter = new(exportInfoStream);
         await exportInfoWriter.WriteAsync(exportInfoJson).ConfigureAwait(false);
     }
-
 
     /// <summary>
     /// ファイルをZIPアーカイブに追加.

@@ -23,7 +23,7 @@ public class SystemTrayService : ISystemTrayService, IDisposable
                 return new Icon(iconPath);
             }
         }
-        catch (Exception)
+        catch (Exception ex) when (ex is System.IO.FileNotFoundException or UnauthorizedAccessException or System.IO.IOException)
         {
             // アイコン読み込みエラーは無視
         }

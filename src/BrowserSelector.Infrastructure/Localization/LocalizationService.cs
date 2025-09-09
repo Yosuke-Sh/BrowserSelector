@@ -20,8 +20,8 @@ public class LocalizationService : ILocalizationService
     /// <summary>
     /// Initializes a new instance of the <see cref="LocalizationService"/> class.
     /// </summary>
-    /// <param name="customLanguageService"></param>
-    /// <param name="logService"></param>
+    /// <param name="customLanguageService">customLanguageService.</param>
+    /// <param name="logService">logService.</param>
     public LocalizationService(ICustomLanguageService customLanguageService, ILogService? logService = null)
     {
         _resourceManager = new ResourceManager("BrowserSelector.Infrastructure.Localization.Resources", typeof(LocalizationService).Assembly);

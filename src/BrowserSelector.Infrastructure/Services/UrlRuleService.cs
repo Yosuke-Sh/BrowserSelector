@@ -60,7 +60,7 @@ public class UrlRuleService : IUrlRuleService
             lock (_lockObject)
             {
                 // 重複チェック
-                if (_rules.Any(r => r.Pattern.Equals(rule.Pattern, StringComparison.OrdinalIgnoreCase)))
+                if (_rules.Exists(r => r.Pattern.Equals(rule.Pattern, StringComparison.OrdinalIgnoreCase)))
                 {
                     Debug.WriteLine($"UrlRuleService: パターン '{rule.Pattern}' は既に存在します");
                     return false;

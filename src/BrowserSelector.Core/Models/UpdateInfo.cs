@@ -17,7 +17,7 @@ namespace BrowserSelector.Core.Models
         /// <summary>
         /// Gets or sets ダウンロードURL.
         /// </summary>
-        public Uri DownloadUrl { get; set; } = new Uri("https://example.com");
+        public Uri DownloadUrl { get; set; } = new Uri("https://example.com", UriKind.Absolute);
 
         /// <summary>
         /// Gets or sets リリースノート.

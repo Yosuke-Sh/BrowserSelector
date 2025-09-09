@@ -11,6 +11,14 @@ namespace BrowserSelector.Infrastructure.Updates;
 /// </summary>
 public class UpdateService : IUpdateService
 {
+    private static string GetBackupPath()
+    {
+        string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        string backupDir = Path.Combine(appDataPath, "BrowserSelector", "Backup");
+        _ = Directory.CreateDirectory(backupDir);
+        return Path.Combine(backupDir, "BrowserSelector.exe.backup");
+    }
+
     private readonly HttpClient _httpClient;
     private readonly string _updateCheckUrl;
     private readonly string _currentVersion;
@@ -21,6 +29,8 @@ public class UpdateService : IUpdateService
     /// </summary>
     public UpdateService(Uri updateCheckUrl, string currentVersion)
     {
+        ArgumentNullException.ThrowIfNull(updateCheckUrl);
+        ArgumentNullException.ThrowIfNull(currentVersion);
         _updateCheckUrl = updateCheckUrl.ToString();
         _currentVersion = currentVersion;
         _httpClient = new HttpClient();
@@ -76,7 +86,7 @@ public class UpdateService : IUpdateService
         ArgumentNullException.ThrowIfNull(updateInfo);
         try
         {
-            string tempPath = Path.GetTempFileName();
+            string tempPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             HttpResponseMessage response = await _httpClient.GetAsync(updateInfo.DownloadUrl, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
             _ = response.EnsureSuccessStatusCode();
 
@@ -89,9 +99,9 @@ public class UpdateService : IUpdateService
             byte[] buffer = new byte[8192];
             int bytesRead;
 
-            while ((bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false)) > 0)
+            while ((bytesRead = await contentStream.ReadAsync(buffer).ConfigureAwait(false)) > 0)
             {
-                await fileStream.WriteAsync(buffer, 0, bytesRead).ConfigureAwait(false);
+                await fileStream.WriteAsync(buffer.AsMemory(0, bytesRead)).ConfigureAwait(false);
                 downloadedBytes += bytesRead;
 
                 if (totalBytes > 0 && progress != null)
@@ -164,7 +174,7 @@ public class UpdateService : IUpdateService
             if (File.Exists(backupPath))
             {
                 string currentExePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
-                string tempPath = Path.GetTempFileName();
+                string tempPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
                 // 現在のファイルをバックアップ
                 File.Copy(currentExePath, tempPath, true);
@@ -265,14 +275,6 @@ public class UpdateService : IUpdateService
         {
             _httpClient?.Dispose();
         }
-    }
-
-    private static string GetBackupPath()
-    {
-        string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-        string backupDir = Path.Combine(appDataPath, "BrowserSelector", "Backup");
-        _ = Directory.CreateDirectory(backupDir);
-        return Path.Combine(backupDir, "BrowserSelector.exe.backup");
     }
 }
 

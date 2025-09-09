@@ -13,7 +13,6 @@ namespace BrowserSelector.Infrastructure.Logging;
 /// </summary>
 public class LogService : ILogService
 {
-
     private readonly object _lockObject = new();
     private readonly string _defaultLogFolder;
     private LogSettings _settings;
@@ -196,6 +195,7 @@ public class LogService : ILogService
             // ログ出力中のエラーは無視
         }
     }
+
     /// <summary>
     /// ログ設定を更新.
     /// </summary>

@@ -15,7 +15,7 @@ public class WindowsRegistryService : IRegistryService
     /// <summary>
     /// Initializes a new instance of the <see cref="WindowsRegistryService"/> class.
     /// </summary>
-    /// <param name="logService"></param>
+    /// <param name="logService">logService.</param>
     public WindowsRegistryService(ILogService? logService = null)
     {
         _logService = logService;
