@@ -11,7 +11,7 @@ namespace BrowserSelector.AppTests;
 public static class WpfTestHelper
 {
     /// <summary>
-    /// WPFアプリケーションのテスト用コンテキストを作成
+    /// WPFアプリケーションのテスト用コンテキストを作成.
     /// </summary>
     public static void InitializeWpfContext()
     {
@@ -24,7 +24,7 @@ public static class WpfTestHelper
     }
 
     /// <summary>
-    /// WPFアプリケーションのテスト用コンテキストをクリーンアップ
+    /// WPFアプリケーションのテスト用コンテキストをクリーンアップ.
     /// </summary>
     public static void CleanupWpfContext()
     {
@@ -35,8 +35,9 @@ public static class WpfTestHelper
     }
 
     /// <summary>
-    /// ウィンドウの基本プロパティをテスト
+    /// ウィンドウの基本プロパティをテスト.
     /// </summary>
+    /// <param name="window">テスト対象のウィンドウ.</param>
     public static void TestWindowProperties(Window window)
     {
         // ウィンドウの基本プロパティをテスト

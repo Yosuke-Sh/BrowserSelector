@@ -7,13 +7,14 @@ using Xunit;
 namespace BrowserSelector.SecurityTests;
 
 /// <summary>
-/// ファイルシステムセキュリティテスト
+/// ファイルシステムセキュリティテスト.
 /// </summary>
 public class FileSystemSecurityTests
 {
     /// <summary>
-    /// ファイルパスの検証テスト
+    /// ファイルパスの検証テスト.
     /// </summary>
+    /// <param name="validPath">有効なファイルパス.</param>
     [Theory]
     [InlineData("C:\\Program Files\\BrowserSelector\\config.xml")]
     [InlineData("C:\\Users\\User\\AppData\\Local\\BrowserSelector\\settings.json")]
@@ -220,6 +221,8 @@ public class FileSystemSecurityTests
     [InlineData("C:\\Windows\\System32\\config\\SYSTEM")]
     public void FileReading_ShouldRejectDangerousFiles(string dangerousFile)
     {
+        ArgumentNullException.ThrowIfNull(dangerousFile);
+        
         // Act
         var canRead = CanReadFile(dangerousFile);
 
@@ -295,7 +298,7 @@ public class FileSystemSecurityTests
             return false;
 
         // パストラバーサル攻撃チェック
-        if (path.Contains("..") || path.Contains("..\\") || path.Contains("../"))
+        if (path.Contains("..", StringComparison.Ordinal) || path.Contains("..\\", StringComparison.Ordinal) || path.Contains("../", StringComparison.Ordinal))
             return false;
 
         // 予約されたファイル名チェック

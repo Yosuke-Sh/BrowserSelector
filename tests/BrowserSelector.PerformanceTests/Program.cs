@@ -7,10 +7,14 @@ using System;
 namespace BrowserSelector.PerformanceTests;
 
 /// <summary>
-/// パフォーマンステスト実行プログラム
+/// パフォーマンステスト実行プログラム.
 /// </summary>
 public static class Program
 {
+    /// <summary>
+    /// メインエントリーポイント.
+    /// </summary>
+    /// <param name="args">コマンドライン引数.</param>
     public static void Main(string[] args)
     {
         Console.WriteLine("=== BrowserSelector パフォーマンステスト ===");

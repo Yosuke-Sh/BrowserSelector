@@ -6,8 +6,14 @@ using FluentAssertions;
 
 namespace BrowserSelector.LibraryTests;
 
+/// <summary>
+/// LibraryServiceのテストクラス.
+/// </summary>
 public class LibraryServiceTests
 {
+    /// <summary>
+    /// GetLibraryMessageメソッドが正しいメッセージを返すことをテスト.
+    /// </summary>
     [Fact]
     public void LibraryService_GetLibraryMessage_ShouldReturnCorrectMessage()
     {
@@ -21,6 +27,9 @@ public class LibraryServiceTests
         message.Should().Be("Hello from BrowserSelector.Library.Infrastructure!");
     }
 
+    /// <summary>
+    /// 有効なブラウザでValidateBrowserAsyncがtrueを返すことをテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateBrowserAsync_WithValidBrowser_ShouldReturnTrue()
     {
@@ -40,6 +49,9 @@ public class LibraryServiceTests
         result.Should().BeTrue();
     }
 
+    /// <summary>
+    /// 空の名前のブラウザでValidateBrowserAsyncがfalseを返すことをテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateBrowserAsync_WithEmptyName_ShouldReturnFalse()
     {
@@ -59,6 +71,9 @@ public class LibraryServiceTests
         result.Should().BeFalse();
     }
 
+    /// <summary>
+    /// 空の実行パスでValidateBrowserAsyncがfalseを返すことをテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateBrowserAsync_WithEmptyExecutablePath_ShouldReturnFalse()
     {
@@ -78,6 +93,9 @@ public class LibraryServiceTests
         result.Should().BeFalse();
     }
 
+    /// <summary>
+    /// 無効な拡張子でValidateBrowserAsyncがfalseを返すことをテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateBrowserAsync_WithInvalidExtension_ShouldReturnFalse()
     {

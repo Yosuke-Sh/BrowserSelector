@@ -10,6 +10,9 @@ namespace BrowserSelector.CoreTests;
 /// </summary>
 public class CoreModelsTests
 {
+    /// <summary>
+    /// 有効なデータでBrowserオブジェクトが有効であることをテスト.
+    /// </summary>
     [Fact]
     public void Browser_WithValidData_ShouldBeValid()
     {
@@ -28,6 +31,9 @@ public class CoreModelsTests
         browser.UseCount.Should().Be(0);
     }
 
+    /// <summary>
+    /// 空の名前でBrowserオブジェクトが無効であることをテスト.
+    /// </summary>
     [Fact]
     public void Browser_WithEmptyName_ShouldNotBeValid()
     {
