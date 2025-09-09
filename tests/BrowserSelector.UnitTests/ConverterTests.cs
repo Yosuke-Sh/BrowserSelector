@@ -6,7 +6,7 @@ using System.Windows;
 namespace BrowserSelector.UnitTests;
 
 /// <summary>
-/// PresentationプロジェクトのConverterクラスのテスト
+/// PresentationプロジェクトのConverterクラスのテスト.
 /// </summary>
 public class ConverterTests
 {

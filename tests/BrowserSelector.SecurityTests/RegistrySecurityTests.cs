@@ -6,12 +6,12 @@ using Xunit;
 namespace BrowserSelector.SecurityTests;
 
 /// <summary>
-/// レジストリアクセスのセキュリティテスト
+/// レジストリアクセスのセキュリティテスト.
 /// </summary>
 public class RegistrySecurityTests
 {
     /// <summary>
-    /// 有効なレジストリキーの検証テスト
+    /// 有効なレジストリキーの検証テスト.
     /// </summary>
     [Theory]
     [InlineData("HKEY_CURRENT_USER\\Software\\BrowserSelector")]
@@ -29,7 +29,7 @@ public class RegistrySecurityTests
     }
 
     /// <summary>
-    /// 危険なレジストリキーの検証テスト
+    /// 危険なレジストリキーの検証テスト.
     /// </summary>
     [Theory]
     [InlineData("HKEY_LOCAL_MACHINE\\SAM")]
@@ -49,7 +49,7 @@ public class RegistrySecurityTests
     }
 
     /// <summary>
-    /// 無効なレジストリキーの検証テスト
+    /// 無効なレジストリキーの検証テスト.
     /// </summary>
     [Theory]
     [InlineData("INVALID_HIVE\\Software\\Test")]
@@ -69,7 +69,7 @@ public class RegistrySecurityTests
     }
 
     /// <summary>
-    /// レジストリ値の検証テスト
+    /// レジストリ値の検証テスト.
     /// </summary>
     [Theory]
     [InlineData("BrowserSelectorPath")]
@@ -87,7 +87,7 @@ public class RegistrySecurityTests
     }
 
     /// <summary>
-    /// 危険なレジストリ値の検証テスト
+    /// 危険なレジストリ値の検証テスト.
     /// </summary>
     [Theory]
     [InlineData("Value<script>alert('XSS')</script>")]
@@ -109,7 +109,7 @@ public class RegistrySecurityTests
     }
 
     /// <summary>
-    /// レジストリデータの検証テスト
+    /// レジストリデータの検証テスト.
     /// </summary>
     [Theory]
     [InlineData("C:\\Program Files\\BrowserSelector\\BrowserSelector.exe")]
@@ -128,7 +128,7 @@ public class RegistrySecurityTests
     }
 
     /// <summary>
-    /// 危険なレジストリデータの検証テスト
+    /// 危険なレジストリデータの検証テスト.
     /// </summary>
     [Theory]
     [InlineData("C:\\Program Files\\BrowserSelector\\BrowserSelector.exe<script>alert('XSS')</script>")]
@@ -150,7 +150,7 @@ public class RegistrySecurityTests
     }
 
     /// <summary>
-    /// 長すぎるレジストリキーの検証テスト
+    /// 長すぎるレジストリキーの検証テスト.
     /// </summary>
     [Fact]
     public void RegistryKey_ShouldRejectExcessivelyLongKeys()
@@ -166,7 +166,7 @@ public class RegistrySecurityTests
     }
 
     /// <summary>
-    /// 長すぎるレジストリ値の検証テスト
+    /// 長すぎるレジストリ値の検証テスト.
     /// </summary>
     [Fact]
     public void RegistryValue_ShouldRejectExcessivelyLongValues()
@@ -182,7 +182,7 @@ public class RegistrySecurityTests
     }
 
     /// <summary>
-    /// 長すぎるレジストリデータの検証テスト
+    /// 長すぎるレジストリデータの検証テスト.
     /// </summary>
     [Fact]
     public void RegistryData_ShouldRejectExcessivelyLongData()
@@ -198,16 +198,20 @@ public class RegistrySecurityTests
     }
 
     /// <summary>
-    /// レジストリキーが有効かどうかを検証するメソッド
+    /// レジストリキーが有効かどうかを検証するメソッド.
     /// </summary>
     private static bool IsValidRegistryKey(string key)
     {
         if (string.IsNullOrWhiteSpace(key))
+        {
             return false;
+        }
 
         // 長さ制限チェック
         if (key.Length > 512)
+        {
             return false;
+        }
 
         // 有効なレジストリハイブチェック
         var validHives = new[]
@@ -222,7 +226,9 @@ public class RegistrySecurityTests
 
         var hive = key.Split('\\')[0];
         if (!validHives.Contains(hive))
+        {
             return false;
+        }
 
         // 危険なレジストリキーチェック
         var dangerousKeys = new[]
@@ -239,7 +245,9 @@ public class RegistrySecurityTests
         foreach (var dangerousKey in dangerousKeys)
         {
             if (key.StartsWith(dangerousKey, StringComparison.OrdinalIgnoreCase))
+            {
                 return false;
+            }
         }
 
         // 危険な文字列パターンチェック
@@ -256,23 +264,29 @@ public class RegistrySecurityTests
         foreach (var pattern in dangerousPatterns)
         {
             if (System.Text.RegularExpressions.Regex.IsMatch(key, pattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+            {
                 return false;
+            }
         }
 
         return true;
     }
 
     /// <summary>
-    /// レジストリ値が有効かどうかを検証するメソッド
+    /// レジストリ値が有効かどうかを検証するメソッド.
     /// </summary>
     private static bool IsValidRegistryValue(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
+        {
             return false;
+        }
 
         // 長さ制限チェック
         if (value.Length > 1000)
+        {
             return false;
+        }
 
         // 危険な文字列パターンチェック
         var dangerousPatterns = new[]
@@ -289,23 +303,29 @@ public class RegistrySecurityTests
         foreach (var pattern in dangerousPatterns)
         {
             if (System.Text.RegularExpressions.Regex.IsMatch(value, pattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+            {
                 return false;
+            }
         }
 
         return true;
     }
 
     /// <summary>
-    /// レジストリデータが有効かどうかを検証するメソッド
+    /// レジストリデータが有効かどうかを検証するメソッド.
     /// </summary>
     private static bool IsValidRegistryData(string data)
     {
         if (string.IsNullOrWhiteSpace(data))
+        {
             return false;
+        }
 
         // 長さ制限チェック
         if (data.Length > 10000)
+        {
             return false;
+        }
 
         // 危険な文字列パターンチェック
         var dangerousPatterns = new[]
@@ -322,7 +342,9 @@ public class RegistrySecurityTests
         foreach (var pattern in dangerousPatterns)
         {
             if (System.Text.RegularExpressions.Regex.IsMatch(data, pattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+            {
                 return false;
+            }
         }
 
         return true;

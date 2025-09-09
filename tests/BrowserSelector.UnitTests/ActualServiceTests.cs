@@ -9,7 +9,7 @@ namespace BrowserSelector.UnitTests
 {
     /// <summary>
     /// 実際のサービスクラスを使用するテスト
-    /// モックではなく実際のインスタンスを使用してビジネスロジックを実行
+    /// モックではなく実際のインスタンスを使用してビジネスロジックを実行.
     /// </summary>
     public class ActualServiceTests : IDisposable
     {
@@ -260,6 +260,7 @@ namespace BrowserSelector.UnitTests
             _ = result.Should().BeTrue();
         }
 
+        /// <inheritdoc/>
         public void Dispose()
         {
             _serviceProvider?.Dispose();

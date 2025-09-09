@@ -6,12 +6,12 @@ using Xunit;
 namespace BrowserSelector.SecurityTests;
 
 /// <summary>
-/// 入力検証のセキュリティテスト
+/// 入力検証のセキュリティテスト.
 /// </summary>
 public class InputValidationSecurityTests
 {
     /// <summary>
-    /// URL入力のXSS攻撃検証テスト
+    /// URL入力のXSS攻撃検証テスト.
     /// </summary>
     [Theory]
     [InlineData("<script>alert('XSS')</script>")]
@@ -34,7 +34,7 @@ public class InputValidationSecurityTests
     }
 
     /// <summary>
-    /// URL入力のSQLインジェクション攻撃検証テスト
+    /// URL入力のSQLインジェクション攻撃検証テスト.
     /// </summary>
     [Theory]
     [InlineData("'; DROP TABLE users; --")]
@@ -53,7 +53,7 @@ public class InputValidationSecurityTests
     }
 
     /// <summary>
-    /// URL入力のパストラバーサル攻撃検証テスト
+    /// URL入力のパストラバーサル攻撃検証テスト.
     /// </summary>
     [Theory]
     [InlineData("../../../etc/passwd")]
@@ -71,7 +71,7 @@ public class InputValidationSecurityTests
     }
 
     /// <summary>
-    /// URL入力のコマンドインジェクション攻撃検証テスト
+    /// URL入力のコマンドインジェクション攻撃検証テスト.
     /// </summary>
     [Theory]
     [InlineData("https://example.com; rm -rf /")]
@@ -89,7 +89,7 @@ public class InputValidationSecurityTests
     }
 
     /// <summary>
-    /// 有効なURLの検証テスト
+    /// 有効なURLの検証テスト.
     /// </summary>
     [Theory]
     [InlineData("https://www.google.com")]
@@ -112,7 +112,7 @@ public class InputValidationSecurityTests
     }
 
     /// <summary>
-    /// 長すぎるURLの検証テスト
+    /// 長すぎるURLの検証テスト.
     /// </summary>
     [Fact]
     public void UrlInput_ShouldRejectExcessivelyLongUrls()
@@ -128,7 +128,7 @@ public class InputValidationSecurityTests
     }
 
     /// <summary>
-    /// 特殊文字を含むURLの検証テスト
+    /// 特殊文字を含むURLの検証テスト.
     /// </summary>
     [Theory]
     [InlineData("https://example.com/path with spaces")]
@@ -146,7 +146,7 @@ public class InputValidationSecurityTests
     }
 
     /// <summary>
-    /// ブラウザ名入力の検証テスト
+    /// ブラウザ名入力の検証テスト.
     /// </summary>
     [Theory]
     [InlineData("Chrome")]
@@ -165,7 +165,7 @@ public class InputValidationSecurityTests
     }
 
     /// <summary>
-    /// ブラウザ名入力の悪意のある文字列検証テスト
+    /// ブラウザ名入力の悪意のある文字列検証テスト.
     /// </summary>
     [Theory]
     [InlineData("Chrome<script>alert('XSS')</script>")]
@@ -184,7 +184,7 @@ public class InputValidationSecurityTests
     }
 
     /// <summary>
-    /// 設定値入力の検証テスト
+    /// 設定値入力の検証テスト.
     /// </summary>
     [Theory]
     [InlineData("normal_setting_value")]
@@ -202,7 +202,7 @@ public class InputValidationSecurityTests
     }
 
     /// <summary>
-    /// 設定値入力の悪意のある文字列検証テスト
+    /// 設定値入力の悪意のある文字列検証テスト.
     /// </summary>
     [Theory]
     [InlineData("setting<script>alert('XSS')</script>")]
@@ -223,16 +223,20 @@ public class InputValidationSecurityTests
     }
 
     /// <summary>
-    /// URLが有効かどうかを検証するメソッド
+    /// URLが有効かどうかを検証するメソッド.
     /// </summary>
     private static bool IsValidUrl(string url)
     {
         if (string.IsNullOrWhiteSpace(url))
+        {
             return false;
+        }
 
         // 長さ制限チェック
         if (url.Length > 2048)
+        {
             return false;
+        }
 
         // 危険な文字列パターンチェック
         var dangerousPatterns = new[]
@@ -256,7 +260,9 @@ public class InputValidationSecurityTests
         foreach (var pattern in dangerousPatterns)
         {
             if (Regex.IsMatch(url, pattern, RegexOptions.IgnoreCase))
+            {
                 return false;
+            }
         }
 
         // 基本的なURL形式チェック
@@ -265,16 +271,20 @@ public class InputValidationSecurityTests
     }
 
     /// <summary>
-    /// ブラウザ名が有効かどうかを検証するメソッド
+    /// ブラウザ名が有効かどうかを検証するメソッド.
     /// </summary>
     private static bool IsValidBrowserName(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
+        {
             return false;
+        }
 
         // 長さ制限チェック
         if (name.Length > 100)
+        {
             return false;
+        }
 
         // 危険な文字列パターンチェック
         var dangerousPatterns = new[]
@@ -292,7 +302,9 @@ public class InputValidationSecurityTests
         foreach (var pattern in dangerousPatterns)
         {
             if (Regex.IsMatch(name, pattern, RegexOptions.IgnoreCase))
+            {
                 return false;
+            }
         }
 
         // 英数字、ハイフン、アンダースコア、ドットのみ許可
@@ -300,16 +312,20 @@ public class InputValidationSecurityTests
     }
 
     /// <summary>
-    /// 設定値が有効かどうかを検証するメソッド
+    /// 設定値が有効かどうかを検証するメソッド.
     /// </summary>
     private static bool IsValidSettingValue(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
+        {
             return false;
+        }
 
         // 長さ制限チェック
         if (value.Length > 500)
+        {
             return false;
+        }
 
         // 危険な文字列パターンチェック
         var dangerousPatterns = new[]
@@ -327,7 +343,9 @@ public class InputValidationSecurityTests
         foreach (var pattern in dangerousPatterns)
         {
             if (Regex.IsMatch(value, pattern, RegexOptions.IgnoreCase))
+            {
                 return false;
+            }
         }
 
         return true;

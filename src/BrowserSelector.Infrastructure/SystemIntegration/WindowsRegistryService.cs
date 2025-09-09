@@ -6,7 +6,7 @@ using System.IO;
 namespace BrowserSelector.Infrastructure.SystemIntegration;
 
 /// <summary>
-/// Windowsレジストリからブラウザ情報を取得するサービス
+/// Windowsレジストリからブラウザ情報を取得するサービス.
 /// </summary>
 public class WindowsRegistryService : IRegistryService
 {
@@ -16,6 +16,8 @@ public class WindowsRegistryService : IRegistryService
     {
         _logService = logService;
     }
+
+    /// <inheritdoc/>
     public Task<IEnumerable<Browser>> DetectBrowsersFromRegistryAsync()
     {
         List<Browser> browsers = [];
@@ -54,7 +56,7 @@ public class WindowsRegistryService : IRegistryService
 
         IOrderedEnumerable<Browser> uniqueBrowsers = browsers
             .Where(b => b.IsValid)
-            .GroupBy(b => b.ExecutablePath?.ToLowerInvariant())
+            .GroupBy(b => b.ExecutablePath?.ToUpperInvariant())
             .Select(g => g.First())
             .OrderBy(b => b.DisplayOrder);
 
@@ -74,7 +76,7 @@ public class WindowsRegistryService : IRegistryService
         try
         {
             // Chrome 64bit
-            string chromePath = GetRegistryValue(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe", "");
+            string chromePath = GetRegistryValue(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe", string.Empty);
             _logService?.LogDebug($"Chrome 64bit パス: {chromePath}", "WindowsRegistryService");
 
             if (!string.IsNullOrEmpty(chromePath) && File.Exists(chromePath))
@@ -95,7 +97,7 @@ public class WindowsRegistryService : IRegistryService
             }
 
             // Chrome 32bit
-            string chromePath32 = GetRegistryValue(@"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe", "");
+            string chromePath32 = GetRegistryValue(@"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe", string.Empty);
             _logService?.LogDebug($"Chrome 32bit パス: {chromePath32}", "WindowsRegistryService");
 
             if (!string.IsNullOrEmpty(chromePath32) && File.Exists(chromePath32))
@@ -130,7 +132,7 @@ public class WindowsRegistryService : IRegistryService
         try
         {
             // Firefox 64bit
-            string firefoxPath = GetRegistryValue(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\firefox.exe", "");
+            string firefoxPath = GetRegistryValue(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\firefox.exe", string.Empty);
             if (!string.IsNullOrEmpty(firefoxPath) && File.Exists(firefoxPath))
             {
                 browsers.Add(new Browser
@@ -143,7 +145,7 @@ public class WindowsRegistryService : IRegistryService
             }
 
             // Firefox 32bit
-            string firefoxPath32 = GetRegistryValue(@"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\App Paths\firefox.exe", "");
+            string firefoxPath32 = GetRegistryValue(@"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\App Paths\firefox.exe", string.Empty);
             if (!string.IsNullOrEmpty(firefoxPath32) && File.Exists(firefoxPath32))
             {
                 browsers.Add(new Browser
@@ -170,7 +172,7 @@ public class WindowsRegistryService : IRegistryService
         try
         {
             // Edge Chromium
-            string edgePath = GetRegistryValue(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\msedge.exe", "");
+            string edgePath = GetRegistryValue(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\msedge.exe", string.Empty);
             _logService?.LogDebug($"Edge パス: {edgePath}", "WindowsRegistryService");
 
             if (!string.IsNullOrEmpty(edgePath) && File.Exists(edgePath))
@@ -205,7 +207,7 @@ public class WindowsRegistryService : IRegistryService
         try
         {
             // Opera
-            string operaPath = GetRegistryValue(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\opera.exe", "");
+            string operaPath = GetRegistryValue(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\opera.exe", string.Empty);
             if (!string.IsNullOrEmpty(operaPath) && File.Exists(operaPath))
             {
                 browsers.Add(new Browser
@@ -232,7 +234,7 @@ public class WindowsRegistryService : IRegistryService
         try
         {
             // Brave
-            string bravePath = GetRegistryValue(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\brave.exe", "");
+            string bravePath = GetRegistryValue(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\brave.exe", string.Empty);
             if (!string.IsNullOrEmpty(bravePath) && File.Exists(bravePath))
             {
                 browsers.Add(new Browser
@@ -259,7 +261,7 @@ public class WindowsRegistryService : IRegistryService
         try
         {
             // Vivaldi
-            string vivaldiPath = GetRegistryValue(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\vivaldi.exe", "");
+            string vivaldiPath = GetRegistryValue(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\vivaldi.exe", string.Empty);
             if (!string.IsNullOrEmpty(vivaldiPath) && File.Exists(vivaldiPath))
             {
                 browsers.Add(new Browser
@@ -298,4 +300,3 @@ public class WindowsRegistryService : IRegistryService
         return string.Empty;
     }
 }
-

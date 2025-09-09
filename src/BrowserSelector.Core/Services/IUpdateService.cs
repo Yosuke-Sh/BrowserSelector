@@ -6,45 +6,46 @@ using BrowserSelector.Core.Models;
 namespace BrowserSelector.Core.Services;
 
 /// <summary>
-/// 自動アチE�EチE�Eト機�Eを提供するサービスのインターフェース
+/// 閾ｪ蜍輔い繝・・繝・・繝域ｩ溯・繧呈署萓帙☆繧九し繝ｼ繝薙せ縺ｮ繧､繝ｳ繧ｿ繝ｼ繝輔ぉ繝ｼ繧ｹ.
 /// </summary>
 public interface IUpdateService : IDisposable
 {
     /// <summary>
-    /// アチE�EチE�Eトが利用可能になった時のイベンチE
+    /// 繧｢繝・・繝・・繝医′蛻ｩ逕ｨ蜿ｯ閭ｽ縺ｫ縺ｪ縺｣縺滓凾縺ｮ繧､繝吶Φ繝・
     /// </summary>
     event EventHandler<UpdateAvailableEventArgs>? UpdateAvailable;
 
     /// <summary>
-    /// アチE�EチE�EトをチェチE��
+    /// 繧｢繝・・繝・・繝医ｒ繝√ぉ繝・け.
     /// </summary>
-    /// <returns>アチE�EチE�Eト情報</returns>
+    /// <returns>繧｢繝・・繝・・繝域ュ蝣ｱ.</returns>
     Task<UpdateInfo?> CheckForUpdatesAsync();
 
     /// <summary>
-    /// アチE�EチE�EトをダウンローチE
+    /// 繧｢繝・・繝・・繝医ｒ繝繧ｦ繝ｳ繝ｭ繝ｼ繝・.
     /// </summary>
-    /// <param name="updateInfo">アチE�EチE�Eト情報</param>
-    /// <param name="progress">進捗報呁E/param>
-    /// <returns>ダウンロードが成功したかどぁE��</returns>
+    /// <param name="updateInfo">繧｢繝・・繝・・繝域ュ蝣ｱ.</param>
+    /// 
+    /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns><param name="progress">騾ｲ謐怜ｱ蜻・/param>.
+    /// <returns>繝繧ｦ繝ｳ繝ｭ繝ｼ繝峨′謌仙粥縺励◆縺九←縺・°</returns>
     Task<bool> DownloadUpdateAsync(UpdateInfo updateInfo, IProgress<int>? progress = null);
 
     /// <summary>
-    /// アチE�EチE�Eトをインスト�Eル
+    /// 繧｢繝・・繝・・繝医ｒ繧､繝ｳ繧ｹ繝医・繝ｫ.
     /// </summary>
-    /// <param name="updateInfo">アチE�EチE�Eト情報</param>
-    /// <returns>インスト�Eルが�E功したかどぁE��</returns>
+    /// <param name="updateInfo">繧｢繝・・繝・・繝域ュ蝣ｱ.</param>
+    /// <returns>繧､繝ｳ繧ｹ繝医・繝ｫ縺梧・蜉溘＠縺溘°縺ｩ縺・°.</returns>
     Task<bool> InstallUpdateAsync(UpdateInfo updateInfo);
 
     /// <summary>
-    /// アチE�EチE�Eトをロールバック
+    /// 繧｢繝・・繝・・繝医ｒ繝ｭ繝ｼ繝ｫ繝舌ャ繧ｯ.
     /// </summary>
-    /// <returns>ロールバックが�E功したかどぁE��</returns>
+    /// <returns>繝ｭ繝ｼ繝ｫ繝舌ャ繧ｯ縺梧・蜉溘＠縺溘°縺ｩ縺・°.</returns>
     Task<bool> RollbackUpdateAsync();
 
     /// <summary>
-    /// バックアチE�Eを作�E
+    /// 繝舌ャ繧ｯ繧｢繝・・繧剃ｽ懈・.
     /// </summary>
-    /// <returns>バックアチE�Eが�E功したかどぁE��</returns>
+    /// <returns>繝舌ャ繧ｯ繧｢繝・・縺梧・蜉溘＠縺溘°縺ｩ縺・°.</returns>
     bool CreateBackup();
 }

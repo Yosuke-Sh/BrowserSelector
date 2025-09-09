@@ -8,11 +8,12 @@ using System.Windows;
 namespace BrowserSelector.Presentation.Views;
 
 /// <summary>
-/// BrowserEditDialog.xaml の相互作用ロジック
+/// BrowserEditDialog.xaml の相互作用ロジック.
 /// </summary>
 public partial class BrowserEditDialog : Window
 {
     public Browser Browser { get; private set; }
+
     private readonly bool _isNewBrowser;
     private readonly bool _isSystemBrowser;
     private readonly ILogService? _logService;

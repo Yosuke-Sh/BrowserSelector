@@ -6,7 +6,7 @@ namespace BrowserSelector.CoreTests;
 
 /// <summary>
 /// Coreプロジェクト専用のテストクラス
-/// ドメインモデルのテストを重点的に実施
+/// ドメインモデルのテストを重点的に実施.
 /// </summary>
 public class CoreModelsTests
 {
@@ -50,6 +50,9 @@ public class CoreModelsTests
         browser.DisplayName.Should().Be("Unknown Browser");
     }
 
+    /// <summary>
+    /// 空の実行ファイルパスを持つブラウザが無効であることを確認するテスト.
+    /// </summary>
     [Fact]
     public void Browser_WithEmptyExecutablePath_ShouldNotBeValid()
     {
@@ -65,6 +68,9 @@ public class CoreModelsTests
         browser.IsValid.Should().BeFalse();
     }
 
+    /// <summary>
+    /// ブラウザの使用回数が正しく増加することを確認するテスト.
+    /// </summary>
     [Fact]
     public void Browser_IncrementUseCount_ShouldIncreaseCount()
     {
@@ -85,6 +91,9 @@ public class CoreModelsTests
         browser.UseCount.Should().Be(initialCount + 1);
     }
 
+    /// <summary>
+    /// ブラウザのクローンが新しいインスタンスを作成することを確認するテスト.
+    /// </summary>
     [Fact]
     public void Browser_Clone_ShouldCreateNewInstance()
     {
@@ -105,6 +114,9 @@ public class CoreModelsTests
         clonedBrowser.Should().BeEquivalentTo(originalBrowser, options => options.Excluding(b => b.Id));
     }
 
+    /// <summary>
+    /// デフォルト値を持つAppSettingsが有効であることを確認するテスト.
+    /// </summary>
     [Fact]
     public void AppSettings_WithDefaultValues_ShouldBeValid()
     {
@@ -117,6 +129,9 @@ public class CoreModelsTests
         settings.CloseAfterUrlRuleMatch.Should().BeTrue();
     }
 
+    /// <summary>
+    /// カスタム値を持つAppSettingsが有効であることを確認するテスト.
+    /// </summary>
     [Fact]
     public void AppSettings_WithCustomValues_ShouldBeValid()
     {
@@ -132,6 +147,9 @@ public class CoreModelsTests
         settings.CloseAfterUrlRuleMatch.Should().BeTrue();
     }
 
+    /// <summary>
+    /// デフォルト値を持つVisualSettingsが有効であることを確認するテスト.
+    /// </summary>
     [Fact]
     public void VisualSettings_WithDefaultValues_ShouldBeValid()
     {
@@ -143,6 +161,9 @@ public class CoreModelsTests
         settings.BackgroundColor.Should().Be(System.Windows.Media.Colors.White);
     }
 
+    /// <summary>
+    /// カスタム値を持つVisualSettingsが有効であることを確認するテスト.
+    /// </summary>
     [Fact]
     public void VisualSettings_WithCustomValues_ShouldBeValid()
     {
@@ -157,6 +178,9 @@ public class CoreModelsTests
         settings.BackgroundColor.Should().Be(customColor);
     }
 
+    /// <summary>
+    /// 有効なデータを持つUrlRuleが有効であることを確認するテスト.
+    /// </summary>
     [Fact]
     public void UrlRule_WithValidData_ShouldBeValid()
     {
@@ -175,6 +199,9 @@ public class CoreModelsTests
         rule.IsEnabled.Should().BeTrue();
     }
 
+    /// <summary>
+    /// 空のパターンを持つUrlRuleが無効であることを確認するテスト.
+    /// </summary>
     [Fact]
     public void UrlRule_WithEmptyPattern_ShouldNotBeValid()
     {
@@ -191,6 +218,9 @@ public class CoreModelsTests
         rule.BrowserName.Should().Be("Google Chrome");
     }
 
+    /// <summary>
+    /// デフォルト値を持つLogSettingsが有効であることを確認するテスト.
+    /// </summary>
     [Fact]
     public void LogSettings_WithDefaultValues_ShouldBeValid()
     {
@@ -203,6 +233,9 @@ public class CoreModelsTests
         settings.EnableFileLogging.Should().BeTrue();
     }
 
+    /// <summary>
+    /// カスタム値を持つLogSettingsが有効であることを確認するテスト.
+    /// </summary>
     [Fact]
     public void LogSettings_WithCustomValues_ShouldBeValid()
     {

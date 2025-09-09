@@ -6,7 +6,7 @@ using System.Security;
 namespace BrowserSelector.Infrastructure.SystemIntegration;
 
 /// <summary>
-/// プロトコルハンドラーを管理するサービス
+/// プロトコルハンドラーを管理するサービス.
 /// </summary>
 public class ProtocolHandler : IProtocolHandler
 {
@@ -15,8 +15,9 @@ public class ProtocolHandler : IProtocolHandler
     private const string RegistryKeyPath = @"SOFTWARE\Classes\" + ProtocolName;
 
     /// <summary>
-    /// プロトコルを登録
+    /// プロトコルを登録.
     /// </summary>
+    /// <returns></returns>
     public bool RegisterProtocol(string applicationPath)
     {
         try
@@ -28,16 +29,16 @@ public class ProtocolHandler : IProtocolHandler
             }
 
             // プロトコル名の設定
-            key.SetValue("", ProtocolDescription);
-            key.SetValue("URL Protocol", "");
+            key.SetValue(string.Empty, ProtocolDescription);
+            key.SetValue("URL Protocol", string.Empty);
 
             // デフォルトアイコンの設定
             using RegistryKey defaultIconKey = key.CreateSubKey("DefaultIcon");
-            defaultIconKey?.SetValue("", $"{applicationPath},0");
+            defaultIconKey?.SetValue(string.Empty, $"{applicationPath},0");
 
             // シェルコマンドの設定
             using RegistryKey shellKey = key.CreateSubKey(@"shell\open\command");
-            shellKey?.SetValue("", $"\"{applicationPath}\" \"%1\"");
+            shellKey?.SetValue(string.Empty, $"\"{applicationPath}\" \"%1\"");
 
             return true;
         }
@@ -52,8 +53,9 @@ public class ProtocolHandler : IProtocolHandler
     }
 
     /// <summary>
-    /// プロトコルを登録解除
+    /// プロトコルを登録解除.
     /// </summary>
+    /// <returns></returns>
     public bool UnregisterProtocol()
     {
         try
@@ -72,8 +74,9 @@ public class ProtocolHandler : IProtocolHandler
     }
 
     /// <summary>
-    /// プロトコルが登録されているかチェック
+    /// プロトコルが登録されているかチェック.
     /// </summary>
+    /// <returns></returns>
     public bool IsProtocolRegistered()
     {
         try
@@ -81,15 +84,17 @@ public class ProtocolHandler : IProtocolHandler
             using RegistryKey? key = Registry.CurrentUser.OpenSubKey(RegistryKeyPath);
             return key != null;
         }
-        catch
+        catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"Protocol registration check failed: {ex.Message}");
             return false;
         }
     }
 
     /// <summary>
-    /// プロトコルURLからパラメータを抽出
+    /// プロトコルURLからパラメータを抽出.
     /// </summary>
+    /// <returns></returns>
     public string? ExtractUrlFromProtocol(string protocolUrl)
     {
         if (string.IsNullOrEmpty(protocolUrl))
@@ -104,16 +109,18 @@ public class ProtocolHandler : IProtocolHandler
     }
 
     /// <summary>
-    /// プロトコルURLを生成
+    /// プロトコルURLを生成.
     /// </summary>
+    /// <returns></returns>
     public string CreateProtocolUrl(string url)
     {
         return $"{ProtocolName}://{url}";
     }
 
     /// <summary>
-    /// プロトコル登録情報を取得
+    /// プロトコル登録情報を取得.
     /// </summary>
+    /// <returns></returns>
     public ProtocolRegistrationInfo? GetProtocolRegistrationInfo()
     {
         try
@@ -124,13 +131,13 @@ public class ProtocolHandler : IProtocolHandler
                 return null;
             }
 
-            string description = key.GetValue("") as string ?? "";
-            string command = "";
+            string description = key.GetValue(string.Empty) as string ?? string.Empty;
+            string command = string.Empty;
 
             using RegistryKey? shellKey = key.OpenSubKey(@"shell\open\command");
             if (shellKey != null)
             {
-                command = shellKey.GetValue("") as string ?? "";
+                command = shellKey.GetValue(string.Empty) as string ?? string.Empty;
             }
 
             return new ProtocolRegistrationInfo
@@ -141,8 +148,9 @@ public class ProtocolHandler : IProtocolHandler
                 IsRegistered = true
             };
         }
-        catch
+        catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"Protocol registration info retrieval failed: {ex.Message}");
             return null;
         }
     }

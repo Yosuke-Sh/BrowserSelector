@@ -7,7 +7,7 @@ namespace BrowserSelector.AppTests;
 
 /// <summary>
 /// MainWindow専用のテスト
-/// WPFウィンドウの基本機能をテスト
+/// WPFウィンドウの基本機能をテスト.
 /// </summary>
 public class MainWindowTests
 {
@@ -288,6 +288,9 @@ public class MainWindowTests
         defaultConstructor.IsStatic.Should().BeFalse();
     }
 
+    /// <summary>
+    /// MainWindowのメソッド修飾子が正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void MainWindow_ShouldHaveCorrectMethodModifiers()
     {
@@ -303,7 +306,9 @@ public class MainWindowTests
         // initializeComponentMethod.IsVirtual.Should().BeFalse();
     }
 
-    // 追加のテストケース - MainWindowのカバレッジ向上
+    /// <summary>
+    /// MainWindowの基底型が正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void MainWindow_ShouldHaveCorrectBaseType()
     {
@@ -315,6 +320,9 @@ public class MainWindowTests
         mainWindowType.BaseType.Should().NotBeNull();
     }
 
+    /// <summary>
+    /// MainWindowの名前空間が正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void MainWindow_ShouldHaveCorrectNamespace()
     {
@@ -325,6 +333,9 @@ public class MainWindowTests
         mainWindowType.Namespace.Should().Be("BrowserSelector.App");
     }
 
+    /// <summary>
+    /// MainWindowのアセンブリが正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void MainWindow_ShouldHaveCorrectAssembly()
     {
@@ -337,6 +348,9 @@ public class MainWindowTests
         assembly.GetName().Name.Should().Be("BrowserSelector.App");
     }
 
+    /// <summary>
+    /// MainWindowの型属性が正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void MainWindow_ShouldHaveCorrectTypeAttributes()
     {
@@ -348,6 +362,9 @@ public class MainWindowTests
         attributes.Should().NotBeNull();
     }
 
+    /// <summary>
+    /// MainWindowのコンストラクタパラメータが正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void MainWindow_ShouldHaveCorrectConstructorParameters()
     {
@@ -361,6 +378,9 @@ public class MainWindowTests
         defaultConstructor.GetParameters().Should().BeEmpty();
     }
 
+    /// <summary>
+    /// MainWindowのメソッド数が正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void MainWindow_ShouldHaveCorrectMethodCount()
     {
@@ -373,6 +393,9 @@ public class MainWindowTests
         methods.Should().Contain(m => m.Name == "InitializeComponent");
     }
 
+    /// <summary>
+    /// MainWindowのプロパティ数が正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void MainWindow_ShouldHaveCorrectPropertyCount()
     {
@@ -387,6 +410,9 @@ public class MainWindowTests
         properties.Should().Contain(p => p.Name == "Height");
     }
 
+    /// <summary>
+    /// MainWindowのイベント数が正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void MainWindow_ShouldHaveCorrectEventCount()
     {
@@ -401,6 +427,9 @@ public class MainWindowTests
         events.Should().Contain(e => e.Name == "Closed");
     }
 
+    /// <summary>
+    /// MainWindowのフィールド数が正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void MainWindow_ShouldHaveCorrectFieldCount()
     {
@@ -412,6 +441,9 @@ public class MainWindowTests
         fields.Should().NotBeNull();
     }
 
+    /// <summary>
+    /// MainWindowのインターフェース実装が正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void MainWindow_ShouldHaveCorrectInterfaceImplementations()
     {
@@ -423,6 +455,9 @@ public class MainWindowTests
         interfaces.Should().NotBeNull();
     }
 
+    /// <summary>
+    /// MainWindowのジェネリック型定義が正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void MainWindow_ShouldHaveCorrectGenericTypeDefinition()
     {
@@ -434,6 +469,9 @@ public class MainWindowTests
         mainWindowType.IsGenericType.Should().BeFalse();
     }
 
+    /// <summary>
+    /// MainWindowの型修飾子が正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void MainWindow_ShouldHaveCorrectTypeModifiers()
     {
@@ -447,6 +485,9 @@ public class MainWindowTests
         mainWindowType.IsSealed.Should().BeFalse();
     }
 
+    /// <summary>
+    /// MainWindowのメソッド戻り値型が正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void MainWindow_ShouldHaveCorrectMethodReturnTypes()
     {
@@ -459,6 +500,9 @@ public class MainWindowTests
         initializeComponentMethod.ReturnType.Should().Be(typeof(void));
     }
 
+    /// <summary>
+    /// MainWindowのプロパティ型が正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void MainWindow_ShouldHaveCorrectPropertyTypes()
     {
@@ -479,6 +523,9 @@ public class MainWindowTests
         heightProperty.PropertyType.Should().Be(typeof(double));
     }
 
+    /// <summary>
+    /// MainWindowのイベント型が正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void MainWindow_ShouldHaveCorrectEventTypes()
     {
@@ -499,6 +546,9 @@ public class MainWindowTests
         closedEvent.EventHandlerType.Should().Be(typeof(EventHandler));
     }
 
+    /// <summary>
+    /// MainWindowのアセンブリ属性が正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void MainWindow_ShouldHaveCorrectAssemblyAttributes()
     {
@@ -512,6 +562,9 @@ public class MainWindowTests
         attributes.Should().NotBeEmpty();
     }
 
+    /// <summary>
+    /// MainWindowの参照アセンブリが正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void MainWindow_ShouldHaveCorrectReferencedAssemblies()
     {

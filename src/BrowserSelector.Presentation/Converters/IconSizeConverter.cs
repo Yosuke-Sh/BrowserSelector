@@ -5,10 +5,11 @@ namespace BrowserSelector.Presentation.Converters;
 
 /// <summary>
 /// アイコンサイズを計算するコンバーター
-/// テキスト表示無しの場合はアイコンを大きくする
+/// テキスト表示無しの場合はアイコンを大きくする.
 /// </summary>
 public class IconSizeConverter : IMultiValueConverter
 {
+    /// <inheritdoc/>
     public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
     {
         if (values.Length < 2 || values[0] is not double baseSize || values[1] is not bool showBrowserName)
@@ -20,6 +21,7 @@ public class IconSizeConverter : IMultiValueConverter
         return showBrowserName ? baseSize : baseSize * 1.5;
     }
 
+    /// <inheritdoc/>
     public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
     {
         throw new NotImplementedException();

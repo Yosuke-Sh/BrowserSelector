@@ -8,7 +8,7 @@ using Moq;
 namespace BrowserSelector.UnitTests;
 
 /// <summary>
-/// Core・Infrastructureプロジェクトのカバレッジ向上のためのテスト
+/// Core・Infrastructureプロジェクトのカバレッジ向上のためのテスト.
 /// </summary>
 public class CoreProjectCoverageTests
 {

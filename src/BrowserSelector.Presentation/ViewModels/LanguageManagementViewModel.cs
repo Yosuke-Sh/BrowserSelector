@@ -8,7 +8,7 @@ using System.Globalization;
 namespace BrowserSelector.Presentation.ViewModels;
 
 /// <summary>
-/// 言語管理ViewModel
+/// 言語管理ViewModel.
 /// </summary>
 public partial class LanguageManagementViewModel : ObservableObject
 {
@@ -56,7 +56,7 @@ public partial class LanguageManagementViewModel : ObservableObject
     }
 
     /// <summary>
-    /// 言語コードリストを初期化
+    /// 言語コードリストを初期化.
     /// </summary>
     private void InitializeLanguageCodes()
     {
@@ -163,8 +163,9 @@ public partial class LanguageManagementViewModel : ObservableObject
     }
 
     /// <summary>
-    /// 初期化
+    /// 初期化.
     /// </summary>
+    /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
     public async Task InitializeAsync()
     {
         try
@@ -180,7 +181,7 @@ public partial class LanguageManagementViewModel : ObservableObject
     }
 
     /// <summary>
-    /// 言語一覧を更新
+    /// 言語一覧を更新.
     /// </summary>
     [RelayCommand]
     private async Task RefreshLanguagesAsync()
@@ -206,7 +207,7 @@ public partial class LanguageManagementViewModel : ObservableObject
     }
 
     /// <summary>
-    /// 言語テンプレートを生成
+    /// 言語テンプレートを生成.
     /// </summary>
     [RelayCommand]
     private async Task GenerateLanguageTemplateAsync()
@@ -260,7 +261,7 @@ public partial class LanguageManagementViewModel : ObservableObject
     }
 
     /// <summary>
-    /// カスタム言語を削除
+    /// カスタム言語を削除.
     /// </summary>
     [RelayCommand]
     private async Task RemoveCustomLanguageAsync()
@@ -301,7 +302,7 @@ public partial class LanguageManagementViewModel : ObservableObject
     }
 
     /// <summary>
-    /// 言語フォルダを開く
+    /// 言語フォルダを開く.
     /// </summary>
     [RelayCommand]
     private void OpenLanguageFolder()
@@ -327,7 +328,7 @@ public partial class LanguageManagementViewModel : ObservableObject
     }
 
     /// <summary>
-    /// 言語ファイルを検証
+    /// 言語ファイルを検証.
     /// </summary>
     [RelayCommand]
     private async Task ValidateLanguageFileAsync()

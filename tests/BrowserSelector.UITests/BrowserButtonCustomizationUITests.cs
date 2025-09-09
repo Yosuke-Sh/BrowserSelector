@@ -7,7 +7,7 @@ using Xunit.Sdk;
 namespace BrowserSelector.UITests;
 
 /// <summary>
-/// ブラウザボタンのカスタマイズ機能のUIテスト
+/// ブラウザボタンのカスタマイズ機能のUIテスト.
 /// </summary>
 [Collection("UI Tests")]
 public class BrowserButtonCustomizationUITests : IDisposable
@@ -35,6 +35,7 @@ public class BrowserButtonCustomizationUITests : IDisposable
         }
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         _automation?.Dispose();

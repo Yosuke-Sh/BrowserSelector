@@ -7,7 +7,7 @@ using Xunit.Sdk;
 namespace BrowserSelector.UITests;
 
 /// <summary>
-/// 実際のUI要素に基づいたUIテスト
+/// 実際のUI要素に基づいたUIテスト.
 /// </summary>
 [Collection("UI Tests")]
 public class ActualUITests : IDisposable
@@ -16,7 +16,7 @@ public class ActualUITests : IDisposable
     private UIA3Automation? _automation = null;
 
     /// <summary>
-    /// UI要素を待機して取得するヘルパーメソッド
+    /// UI要素を待機して取得するヘルパーメソッド.
     /// </summary>
     private T? WaitForElement<T>(Func<T?> findElement, int timeoutMs = 5000) where T : class
     {
@@ -52,6 +52,7 @@ public class ActualUITests : IDisposable
         }
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         _automation?.Dispose();
@@ -59,7 +60,7 @@ public class ActualUITests : IDisposable
     }
 
     /// <summary>
-    /// 設定ウィンドウを複数の方法で検索するヘルパーメソッド
+    /// 設定ウィンドウを複数の方法で検索するヘルパーメソッド.
     /// </summary>
     private FlaUI.Core.AutomationElements.Window? FindSettingsWindow()
     {
@@ -110,8 +111,8 @@ public class ActualUITests : IDisposable
         return null;
     }
 
-        [Fact]
-        public void MainWindowShouldHaveUrlInputTextBox()
+    [Fact]
+    public void MainWindowShouldHaveUrlInputTextBox()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
         Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
@@ -124,8 +125,8 @@ public class ActualUITests : IDisposable
         urlTextBox.Should().NotBeNull("URL入力テキストボックスが存在すること");
     }
 
-        [Fact]
-        public void MainWindowShouldHaveSettingsButton()
+    [Fact]
+    public void MainWindowShouldHaveSettingsButton()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
         Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
@@ -138,8 +139,8 @@ public class ActualUITests : IDisposable
         settingsButton.Should().NotBeNull("設定ボタンが存在すること");
     }
 
-        [Fact]
-        public void MainWindowShouldHaveBrowserButtonsContainer()
+    [Fact]
+    public void MainWindowShouldHaveBrowserButtonsContainer()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
         Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");

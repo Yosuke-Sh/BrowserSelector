@@ -6,7 +6,7 @@ namespace BrowserSelector.AppTests;
 
 /// <summary>
 /// WPFテスト用のヘルパークラス
-/// WPFアプリケーションのテストを支援するユーティリティ
+/// WPFアプリケーションのテストを支援するユーティリティ.
 /// </summary>
 public static class WpfTestHelper
 {
@@ -48,7 +48,7 @@ public static class WpfTestHelper
     }
 
     /// <summary>
-    /// ウィンドウのイベントハンドラーをテスト
+    /// ウィンドウのイベントハンドラーをテスト.
     /// </summary>
     public static void TestWindowEvents(Window window)
     {
@@ -63,7 +63,7 @@ public static class WpfTestHelper
     }
 
     /// <summary>
-    /// アプリケーションの基本プロパティをテスト
+    /// アプリケーションの基本プロパティをテスト.
     /// </summary>
     public static void TestApplicationProperties(Application app)
     {
@@ -72,7 +72,7 @@ public static class WpfTestHelper
     }
 
     /// <summary>
-    /// アプリケーションのイベントハンドラーをテスト
+    /// アプリケーションのイベントハンドラーをテスト.
     /// </summary>
     public static void TestApplicationEvents(Application app)
     {
@@ -85,8 +85,9 @@ public static class WpfTestHelper
     }
 
     /// <summary>
-    /// リフレクションを使用してプライベートメソッドをテスト
+    /// リフレクションを使用してプライベートメソッドをテスト.
     /// </summary>
+    /// <returns></returns>
     public static T InvokePrivateMethod<T>(object obj, string methodName, params object[] parameters)
     {
         var method = obj.GetType().GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance);
@@ -97,8 +98,9 @@ public static class WpfTestHelper
     }
 
     /// <summary>
-    /// リフレクションを使用してプライベートプロパティをテスト
+    /// リフレクションを使用してプライベートプロパティをテスト.
     /// </summary>
+    /// <returns></returns>
     public static T GetPrivateProperty<T>(object obj, string propertyName)
     {
         var property = obj.GetType().GetProperty(propertyName, BindingFlags.NonPublic | BindingFlags.Instance);
@@ -109,8 +111,9 @@ public static class WpfTestHelper
     }
 
     /// <summary>
-    /// リフレクションを使用してプライベートフィールドをテスト
+    /// リフレクションを使用してプライベートフィールドをテスト.
     /// </summary>
+    /// <returns></returns>
     public static T GetPrivateField<T>(object obj, string fieldName)
     {
         var field = obj.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
@@ -121,7 +124,7 @@ public static class WpfTestHelper
     }
 
     /// <summary>
-    /// ウィンドウの初期化をテスト
+    /// ウィンドウの初期化をテスト.
     /// </summary>
     public static void TestWindowInitialization(Window window)
     {
@@ -132,7 +135,7 @@ public static class WpfTestHelper
     }
 
     /// <summary>
-    /// アプリケーションの初期化をテスト
+    /// アプリケーションの初期化をテスト.
     /// </summary>
     public static void TestApplicationInitialization(Application app)
     {

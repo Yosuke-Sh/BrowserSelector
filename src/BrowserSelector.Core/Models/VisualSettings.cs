@@ -9,7 +9,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 namespace BrowserSelector.Core.Models;
 
 /// <summary>
-/// 視覚的な設定を表すモデル
+/// 視覚的な設定を表すモデル.
 /// </summary>
 public partial class VisualSettings : ObservableObject
 {

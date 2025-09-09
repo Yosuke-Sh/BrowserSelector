@@ -7,10 +7,11 @@ using System.Windows.Media.Imaging;
 namespace BrowserSelector.Presentation.Converters;
 
 /// <summary>
-/// アイコンパスの変換を行うコンバーター
+/// アイコンパスの変換を行うコンバーター.
 /// </summary>
 public class IconPathConverter : IMultiValueConverter
 {
+    /// <inheritdoc/>
     public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
     {
         try
@@ -83,6 +84,7 @@ public class IconPathConverter : IMultiValueConverter
         }
     }
 
+    /// <inheritdoc/>
     public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
     {
         throw new NotImplementedException();

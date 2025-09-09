@@ -6,7 +6,7 @@ using Xunit;
 namespace BrowserSelector.UITests;
 
 /// <summary>
-/// 最適化されたUIテスト（実用的なテストのみ）
+/// 最適化されたUIテスト（実用的なテストのみ）.
 /// </summary>
 [Collection("UI Tests")]
 public class OptimizedUITests : IDisposable
@@ -15,7 +15,7 @@ public class OptimizedUITests : IDisposable
     private UIA3Automation? _automation = null;
 
     /// <summary>
-    /// UI要素を待機して取得するヘルパーメソッド
+    /// UI要素を待機して取得するヘルパーメソッド.
     /// </summary>
     private T? WaitForElement<T>(Func<T?> findElement, int timeoutMs = 5000) where T : class
     {
@@ -25,7 +25,7 @@ public class OptimizedUITests : IDisposable
             var element = findElement();
             if (element != null)
                 return element;
-            
+
             Thread.Sleep(100);
         }
         return null;
@@ -54,14 +54,15 @@ public class OptimizedUITests : IDisposable
         }
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         _automation?.Dispose();
         _app?.Close();
     }
 
-        [Fact]
-        public void MainWindowShouldHaveBasicElements()
+    [Fact]
+    public void MainWindowShouldHaveBasicElements()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
         Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
@@ -79,8 +80,8 @@ public class OptimizedUITests : IDisposable
         _ = settingsButton.Should().NotBeNull("設定ボタンが存在すること");
     }
 
-        [Fact]
-        public void MainWindowShouldAcceptUrlInput()
+    [Fact]
+    public void MainWindowShouldAcceptUrlInput()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
         Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");
@@ -105,8 +106,8 @@ public class OptimizedUITests : IDisposable
     }
 
 
-        [Fact]
-        public void BrowserButtonsShouldBeVisible()
+    [Fact]
+    public void BrowserButtonsShouldBeVisible()
     {
         // STAスレッドの問題でアプリケーションが起動できないため、テストをスキップ
         Xunit.Assert.Fail("STAスレッドの問題により、UIテストをスキップします");

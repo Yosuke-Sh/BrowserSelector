@@ -4,7 +4,7 @@ using System.Net.Http;
 namespace BrowserSelector.Infrastructure.Services;
 
 /// <summary>
-/// URL処理サービスの実装
+/// URL処理サービスの実装.
 /// </summary>
 public class UrlService : IUrlService
 {
@@ -19,6 +19,7 @@ public class UrlService : IUrlService
         };
     }
 
+    /// <inheritdoc/>
     public Task<string> NormalizeUrlAsync(string url)
     {
         _logService?.LogTrace($"URL正規化処理開始: 入力URL='{url}'", "UrlService");
@@ -47,8 +48,7 @@ public class UrlService : IUrlService
         }
     }
 
-
-
+    /// <inheritdoc/>
     public Task<bool> ValidateUrlAsync(string url)
     {
         try
@@ -89,6 +89,7 @@ public class UrlService : IUrlService
         }
     }
 
+    /// <inheritdoc/>
     public string ExtractDomain(string url)
     {
         try
@@ -103,12 +104,14 @@ public class UrlService : IUrlService
 
             return Uri.TryCreate(url, UriKind.Absolute, out Uri? uri) ? uri.Host : string.Empty;
         }
-        catch
+        catch (Exception ex)
         {
+            _logService?.LogError($"ドメイン抽出エラー: {ex.Message}", "UrlService", ex);
             return string.Empty;
         }
     }
 
+    /// <inheritdoc/>
     public string AddProtocolIfNeeded(string url)
     {
         if (string.IsNullOrWhiteSpace(url))
@@ -119,8 +122,8 @@ public class UrlService : IUrlService
         url = url.Trim();
 
         // 既にプロトコルがある場合はそのまま返す
-        if (url.StartsWith("http://") || url.StartsWith("https://") ||
-            url.StartsWith("ftp://") || url.StartsWith("file://"))
+        if (url.StartsWith("http://", StringComparison.Ordinal) || url.StartsWith("https://", StringComparison.Ordinal) ||
+            url.StartsWith("ftp://", StringComparison.Ordinal) || url.StartsWith("file://", StringComparison.Ordinal))
         {
             return url;
         }
@@ -128,6 +131,4 @@ public class UrlService : IUrlService
         // プロトコルがない場合はhttps://を追加
         return "https://" + url;
     }
-
-
 }

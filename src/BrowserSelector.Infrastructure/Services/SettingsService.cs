@@ -7,7 +7,7 @@ using System.Text.Json;
 namespace BrowserSelector.Infrastructure.Services;
 
 /// <summary>
-/// 設定管理サービスの実装
+/// 設定管理サービスの実装.
 /// </summary>
 public class SettingsService : ISettingsService
 {
@@ -20,6 +20,7 @@ public class SettingsService : ISettingsService
     public SettingsService(ILogService? logService = null)
     {
         _logService = logService;
+
         // ポータブルモードかどうかを判定
         string executablePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
         string executableDirectory = Path.GetDirectoryName(executablePath) ?? Environment.CurrentDirectory;
@@ -49,6 +50,7 @@ public class SettingsService : ISettingsService
         _logSettingsPath = Path.Combine(_settingsDirectory, "logsettings.json");
     }
 
+    /// <inheritdoc/>
     public async Task<AppSettings> LoadAppSettingsAsync()
     {
         _logService?.LogTrace("アプリケーション設定読み込み開始", "SettingsService");
@@ -76,17 +78,12 @@ public class SettingsService : ISettingsService
         }
     }
 
+    /// <inheritdoc/>
     public async Task<bool> SaveAppSettingsAsync(AppSettings settings)
     {
         try
         {
-            JsonSerializerOptions options = new()
-            {
-                WriteIndented = true,
-                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-            };
-
-            string json = JsonSerializer.Serialize(settings, options);
+            string json = JsonSerializer.Serialize(settings, GetJsonSerializerOptions());
             await File.WriteAllTextAsync(_appSettingsPath, json).ConfigureAwait(false);
             return true;
         }
@@ -97,6 +94,7 @@ public class SettingsService : ISettingsService
         }
     }
 
+    /// <inheritdoc/>
     public async Task<VisualSettings> LoadVisualSettingsAsync()
     {
         _logService?.LogTrace("視覚設定読み込み開始", "SettingsService");
@@ -124,6 +122,7 @@ public class SettingsService : ISettingsService
         }
     }
 
+    /// <inheritdoc/>
     public async Task<bool> SaveVisualSettingsAsync(VisualSettings settings)
     {
         try
@@ -145,11 +144,13 @@ public class SettingsService : ISettingsService
         }
     }
 
+    /// <inheritdoc/>
     public string GetSettingsFilePath()
     {
         return _settingsDirectory;
     }
 
+    /// <inheritdoc/>
     public async Task<bool> ResetSettingsAsync()
     {
         try
@@ -178,6 +179,7 @@ public class SettingsService : ISettingsService
         }
     }
 
+    /// <inheritdoc/>
     public async Task<bool> ImportSettingsAsync(string filePath)
     {
         try
@@ -190,7 +192,7 @@ public class SettingsService : ISettingsService
             _logService?.LogInformation("設定ファイル群のインポート開始", "SettingsService");
 
             // ZIPファイルかどうかを判定
-            if (Path.GetExtension(filePath).ToLower() == ".zip")
+            if (string.Equals(Path.GetExtension(filePath), ".zip", StringComparison.OrdinalIgnoreCase))
             {
                 return await ImportSettingsFromZipAsync(filePath).ConfigureAwait(false);
             }
@@ -208,7 +210,7 @@ public class SettingsService : ISettingsService
     }
 
     /// <summary>
-    /// ZIPファイルから設定ファイル群をインポート
+    /// ZIPファイルから設定ファイル群をインポート.
     /// </summary>
     private async Task<bool> ImportSettingsFromZipAsync(string zipFilePath)
     {
@@ -259,17 +261,17 @@ public class SettingsService : ISettingsService
     }
 
     /// <summary>
-    /// エントリ名から対象パスを取得
+    /// エントリ名から対象パスを取得.
     /// </summary>
     private string? GetTargetPathForEntry(string entryName)
     {
-        return entryName.ToLower() switch
+        return entryName switch
         {
-            "appsettings.json" => _appSettingsPath,
-            "visualsettings.json" => _visualSettingsPath,
-            "logsettings.json" => _logSettingsPath,
-            "urlrules.json" => Path.Combine(_settingsDirectory, "urlrules.json"),
-            "export-info.json" => null, // エクスポート情報ファイルは無視
+            var name when string.Equals(name, "appsettings.json", StringComparison.OrdinalIgnoreCase) => _appSettingsPath,
+            var name when string.Equals(name, "visualsettings.json", StringComparison.OrdinalIgnoreCase) => _visualSettingsPath,
+            var name when string.Equals(name, "logsettings.json", StringComparison.OrdinalIgnoreCase) => _logSettingsPath,
+            var name when string.Equals(name, "urlrules.json", StringComparison.OrdinalIgnoreCase) => Path.Combine(_settingsDirectory, "urlrules.json"),
+            var name when string.Equals(name, "export-info.json", StringComparison.OrdinalIgnoreCase) => null, // エクスポート情報ファイルは無視
             _ when entryName.StartsWith("Languages/", StringComparison.OrdinalIgnoreCase) =>
                 Path.Combine(_settingsDirectory, entryName),
             _ => null // サポートされていないファイル
@@ -277,7 +279,7 @@ public class SettingsService : ISettingsService
     }
 
     /// <summary>
-    /// 従来のJSONファイル形式からインポート（後方互換性）
+    /// 従来のJSONファイル形式からインポート（後方互換性）.
     /// </summary>
     private async Task<bool> ImportSettingsFromJsonAsync(string filePath)
     {
@@ -313,6 +315,7 @@ public class SettingsService : ISettingsService
         return true;
     }
 
+    /// <inheritdoc/>
     public async Task<bool> ExportSettingsAsync(string filePath)
     {
         try
@@ -333,7 +336,7 @@ public class SettingsService : ISettingsService
     }
 
     /// <summary>
-    /// 設定ファイル群をZIP形式でエクスポート
+    /// 設定ファイル群をZIP形式でエクスポート.
     /// </summary>
     private async Task ExportSettingsAsZipAsync(string zipFilePath)
     {
@@ -371,7 +374,7 @@ public class SettingsService : ISettingsService
             Description = "BrowserSelector設定ファイル群"
         };
 
-        string exportInfoJson = JsonSerializer.Serialize(exportInfo, new JsonSerializerOptions { WriteIndented = true });
+        string exportInfoJson = JsonSerializer.Serialize(exportInfo, GetJsonSerializerOptions());
         ZipArchiveEntry exportInfoEntry = archive.CreateEntry("export-info.json");
         using Stream exportInfoStream = exportInfoEntry.Open();
         using StreamWriter exportInfoWriter = new(exportInfoStream);
@@ -379,7 +382,19 @@ public class SettingsService : ISettingsService
     }
 
     /// <summary>
-    /// ファイルをZIPアーカイブに追加
+    /// JSONシリアライザーオプションを取得.
+    /// </summary>
+    private static JsonSerializerOptions GetJsonSerializerOptions()
+    {
+        return new JsonSerializerOptions
+        {
+            WriteIndented = true,
+            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        };
+    }
+
+    /// <summary>
+    /// ファイルをZIPアーカイブに追加.
     /// </summary>
     private async Task AddFileToZipAsync(ZipArchive archive, string filePath, string entryName)
     {
@@ -397,6 +412,7 @@ public class SettingsService : ISettingsService
         }
     }
 
+    /// <inheritdoc/>
     public async Task<LogSettings> LoadLogSettingsAsync()
     {
         _logService?.LogTrace("ログ設定読み込み開始", "SettingsService");
@@ -426,14 +442,12 @@ public class SettingsService : ISettingsService
         }
     }
 
+    /// <inheritdoc/>
     public async Task<bool> SaveLogSettingsAsync(LogSettings settings)
     {
         try
         {
-            string json = JsonSerializer.Serialize(settings, new JsonSerializerOptions
-            {
-                WriteIndented = true
-            });
+            string json = JsonSerializer.Serialize(settings, GetJsonSerializerOptions());
             await File.WriteAllTextAsync(_logSettingsPath, json).ConfigureAwait(false);
             return true;
         }

@@ -9,7 +9,7 @@ using Xunit.Sdk;
 namespace BrowserSelector.UITests;
 
 /// <summary>
-/// 高度なインタラクションテスト（キーボード・マウス操作）
+/// 高度なインタラクションテスト（キーボード・マウス操作）.
 /// </summary>
 [Collection("UI Tests")]
 public class AdvancedInteractionTests : IDisposable
@@ -34,7 +34,7 @@ public class AdvancedInteractionTests : IDisposable
             if (System.IO.File.Exists(appPath))
             {
                 // テスト用アプリケーションを起動
-            _app = UITestHelper.LaunchTestApplication(appPath);
+                _app = UITestHelper.LaunchTestApplication(appPath);
                 _automation = new UIA3Automation();
 
                 // メインウィンドウの取得を待機
@@ -51,6 +51,7 @@ public class AdvancedInteractionTests : IDisposable
         }
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         try

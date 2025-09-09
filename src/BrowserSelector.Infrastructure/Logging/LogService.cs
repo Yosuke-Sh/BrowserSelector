@@ -1,6 +1,7 @@
 using BrowserSelector.Core.Enums;
 using BrowserSelector.Core.Models;
 using BrowserSelector.Core.Services;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -8,7 +9,7 @@ using System.Text.RegularExpressions;
 namespace BrowserSelector.Infrastructure.Logging;
 
 /// <summary>
-/// ログサービスの実装
+/// ログサービスの実装.
 /// </summary>
 public class LogService : ILogService
 {
@@ -28,9 +29,10 @@ public class LogService : ILogService
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8;
         }
-        catch
+        catch (Exception ex)
         {
             // コンソールエンコーディング設定に失敗しても続行
+            System.Diagnostics.Debug.WriteLine($"Console encoding setup failed: {ex.Message}");
         }
 
         // 設定ファイルからログ設定を読み込み
@@ -44,7 +46,7 @@ public class LogService : ILogService
     }
 
     /// <summary>
-    /// トレースレベルのログを出力
+    /// トレースレベルのログを出力.
     /// </summary>
     public void LogTrace(string message, string? category = null, Exception? exception = null)
     {
@@ -52,7 +54,7 @@ public class LogService : ILogService
     }
 
     /// <summary>
-    /// デバッグレベルのログを出力
+    /// デバッグレベルのログを出力.
     /// </summary>
     public void LogDebug(string message, string? category = null, Exception? exception = null)
     {
@@ -60,7 +62,7 @@ public class LogService : ILogService
     }
 
     /// <summary>
-    /// 情報レベルのログを出力
+    /// 情報レベルのログを出力.
     /// </summary>
     public void LogInformation(string message, string? category = null, Exception? exception = null)
     {
@@ -68,7 +70,7 @@ public class LogService : ILogService
     }
 
     /// <summary>
-    /// 警告レベルのログを出力
+    /// 警告レベルのログを出力.
     /// </summary>
     public void LogWarning(string message, string? category = null, Exception? exception = null)
     {
@@ -76,7 +78,7 @@ public class LogService : ILogService
     }
 
     /// <summary>
-    /// エラーレベルのログを出力
+    /// エラーレベルのログを出力.
     /// </summary>
     public void LogError(string message, string? category = null, Exception? exception = null)
     {
@@ -84,7 +86,7 @@ public class LogService : ILogService
     }
 
     /// <summary>
-    /// 致命的エラーレベルのログを出力
+    /// 致命的エラーレベルのログを出力.
     /// </summary>
     public void LogCritical(string message, string? category = null, Exception? exception = null)
     {
@@ -92,7 +94,7 @@ public class LogService : ILogService
     }
 
     /// <summary>
-    /// 指定されたレベルのログを出力
+    /// 指定されたレベルのログを出力.
     /// </summary>
     public void Log(LogLevel level, string message, string? category = null, Exception? exception = null)
     {
@@ -100,7 +102,7 @@ public class LogService : ILogService
     }
 
     /// <summary>
-    /// 詳細情報付きのログを出力
+    /// 詳細情報付きのログを出力.
     /// </summary>
     public void LogDetailed(LogLevel level, string message, string? category = null,
                            string? eventId = null, string? requestTarget = null, string? userInfo = null,
@@ -135,7 +137,7 @@ public class LogService : ILogService
     }
 
     /// <summary>
-    /// 設定ファイルからログ設定を読み込み
+    /// 設定ファイルからログ設定を読み込み.
     /// </summary>
     private void LoadSettingsFromFile()
     {
@@ -162,7 +164,7 @@ public class LogService : ILogService
     }
 
     /// <summary>
-    /// ログ設定を更新
+    /// ログ設定を更新.
     /// </summary>
     public void UpdateSettings(LogSettings settings)
     {
@@ -178,7 +180,7 @@ public class LogService : ILogService
     }
 
     /// <summary>
-    /// ログファイルをクリア
+    /// ログファイルをクリア.
     /// </summary>
     public void ClearLogs()
     {
@@ -198,7 +200,7 @@ public class LogService : ILogService
     }
 
     /// <summary>
-    /// 古いログファイルを削除
+    /// 古いログファイルを削除.
     /// </summary>
     public void CleanupOldLogs()
     {
@@ -229,8 +231,9 @@ public class LogService : ILogService
     }
 
     /// <summary>
-    /// ログファイルの内容を取得
+    /// ログファイルの内容を取得.
     /// </summary>
+    /// <returns></returns>
     public string GetLogContent(int maxLines = 1000)
     {
         try
@@ -253,33 +256,27 @@ public class LogService : ILogService
     }
 
     /// <summary>
-    /// ログファイルのパスを取得
+    /// ログファイルのパスを取得.
     /// </summary>
+    /// <returns></returns>
     public string GetLogFilePath()
     {
         return _settings.GetLogFilePath();
     }
 
     /// <summary>
-    /// ログメッセージをフォーマット
-    /// </summary>
-    private string FormatLogMessage(LogLevel level, string message, string? category, Exception? exception)
-    {
-        return FormatDetailedLogMessage(level, message, category, null, null, null, null, null, null, exception);
-    }
-
-    /// <summary>
-    /// 詳細ログメッセージをフォーマット
+    /// 詳細ログメッセージをフォーマット.
     /// </summary>
     private string FormatDetailedLogMessage(LogLevel level, string message, string? category,
                                           string? eventId, string? requestTarget, string? userInfo,
                                           string? processTarget, string? processAction, string? processResult,
                                           Exception? exception)
     {
-        string timestamp = DateTime.Now.ToString(_settings.TimestampFormat);
+        string timestamp = DateTime.Now.ToString(_settings.TimestampFormat, CultureInfo.InvariantCulture);
         string levelText = GetLogLevelShortName(level);
         string categoryText = string.IsNullOrEmpty(category) ? "General" : category;
         string eventIdText = string.IsNullOrEmpty(eventId) ? GetNextEventId() : eventId;
+
         // 空値は出力しない（N/Aは使わない）
         string requestTargetText = string.IsNullOrWhiteSpace(requestTarget) ? string.Empty : requestTarget;
         string userInfoText = string.IsNullOrWhiteSpace(userInfo) ? string.Empty : userInfo;
@@ -288,16 +285,16 @@ public class LogService : ILogService
         string processResultText = string.IsNullOrWhiteSpace(processResult) ? string.Empty : processResult;
 
         string logMessage = _settings.LogMessageTemplate
-            .Replace("{Timestamp}", timestamp)
-            .Replace("{Level}", levelText)
-            .Replace("{EventId}", eventIdText)
-            .Replace("{Category}", categoryText)
-            .Replace("{RequestTarget}", requestTargetText)
-            .Replace("{UserInfo}", userInfoText)
-            .Replace("{ProcessTarget}", processTargetText)
-            .Replace("{ProcessAction}", processActionText)
-            .Replace("{ProcessResult}", processResultText)
-            .Replace("{Message}", message);
+            .Replace("{Timestamp}", timestamp, StringComparison.Ordinal)
+            .Replace("{Level}", levelText, StringComparison.Ordinal)
+            .Replace("{EventId}", eventIdText, StringComparison.Ordinal)
+            .Replace("{Category}", categoryText, StringComparison.Ordinal)
+            .Replace("{RequestTarget}", requestTargetText, StringComparison.Ordinal)
+            .Replace("{UserInfo}", userInfoText, StringComparison.Ordinal)
+            .Replace("{ProcessTarget}", processTargetText, StringComparison.Ordinal)
+            .Replace("{ProcessAction}", processActionText, StringComparison.Ordinal)
+            .Replace("{ProcessResult}", processResultText, StringComparison.Ordinal)
+            .Replace("{Message}", message, StringComparison.Ordinal);
 
         if (exception != null)
         {
@@ -314,7 +311,7 @@ public class LogService : ILogService
     }
 
     /// <summary>
-    /// 次のイベントIDを取得
+    /// 次のイベントIDを取得.
     /// </summary>
     private string GetNextEventId()
     {
@@ -322,7 +319,7 @@ public class LogService : ILogService
     }
 
     /// <summary>
-    /// ログレベルの短縮形を取得
+    /// ログレベルの短縮形を取得.
     /// </summary>
     private string GetLogLevelShortName(LogLevel level)
     {
@@ -334,12 +331,12 @@ public class LogService : ILogService
             LogLevel.Warning => "WARN",
             LogLevel.Error => "ERROR",
             LogLevel.Critical => "FATAL",
-            _ => level.ToString().ToUpper()
+            _ => level.ToString().ToUpperInvariant()
         };
     }
 
     /// <summary>
-    /// コンソールにログを出力
+    /// コンソールにログを出力.
     /// </summary>
     private void WriteToConsole(LogLevel level, string message)
     {
@@ -367,7 +364,7 @@ public class LogService : ILogService
     }
 
     /// <summary>
-    /// ファイルにログを出力
+    /// ファイルにログを出力.
     /// </summary>
     private void WriteToFile(string message)
     {
@@ -389,7 +386,7 @@ public class LogService : ILogService
     }
 
     /// <summary>
-    /// ログファイルのサイズチェックとローテーション
+    /// ログファイルのサイズチェックとローテーション.
     /// </summary>
     private void CheckAndRotateLogFile(string logFilePath)
     {
@@ -405,8 +402,10 @@ public class LogService : ILogService
 
             if (fileInfo.Length > maxSizeBytes)
             {
-                string backupPath = logFilePath.Replace($".{_settings.LogFileSuffix}",
-                    $"_{DateTime.Now:yyyyMMdd_HHmmss}.{_settings.LogFileSuffix}");
+                string backupPath = logFilePath.Replace(
+                    $".{_settings.LogFileSuffix}",
+                    $"_{DateTime.Now:yyyyMMdd_HHmmss}.{_settings.LogFileSuffix}",
+                    StringComparison.Ordinal);
 
                 File.Move(logFilePath, backupPath);
                 LogInformation($"ログファイルをローテーションしました: {backupPath}", "LogService");
@@ -419,7 +418,7 @@ public class LogService : ILogService
     }
 
     /// <summary>
-    /// ログディレクトリの存在確認と作成
+    /// ログディレクトリの存在確認と作成.
     /// </summary>
     private void EnsureLogDirectoryExists()
     {

@@ -6,12 +6,12 @@ using Xunit;
 namespace BrowserSelector.SecurityTests;
 
 /// <summary>
-/// プロセス実行のセキュリティテスト
+/// プロセス実行のセキュリティテスト.
 /// </summary>
 public class ProcessExecutionSecurityTests
 {
     /// <summary>
-    /// 有効なブラウザ実行パスの検証テスト
+    /// 有効なブラウザ実行パスの検証テスト.
     /// </summary>
     [Theory]
     [InlineData("C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe")]
@@ -30,7 +30,7 @@ public class ProcessExecutionSecurityTests
     }
 
     /// <summary>
-    /// 危険な実行パスの検証テスト
+    /// 危険な実行パスの検証テスト.
     /// </summary>
     [Theory]
     [InlineData("C:\\Windows\\System32\\cmd.exe")]
@@ -53,7 +53,7 @@ public class ProcessExecutionSecurityTests
     }
 
     /// <summary>
-    /// 無効な実行パスの検証テスト
+    /// 無効な実行パスの検証テスト.
     /// </summary>
     [Theory]
     [InlineData("chrome.exe<script>alert('XSS')</script>")]
@@ -74,7 +74,7 @@ public class ProcessExecutionSecurityTests
     }
 
     /// <summary>
-    /// 有効なコマンドライン引数の検証テスト
+    /// 有効なコマンドライン引数の検証テスト.
     /// </summary>
     [Theory]
     [InlineData("https://www.google.com")]
@@ -95,7 +95,7 @@ public class ProcessExecutionSecurityTests
     }
 
     /// <summary>
-    /// 危険なコマンドライン引数の検証テスト
+    /// 危険なコマンドライン引数の検証テスト.
     /// </summary>
     [Theory]
     [InlineData("https://www.google.com; rm -rf /")]
@@ -116,7 +116,7 @@ public class ProcessExecutionSecurityTests
     }
 
     /// <summary>
-    /// 無効なコマンドライン引数の検証テスト
+    /// 無効なコマンドライン引数の検証テスト.
     /// </summary>
     [Theory]
     [InlineData("https://www.google.com<script>alert('XSS')</script>")]
@@ -135,7 +135,7 @@ public class ProcessExecutionSecurityTests
     }
 
     /// <summary>
-    /// 長すぎるコマンドライン引数の検証テスト
+    /// 長すぎるコマンドライン引数の検証テスト.
     /// </summary>
     [Fact]
     public void CommandLineArguments_ShouldRejectExcessivelyLongArguments()
@@ -151,7 +151,7 @@ public class ProcessExecutionSecurityTests
     }
 
     /// <summary>
-    /// プロセス実行のセキュリティテスト
+    /// プロセス実行のセキュリティテスト.
     /// </summary>
     [Fact]
     public void ProcessExecution_ShouldBeSecure()
@@ -168,7 +168,7 @@ public class ProcessExecutionSecurityTests
     }
 
     /// <summary>
-    /// 危険なプロセス実行の検証テスト
+    /// 危険なプロセス実行の検証テスト.
     /// </summary>
     [Theory]
     [InlineData("C:\\Windows\\System32\\cmd.exe", "https://www.google.com")]
@@ -186,7 +186,7 @@ public class ProcessExecutionSecurityTests
     }
 
     /// <summary>
-    /// プロセス実行の権限チェックテスト
+    /// プロセス実行の権限チェックテスト.
     /// </summary>
     [Fact]
     public void ProcessExecution_ShouldCheckPermissions()
@@ -202,7 +202,7 @@ public class ProcessExecutionSecurityTests
     }
 
     /// <summary>
-    /// 危険なプロセス実行の権限チェックテスト
+    /// 危険なプロセス実行の権限チェックテスト.
     /// </summary>
     [Theory]
     [InlineData("C:\\Windows\\System32\\cmd.exe")]
@@ -220,20 +220,26 @@ public class ProcessExecutionSecurityTests
     }
 
     /// <summary>
-    /// 実行パスが有効かどうかを検証するメソッド
+    /// 実行パスが有効かどうかを検証するメソッド.
     /// </summary>
     private static bool IsValidExecutablePath(string path)
     {
         if (string.IsNullOrWhiteSpace(path))
+        {
             return false;
+        }
 
         // 長さ制限チェック
         if (path.Length > 260)
+        {
             return false;
+        }
 
         // パストラバーサル攻撃チェック
         if (path.Contains("..") || path.Contains("..\\") || path.Contains("../"))
+        {
             return false;
+        }
 
         // 危険な実行パスチェック
         var dangerousPaths = new[]
@@ -253,7 +259,9 @@ public class ProcessExecutionSecurityTests
         foreach (var dangerousPath in dangerousPaths)
         {
             if (path.Equals(dangerousPath, StringComparison.OrdinalIgnoreCase))
+            {
                 return false;
+            }
         }
 
         // 危険な文字列パターンチェック
@@ -270,29 +278,37 @@ public class ProcessExecutionSecurityTests
         foreach (var pattern in dangerousPatterns)
         {
             if (System.Text.RegularExpressions.Regex.IsMatch(path, pattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+            {
                 return false;
+            }
         }
 
         // 実行可能ファイル拡張子チェック
         var validExtensions = new[] { ".exe", ".msc", ".bat", ".cmd", ".com", ".scr" };
         var extension = System.IO.Path.GetExtension(path).ToLowerInvariant();
         if (!validExtensions.Contains(extension))
+        {
             return false;
+        }
 
         return true;
     }
 
     /// <summary>
-    /// コマンドライン引数が有効かどうかを検証するメソッド
+    /// コマンドライン引数が有効かどうかを検証するメソッド.
     /// </summary>
     private static bool IsValidCommandLineArgument(string argument)
     {
         if (string.IsNullOrWhiteSpace(argument))
+        {
             return false;
+        }
 
         // 長さ制限チェック
         if (argument.Length > 2048)
+        {
             return false;
+        }
 
         // 危険な文字列パターンチェック
         var dangerousPatterns = new[]
@@ -309,7 +325,9 @@ public class ProcessExecutionSecurityTests
         foreach (var pattern in dangerousPatterns)
         {
             if (System.Text.RegularExpressions.Regex.IsMatch(argument, pattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+            {
                 return false;
+            }
         }
 
         // 基本的なURL形式チェック
@@ -318,24 +336,28 @@ public class ProcessExecutionSecurityTests
     }
 
     /// <summary>
-    /// プロセスを実行できるかどうかを検証するメソッド
+    /// プロセスを実行できるかどうかを検証するメソッド.
     /// </summary>
     private static bool CanExecuteProcess(string path, string arguments)
     {
         if (!IsValidExecutablePath(path) || !IsValidCommandLineArgument(arguments))
+        {
             return false;
+        }
 
         // 実際の実行は行わず、パスと引数の妥当性のみチェック
         return true;
     }
 
     /// <summary>
-    /// プロセス実行の権限があるかどうかを検証するメソッド
+    /// プロセス実行の権限があるかどうかを検証するメソッド.
     /// </summary>
     private static bool HasExecutionPermission(string path)
     {
         if (!IsValidExecutablePath(path))
+        {
             return false;
+        }
 
         // 実際の権限チェックは行わず、パスの妥当性のみチェック
         return true;

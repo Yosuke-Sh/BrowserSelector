@@ -29,7 +29,7 @@ public class FileSystemSecurityTests
     }
 
     /// <summary>
-    /// パストラバーサル攻撃の検証テスト
+    /// パストラバーサル攻撃の検証テスト.
     /// </summary>
     [Theory]
     [InlineData("../../../etc/passwd")]
@@ -48,7 +48,7 @@ public class FileSystemSecurityTests
     }
 
     /// <summary>
-    /// 予約されたファイル名の検証テスト
+    /// 予約されたファイル名の検証テスト.
     /// </summary>
     [Theory]
     [InlineData("CON")]
@@ -83,7 +83,7 @@ public class FileSystemSecurityTests
     }
 
     /// <summary>
-    /// 無効な文字を含むファイルパスの検証テスト
+    /// 無効な文字を含むファイルパスの検証テスト.
     /// </summary>
     [Theory]
     [InlineData("file<name>.txt")]
@@ -107,7 +107,7 @@ public class FileSystemSecurityTests
     }
 
     /// <summary>
-    /// 長すぎるファイルパスの検証テスト
+    /// 長すぎるファイルパスの検証テスト.
     /// </summary>
     [Fact]
     public void FilePath_ShouldRejectExcessivelyLongPaths()
@@ -123,7 +123,7 @@ public class FileSystemSecurityTests
     }
 
     /// <summary>
-    /// ディレクトリ作成のセキュリティテスト
+    /// ディレクトリ作成のセキュリティテスト.
     /// </summary>
     [Fact]
     public void DirectoryCreation_ShouldBeSecure()
@@ -151,14 +151,21 @@ public class FileSystemSecurityTests
             // クリーンアップ
             if (Directory.Exists(testDir))
             {
-                try { Directory.Delete(testDir); } catch { }
+                try
+                {
+                    Directory.Delete(testDir);
+                }
+                catch
+                {
+                }
             }
+
             throw new Exception($"ディレクトリ作成テストでエラーが発生しました: {ex.Message}", ex);
         }
     }
 
     /// <summary>
-    /// 危険なディレクトリ作成の検証テスト
+    /// 危険なディレクトリ作成の検証テスト.
     /// </summary>
     [Theory]
     [InlineData("C:\\Windows\\System32")]
@@ -179,7 +186,7 @@ public class FileSystemSecurityTests
     }
 
     /// <summary>
-    /// ファイル読み取りのセキュリティテスト
+    /// ファイル読み取りのセキュリティテスト.
     /// </summary>
     [Fact]
     public void FileReading_ShouldBeSecure()
@@ -211,7 +218,7 @@ public class FileSystemSecurityTests
     }
 
     /// <summary>
-    /// 危険なファイル読み取りの検証テスト
+    /// 危険なファイル読み取りの検証テスト.
     /// </summary>
     [Theory]
     [InlineData("C:\\Windows\\System32\\config\\SAM")]
@@ -222,7 +229,7 @@ public class FileSystemSecurityTests
     public void FileReading_ShouldRejectDangerousFiles(string dangerousFile)
     {
         ArgumentNullException.ThrowIfNull(dangerousFile);
-        
+
         // Act
         var canRead = CanReadFile(dangerousFile);
 
@@ -231,7 +238,7 @@ public class FileSystemSecurityTests
     }
 
     /// <summary>
-    /// ファイル書き込みのセキュリティテスト
+    /// ファイル書き込みのセキュリティテスト.
     /// </summary>
     [Fact]
     public void FileWriting_ShouldBeSecure()
@@ -265,7 +272,7 @@ public class FileSystemSecurityTests
     }
 
     /// <summary>
-    /// 危険なファイル書き込みの検証テスト
+    /// 危険なファイル書き込みの検証テスト.
     /// </summary>
     [Theory]
     [InlineData("C:\\Windows\\System32\\config\\SAM")]
@@ -286,20 +293,26 @@ public class FileSystemSecurityTests
     }
 
     /// <summary>
-    /// ファイルパスが有効かどうかを検証するメソッド
+    /// ファイルパスが有効かどうかを検証するメソッド.
     /// </summary>
     private static bool IsValidFilePath(string path)
     {
         if (string.IsNullOrWhiteSpace(path))
+        {
             return false;
+        }
 
         // 長さ制限チェック
         if (path.Length > 260)
+        {
             return false;
+        }
 
         // パストラバーサル攻撃チェック
         if (path.Contains("..", StringComparison.Ordinal) || path.Contains("..\\", StringComparison.Ordinal) || path.Contains("../", StringComparison.Ordinal))
+        {
             return false;
+        }
 
         // 予約されたファイル名チェック
         var fileName = Path.GetFileName(path);
@@ -311,12 +324,16 @@ public class FileSystemSecurityTests
         };
 
         if (reservedNames.Contains(fileName.ToUpperInvariant()))
+        {
             return false;
+        }
 
         // 無効な文字チェック
         var invalidChars = Path.GetInvalidPathChars();
         if (path.IndexOfAny(invalidChars) >= 0)
+        {
             return false;
+        }
 
         try
         {
@@ -331,12 +348,14 @@ public class FileSystemSecurityTests
     }
 
     /// <summary>
-    /// ディレクトリを作成できるかどうかを検証するメソッド
+    /// ディレクトリを作成できるかどうかを検証するメソッド.
     /// </summary>
     private static bool CanCreateDirectory(string path)
     {
         if (!IsValidFilePath(path))
+        {
             return false;
+        }
 
         try
         {
@@ -353,7 +372,9 @@ public class FileSystemSecurityTests
             foreach (var dangerousPath in dangerousPaths)
             {
                 if (path.StartsWith(dangerousPath, StringComparison.OrdinalIgnoreCase))
+                {
                     return false;
+                }
             }
 
             // 実際の作成は行わず、パスの妥当性のみチェック
@@ -366,12 +387,14 @@ public class FileSystemSecurityTests
     }
 
     /// <summary>
-    /// ファイルを読み取れるかどうかを検証するメソッド
+    /// ファイルを読み取れるかどうかを検証するメソッド.
     /// </summary>
     private static bool CanReadFile(string path)
     {
         if (!IsValidFilePath(path))
+        {
             return false;
+        }
 
         try
         {
@@ -388,7 +411,9 @@ public class FileSystemSecurityTests
             foreach (var dangerousFile in dangerousFiles)
             {
                 if (path.Equals(dangerousFile, StringComparison.OrdinalIgnoreCase))
+                {
                     return false;
+                }
             }
 
             // ファイルの存在チェック
@@ -401,12 +426,14 @@ public class FileSystemSecurityTests
     }
 
     /// <summary>
-    /// ファイルに書き込めるかどうかを検証するメソッド
+    /// ファイルに書き込めるかどうかを検証するメソッド.
     /// </summary>
     private static bool CanWriteFile(string path, string content)
     {
         if (!IsValidFilePath(path))
+        {
             return false;
+        }
 
         try
         {
@@ -423,7 +450,9 @@ public class FileSystemSecurityTests
             foreach (var dangerousFile in dangerousFiles)
             {
                 if (path.Equals(dangerousFile, StringComparison.OrdinalIgnoreCase))
+                {
                     return false;
+                }
             }
 
             // 実際の書き込みは行わず、パスの妥当性のみチェック

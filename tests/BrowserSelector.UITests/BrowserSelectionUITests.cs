@@ -9,7 +9,7 @@ using Xunit.Sdk;
 namespace BrowserSelector.UITests;
 
 /// <summary>
-/// ブラウザ選択機能に特化したFlaUIテスト
+/// ブラウザ選択機能に特化したFlaUIテスト.
 /// </summary>
 public class BrowserSelectionUITests : IDisposable
 {
@@ -33,7 +33,7 @@ public class BrowserSelectionUITests : IDisposable
             if (System.IO.File.Exists(appPath))
             {
                 // テスト用アプリケーションを起動
-            _app = UITestHelper.LaunchTestApplication(appPath);
+                _app = UITestHelper.LaunchTestApplication(appPath);
                 _automation = new UIA3Automation();
 
                 // メインウィンドウの取得を待機
@@ -50,6 +50,7 @@ public class BrowserSelectionUITests : IDisposable
         }
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         try

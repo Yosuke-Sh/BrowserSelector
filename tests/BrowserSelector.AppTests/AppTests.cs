@@ -8,7 +8,7 @@ namespace BrowserSelector.AppTests;
 
 /// <summary>
 /// Appプロジェクト専用のテストクラス
-/// プロセス境界の問題を回避するため、Appプロジェクトのみを対象とする
+/// プロセス境界の問題を回避するため、Appプロジェクトのみを対象とする.
 /// </summary>
 public class AppTests : IDisposable
 {
@@ -482,6 +482,7 @@ public class AppTests : IDisposable
         mainViewModel.Should().NotBeNull();
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         _serviceProvider?.Dispose();

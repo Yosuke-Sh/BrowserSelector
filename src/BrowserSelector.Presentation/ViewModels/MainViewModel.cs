@@ -192,27 +192,27 @@ public partial class MainViewModel : ObservableObject
     }
 
     /// <summary>
-    /// ブラウザ一覧を読み込み.
+    /// Gets ブラウザ一覧を読み込み.
     /// </summary>
     public IAsyncRelayCommand LoadBrowsersCommand { get; }
 
     /// <summary>
-    /// ブラウザを起動.
+    /// Gets ブラウザを起動.
     /// </summary>
     public IAsyncRelayCommand<Browser> LaunchBrowserCommand { get; }
 
     /// <summary>
-    /// 設定を開く.
+    /// Gets 設定を開く.
     /// </summary>
     public IRelayCommand OpenSettingsCommand { get; }
 
     /// <summary>
-    /// 設定を閉じる.
+    /// Gets 設定を閉じる.
     /// </summary>
     public IRelayCommand CloseSettingsCommand { get; }
 
     /// <summary>
-    /// URLをクリア.
+    /// Gets uRLをクリア.
     /// </summary>
     public IRelayCommand ClearUrlCommand { get; }
 

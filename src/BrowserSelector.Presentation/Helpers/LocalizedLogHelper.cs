@@ -3,14 +3,14 @@ using BrowserSelector.Core.Services;
 namespace BrowserSelector.Presentation.Helpers;
 
 /// <summary>
-/// 多言語化対応のログヘルパークラス
+/// 多言語化対応のログヘルパークラス.
 /// </summary>
 public static class LocalizedLogHelper
 {
     private static ILocalizationService? _localizationService;
 
     /// <summary>
-    /// ローカライゼーションサービスを設定
+    /// ローカライゼーションサービスを設定.
     /// </summary>
     public static void SetLocalizationService(ILocalizationService localizationService)
     {
@@ -18,15 +18,16 @@ public static class LocalizedLogHelper
     }
 
     /// <summary>
-    /// ローカライズされた文字列を取得
+    /// ローカライズされた文字列を取得.
     /// </summary>
+    /// <returns></returns>
     public static string GetString(string key, params object[] args)
     {
         return _localizationService?.GetString(key, args) ?? key;
     }
 
     /// <summary>
-    /// アプリケーション起動開始ログ
+    /// アプリケーション起動開始ログ.
     /// </summary>
     public static void LogApplicationStart(ILogService logService, string category)
     {
@@ -35,7 +36,7 @@ public static class LocalizedLogHelper
     }
 
     /// <summary>
-    /// アプリケーション起動完了ログ
+    /// アプリケーション起動完了ログ.
     /// </summary>
     public static void LogApplicationStartComplete(ILogService logService, string category)
     {
@@ -44,7 +45,7 @@ public static class LocalizedLogHelper
     }
 
     /// <summary>
-    /// ブラウザ検出開始ログ
+    /// ブラウザ検出開始ログ.
     /// </summary>
     public static void LogBrowserDetectionStart(ILogService logService, string category)
     {
@@ -53,7 +54,7 @@ public static class LocalizedLogHelper
     }
 
     /// <summary>
-    /// ブラウザ検出完了ログ
+    /// ブラウザ検出完了ログ.
     /// </summary>
     public static void LogBrowserDetectionComplete(ILogService logService, string category, int count, string details)
     {
@@ -63,7 +64,7 @@ public static class LocalizedLogHelper
     }
 
     /// <summary>
-    /// 設定読み込み開始ログ
+    /// 設定読み込み開始ログ.
     /// </summary>
     public static void LogSettingsLoadStart(ILogService logService, string category)
     {
@@ -72,7 +73,7 @@ public static class LocalizedLogHelper
     }
 
     /// <summary>
-    /// 設定読み込み完了ログ
+    /// 設定読み込み完了ログ.
     /// </summary>
     public static void LogSettingsLoadComplete(ILogService logService, string category)
     {
@@ -81,7 +82,7 @@ public static class LocalizedLogHelper
     }
 
     /// <summary>
-    /// 言語変更ログ
+    /// 言語変更ログ.
     /// </summary>
     public static void LogLanguageChanged(ILogService logService, string category, string language)
     {
@@ -91,7 +92,7 @@ public static class LocalizedLogHelper
     }
 
     /// <summary>
-    /// ブラウザ起動開始ログ
+    /// ブラウザ起動開始ログ.
     /// </summary>
     public static void LogBrowserLaunchStart(ILogService logService, string category, string browserName)
     {
@@ -101,7 +102,7 @@ public static class LocalizedLogHelper
     }
 
     /// <summary>
-    /// ブラウザ起動完了ログ
+    /// ブラウザ起動完了ログ.
     /// </summary>
     public static void LogBrowserLaunchComplete(ILogService logService, string category, string browserName)
     {
@@ -111,7 +112,7 @@ public static class LocalizedLogHelper
     }
 
     /// <summary>
-    /// ブラウザ起動エラーログ
+    /// ブラウザ起動エラーログ.
     /// </summary>
     public static void LogBrowserLaunchError(ILogService logService, string category, string error)
     {

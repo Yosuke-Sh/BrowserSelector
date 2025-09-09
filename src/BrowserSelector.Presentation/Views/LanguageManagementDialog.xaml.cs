@@ -4,7 +4,7 @@ using System.Windows;
 namespace BrowserSelector.Presentation.Views;
 
 /// <summary>
-/// 言語管理ダイアログ
+/// 言語管理ダイアログ.
 /// </summary>
 public partial class LanguageManagementDialog : Window
 {

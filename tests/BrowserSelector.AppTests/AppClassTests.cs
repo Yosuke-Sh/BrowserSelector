@@ -6,7 +6,7 @@ namespace BrowserSelector.AppTests;
 
 /// <summary>
 /// Appクラス専用のテスト
-/// WPFアプリケーションの基本機能をテスト
+/// WPFアプリケーションの基本機能をテスト.
 /// </summary>
 public class AppClassTests
 {

@@ -4,14 +4,14 @@ using System.Windows;
 namespace BrowserSelector.Presentation.Helpers;
 
 /// <summary>
-/// 多言語化対応のMessageBoxヘルパークラス
+/// 多言語化対応のMessageBoxヘルパークラス.
 /// </summary>
 public static class LocalizedMessageBox
 {
     private static ILocalizationService? _localizationService;
 
     /// <summary>
-    /// ローカライゼーションサービスを設定
+    /// ローカライゼーションサービスを設定.
     /// </summary>
     public static void SetLocalizationService(ILocalizationService localizationService)
     {
@@ -19,8 +19,9 @@ public static class LocalizedMessageBox
     }
 
     /// <summary>
-    /// 確認ダイアログを表示
+    /// 確認ダイアログを表示.
     /// </summary>
+    /// <returns></returns>
     public static MessageBoxResult ShowConfirm(string message, string? title = null)
     {
         if (IsTestEnvironment())
@@ -33,8 +34,9 @@ public static class LocalizedMessageBox
     }
 
     /// <summary>
-    /// 情報ダイアログを表示
+    /// 情報ダイアログを表示.
     /// </summary>
+    /// <returns></returns>
     public static MessageBoxResult ShowInformation(string message, string? title = null)
     {
         if (IsTestEnvironment())
@@ -47,8 +49,9 @@ public static class LocalizedMessageBox
     }
 
     /// <summary>
-    /// 警告ダイアログを表示
+    /// 警告ダイアログを表示.
     /// </summary>
+    /// <returns></returns>
     public static MessageBoxResult ShowWarning(string message, string? title = null)
     {
         if (IsTestEnvironment())
@@ -61,8 +64,9 @@ public static class LocalizedMessageBox
     }
 
     /// <summary>
-    /// エラーダイアログを表示
+    /// エラーダイアログを表示.
     /// </summary>
+    /// <returns></returns>
     public static MessageBoxResult ShowError(string message, string? title = null)
     {
         if (IsTestEnvironment())
@@ -75,8 +79,9 @@ public static class LocalizedMessageBox
     }
 
     /// <summary>
-    /// ログクリア確認ダイアログを表示
+    /// ログクリア確認ダイアログを表示.
     /// </summary>
+    /// <returns></returns>
     public static MessageBoxResult ShowLogClearConfirm()
     {
         string message = _localizationService?.GetString("MessageBox.LogClearConfirm") ?? "Do you want to clear the log file?";
@@ -85,8 +90,9 @@ public static class LocalizedMessageBox
     }
 
     /// <summary>
-    /// ログクリア完了ダイアログを表示
+    /// ログクリア完了ダイアログを表示.
     /// </summary>
+    /// <returns></returns>
     public static MessageBoxResult ShowLogClearComplete()
     {
         string message = _localizationService?.GetString("MessageBox.LogClearComplete") ?? "Log file has been cleared.";
@@ -95,8 +101,9 @@ public static class LocalizedMessageBox
     }
 
     /// <summary>
-    /// 古いログ削除確認ダイアログを表示
+    /// 古いログ削除確認ダイアログを表示.
     /// </summary>
+    /// <returns></returns>
     public static MessageBoxResult ShowOldLogDeleteConfirm()
     {
         string message = _localizationService?.GetString("MessageBox.OldLogDeleteConfirm") ?? "Do you want to delete old log files?";
@@ -105,8 +112,9 @@ public static class LocalizedMessageBox
     }
 
     /// <summary>
-    /// 古いログ削除完了ダイアログを表示
+    /// 古いログ削除完了ダイアログを表示.
     /// </summary>
+    /// <returns></returns>
     public static MessageBoxResult ShowOldLogDeleteComplete()
     {
         string message = _localizationService?.GetString("MessageBox.OldLogDeleteComplete") ?? "Old log files have been deleted.";
@@ -115,8 +123,9 @@ public static class LocalizedMessageBox
     }
 
     /// <summary>
-    /// 汎用メッセージボックスを表示
+    /// 汎用メッセージボックスを表示.
     /// </summary>
+    /// <returns></returns>
     public static MessageBoxResult Show(string message, string caption = "情報", MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage icon = MessageBoxImage.Information)
     {
         if (IsTestEnvironment())
@@ -129,7 +138,7 @@ public static class LocalizedMessageBox
     }
 
     /// <summary>
-    /// テスト環境かどうかを判定する
+    /// テスト環境かどうかを判定する.
     /// </summary>
     private static bool IsTestEnvironment()
     {
@@ -158,7 +167,7 @@ public static class LocalizedMessageBox
     }
 
     /// <summary>
-    /// テストフレームワーク内で実行されているかどうかを判定
+    /// テストフレームワーク内で実行されているかどうかを判定.
     /// </summary>
     private static bool IsRunningInTestFramework()
     {

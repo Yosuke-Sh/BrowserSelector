@@ -6,7 +6,7 @@ namespace BrowserSelector.E2ETests;
 
 /// <summary>
 /// テスト用の設定サービス実装
-/// 実際のファイルシステムではなく、テスト用の一時ディレクトリを使用
+/// 実際のファイルシステムではなく、テスト用の一時ディレクトリを使用.
 /// </summary>
 public class TestSettingsService : ISettingsService
 {
@@ -25,6 +25,7 @@ public class TestSettingsService : ISettingsService
         _logSettingsPath = Path.Combine(_settingsDirectory, "logsettings.json");
     }
 
+    /// <inheritdoc/>
     public async Task<AppSettings> LoadAppSettingsAsync()
     {
         _logService?.LogTrace("アプリ設定読み込み開始", "TestSettingsService");
@@ -51,6 +52,7 @@ public class TestSettingsService : ISettingsService
         }
     }
 
+    /// <inheritdoc/>
     public async Task<bool> SaveAppSettingsAsync(AppSettings settings)
     {
         _logService?.LogTrace($"アプリ設定保存開始: Language={settings.Language}", "TestSettingsService");
@@ -70,6 +72,7 @@ public class TestSettingsService : ISettingsService
         }
     }
 
+    /// <inheritdoc/>
     public async Task<VisualSettings> LoadVisualSettingsAsync()
     {
         _logService?.LogTrace("視覚設定読み込み開始", "TestSettingsService");
@@ -96,6 +99,7 @@ public class TestSettingsService : ISettingsService
         }
     }
 
+    /// <inheritdoc/>
     public async Task<bool> SaveVisualSettingsAsync(VisualSettings settings)
     {
         _logService?.LogTrace($"視覚設定保存開始: BackgroundColor={settings.BackgroundColor}", "TestSettingsService");
@@ -115,6 +119,7 @@ public class TestSettingsService : ISettingsService
         }
     }
 
+    /// <inheritdoc/>
     public async Task<LogSettings> LoadLogSettingsAsync()
     {
         _logService?.LogTrace("ログ設定読み込み開始", "TestSettingsService");
@@ -141,6 +146,7 @@ public class TestSettingsService : ISettingsService
         }
     }
 
+    /// <inheritdoc/>
     public async Task<bool> SaveLogSettingsAsync(LogSettings settings)
     {
         _logService?.LogTrace($"ログ設定保存開始: LogLevel={settings.LogLevel}", "TestSettingsService");
@@ -160,6 +166,7 @@ public class TestSettingsService : ISettingsService
         }
     }
 
+    /// <inheritdoc/>
     public async Task<bool> ResetSettingsAsync()
     {
         _logService?.LogTrace("設定リセット開始", "TestSettingsService");
@@ -180,6 +187,7 @@ public class TestSettingsService : ISettingsService
         }
     }
 
+    /// <inheritdoc/>
     public async Task<bool> ExportSettingsAsync(string filePath)
     {
         _logService?.LogTrace($"設定エクスポート開始: {filePath}", "TestSettingsService");
@@ -207,6 +215,7 @@ public class TestSettingsService : ISettingsService
         }
     }
 
+    /// <inheritdoc/>
     public async Task<bool> ImportSettingsAsync(string filePath)
     {
         _logService?.LogTrace($"設定インポート開始: {filePath}", "TestSettingsService");
@@ -259,6 +268,7 @@ public class TestSettingsService : ISettingsService
         }
     }
 
+    /// <inheritdoc/>
     public string GetSettingsFilePath()
     {
         return _settingsDirectory;

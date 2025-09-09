@@ -3,7 +3,7 @@ using System.Windows;
 namespace BrowserSelector.App;
 
 /// <summary>
-/// テスト用のエントリーポイント
+/// テスト用のエントリーポイント.
 /// </summary>
 public class TestProgram
 {

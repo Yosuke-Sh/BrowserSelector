@@ -5,10 +5,11 @@ using System.Windows.Data;
 namespace BrowserSelector.Presentation.Converters;
 
 /// <summary>
-/// bool値をVisibilityに変換するコンバーター
+/// bool値をVisibilityに変換するコンバーター.
 /// </summary>
 public class BoolToVisibilityConverter : IValueConverter
 {
+    /// <inheritdoc/>
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
         if (value is bool boolValue)
@@ -24,6 +25,7 @@ public class BoolToVisibilityConverter : IValueConverter
         return Visibility.Collapsed;
     }
 
+    /// <inheritdoc/>
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
         if (value is Visibility visibility)

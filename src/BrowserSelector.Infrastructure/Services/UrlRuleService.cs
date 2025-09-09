@@ -6,7 +6,7 @@ using System.IO;
 namespace BrowserSelector.Infrastructure.Services;
 
 /// <summary>
-/// URLルール管理サービスの実装
+/// URLルール管理サービスの実装.
 /// </summary>
 public class UrlRuleService : IUrlRuleService
 {
@@ -18,6 +18,7 @@ public class UrlRuleService : IUrlRuleService
     public UrlRuleService(ILogService? logService = null)
     {
         _logService = logService;
+
         // 設定ファイルのパスを設定
         string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         string appFolder = Path.Combine(appDataPath, "BrowserSelector");
@@ -28,6 +29,7 @@ public class UrlRuleService : IUrlRuleService
         LoadRulesSync();
     }
 
+    /// <inheritdoc/>
     public Task<IEnumerable<UrlRule>> GetAllRulesAsync()
     {
         lock (_lockObject)
@@ -36,6 +38,7 @@ public class UrlRuleService : IUrlRuleService
         }
     }
 
+    /// <inheritdoc/>
     public Task<IEnumerable<UrlRule>> GetEnabledRulesAsync()
     {
         lock (_lockObject)
@@ -44,8 +47,10 @@ public class UrlRuleService : IUrlRuleService
         }
     }
 
+    /// <inheritdoc/>
     public async Task<bool> AddRuleAsync(UrlRule rule)
     {
+        ArgumentNullException.ThrowIfNull(rule);
         try
         {
             lock (_lockObject)
@@ -71,8 +76,10 @@ public class UrlRuleService : IUrlRuleService
         }
     }
 
+    /// <inheritdoc/>
     public async Task<bool> UpdateRuleAsync(UrlRule rule)
     {
+        ArgumentNullException.ThrowIfNull(rule);
         try
         {
             lock (_lockObject)
@@ -105,6 +112,7 @@ public class UrlRuleService : IUrlRuleService
         }
     }
 
+    /// <inheritdoc/>
     public async Task<bool> DeleteRuleAsync(Guid ruleId)
     {
         try
@@ -132,6 +140,7 @@ public class UrlRuleService : IUrlRuleService
         }
     }
 
+    /// <inheritdoc/>
     public async Task<bool> ToggleRuleAsync(Guid ruleId, bool isEnabled)
     {
         try
@@ -160,6 +169,7 @@ public class UrlRuleService : IUrlRuleService
         }
     }
 
+    /// <inheritdoc/>
     public Task<Browser?> FindMatchingBrowserAsync(string url, IEnumerable<Browser> browsers)
     {
         try
@@ -197,6 +207,7 @@ public class UrlRuleService : IUrlRuleService
         }
     }
 
+    /// <inheritdoc/>
     public async Task<bool> ChangePriorityAsync(Guid ruleId, int newPriority)
     {
         try
@@ -225,6 +236,7 @@ public class UrlRuleService : IUrlRuleService
         }
     }
 
+    /// <inheritdoc/>
     public async Task<bool> ReorderRulesAsync(IEnumerable<Guid> ruleIds)
     {
         try
@@ -258,7 +270,7 @@ public class UrlRuleService : IUrlRuleService
     }
 
     /// <summary>
-    /// ルールをファイルから同期的に読み込み（DI解決時のハング回避用）
+    /// ルールをファイルから同期的に読み込み（DI解決時のハング回避用）.
     /// </summary>
     private void LoadRulesSync()
     {
@@ -286,13 +298,14 @@ public class UrlRuleService : IUrlRuleService
         catch (Exception ex)
         {
             Debug.WriteLine($"UrlRuleService: 同期読み込みエラー - {ex.Message}");
+
             // 失敗時はデフォルトルールで初期化
             CreateDefaultRulesSync();
         }
     }
 
     /// <summary>
-    /// ルールをファイルに保存
+    /// ルールをファイルに保存.
     /// </summary>
     private async Task SaveRulesAsync()
     {
@@ -316,7 +329,7 @@ public class UrlRuleService : IUrlRuleService
     }
 
     /// <summary>
-    /// デフォルトルールを同期的に作成・保存
+    /// デフォルトルールを同期的に作成・保存.
     /// </summary>
     private void CreateDefaultRulesSync()
     {

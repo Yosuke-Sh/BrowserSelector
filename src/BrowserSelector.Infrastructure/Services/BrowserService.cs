@@ -7,7 +7,7 @@ using System.IO;
 namespace BrowserSelector.Infrastructure.Services;
 
 /// <summary>
-/// ブラウザ管理サービスの実装
+/// ブラウザ管理サービスの実装.
 /// </summary>
 public class BrowserService : IBrowserService
 {
@@ -29,6 +29,7 @@ public class BrowserService : IBrowserService
         _logService = logService;
     }
 
+    /// <inheritdoc/>
     public async Task<IEnumerable<Browser>> DetectBrowsersAsync()
     {
         _logService.LogTrace("ブラウザ検出処理開始", "BrowserService");
@@ -65,8 +66,11 @@ public class BrowserService : IBrowserService
         }
     }
 
+    /// <inheritdoc/>
     public async Task<bool> LaunchBrowserAsync(Browser browser, string url)
     {
+        ArgumentNullException.ThrowIfNull(browser);
+        ArgumentNullException.ThrowIfNull(url);
         try
         {
             _logService.LogDebug($"ブラウザ起動開始 - {browser.Name}, パス: {browser.ExecutablePath}, URL: {url}", nameof(BrowserService));
@@ -151,8 +155,10 @@ public class BrowserService : IBrowserService
         }
     }
 
+    /// <inheritdoc/>
     public async Task<bool> AddBrowserAsync(Browser browser)
     {
+        ArgumentNullException.ThrowIfNull(browser);
         try
         {
             if (!browser.IsValid)
@@ -180,8 +186,10 @@ public class BrowserService : IBrowserService
         }
     }
 
+    /// <inheritdoc/>
     public async Task<bool> UpdateBrowserAsync(Browser browser)
     {
+        ArgumentNullException.ThrowIfNull(browser);
         try
         {
             Browser? existingBrowser = _browsers.FirstOrDefault(b => b.Id == browser.Id);
@@ -205,6 +213,7 @@ public class BrowserService : IBrowserService
         }
     }
 
+    /// <inheritdoc/>
     public async Task<bool> RemoveBrowserAsync(Guid browserId)
     {
         try
@@ -218,7 +227,6 @@ public class BrowserService : IBrowserService
             // システム検出ブラウザも削除可能にする
             // if (browser.Type != BrowserType.Custom)
             //     return false;
-
             _ = _browsers.Remove(browser);
             await SaveCustomBrowsersAsync().ConfigureAwait(false);
             return true;
@@ -230,6 +238,7 @@ public class BrowserService : IBrowserService
         }
     }
 
+    /// <inheritdoc/>
     public Task<IEnumerable<Browser>> GetAllBrowsersAsync()
     {
         // 既存のブラウザデータを返すのみ（自動検出は行わない）
@@ -237,6 +246,7 @@ public class BrowserService : IBrowserService
         return Task.FromResult<IEnumerable<Browser>>(_browsers.OrderBy(b => b.DisplayOrder));
     }
 
+    /// <inheritdoc/>
     public async Task<bool> SetDefaultBrowserAsync(Guid browserId)
     {
         try
@@ -263,6 +273,7 @@ public class BrowserService : IBrowserService
         }
     }
 
+    /// <inheritdoc/>
     public async Task<Browser?> GetDefaultBrowserAsync()
     {
         try
@@ -283,6 +294,7 @@ public class BrowserService : IBrowserService
         }
     }
 
+    /// <inheritdoc/>
     public async Task UpdateUsageAsync(Browser browser)
     {
         try
@@ -295,6 +307,7 @@ public class BrowserService : IBrowserService
         }
     }
 
+    /// <inheritdoc/>
     public async Task UpdateBrowserUsageAsync(Guid browserId)
     {
         try
@@ -342,7 +355,7 @@ public class BrowserService : IBrowserService
     }
 
     /// <summary>
-    /// ブラウザタイプに応じた起動引数を取得
+    /// ブラウザタイプに応じた起動引数を取得.
     /// </summary>
     private string GetBrowserArguments(BrowserType browserType, string url)
     {
@@ -359,4 +372,3 @@ public class BrowserService : IBrowserService
         };
     }
 }
-

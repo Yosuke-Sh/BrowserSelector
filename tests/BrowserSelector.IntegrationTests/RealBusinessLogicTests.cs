@@ -10,7 +10,7 @@ namespace BrowserSelector.IntegrationTests
 {
     /// <summary>
     /// 実際のビジネスロジックを実行する統合テスト
-    /// ファイルシステム操作やレジストリアクセスを含む
+    /// ファイルシステム操作やレジストリアクセスを含む.
     /// </summary>
     public class RealBusinessLogicTests : IDisposable
     {
@@ -270,6 +270,7 @@ namespace BrowserSelector.IntegrationTests
             _ = importResult.Should().BeFalse();
         }
 
+        /// <inheritdoc/>
         public void Dispose()
         {
             _serviceProvider?.Dispose();

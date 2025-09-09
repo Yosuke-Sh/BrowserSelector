@@ -8,17 +8,20 @@ using System.Linq;
 namespace BrowserSelector.PerformanceTests;
 
 /// <summary>
-/// 基本的なパフォーマンステスト
+/// 基本的なパフォーマンステスト.
 /// </summary>
 [MemoryDiagnoser]
 [SimpleJob(RuntimeMoniker.Net80)]
-[MinColumn, MaxColumn, MeanColumn, MedianColumn]
+[MinColumn]
+[MaxColumn]
+[MeanColumn]
+[MedianColumn]
 public class SimplePerformanceBenchmarks
 {
-
     /// <summary>
-    /// URL検証応答時間の測定
+    /// URL検証応答時間の測定.
     /// </summary>
+    /// <returns></returns>
     [Benchmark]
     [Arguments("https://www.google.com")]
     [Arguments("http://invalid-url")]
@@ -48,8 +51,9 @@ public class SimplePerformanceBenchmarks
     }
 
     /// <summary>
-    /// メモリ使用量の測定
+    /// メモリ使用量の測定.
     /// </summary>
+    /// <returns></returns>
     [Benchmark]
     public long MemoryUsage()
     {
@@ -65,8 +69,9 @@ public class SimplePerformanceBenchmarks
     }
 
     /// <summary>
-    /// 大量データ処理後のメモリ使用量
+    /// 大量データ処理後のメモリ使用量.
     /// </summary>
+    /// <returns></returns>
     [Benchmark]
     [Arguments(100)]
     [Arguments(1000)]
@@ -103,8 +108,9 @@ public class SimplePerformanceBenchmarks
     }
 
     /// <summary>
-    /// ガベージコレクション効率の測定
+    /// ガベージコレクション効率の測定.
     /// </summary>
+    /// <returns></returns>
     [Benchmark]
     public TimeSpan GarbageCollectionEfficiency()
     {
@@ -141,5 +147,4 @@ public class SimplePerformanceBenchmarks
             return stopwatch.Elapsed;
         }
     }
-
 }

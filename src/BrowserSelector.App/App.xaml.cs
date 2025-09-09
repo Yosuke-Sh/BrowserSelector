@@ -1,4 +1,4 @@
-﻿using BrowserSelector.App.DependencyInjection;
+using BrowserSelector.App.DependencyInjection;
 using BrowserSelector.Core.Enums;
 using BrowserSelector.Core.Services;
 using BrowserSelector.Presentation.Extensions;
@@ -13,21 +13,22 @@ using System.Windows;
 namespace BrowserSelector.App;
 
 /// <summary>
-/// Interaction logic for App.xaml
+/// Interaction logic for App.xaml.
 /// </summary>
 public partial class App : Application
 {
     private IHost? _host;
     private ILogService? _logService;
 
+    /// <inheritdoc/>
     protected override async void OnStartup(StartupEventArgs e)
     {
         try
         {
             // テストモードの確認
-            bool isTestMode = e.Args.Contains("--test-mode") || 
+            bool isTestMode = e.Args.Contains("--test-mode") ||
                              Environment.GetEnvironmentVariable("BROWSERSELECTOR_TEST_MODE") == "true";
-            
+
             _logService?.LogTrace($"アプリケーション起動処理開始: コマンドライン引数={string.Join(" ", e.Args)}, テストモード={isTestMode}", "App");
             // ホストの構築
             _host = Host.CreateDefaultBuilder()
@@ -233,9 +234,9 @@ public partial class App : Application
         catch (Exception ex)
         {
             // テストモードの確認
-            bool isTestMode = e.Args.Contains("--test-mode") || 
+            bool isTestMode = e.Args.Contains("--test-mode") ||
                              Environment.GetEnvironmentVariable("BROWSERSELECTOR_TEST_MODE") == "true";
-            
+
             if (_logService != null)
             {
                 _logService.LogCritical($"アプリケーション起動で致命的エラーが発生: {ex.Message}", "App", ex);
@@ -253,7 +254,7 @@ public partial class App : Application
             {
                 throw new InvalidOperationException($"アプリケーションの起動に失敗しました: {ex.Message}", ex);
             }
-            
+
             // 通常モードではメッセージボックスを表示
             _ = MessageBox.Show($"アプリケーションの起動に失敗しました: {ex.Message}",
                           "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -261,6 +262,7 @@ public partial class App : Application
         }
     }
 
+    /// <inheritdoc/>
     protected override async void OnExit(ExitEventArgs e)
     {
         try

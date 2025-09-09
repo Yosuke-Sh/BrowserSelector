@@ -7,7 +7,7 @@ using Xunit.Sdk;
 namespace BrowserSelector.UITests;
 
 /// <summary>
-/// 設定画面の独立テスト（並列実行を避けるため分離）
+/// 設定画面の独立テスト（並列実行を避けるため分離）.
 /// </summary>
 [Collection("UI Tests")]
 public class SettingsWindowIsolatedTests : IDisposable
@@ -16,7 +16,7 @@ public class SettingsWindowIsolatedTests : IDisposable
     private UIA3Automation? _automation = null;
 
     /// <summary>
-    /// UI要素を待機して取得するヘルパーメソッド
+    /// UI要素を待機して取得するヘルパーメソッド.
     /// </summary>
     private T? WaitForElement<T>(Func<T?> findElement, int timeoutMs = 5000) where T : class
     {
@@ -26,7 +26,7 @@ public class SettingsWindowIsolatedTests : IDisposable
             var element = findElement();
             if (element != null)
                 return element;
-            
+
             Thread.Sleep(100);
         }
         return null;
@@ -56,6 +56,7 @@ public class SettingsWindowIsolatedTests : IDisposable
         }
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         _automation?.Dispose();
@@ -63,7 +64,7 @@ public class SettingsWindowIsolatedTests : IDisposable
     }
 
     /// <summary>
-    /// 設定ウィンドウを複数の方法で検索するヘルパーメソッド
+    /// 設定ウィンドウを複数の方法で検索するヘルパーメソッド.
     /// </summary>
     private FlaUI.Core.AutomationElements.Window? FindSettingsWindow()
     {

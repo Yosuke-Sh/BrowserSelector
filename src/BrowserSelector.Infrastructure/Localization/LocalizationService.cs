@@ -6,7 +6,7 @@ using System.Resources;
 namespace BrowserSelector.Infrastructure.Localization;
 
 /// <summary>
-/// 多言語対応サービスの実装
+/// 多言語対応サービスの実装.
 /// </summary>
 public class LocalizationService : ILocalizationService
 {
@@ -31,6 +31,7 @@ public class LocalizationService : ILocalizationService
         });
     }
 
+    /// <inheritdoc/>
     public string GetString(string key)
     {
         _logService?.LogDebug($"GetString呼び出し: {key}, 現在のカルチャ: {CurrentCulture.Name}, カスタムリソース数: {_customResources.Count}, JSONリソース数: {_jsonResources.Count}", "LocalizationService");
@@ -62,14 +63,17 @@ public class LocalizationService : ILocalizationService
         return key;
     }
 
+    /// <inheritdoc/>
     public string GetString(string key, params object[] args)
     {
         string format = GetString(key);
-        return string.Format(format, args);
+        return string.Format(CultureInfo.InvariantCulture, format, args);
     }
 
+    /// <inheritdoc/>
     public async Task SetLanguage(CultureInfo culture)
     {
+        ArgumentNullException.ThrowIfNull(culture);
         if (CurrentCulture.Equals(culture))
         {
             return;
@@ -88,8 +92,10 @@ public class LocalizationService : ILocalizationService
         _logService?.LogInformation($"言語を {oldCulture.Name} から {culture.Name} に変更しました", "LocalizationService");
     }
 
+    /// <inheritdoc/>
     public CultureInfo CurrentCulture { get; private set; }
 
+    /// <inheritdoc/>
     public async Task<IEnumerable<CultureInfo>> GetSupportedLanguagesAsync()
     {
         List<CultureInfo> languages = [];
@@ -122,16 +128,18 @@ public class LocalizationService : ILocalizationService
         return languages;
     }
 
+    /// <inheritdoc/>
     public IEnumerable<CultureInfo> SupportedLanguages => new[]
     {
         new CultureInfo("en-US"),
         new CultureInfo("ja-JP")
     };
 
+    /// <inheritdoc/>
     public event EventHandler<LanguageChangedEventArgs>? LanguageChanged;
 
     /// <summary>
-    /// JSONファイルからリソースを読み込み（非同期版）
+    /// JSONファイルからリソースを読み込み（非同期版）.
     /// </summary>
     private async Task LoadJsonResourcesAsync(string cultureCode)
     {
@@ -166,43 +174,7 @@ public class LocalizationService : ILocalizationService
     }
 
     /// <summary>
-    /// JSONファイルからリソースを読み込み（同期版）
-    /// </summary>
-    private Dictionary<string, string>? LoadJsonResources(string cultureCode)
-    {
-        try
-        {
-            System.Reflection.Assembly assembly = typeof(LocalizationService).Assembly;
-            string resourceName = $"BrowserSelector.Infrastructure.Localization.{cultureCode}.json";
-
-            using System.IO.Stream? stream = assembly.GetManifestResourceStream(resourceName);
-            if (stream == null)
-            {
-                _logService?.LogDebug($"JSONリソースファイルが見つかりません: {resourceName}", "LocalizationService");
-                return null;
-            }
-
-            using System.IO.StreamReader reader = new(stream);
-            string json = reader.ReadToEnd();
-
-            CustomLanguageFile? languageFile = System.Text.Json.JsonSerializer.Deserialize<CustomLanguageFile>(json);
-            if (languageFile?.Resources != null)
-            {
-                _logService?.LogDebug($"JSONリソースを読み込みました: {cultureCode} ({languageFile.Resources.Count}個のリソース)", "LocalizationService");
-                return languageFile.Resources;
-            }
-
-            return null;
-        }
-        catch (Exception ex)
-        {
-            _logService?.LogWarning($"JSONリソースの読み込みに失敗しました: {cultureCode} - {ex.Message}", "LocalizationService");
-            return null;
-        }
-    }
-
-    /// <summary>
-    /// カスタム言語リソースを読み込み
+    /// カスタム言語リソースを読み込み.
     /// </summary>
     private async Task LoadCustomLanguageResourcesAsync(string cultureCode)
     {
@@ -211,7 +183,6 @@ public class LocalizationService : ILocalizationService
             _customResources.Clear();
 
             // すべての言語でカスタムリソースを読み込み（デフォルト言語も含む）
-
             Dictionary<string, string>? customResources = await _customLanguageService.LoadCustomLanguageAsync(cultureCode).ConfigureAwait(false);
             if (customResources != null)
             {

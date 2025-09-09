@@ -7,7 +7,7 @@ using System.Windows;
 namespace BrowserSelector.Presentation.Views;
 
 /// <summary>
-/// URLルール編集ダイアログ
+/// URLルール編集ダイアログ.
 /// </summary>
 public partial class UrlRuleEditDialog : Window
 {
@@ -15,7 +15,9 @@ public partial class UrlRuleEditDialog : Window
     private readonly ILogService _logService;
 
     public UrlRule UrlRule { get; set; } = new();
+
     public ObservableCollection<Browser> AvailableBrowsers { get; } = new();
+
     public Browser? SelectedBrowser { get; set; }
 
     public UrlRuleEditDialog(IBrowserService browserService, ILogService logService)

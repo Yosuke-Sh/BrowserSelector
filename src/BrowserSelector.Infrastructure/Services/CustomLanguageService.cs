@@ -7,7 +7,7 @@ using System.Text.Json;
 namespace BrowserSelector.Infrastructure.Services;
 
 /// <summary>
-/// カスタム言語ファイル管理サービスの実装
+/// カスタム言語ファイル管理サービスの実装.
 /// </summary>
 public class CustomLanguageService : ICustomLanguageService
 {
@@ -34,6 +34,7 @@ public class CustomLanguageService : ICustomLanguageService
         _ = Task.Run(async () => await EnsureDefaultLanguageFilesAsync().ConfigureAwait(false));
     }
 
+    /// <inheritdoc/>
     public async Task<IEnumerable<LanguageInfo>> GetAvailableLanguagesAsync()
     {
         List<LanguageInfo> languages = [];
@@ -81,6 +82,7 @@ public class CustomLanguageService : ICustomLanguageService
         return languages;
     }
 
+    /// <inheritdoc/>
     public async Task<bool> AddCustomLanguageAsync(string languageFilePath)
     {
         try
@@ -121,6 +123,7 @@ public class CustomLanguageService : ICustomLanguageService
         }
     }
 
+    /// <inheritdoc/>
     public Task<bool> RemoveCustomLanguageAsync(string cultureCode)
     {
         try
@@ -145,6 +148,7 @@ public class CustomLanguageService : ICustomLanguageService
         }
     }
 
+    /// <inheritdoc/>
     public async Task<bool> ValidateLanguageFileAsync(string languageFilePath)
     {
         try
@@ -179,9 +183,9 @@ public class CustomLanguageService : ICustomLanguageService
             {
                 CultureInfo culture = new(languageFile.CultureCode);
             }
-            catch
+            catch (Exception ex)
             {
-                _logService?.LogWarning($"無効なカルチャーコードです: {languageFile.CultureCode}", "CustomLanguageService");
+                _logService?.LogWarning($"無効なカルチャーコードです: {languageFile.CultureCode} - {ex.Message}", "CustomLanguageService");
                 return false;
             }
 
@@ -195,11 +199,13 @@ public class CustomLanguageService : ICustomLanguageService
         }
     }
 
+    /// <inheritdoc/>
     public string GetCustomLanguageFolder()
     {
         return _customLanguageFolder;
     }
 
+    /// <inheritdoc/>
     public async Task<Dictionary<string, string>?> LoadCustomLanguageAsync(string cultureCode)
     {
         try
@@ -223,6 +229,7 @@ public class CustomLanguageService : ICustomLanguageService
         }
     }
 
+    /// <inheritdoc/>
     public async Task<bool> SaveCustomLanguageAsync(string cultureCode, string displayName, Dictionary<string, string> resources)
     {
         try
@@ -256,6 +263,7 @@ public class CustomLanguageService : ICustomLanguageService
         }
     }
 
+    /// <inheritdoc/>
     public async Task<bool> GenerateLanguageTemplateAsync(string cultureCode, string displayName)
     {
         try
@@ -318,6 +326,7 @@ public class CustomLanguageService : ICustomLanguageService
         }
     }
 
+    /// <inheritdoc/>
     public Task<IEnumerable<string>> GetAvailableResourceKeysAsync()
     {
         try
@@ -353,7 +362,7 @@ public class CustomLanguageService : ICustomLanguageService
     }
 
     /// <summary>
-    /// デフォルト言語ファイルが存在しない場合に配置する（高速版）
+    /// デフォルト言語ファイルが存在しない場合に配置する（高速版）.
     /// </summary>
     private async Task EnsureDefaultLanguageFilesAsync()
     {
@@ -370,7 +379,7 @@ public class CustomLanguageService : ICustomLanguageService
     }
 
     /// <summary>
-    /// 言語ファイルの高速同期処理
+    /// 言語ファイルの高速同期処理.
     /// </summary>
     private async Task SyncLanguageFilesFastAsync()
     {
@@ -420,7 +429,7 @@ public class CustomLanguageService : ICustomLanguageService
     }
 
     /// <summary>
-    /// 言語ファイルの更新が必要かどうかを軽量チェック
+    /// 言語ファイルの更新が必要かどうかを軽量チェック.
     /// </summary>
     private Task<bool> ShouldUpdateLanguageFileAsync(System.Reflection.Assembly assembly, string cultureCode, string targetPath)
     {
@@ -461,7 +470,6 @@ public class CustomLanguageService : ICustomLanguageService
             // {
             //     return await CompareFileHashesAsync(assembly, cultureCode, targetPath);
             // }
-
             return Task.FromResult(false);
         }
         catch (Exception ex)
@@ -472,7 +480,7 @@ public class CustomLanguageService : ICustomLanguageService
     }
 
     /// <summary>
-    /// 埋め込みリソースから言語ファイルをコピー
+    /// 埋め込みリソースから言語ファイルをコピー.
     /// </summary>
     private async Task CopyEmbeddedLanguageFileAsync(string cultureCode, string targetPath)
     {
@@ -499,9 +507,8 @@ public class CustomLanguageService : ICustomLanguageService
         }
     }
 
-
     /// <summary>
-    /// 言語選択コンボボックス用の表示名を取得（ローカライズ不要）
+    /// 言語選択コンボボックス用の表示名を取得（ローカライズ不要）.
     /// </summary>
     private string GetLocalizedDisplayName(string cultureCode, string originalDisplayName)
     {
@@ -516,43 +523,7 @@ public class CustomLanguageService : ICustomLanguageService
     }
 
     /// <summary>
-    /// ハッシュ値による詳細比較（オプション機能）
-    /// </summary>
-    private async Task<bool> CompareFileHashesAsync(System.Reflection.Assembly assembly, string cultureCode, string targetPath)
-    {
-        try
-        {
-            // 埋め込みリソースのハッシュを計算
-            string resourceName = $"BrowserSelector.Infrastructure.Localization.{cultureCode}.json";
-            using System.IO.Stream? embeddedStream = assembly.GetManifestResourceStream(resourceName);
-            if (embeddedStream == null)
-            {
-                return false;
-            }
-
-            byte[] embeddedHash = await ComputeStreamHashAsync(embeddedStream).ConfigureAwait(false);
-
-            // 既存ファイルのハッシュを計算
-            using System.IO.FileStream fileStream = new(targetPath, System.IO.FileMode.Open, System.IO.FileAccess.Read);
-            byte[] existingHash = await ComputeStreamHashAsync(fileStream).ConfigureAwait(false);
-
-            bool isDifferent = !embeddedHash.SequenceEqual(existingHash);
-            if (isDifferent)
-            {
-                _logService?.LogDebug($"ファイルハッシュが異なります: {cultureCode}", "CustomLanguageService");
-            }
-
-            return isDifferent;
-        }
-        catch (Exception ex)
-        {
-            _logService?.LogWarning($"ハッシュ比較エラー ({cultureCode}): {ex.Message}", "CustomLanguageService");
-            return false;
-        }
-    }
-
-    /// <summary>
-    /// ストリームのハッシュ値を計算
+    /// ストリームのハッシュ値を計算.
     /// </summary>
     private async Task<byte[]> ComputeStreamHashAsync(System.IO.Stream stream)
     {
@@ -561,17 +532,7 @@ public class CustomLanguageService : ICustomLanguageService
     }
 
     /// <summary>
-    /// ハッシュチェックが必要かどうかを判定
-    /// </summary>
-    private Task<bool> ShouldCheckHashAsync()
-    {
-        // 現在は無効化（高速化のため）
-        // 必要に応じて設定ファイルや環境変数で制御可能
-        return Task.FromResult(false);
-    }
-
-    /// <summary>
-    /// 言語ファイルを読み込み
+    /// 言語ファイルを読み込み.
     /// </summary>
     private async Task<CustomLanguageFile?> LoadLanguageFileAsync(string filePath)
     {

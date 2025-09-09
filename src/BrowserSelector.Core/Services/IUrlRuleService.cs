@@ -6,72 +6,71 @@ using BrowserSelector.Core.Models;
 namespace BrowserSelector.Core.Services;
 
 /// <summary>
-/// URLルール管琁E��ービスのインターフェース
+/// URL繝ｫ繝ｼ繝ｫ邂｡逅・し繝ｼ繝薙せ縺ｮ繧､繝ｳ繧ｿ繝ｼ繝輔ぉ繝ｼ繧ｹ.
 /// </summary>
 public interface IUrlRuleService
 {
     /// <summary>
-    /// すべてのURLルールを取征E
+    /// 縺吶∋縺ｦ縺ｮURL繝ｫ繝ｼ繝ｫ繧貞叙蠕・.
     /// </summary>
-    /// <returns>URLルールの一覧</returns>
+    /// <returns>URL繝ｫ繝ｼ繝ｫ縺ｮ荳隕ｧ.</returns>
     Task<IEnumerable<UrlRule>> GetAllRulesAsync();
 
     /// <summary>
-    /// 有効なURLルールを取征E
+    /// 譛牙柑縺ｪURL繝ｫ繝ｼ繝ｫ繧貞叙蠕・.
     /// </summary>
-    /// <returns>有効なURLルールの一覧</returns>
+    /// <returns>譛牙柑縺ｪURL繝ｫ繝ｼ繝ｫ縺ｮ荳隕ｧ.</returns>
     Task<IEnumerable<UrlRule>> GetEnabledRulesAsync();
 
     /// <summary>
-    /// URLルールを追加
+    /// URL繝ｫ繝ｼ繝ｫ繧定ｿｽ蜉.
     /// </summary>
-    /// <param name="rule">追加するルール</param>
-    /// <returns>追加成功時true</returns>
+    /// <param name="rule">霑ｽ蜉縺吶ｋ繝ｫ繝ｼ繝ｫ.</param>
+    /// <returns>霑ｽ蜉謌仙粥譎Ｕrue.</returns>
     Task<bool> AddRuleAsync(UrlRule rule);
 
     /// <summary>
-    /// URLルールを更新
+    /// URL繝ｫ繝ｼ繝ｫ繧呈峩譁ｰ.
     /// </summary>
-    /// <param name="rule">更新するルール</param>
-    /// <returns>更新成功時true</returns>
+    /// <param name="rule">譖ｴ譁ｰ縺吶ｋ繝ｫ繝ｼ繝ｫ.</param>
+    /// <returns>譖ｴ譁ｰ謌仙粥譎Ｕrue.</returns>
     Task<bool> UpdateRuleAsync(UrlRule rule);
 
     /// <summary>
-    /// URLルールを削除
+    /// URL繝ｫ繝ｼ繝ｫ繧貞炎髯､.
     /// </summary>
-    /// <param name="ruleId">削除するルールのID</param>
-    /// <returns>削除成功時true</returns>
+    /// <param name="ruleId">蜑企勁縺吶ｋ繝ｫ繝ｼ繝ｫ縺ｮID.</param>
+    /// <returns>蜑企勁謌仙粥譎Ｕrue.</returns>
     Task<bool> DeleteRuleAsync(Guid ruleId);
 
     /// <summary>
-    /// URLルールの有効/無効を�Eり替ぁE
+    /// URL繝ｫ繝ｼ繝ｫ縺ｮ譛牙柑/辟｡蜉ｹ繧貞・繧頑崛縺・.
     /// </summary>
-    /// <param name="ruleId">対象ルールのID</param>
-    /// <param name="isEnabled">有効にするかどぁE��</param>
-    /// <returns>刁E��替え�E功時true</returns>
+    /// <param name="ruleId">蟇ｾ雎｡繝ｫ繝ｼ繝ｫ縺ｮID.</param>
+    /// <param name="isEnabled">譛牙柑縺ｫ縺吶ｋ縺九←縺・°.</param>
+    /// <returns>蛻・ｊ譖ｿ縺域・蜉滓凾true.</returns>
     Task<bool> ToggleRuleAsync(Guid ruleId, bool isEnabled);
 
     /// <summary>
-    /// 持E��されたURLにマッチするブラウザを検索
+    /// 謖・ｮ壹＆繧後◆URL縺ｫ繝槭ャ繝√☆繧九ヶ繝ｩ繧ｦ繧ｶ繧呈､懃ｴ｢.
     /// </summary>
-    /// <param name="url">検索対象のURL</param>
-    /// <param name="browsers">利用可能なブラウザの一覧</param>
-    /// <returns>マッチするブラウザ�E�見つからなぁE��合�Enull�E�E/returns>
+    /// <param name="url">讀懃ｴ｢蟇ｾ雎｡縺ｮURL.</param>
+    /// <param name="browsers">蛻ｩ逕ｨ蜿ｯ閭ｽ縺ｪ繝悶Λ繧ｦ繧ｶ縺ｮ荳隕ｧ.</param>
+    /// <returns>繝槭ャ繝√☆繧九ヶ繝ｩ繧ｦ繧ｶ・郁ｦ九▽縺九ｉ縺ｪ縺・ｴ蜷医・null・・/returns>.
     Task<Browser?> FindMatchingBrowserAsync(string url, IEnumerable<Browser> browsers);
 
     /// <summary>
-    /// ルールの優先度を変更
+    /// 繝ｫ繝ｼ繝ｫ縺ｮ蜆ｪ蜈亥ｺｦ繧貞､画峩.
     /// </summary>
-    /// <param name="ruleId">対象ルールのID</param>
-    /// <param name="newPriority">新しい優先度</param>
-    /// <returns>変更成功時true</returns>
+    /// <param name="ruleId">蟇ｾ雎｡繝ｫ繝ｼ繝ｫ縺ｮID.</param>
+    /// <param name="newPriority">譁ｰ縺励＞蜆ｪ蜈亥ｺｦ.</param>
+    /// <returns>螟画峩謌仙粥譎Ｕrue.</returns>
     Task<bool> ChangePriorityAsync(Guid ruleId, int newPriority);
 
     /// <summary>
-    /// ルールの優先度を並び替ぁE
+    /// 繝ｫ繝ｼ繝ｫ縺ｮ蜆ｪ蜈亥ｺｦ繧剃ｸｦ縺ｳ譖ｿ縺・.
     /// </summary>
-    /// <param name="ruleIds">優先度頁E��並べたルールIDの一覧</param>
-    /// <returns>並び替え�E功時true</returns>
+    /// <param name="ruleIds">蜆ｪ蜈亥ｺｦ鬆・↓荳ｦ縺ｹ縺溘Ν繝ｼ繝ｫID縺ｮ荳隕ｧ.</param>
+    /// <returns>荳ｦ縺ｳ譖ｿ縺域・蜉滓凾true.</returns>
     Task<bool> ReorderRulesAsync(IEnumerable<Guid> ruleIds);
 }
-

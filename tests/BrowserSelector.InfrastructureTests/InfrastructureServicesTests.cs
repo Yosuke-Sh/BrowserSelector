@@ -10,10 +10,13 @@ namespace BrowserSelector.InfrastructureTests;
 
 /// <summary>
 /// Infrastructureプロジェクト専用のテストクラス
-/// インフラストラクチャサービスのテストを重点的に実施
+/// インフラストラクチャサービスのテストを重点的に実施.
 /// </summary>
 public class InfrastructureServicesTests
 {
+    /// <summary>
+    /// 有効なブラウザを持つBrowserServiceのDetectBrowsersAsyncがブラウザを返すことを確認するテスト.
+    /// </summary>
     [Fact]
     public async Task BrowserService_DetectBrowsersAsync_WithValidBrowsers_ShouldReturnBrowsers()
     {
@@ -50,6 +53,9 @@ public class InfrastructureServicesTests
         result.Should().BeEquivalentTo(expectedBrowsers, options => options.Excluding(b => b.Id));
     }
 
+    /// <summary>
+    /// ブラウザがない場合のBrowserServiceのDetectBrowsersAsyncが空を返すことを確認するテスト.
+    /// </summary>
     [Fact]
     public async Task BrowserService_DetectBrowsersAsync_WithNoBrowsers_ShouldReturnEmpty()
     {
@@ -69,6 +75,9 @@ public class InfrastructureServicesTests
         result.Should().BeEmpty();
     }
 
+    /// <summary>
+    /// 例外が発生した場合のBrowserServiceのDetectBrowsersAsyncがエラーをログに記録することを確認するテスト.
+    /// </summary>
     [Fact]
     public async Task BrowserService_DetectBrowsersAsync_WithException_ShouldLogError()
     {
@@ -88,6 +97,9 @@ public class InfrastructureServicesTests
         result.Should().BeEmpty();
     }
 
+    /// <summary>
+    /// 有効なURLを持つUrlServiceのNormalizeUrlAsyncが正規化されたURLを返すことを確認するテスト.
+    /// </summary>
     [Fact]
     public async Task UrlService_NormalizeUrlAsync_WithValidUrl_ShouldReturnNormalizedUrl()
     {
@@ -106,6 +118,9 @@ public class InfrastructureServicesTests
         result.Should().Be("https://example.com");
     }
 
+    /// <summary>
+    /// HTTP URLを持つUrlServiceのNormalizeUrlAsyncが同じURLを返すことを確認するテスト.
+    /// </summary>
     [Fact]
     public async Task UrlService_NormalizeUrlAsync_WithHttpUrl_ShouldReturnSameUrl()
     {
@@ -124,6 +139,9 @@ public class InfrastructureServicesTests
         result.Should().Be("http://example.com");
     }
 
+    /// <summary>
+    /// HTTPS URLを持つUrlServiceのNormalizeUrlAsyncが同じURLを返すことを確認するテスト.
+    /// </summary>
     [Fact]
     public async Task UrlService_NormalizeUrlAsync_WithHttpsUrl_ShouldReturnSameUrl()
     {
@@ -142,6 +160,9 @@ public class InfrastructureServicesTests
         result.Should().Be("https://example.com");
     }
 
+    /// <summary>
+    /// 空のURLを持つUrlServiceのNormalizeUrlAsyncが空の文字列を返すことを確認するテスト.
+    /// </summary>
     [Fact]
     public async Task UrlService_NormalizeUrlAsync_WithEmptyUrl_ShouldReturnEmptyString()
     {
@@ -160,6 +181,9 @@ public class InfrastructureServicesTests
         result.Should().Be("");
     }
 
+    /// <summary>
+    /// 無効なURLを持つUrlServiceのNormalizeUrlAsyncが警告をログに記録することを確認するテスト.
+    /// </summary>
     [Fact]
     public async Task UrlService_NormalizeUrlAsync_WithInvalidUrl_ShouldLogWarning()
     {
@@ -178,6 +202,9 @@ public class InfrastructureServicesTests
         result.Should().Be("https://invalid-url");
     }
 
+    /// <summary>
+    /// LogServiceのコンストラクタが正しく初期化されることを確認するテスト.
+    /// </summary>
     [Fact]
     public void LogService_Constructor_ShouldInitializeCorrectly()
     {
@@ -188,6 +215,9 @@ public class InfrastructureServicesTests
         logService.Should().NotBeNull();
     }
 
+    /// <summary>
+    /// 有効なメッセージを持つLogServiceのLogがメッセージをログに記録することを確認するテスト.
+    /// </summary>
     [Fact]
     public void LogService_Log_WithValidMessage_ShouldLogMessage()
     {
@@ -202,6 +232,9 @@ public class InfrastructureServicesTests
         logService.Should().NotBeNull();
     }
 
+    /// <summary>
+    /// 異なるレベルを持つLogServiceのLogがすべてのレベルをログに記録することを確認するテスト.
+    /// </summary>
     [Fact]
     public void LogService_Log_WithDifferentLevels_ShouldLogAllLevels()
     {
@@ -219,6 +252,9 @@ public class InfrastructureServicesTests
         logService.Should().NotBeNull();
     }
 
+    /// <summary>
+    /// 有効な設定を持つLogServiceのUpdateLogSettingsが設定を更新することを確認するテスト.
+    /// </summary>
     [Fact]
     public void LogService_UpdateLogSettings_WithValidSettings_ShouldUpdateSettings()
     {

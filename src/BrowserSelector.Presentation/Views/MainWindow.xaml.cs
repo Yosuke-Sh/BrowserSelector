@@ -7,7 +7,7 @@ using System.Windows.Controls;
 namespace BrowserSelector.Presentation.Views;
 
 /// <summary>
-/// Interaction logic for MainWindow.xaml
+/// Interaction logic for MainWindow.xaml.
 /// </summary>
 public partial class MainWindow : Window
 {
@@ -35,7 +35,7 @@ public partial class MainWindow : Window
     }
 
     /// <summary>
-    /// 初期サイズ設定を適用
+    /// 初期サイズ設定を適用.
     /// </summary>
     private void ApplyInitialSizeSettings(MainViewModel viewModel)
     {
@@ -90,7 +90,7 @@ public partial class MainWindow : Window
     }
 
     /// <summary>
-    /// ウィンドウのLoadedイベントハンドラー
+    /// ウィンドウのLoadedイベントハンドラー.
     /// </summary>
     private void MainWindow_Loaded(object sender, RoutedEventArgs e)
     {
@@ -110,7 +110,7 @@ public partial class MainWindow : Window
     }
 
     /// <summary>
-    /// DataContext変更時の処理
+    /// DataContext変更時の処理.
     /// </summary>
     protected override void OnSourceInitialized(EventArgs e)
     {
@@ -125,7 +125,7 @@ public partial class MainWindow : Window
     }
 
     /// <summary>
-    /// DataContextのプロパティ変更時の処理
+    /// DataContextのプロパティ変更時の処理.
     /// </summary>
     private void OnDataContextPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
@@ -140,7 +140,7 @@ public partial class MainWindow : Window
     }
 
     /// <summary>
-    /// ブラウザボタンのクリックイベントハンドラー（デバッグ用）
+    /// ブラウザボタンのクリックイベントハンドラー（デバッグ用）.
     /// </summary>
     private void BrowserButton_Click(object sender, RoutedEventArgs e)
     {

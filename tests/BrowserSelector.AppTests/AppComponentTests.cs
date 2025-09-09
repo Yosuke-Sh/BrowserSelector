@@ -8,7 +8,7 @@ namespace BrowserSelector.AppTests;
 
 /// <summary>
 /// App.xaml.csの個別コンポーネントをテストするクラス
-/// WPFアプリケーションの実際の起動は行わず、個別のコンポーネントをテスト
+/// WPFアプリケーションの実際の起動は行わず、個別のコンポーネントをテスト.
 /// </summary>
 public class AppComponentTests
 {
@@ -28,6 +28,9 @@ public class AppComponentTests
         logServiceField!.FieldType.Should().Be(typeof(ILogService), "_logServiceフィールドの型が正しいこと");
     }
 
+    /// <summary>
+    /// Appクラスのprotectedメソッドが正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void App_ShouldHaveCorrectProtectedMethods()
     {
@@ -46,6 +49,9 @@ public class AppComponentTests
         onExitMethod.IsVirtual.Should().BeTrue("OnExitメソッドがvirtualであること");
     }
 
+    /// <summary>
+    /// Appクラスのメソッドパラメータが正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void App_ShouldHaveCorrectMethodParameters()
     {
@@ -62,6 +68,9 @@ public class AppComponentTests
         onExitMethod.GetParameters()[0].ParameterType.Should().Be(typeof(ExitEventArgs), "OnExitメソッドのパラメータ型が正しいこと");
     }
 
+    /// <summary>
+    /// Appクラスのメソッド戻り値型が正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void App_ShouldHaveCorrectMethodReturnTypes()
     {
@@ -75,6 +84,9 @@ public class AppComponentTests
         onExitMethod!.ReturnType.Should().Be(typeof(void), "OnExitメソッドの戻り値型が正しいこと");
     }
 
+    /// <summary>
+    /// Appクラスのメソッド属性が正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void App_ShouldHaveCorrectMethodAttributes()
     {
@@ -88,6 +100,9 @@ public class AppComponentTests
         onExitMethod!.GetCustomAttributes().Should().NotBeNull("OnExitメソッドに属性が存在すること");
     }
 
+    /// <summary>
+    /// Appクラスの基底型が正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void App_ShouldHaveCorrectBaseType()
     {
@@ -99,6 +114,9 @@ public class AppComponentTests
         appType.BaseType!.Should().NotBeNull("Appクラスの基底型がnullでないこと");
     }
 
+    /// <summary>
+    /// Appクラスのインターフェース実装が正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void App_ShouldHaveCorrectInterfaceImplementations()
     {
@@ -111,6 +129,9 @@ public class AppComponentTests
         interfaces.Should().NotBeEmpty("Appクラスがインターフェースを実装すること");
     }
 
+    /// <summary>
+    /// Appクラスのジェネリック構造が正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void App_ShouldHaveCorrectGenericStructure()
     {
@@ -123,6 +144,9 @@ public class AppComponentTests
         appType.ContainsGenericParameters.Should().BeFalse("Appクラスがジェネリックパラメータを含まないこと");
     }
 
+    /// <summary>
+    /// Appクラスの型修飾子が正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void App_ShouldHaveCorrectTypeModifiers()
     {
@@ -138,6 +162,9 @@ public class AppComponentTests
         appType.IsEnum.Should().BeFalse("Appクラスが列挙型でないこと");
     }
 
+    /// <summary>
+    /// Appクラスのメソッド数が正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void App_ShouldHaveCorrectMethodCount()
     {
@@ -163,6 +190,9 @@ public class AppComponentTests
         constructors.Should().Contain(c => c.GetParameters().Length == 0, "デフォルトコンストラクタが存在すること");
     }
 
+    /// <summary>
+    /// Appクラスのプロパティ数が正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void App_ShouldHaveCorrectPropertyCount()
     {
@@ -175,6 +205,9 @@ public class AppComponentTests
         properties.Should().Contain(p => p.Name == "MainWindow", "MainWindowプロパティが存在すること");
     }
 
+    /// <summary>
+    /// Appクラスのイベント数が正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void App_ShouldHaveCorrectEventCount()
     {
@@ -188,6 +221,9 @@ public class AppComponentTests
         events.Should().Contain(e => e.Name == "Exit", "Exitイベントが存在すること");
     }
 
+    /// <summary>
+    /// Appクラスのフィールド数が正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void App_ShouldHaveCorrectFieldCount()
     {
@@ -201,6 +237,9 @@ public class AppComponentTests
         fields.Should().Contain(f => f.Name == "_logService", "_logServiceフィールドが存在すること");
     }
 
+    /// <summary>
+    /// Appクラスのネスト型数が正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void App_ShouldHaveCorrectNestedTypeCount()
     {
@@ -212,6 +251,9 @@ public class AppComponentTests
         nestedTypes.Should().NotBeNull("Appクラスのネスト型がnullでないこと");
     }
 
+    /// <summary>
+    /// Appクラスのアセンブリ構造が正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void App_ShouldHaveCorrectAssemblyStructure()
     {
@@ -226,6 +268,9 @@ public class AppComponentTests
         assemblyName.Version!.Should().NotBeNull("Appクラスのアセンブリバージョンがnullでないこと");
     }
 
+    /// <summary>
+    /// Appクラスの型階層が正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void App_ShouldHaveCorrectTypeHierarchy()
     {
@@ -239,6 +284,9 @@ public class AppComponentTests
         baseBaseType!.Should().Be(typeof(System.Windows.Threading.DispatcherObject), "Appクラスの間接基底型が正しいこと");
     }
 
+    /// <summary>
+    /// Appクラスのメソッド可視性が正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void App_ShouldHaveCorrectMethodVisibility()
     {
@@ -257,6 +305,9 @@ public class AppComponentTests
         onExitMethod.IsPrivate.Should().BeFalse("OnExitメソッドがprivateでないこと");
     }
 
+    /// <summary>
+    /// Appクラスのメソッド修飾子が正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void App_ShouldHaveCorrectMethodModifiers()
     {
@@ -275,6 +326,9 @@ public class AppComponentTests
         onExitMethod!.IsFinal.Should().BeFalse("OnExitメソッドがfinalでないこと");
     }
 
+    /// <summary>
+    /// Appクラスのフィールド修飾子が正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void App_ShouldHaveCorrectFieldModifiers()
     {
@@ -293,6 +347,9 @@ public class AppComponentTests
         logServiceField.IsStatic.Should().BeFalse("_logServiceフィールドがstaticでないこと");
     }
 
+    /// <summary>
+    /// Appクラスのフィールド型が正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void App_ShouldHaveCorrectFieldTypes()
     {
@@ -309,6 +366,9 @@ public class AppComponentTests
         logServiceField.FieldType.IsInterface.Should().BeTrue("_logServiceフィールドの型がインターフェースであること");
     }
 
+    /// <summary>
+    /// Appクラスのアセンブリ参照が正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void App_ShouldHaveCorrectAssemblyReferences()
     {
@@ -326,6 +386,9 @@ public class AppComponentTests
         referencedAssemblies.Should().Contain(a => a.Name == "Microsoft.Extensions.DependencyInjection.Abstractions", "Microsoft.Extensions.DependencyInjection.Abstractionsが参照されていること");
     }
 
+    /// <summary>
+    /// Appクラスのアセンブリ属性が正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void App_ShouldHaveCorrectAssemblyAttributes()
     {
@@ -339,6 +402,9 @@ public class AppComponentTests
         attributes.Should().NotBeEmpty("Appクラスのアセンブリに属性が存在すること");
     }
 
+    /// <summary>
+    /// Appクラスのアセンブリモジュールが正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void App_ShouldHaveCorrectAssemblyModules()
     {
@@ -352,6 +418,9 @@ public class AppComponentTests
         modules.Should().HaveCount(1, "Appクラスのアセンブリにモジュールが1つ存在すること");
     }
 
+    /// <summary>
+    /// Appクラスのアセンブリ型が正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void App_ShouldHaveCorrectAssemblyTypes()
     {
@@ -367,6 +436,9 @@ public class AppComponentTests
         types.Should().Contain(typeof(BrowserSelector.App.Program), "Programクラスがアセンブリに含まれること");
     }
 
+    /// <summary>
+    /// Appクラスのアセンブリエクスポート型が正しいことを確認するテスト.
+    /// </summary>
     [Fact]
     public void App_ShouldHaveCorrectAssemblyExportedTypes()
     {

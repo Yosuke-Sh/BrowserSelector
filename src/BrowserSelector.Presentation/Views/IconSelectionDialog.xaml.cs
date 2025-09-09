@@ -11,11 +11,12 @@ using System.Windows.Media.Imaging;
 namespace BrowserSelector.Presentation.Views;
 
 /// <summary>
-/// IconSelectionDialog.xaml の相互作用ロジック
+/// IconSelectionDialog.xaml の相互作用ロジック.
 /// </summary>
 public partial class IconSelectionDialog : Window
 {
     public string? SelectedIconPath { get; private set; }
+
     public int SelectedIconIndex { get; private set; } = -1;
 
     private string? _currentSelectedPath;
@@ -30,9 +31,9 @@ public partial class IconSelectionDialog : Window
     }
 
     /// <summary>
-    /// 特定の実行ファイルからアイコンを抽出して表示
+    /// 特定の実行ファイルからアイコンを抽出して表示.
     /// </summary>
-    /// <param name="executablePath">実行ファイルのパス</param>
+    /// <param name="executablePath">実行ファイルのパス.</param>
     public void LoadExecutableIcon(string executablePath)
     {
         try
@@ -60,10 +61,10 @@ public partial class IconSelectionDialog : Window
     }
 
     /// <summary>
-    /// 実行ファイルから複数のアイコンを抽出
+    /// 実行ファイルから複数のアイコンを抽出.
     /// </summary>
-    /// <param name="executablePath">実行ファイルのパス</param>
-    /// <returns>抽出されたアイコンのリスト</returns>
+    /// <param name="executablePath">実行ファイルのパス.</param>
+    /// <returns>抽出されたアイコンのリスト.</returns>
     private List<IconInfo> ExtractIconsFromExecutable(string executablePath)
     {
         List<IconInfo> icons = new();
@@ -210,18 +211,18 @@ public partial class IconSelectionDialog : Window
             if (recentIcons.Count > 0)
             {
                 foreach (string iconPath in recentIcons)
-            {
-                if (File.Exists(iconPath))
                 {
-                    AddIconButton(new IconInfo
+                    if (File.Exists(iconPath))
                     {
-                        Icon = System.Drawing.Icon.ExtractAssociatedIcon(iconPath),
-                        Index = 0,
-                        Path = iconPath,
-                        Name = Path.GetFileName(iconPath)
-                    }, RecentIconsPanel);
+                        AddIconButton(new IconInfo
+                        {
+                            Icon = System.Drawing.Icon.ExtractAssociatedIcon(iconPath),
+                            Index = 0,
+                            Path = iconPath,
+                            Name = Path.GetFileName(iconPath)
+                        }, RecentIconsPanel);
+                    }
                 }
-            }
             }
         }
         catch (Exception ex)
@@ -263,10 +264,10 @@ public partial class IconSelectionDialog : Window
     }
 
     /// <summary>
-    /// アイコンを高解像度BitmapImageに変換
+    /// アイコンを高解像度BitmapImageに変換.
     /// </summary>
-    /// <param name="icon">変換するアイコン</param>
-    /// <returns>高解像度BitmapImage</returns>
+    /// <param name="icon">変換するアイコン.</param>
+    /// <returns>高解像度BitmapImage.</returns>
     private BitmapImage ConvertIconToBitmapImage(System.Drawing.Icon icon)
     {
         try
@@ -423,12 +424,15 @@ public partial class IconSelectionDialog : Window
 }
 
 /// <summary>
-/// アイコン情報を表すクラス
+/// アイコン情報を表すクラス.
 /// </summary>
 public class IconInfo
 {
     public System.Drawing.Icon? Icon { get; set; }
+
     public int Index { get; set; }
+
     public string Path { get; set; } = string.Empty;
+
     public string Name { get; set; } = string.Empty;
 }

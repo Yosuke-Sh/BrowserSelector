@@ -32,6 +32,7 @@ public class SettingsServiceIntegrationTests : IDisposable
         _settingsService = _host.Services.GetRequiredService<ISettingsService>();
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         // テスト用の一時ディレクトリを削除

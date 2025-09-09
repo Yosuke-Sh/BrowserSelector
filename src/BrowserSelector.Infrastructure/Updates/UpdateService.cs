@@ -7,7 +7,7 @@ using System.Text.Json;
 namespace BrowserSelector.Infrastructure.Updates;
 
 /// <summary>
-/// 自動アップデート機能を提供するサービス
+/// 自動アップデート機能を提供するサービス.
 /// </summary>
 public class UpdateService : IUpdateService
 {
@@ -15,6 +15,7 @@ public class UpdateService : IUpdateService
     private readonly string _updateCheckUrl;
     private readonly string _currentVersion;
 
+    /// <inheritdoc/>
     public event EventHandler<UpdateAvailableEventArgs>? UpdateAvailable;
 
     public UpdateService(string updateCheckUrl, string currentVersion)
@@ -26,8 +27,9 @@ public class UpdateService : IUpdateService
     }
 
     /// <summary>
-    /// アップデートをチェック
+    /// アップデートをチェック.
     /// </summary>
+    /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
     public async Task<UpdateInfo?> CheckForUpdatesAsync()
     {
         try
@@ -50,10 +52,12 @@ public class UpdateService : IUpdateService
     }
 
     /// <summary>
-    /// アップデートをダウンロード
+    /// アップデートをダウンロード.
     /// </summary>
+    /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
     public async Task<bool> DownloadUpdateAsync(UpdateInfo updateInfo, IProgress<int>? progress = null)
     {
+        ArgumentNullException.ThrowIfNull(updateInfo);
         try
         {
             string tempPath = Path.GetTempFileName();
@@ -91,10 +95,12 @@ public class UpdateService : IUpdateService
     }
 
     /// <summary>
-    /// アップデートをインストール
+    /// アップデートをインストール.
     /// </summary>
+    /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
     public async Task<bool> InstallUpdateAsync(UpdateInfo updateInfo)
     {
+        ArgumentNullException.ThrowIfNull(updateInfo);
         try
         {
             if (string.IsNullOrEmpty(updateInfo.LocalFilePath) || !File.Exists(updateInfo.LocalFilePath))
@@ -130,8 +136,9 @@ public class UpdateService : IUpdateService
     }
 
     /// <summary>
-    /// アップデートをロールバック
+    /// アップデートをロールバック.
     /// </summary>
+    /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
     public async Task<bool> RollbackUpdateAsync()
     {
         try
@@ -176,8 +183,9 @@ public class UpdateService : IUpdateService
     }
 
     /// <summary>
-    /// バックアップを作成
+    /// バックアップを作成.
     /// </summary>
+    /// <returns></returns>
     public bool CreateBackup()
     {
         try
@@ -207,8 +215,9 @@ public class UpdateService : IUpdateService
             Version newer = new(newVersion);
             return newer > current;
         }
-        catch
+        catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"Version comparison failed: {ex.Message}");
             return false;
         }
     }
@@ -221,6 +230,7 @@ public class UpdateService : IUpdateService
         return Path.Combine(backupDir, "BrowserSelector.exe.backup");
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         _httpClient?.Dispose();
@@ -228,10 +238,20 @@ public class UpdateService : IUpdateService
 }
 
 /// <summary>
-/// アップデート例外
+/// アップデート例外.
 /// </summary>
 public class UpdateException : Exception
 {
-    public UpdateException(string message) : base(message) { }
-    public UpdateException(string message, Exception innerException) : base(message, innerException) { }
+    public UpdateException(string message)
+        : base(message)
+    {
+    }
+
+    public UpdateException(string message, Exception innerException)
+        : base(message, innerException)
+    {
+    }
+    public UpdateException()
+    {
+    }
 }

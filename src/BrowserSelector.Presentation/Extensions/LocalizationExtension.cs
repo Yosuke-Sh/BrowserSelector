@@ -4,19 +4,19 @@ using System.Windows.Markup;
 namespace BrowserSelector.Presentation.Extensions;
 
 /// <summary>
-/// XAMLで多言語化文字列を取得するためのMarkupExtension
+/// XAMLで多言語化文字列を取得するためのMarkupExtension.
 /// </summary>
 public class LocalizationExtension : MarkupExtension
 {
     private static ILocalizationService? _localizationService;
 
     /// <summary>
-    /// リソースキー
+    /// Gets or sets リソースキー.
     /// </summary>
     public string Key { get; set; } = string.Empty;
 
     /// <summary>
-    /// パラメータ（文字列フォーマット用）
+    /// Gets パラメータ（文字列フォーマット用）.
     /// </summary>
     public IList<object>? Parameters { get; }
 
@@ -29,6 +29,7 @@ public class LocalizationExtension : MarkupExtension
         Key = key;
     }
 
+    /// <inheritdoc/>
     public override object ProvideValue(IServiceProvider serviceProvider)
     {
         if (string.IsNullOrEmpty(Key))
@@ -56,7 +57,7 @@ public class LocalizationExtension : MarkupExtension
     }
 
     /// <summary>
-    /// ローカライゼーションサービスを設定
+    /// ローカライゼーションサービスを設定.
     /// </summary>
     public static void SetLocalizationService(ILocalizationService localizationService)
     {

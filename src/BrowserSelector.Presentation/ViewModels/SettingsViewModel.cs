@@ -186,7 +186,7 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     /// <summary>
-    /// 初期化処理
+    /// 初期化処理.
     /// </summary>
     private async void InitializeAsync()
     {
@@ -268,7 +268,7 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     /// <summary>
-    /// 言語リストを初期化
+    /// 言語リストを初期化.
     /// </summary>
     private async void InitializeLanguages()
     {
@@ -304,15 +304,16 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     /// <summary>
-    /// 言語一覧を更新（外部から呼び出し可能）
+    /// 言語一覧を更新（外部から呼び出し可能）.
     /// </summary>
+    /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
     public async Task RefreshLanguagesAsync()
     {
         await InitializeLanguagesAsync().ConfigureAwait(false);
     }
 
     /// <summary>
-    /// 言語一覧を更新（同期版）
+    /// 言語一覧を更新（同期版）.
     /// </summary>
     public void RefreshLanguages()
     {
@@ -320,7 +321,7 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     /// <summary>
-    /// 言語リストを初期化（非同期版）
+    /// 言語リストを初期化（非同期版）.
     /// </summary>
     private async Task InitializeLanguagesAsync()
     {
@@ -366,7 +367,7 @@ public partial class SettingsViewModel : ObservableObject
     public ILogService LogService { get; }
 
     /// <summary>
-    /// ブラウザリストを更新
+    /// ブラウザリストを更新.
     /// </summary>
     private async Task RefreshBrowsersAsync()
     {
@@ -385,7 +386,7 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     /// <summary>
-    /// URLルールリストを更新
+    /// URLルールリストを更新.
     /// </summary>
     private async Task RefreshUrlRulesAsync()
     {
@@ -404,7 +405,7 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     /// <summary>
-    /// ログ設定の読み込み
+    /// ログ設定の読み込み.
     /// </summary>
     private async Task LoadLogSettingsAsync()
     {
@@ -432,7 +433,7 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     /// <summary>
-    /// ログ設定の初期化
+    /// ログ設定の初期化.
     /// </summary>
     private Task RefreshLogSettingsAsync()
     {
@@ -468,7 +469,7 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     /// <summary>
-    /// ログレベルの初期化
+    /// ログレベルの初期化.
     /// </summary>
     private void InitializeLogLevels()
     {
@@ -482,7 +483,7 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     /// <summary>
-    /// プロパティ変更時の処理
+    /// プロパティ変更時の処理.
     /// </summary>
     private async void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
@@ -548,7 +549,7 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     /// <summary>
-    /// 視覚設定を更新
+    /// 視覚設定を更新.
     /// </summary>
     private async Task UpdateVisualSettingsAsync()
     {
@@ -585,7 +586,7 @@ public partial class SettingsViewModel : ObservableObject
 
 
     /// <summary>
-    /// 現在表示中のウィンドウへ視覚設定を即時適用
+    /// 現在表示中のウィンドウへ視覚設定を即時適用.
     /// </summary>
     private void ApplyVisualToActiveWindow(VisualSettings settings)
     {
@@ -673,7 +674,7 @@ public partial class SettingsViewModel : ObservableObject
     #region Commands
 
     /// <summary>
-    /// ブラウザを再検出するコマンド
+    /// ブラウザを再検出するコマンド.
     /// </summary>
     [RelayCommand]
     private async Task RefreshBrowsers()
@@ -703,7 +704,7 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     /// <summary>
-    /// ブラウザを追加するコマンド
+    /// ブラウザを追加するコマンド.
     /// </summary>
     [RelayCommand]
     private async Task AddBrowser()
@@ -740,7 +741,7 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     /// <summary>
-    /// URLルールを更新するコマンド
+    /// URLルールを更新するコマンド.
     /// </summary>
     [RelayCommand]
     private async Task RefreshUrlRules()
@@ -749,7 +750,7 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     /// <summary>
-    /// URLルールを追加するコマンド
+    /// URLルールを追加するコマンド.
     /// </summary>
     [RelayCommand]
     private async Task AddUrlRule()
@@ -784,7 +785,7 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     /// <summary>
-    /// URLルールを編集するコマンド
+    /// URLルールを編集するコマンド.
     /// </summary>
     [RelayCommand]
     private async Task EditUrlRule(UrlRule rule)
@@ -819,7 +820,7 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     /// <summary>
-    /// URLルールを削除するコマンド
+    /// URLルールを削除するコマンド.
     /// </summary>
     [RelayCommand]
     private async Task RemoveUrlRule(UrlRule rule)
@@ -858,7 +859,7 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     /// <summary>
-    /// URLルールをテストするコマンド
+    /// URLルールをテストするコマンド.
     /// </summary>
     [RelayCommand]
     private async Task TestUrlRule()
@@ -894,7 +895,7 @@ public partial class SettingsViewModel : ObservableObject
 
 
     /// <summary>
-    /// 背景色を選択するコマンド
+    /// 背景色を選択するコマンド.
     /// </summary>
     [RelayCommand]
     private void SelectBackgroundColor()
@@ -908,7 +909,7 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     /// <summary>
-    /// グラデーション開始色を選択するコマンド
+    /// グラデーション開始色を選択するコマンド.
     /// </summary>
     [RelayCommand]
     private void SelectGradientStartColor()
@@ -922,7 +923,7 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     /// <summary>
-    /// グラデーション終了色を選択するコマンド
+    /// グラデーション終了色を選択するコマンド.
     /// </summary>
     [RelayCommand]
     private void SelectGradientEndColor()
@@ -938,7 +939,7 @@ public partial class SettingsViewModel : ObservableObject
 
 
     /// <summary>
-    /// フォーカス色を選択するコマンド
+    /// フォーカス色を選択するコマンド.
     /// </summary>
     [RelayCommand]
     private void SelectFocusColor()
@@ -952,7 +953,7 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     /// <summary>
-    /// ブラウザボタン背景色を選択するコマンド
+    /// ブラウザボタン背景色を選択するコマンド.
     /// </summary>
     [RelayCommand]
     private void SelectBrowserButtonBackgroundColor()
@@ -966,7 +967,7 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     /// <summary>
-    /// ブラウザボタンテキスト色を選択するコマンド
+    /// ブラウザボタンテキスト色を選択するコマンド.
     /// </summary>
     [RelayCommand]
     private void SelectBrowserButtonForegroundColor()
@@ -980,7 +981,7 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     /// <summary>
-    /// 設定をリセットするコマンド
+    /// 設定をリセットするコマンド.
     /// </summary>
     [RelayCommand]
     private async Task ResetSettings()
@@ -1002,7 +1003,7 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     /// <summary>
-    /// 設定をインポートするコマンド
+    /// 設定をインポートするコマンド.
     /// </summary>
     [RelayCommand]
     private async Task ImportSettings()
@@ -1046,7 +1047,7 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     /// <summary>
-    /// 設定をエクスポートするコマンド
+    /// 設定をエクスポートするコマンド.
     /// </summary>
     [RelayCommand]
     private async Task ExportSettings()
@@ -1085,7 +1086,7 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     /// <summary>
-    /// 設定を保存するコマンド
+    /// 設定を保存するコマンド.
     /// </summary>
     [RelayCommand]
     private async Task SaveSettings()
@@ -1147,7 +1148,7 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     /// <summary>
-    /// キャンセルコマンド
+    /// キャンセルコマンド.
     /// </summary>
     [RelayCommand]
     private void Cancel()
@@ -1163,7 +1164,7 @@ public partial class SettingsViewModel : ObservableObject
     #region ログ関連コマンド
 
     /// <summary>
-    /// ログフォルダを選択するコマンド
+    /// ログフォルダを選択するコマンド.
     /// </summary>
     [RelayCommand]
     private void SelectLogFolder()
@@ -1189,7 +1190,7 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     /// <summary>
-    /// ログを表示するコマンド
+    /// ログを表示するコマンド.
     /// </summary>
     [RelayCommand]
     private void ViewLogs()
@@ -1206,7 +1207,7 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     /// <summary>
-    /// ログをクリアするコマンド
+    /// ログをクリアするコマンド.
     /// </summary>
     [RelayCommand]
     private void ClearLogs()
@@ -1228,7 +1229,7 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     /// <summary>
-    /// 古いログを削除するコマンド
+    /// 古いログを削除するコマンド.
     /// </summary>
     [RelayCommand]
     private void CleanupOldLogs()
@@ -1253,7 +1254,7 @@ public partial class SettingsViewModel : ObservableObject
 
 
     /// <summary>
-    /// ブラウザを編集するコマンド
+    /// ブラウザを編集するコマンド.
     /// </summary>
     [RelayCommand]
     private async Task EditBrowserAsync(Browser? browser = null)
@@ -1340,7 +1341,7 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     /// <summary>
-    /// ブラウザを削除するコマンド
+    /// ブラウザを削除するコマンド.
     /// </summary>
     [RelayCommand]
     private async Task RemoveBrowserAsync(Browser? browser = null)
@@ -1394,7 +1395,7 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     /// <summary>
-    /// ブラウザを上に移動するコマンド
+    /// ブラウザを上に移動するコマンド.
     /// </summary>
     [RelayCommand]
     private async Task MoveBrowserUpAsync(Browser browser)
@@ -1426,7 +1427,7 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     /// <summary>
-    /// ブラウザを下に移動するコマンド
+    /// ブラウザを下に移動するコマンド.
     /// </summary>
     [RelayCommand]
     private async Task MoveBrowserDownAsync(Browser browser)

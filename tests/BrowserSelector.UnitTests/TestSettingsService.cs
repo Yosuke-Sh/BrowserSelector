@@ -5,7 +5,7 @@ using System.Text.Json;
 namespace BrowserSelector.UnitTests;
 
 /// <summary>
-/// テスト用の設定サービス
+/// テスト用の設定サービス.
 /// </summary>
 public class TestSettingsService : ISettingsService
 {
@@ -31,6 +31,7 @@ public class TestSettingsService : ISettingsService
         _logSettingsPath = Path.Combine(_settingsDirectory, "logsettings.json");
     }
 
+    /// <inheritdoc/>
     public async Task<AppSettings> LoadAppSettingsAsync()
     {
         _logService?.LogTrace("アプリケーション設定読み込み開始", "TestSettingsService");
@@ -72,6 +73,7 @@ public class TestSettingsService : ISettingsService
         }
     }
 
+    /// <inheritdoc/>
     public async Task<bool> SaveAppSettingsAsync(AppSettings settings)
     {
         try
@@ -103,6 +105,7 @@ public class TestSettingsService : ISettingsService
         }
     }
 
+    /// <inheritdoc/>
     public async Task<VisualSettings> LoadVisualSettingsAsync()
     {
         _logService?.LogTrace("視覚設定読み込み開始", "TestSettingsService");
@@ -144,6 +147,7 @@ public class TestSettingsService : ISettingsService
         }
     }
 
+    /// <inheritdoc/>
     public async Task<bool> SaveVisualSettingsAsync(VisualSettings settings)
     {
         try
@@ -175,11 +179,13 @@ public class TestSettingsService : ISettingsService
         }
     }
 
+    /// <inheritdoc/>
     public string GetSettingsFilePath()
     {
         return _settingsDirectory;
     }
 
+    /// <inheritdoc/>
     public async Task<bool> ResetSettingsAsync()
     {
         try
@@ -213,18 +219,21 @@ public class TestSettingsService : ISettingsService
         }
     }
 
+    /// <inheritdoc/>
     public async Task<bool> ImportSettingsAsync(string filePath)
     {
         // テスト用の簡易実装
         return await Task.FromResult(false);
     }
 
+    /// <inheritdoc/>
     public async Task<bool> ExportSettingsAsync(string filePath)
     {
         // テスト用の簡易実装
         return await Task.FromResult(false);
     }
 
+    /// <inheritdoc/>
     public async Task<LogSettings> LoadLogSettingsAsync()
     {
         _logService?.LogTrace("ログ設定読み込み開始", "TestSettingsService");
@@ -266,6 +275,7 @@ public class TestSettingsService : ISettingsService
         }
     }
 
+    /// <inheritdoc/>
     public async Task<bool> SaveLogSettingsAsync(LogSettings settings)
     {
         try

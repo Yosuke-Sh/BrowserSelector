@@ -7,7 +7,7 @@ using Xunit.Sdk;
 namespace BrowserSelector.UITests;
 
 /// <summary>
-/// 背景カスタマイズ機能のUIテスト
+/// 背景カスタマイズ機能のUIテスト.
 /// </summary>
 public class BackgroundCustomizationUITests : IDisposable
 {
@@ -34,6 +34,7 @@ public class BackgroundCustomizationUITests : IDisposable
         }
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         _automation?.Dispose();

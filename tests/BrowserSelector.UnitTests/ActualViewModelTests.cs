@@ -10,7 +10,7 @@ namespace BrowserSelector.UnitTests
 {
     /// <summary>
     /// 実際のViewModelロジックを実行するテスト
-    /// 実際のサービスを使用してViewModelの動作をテスト
+    /// 実際のサービスを使用してViewModelの動作をテスト.
     /// </summary>
     public class ActualViewModelTests : IDisposable
     {
@@ -215,6 +215,7 @@ namespace BrowserSelector.UnitTests
             _ = _settingsViewModel.AppSettings.LogLevel.Should().Be("Debug");
         }
 
+        /// <inheritdoc/>
         public void Dispose()
         {
             _serviceProvider?.Dispose();

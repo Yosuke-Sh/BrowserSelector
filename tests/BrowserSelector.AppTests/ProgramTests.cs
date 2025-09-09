@@ -6,10 +6,13 @@ namespace BrowserSelector.AppTests;
 
 /// <summary>
 /// Programクラス専用のテスト
-/// アプリケーションエントリーポイントの基本機能をテスト
+/// アプリケーションエントリーポイントの基本機能をテスト.
 /// </summary>
 public class ProgramTests
 {
+    /// <summary>
+    /// ProgramクラスがMainメソッドを持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveMainMethod()
     {

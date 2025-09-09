@@ -8,14 +8,14 @@ using FlaUI.Core.AutomationElements;
 namespace BrowserSelector.UITests;
 
 /// <summary>
-/// UIテスト用のヘルパークラス
+/// UIテスト用のヘルパークラス.
 /// </summary>
 public static class UITestHelper
 {
     /// <summary>
-    /// アプリケーションの実行ファイルパスを取得します
+    /// アプリケーションの実行ファイルパスを取得します.
     /// </summary>
-    /// <returns>アプリケーションの実行ファイルパス</returns>
+    /// <returns>アプリケーションの実行ファイルパス.</returns>
     public static string GetApplicationPath()
     {
         // 複数のパス候補を試行
@@ -42,9 +42,9 @@ public static class UITestHelper
     }
 
     /// <summary>
-    /// プロジェクトルートディレクトリを取得します
+    /// プロジェクトルートディレクトリを取得します.
     /// </summary>
-    /// <returns>プロジェクトルートディレクトリのパス</returns>
+    /// <returns>プロジェクトルートディレクトリのパス.</returns>
     private static string GetProjectRoot()
     {
         string currentDir = AppDomain.CurrentDomain.BaseDirectory;
@@ -70,9 +70,9 @@ public static class UITestHelper
     }
 
     /// <summary>
-    /// アプリケーションが起動可能かどうかを確認します
+    /// アプリケーションが起動可能かどうかを確認します.
     /// </summary>
-    /// <returns>起動可能な場合はtrue</returns>
+    /// <returns>起動可能な場合はtrue.</returns>
     public static bool IsApplicationAvailable()
     {
         try
@@ -87,9 +87,9 @@ public static class UITestHelper
     }
 
     /// <summary>
-    /// アプリケーションパスの情報を取得します（デバッグ用）
+    /// アプリケーションパスの情報を取得します（デバッグ用）.
     /// </summary>
-    /// <returns>パス情報の文字列</returns>
+    /// <returns>パス情報の文字列.</returns>
     public static string GetPathInfo()
     {
         var info = new System.Text.StringBuilder();
@@ -111,11 +111,11 @@ public static class UITestHelper
     }
 
     /// <summary>
-    /// メインウィンドウでURLを設定します
+    /// メインウィンドウでURLを設定します.
     /// </summary>
-    /// <param name="mainWindow">メインウィンドウ</param>
-    /// <param name="url">設定するURL</param>
-    /// <returns>URL設定が成功した場合はtrue</returns>
+    /// <param name="mainWindow">メインウィンドウ.</param>
+    /// <param name="url">設定するURL.</param>
+    /// <returns>URL設定が成功した場合はtrue.</returns>
     public static bool SetUrlInMainWindow(FlaUI.Core.AutomationElements.Window mainWindow, string url)
     {
         try
@@ -167,10 +167,10 @@ public static class UITestHelper
     }
 
     /// <summary>
-    /// STAスレッドでアプリケーションを起動します
+    /// STAスレッドでアプリケーションを起動します.
     /// </summary>
-    /// <param name="appPath">アプリケーションのパス</param>
-    /// <returns>起動されたアプリケーション</returns>
+    /// <param name="appPath">アプリケーションのパス.</param>
+    /// <returns>起動されたアプリケーション.</returns>
     public static Application LaunchApplicationInSTA(string appPath)
     {
         Application? app = null;
@@ -203,10 +203,10 @@ public static class UITestHelper
     }
 
     /// <summary>
-    /// プロセスを直接起動してSTAスレッドでアプリケーションを取得します
+    /// プロセスを直接起動してSTAスレッドでアプリケーションを取得します.
     /// </summary>
-    /// <param name="appPath">アプリケーションのパス</param>
-    /// <returns>起動されたアプリケーション</returns>
+    /// <param name="appPath">アプリケーションのパス.</param>
+    /// <returns>起動されたアプリケーション.</returns>
     public static Application LaunchApplicationWithProcess(string appPath)
     {
         var processStartInfo = new ProcessStartInfo
@@ -231,15 +231,15 @@ public static class UITestHelper
     }
 
     /// <summary>
-    /// テスト用のアプリケーションを起動します（STAスレッド対応）
+    /// テスト用のアプリケーションを起動します（STAスレッド対応）.
     /// </summary>
-    /// <param name="appPath">アプリケーションのパス</param>
-    /// <returns>起動されたアプリケーション</returns>
+    /// <param name="appPath">アプリケーションのパス.</param>
+    /// <returns>起動されたアプリケーション.</returns>
     public static Application LaunchTestApplication(string appPath)
     {
         Application? app = null;
         Exception? exception = null;
-        
+
         // STAスレッドでアプリケーションを起動
         var thread = new Thread(() =>
         {
@@ -247,14 +247,14 @@ public static class UITestHelper
             {
                 // STAスレッドとして設定
                 Thread.CurrentThread.SetApartmentState(ApartmentState.STA);
-                
+
                 // テスト用の環境変数を設定
                 Environment.SetEnvironmentVariable("BROWSERSELECTOR_TEST_MODE", "true");
-                
+
                 // ポート競合を避けるため、固定ポートを設定
                 int testPort = 50001;
                 Environment.SetEnvironmentVariable("BROWSERSELECTOR_TEST_PORT", testPort.ToString());
-                
+
                 // プロセス起動情報を設定
                 var startInfo = new ProcessStartInfo
                 {
@@ -265,27 +265,27 @@ public static class UITestHelper
                     RedirectStandardOutput = true,
                     RedirectStandardError = true
                 };
-                
+
                 // テストモード用の環境変数を設定
                 startInfo.EnvironmentVariables["TestMode"] = "true";
                 startInfo.EnvironmentVariables["BROWSERSELECTOR_TEST_MODE"] = "true";
                 startInfo.EnvironmentVariables["BROWSERSELECTOR_TEST_PORT"] = testPort.ToString();
-                
+
                 Console.WriteLine($"アプリケーション起動開始: {appPath}");
                 Console.WriteLine($"引数: {startInfo.Arguments}");
-                
+
                 // プロセスを起動
                 var process = Process.Start(startInfo);
                 if (process == null)
                 {
                     throw new InvalidOperationException("アプリケーションの起動に失敗しました");
                 }
-                
+
                 Console.WriteLine($"プロセス起動完了: PID={process.Id}");
-                
+
                 // プロセスが起動するまで少し待機
                 Thread.Sleep(3000);
-                
+
                 // プロセスが終了していないかチェック
                 if (process.HasExited)
                 {
@@ -293,10 +293,10 @@ public static class UITestHelper
                     string standardOutput = process.StandardOutput.ReadToEnd();
                     throw new InvalidOperationException($"アプリケーションが起動直後に終了しました。エラー: {errorOutput}, 出力: {standardOutput}");
                 }
-                
+
                 // FlaUIのApplication.Attachを使用してアプリケーションに接続
                 app = Application.Attach(process);
-                
+
                 // メインウィンドウが利用可能になるまで待機
                 using var automation = new FlaUI.UIA3.UIA3Automation();
                 var mainWindow = app.GetMainWindow(automation, TimeSpan.FromSeconds(15));
@@ -312,36 +312,36 @@ public static class UITestHelper
                 exception = ex;
             }
         });
-        
+
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();
-        
+
         // スレッドの完了を待機
         if (!thread.Join(30000)) // 30秒でタイムアウト
         {
             thread.Abort();
             throw new TimeoutException("アプリケーションの起動がタイムアウトしました");
         }
-        
+
         if (exception != null)
         {
             throw new InvalidOperationException($"アプリケーションの起動に失敗しました: {exception.Message}", exception);
         }
-        
+
         if (app == null)
         {
             throw new InvalidOperationException("アプリケーションの起動に失敗しました");
         }
-        
+
         return app;
     }
 
     /// <summary>
-    /// ブラウザボタンが有効になるまで待機します
+    /// ブラウザボタンが有効になるまで待機します.
     /// </summary>
-    /// <param name="mainWindow">メインウィンドウ</param>
-    /// <param name="timeoutMs">タイムアウト時間（ミリ秒）</param>
-    /// <returns>ブラウザボタンが有効になった場合はtrue</returns>
+    /// <param name="mainWindow">メインウィンドウ.</param>
+    /// <param name="timeoutMs">タイムアウト時間（ミリ秒）.</param>
+    /// <returns>ブラウザボタンが有効になった場合はtrue.</returns>
     public static bool WaitForBrowserButtonsEnabled(FlaUI.Core.AutomationElements.Window mainWindow, int timeoutMs = 5000)
     {
         var startTime = DateTime.Now;

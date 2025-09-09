@@ -6,7 +6,7 @@ using System.Windows;
 namespace BrowserSelector.Presentation.Views;
 
 /// <summary>
-/// LogViewerWindow.xaml の相互作用ロジック
+/// LogViewerWindow.xaml の相互作用ロジック.
 /// </summary>
 public partial class LogViewerWindow : Window
 {
@@ -18,7 +18,7 @@ public partial class LogViewerWindow : Window
 }
 
 /// <summary>
-/// ログビューアーのViewModel
+/// ログビューアーのViewModel.
 /// </summary>
 public partial class LogViewerViewModel : ObservableObject
 {
@@ -31,7 +31,7 @@ public partial class LogViewerViewModel : ObservableObject
     }
 
     /// <summary>
-    /// ログを更新するコマンド
+    /// ログを更新するコマンド.
     /// </summary>
     [RelayCommand]
     private void RefreshLogs()
@@ -48,7 +48,7 @@ public partial class LogViewerViewModel : ObservableObject
     }
 
     /// <summary>
-    /// ログをクリップボードにコピーするコマンド
+    /// ログをクリップボードにコピーするコマンド.
     /// </summary>
     [RelayCommand]
     private void CopyToClipboard()
@@ -65,7 +65,7 @@ public partial class LogViewerViewModel : ObservableObject
     }
 
     /// <summary>
-    /// ウィンドウを閉じるコマンド
+    /// ウィンドウを閉じるコマンド.
     /// </summary>
     [RelayCommand]
     private void Close()

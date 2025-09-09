@@ -8,7 +8,7 @@ using Moq;
 namespace BrowserSelector.UnitTests;
 
 /// <summary>
-/// シンプルなカバレッジ向上テスト
+/// シンプルなカバレッジ向上テスト.
 /// </summary>
 public class SimpleCoverageTests
 {

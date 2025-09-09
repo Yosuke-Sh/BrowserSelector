@@ -6,7 +6,7 @@ using System.Windows.Forms;
 namespace BrowserSelector.Infrastructure.SystemIntegration;
 
 /// <summary>
-/// システムトレイ機能を提供するサービス
+/// システムトレイ機能を提供するサービス.
 /// </summary>
 public class SystemTrayService : ISystemTrayService, IDisposable
 {
@@ -14,10 +14,11 @@ public class SystemTrayService : ISystemTrayService, IDisposable
     private ContextMenuStrip? _contextMenu;
     private bool _disposed = false;
 
+    /// <inheritdoc/>
     public event EventHandler<SystemTrayEventArgs>? SystemTrayAction;
 
     /// <summary>
-    /// システムトレイアイコンを初期化
+    /// システムトレイアイコンを初期化.
     /// </summary>
     public void InitializeSystemTray(string iconPath, string tooltipText)
     {
@@ -49,7 +50,7 @@ public class SystemTrayService : ISystemTrayService, IDisposable
     }
 
     /// <summary>
-    /// システムトレイアイコンを表示
+    /// システムトレイアイコンを表示.
     /// </summary>
     public void ShowSystemTray()
     {
@@ -60,7 +61,7 @@ public class SystemTrayService : ISystemTrayService, IDisposable
     }
 
     /// <summary>
-    /// システムトレイアイコンを非表示
+    /// システムトレイアイコンを非表示.
     /// </summary>
     public void HideSystemTray()
     {
@@ -71,7 +72,7 @@ public class SystemTrayService : ISystemTrayService, IDisposable
     }
 
     /// <summary>
-    /// バルーンティップを表示
+    /// バルーンティップを表示.
     /// </summary>
     public void ShowBalloonTip(string title, string text, System.Windows.Forms.ToolTipIcon icon = System.Windows.Forms.ToolTipIcon.Info, int timeout = 3000)
     {
@@ -79,10 +80,11 @@ public class SystemTrayService : ISystemTrayService, IDisposable
     }
 
     /// <summary>
-    /// コンテキストメニューを更新
+    /// コンテキストメニューを更新.
     /// </summary>
     public void UpdateContextMenu(SystemTrayMenuItems menuItems)
     {
+        ArgumentNullException.ThrowIfNull(menuItems);
         if (_contextMenu != null)
         {
             _contextMenu.Items.Clear();
@@ -160,9 +162,10 @@ public class SystemTrayService : ISystemTrayService, IDisposable
                 return SystemIcons.Application;
             }
         }
-        catch
+        catch (Exception ex)
         {
             // エラー時はデフォルトアイコンを使用
+            System.Diagnostics.Debug.WriteLine($"Icon loading failed: {ex.Message}");
             return SystemIcons.Application;
         }
     }
@@ -201,6 +204,7 @@ public class SystemTrayService : ISystemTrayService, IDisposable
         }
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         Dispose(true);

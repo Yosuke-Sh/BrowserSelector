@@ -7,47 +7,47 @@ using BrowserSelector.Core.Models;
 namespace BrowserSelector.Core.Services;
 
 /// <summary>
-/// ログサービスのインターフェース
+/// 繝ｭ繧ｰ繧ｵ繝ｼ繝薙せ縺ｮ繧､繝ｳ繧ｿ繝ｼ繝輔ぉ繝ｼ繧ｹ.
 /// </summary>
 public interface ILogService
 {
     /// <summary>
-    /// トレースレベルのログを�E劁E
+    /// 繝医Ξ繝ｼ繧ｹ繝ｬ繝吶Ν縺ｮ繝ｭ繧ｰ繧貞・蜉・.
     /// </summary>
     void LogTrace(string message, string? category = null, Exception? exception = null);
 
     /// <summary>
-    /// チE��チE��レベルのログを�E劁E
+    /// 繝・ヰ繝・げ繝ｬ繝吶Ν縺ｮ繝ｭ繧ｰ繧貞・蜉・.
     /// </summary>
     void LogDebug(string message, string? category = null, Exception? exception = null);
 
     /// <summary>
-    /// 惁E��レベルのログを�E劁E
+    /// 諠・ｱ繝ｬ繝吶Ν縺ｮ繝ｭ繧ｰ繧貞・蜉・.
     /// </summary>
     void LogInformation(string message, string? category = null, Exception? exception = null);
 
     /// <summary>
-    /// 警告レベルのログを�E劁E
+    /// 隴ｦ蜻翫Ξ繝吶Ν縺ｮ繝ｭ繧ｰ繧貞・蜉・.
     /// </summary>
     void LogWarning(string message, string? category = null, Exception? exception = null);
 
     /// <summary>
-    /// エラーレベルのログを�E劁E
+    /// 繧ｨ繝ｩ繝ｼ繝ｬ繝吶Ν縺ｮ繝ｭ繧ｰ繧貞・蜉・.
     /// </summary>
     void LogError(string message, string? category = null, Exception? exception = null);
 
     /// <summary>
-    /// 致命皁E��ラーレベルのログを�E劁E
+    /// 閾ｴ蜻ｽ逧・お繝ｩ繝ｼ繝ｬ繝吶Ν縺ｮ繝ｭ繧ｰ繧貞・蜉・.
     /// </summary>
     void LogCritical(string message, string? category = null, Exception? exception = null);
 
     /// <summary>
-    /// 持E��されたレベルのログを�E劁E
+    /// 謖・ｮ壹＆繧後◆繝ｬ繝吶Ν縺ｮ繝ｭ繧ｰ繧貞・蜉・.
     /// </summary>
     void Log(LogLevel level, string message, string? category = null, Exception? exception = null);
 
     /// <summary>
-    /// 詳細惁E��付きのログを�E劁E
+    /// 隧ｳ邏ｰ諠・ｱ莉倥″縺ｮ繝ｭ繧ｰ繧貞・蜉・.
     /// </summary>
     void LogDetailed(LogLevel level, string message, string? category = null,
                     string? eventId = null, string? requestTarget = null, string? userInfo = null,
@@ -55,27 +55,29 @@ public interface ILogService
                     Exception? exception = null);
 
     /// <summary>
-    /// ログ設定を更新
+    /// 繝ｭ繧ｰ險ｭ螳壹ｒ譖ｴ譁ｰ.
     /// </summary>
     void UpdateSettings(LogSettings settings);
 
     /// <summary>
-    /// ログファイルをクリア
+    /// 繝ｭ繧ｰ繝輔ぃ繧､繝ｫ繧偵け繝ｪ繧｢.
     /// </summary>
     void ClearLogs();
 
     /// <summary>
-    /// 古ぁE��グファイルを削除
+    /// 蜿､縺・Ο繧ｰ繝輔ぃ繧､繝ｫ繧貞炎髯､.
     /// </summary>
     void CleanupOldLogs();
 
     /// <summary>
-    /// ログファイルの冁E��を取征E
+    /// 繝ｭ繧ｰ繝輔ぃ繧､繝ｫ縺ｮ蜀・ｮｹ繧貞叙蠕・.
     /// </summary>
+    /// <returns></returns>
     string GetLogContent(int maxLines = 1000);
 
     /// <summary>
-    /// ログファイルのパスを取征E
+    /// 繝ｭ繧ｰ繝輔ぃ繧､繝ｫ縺ｮ繝代せ繧貞叙蠕・.
     /// </summary>
+    /// <returns></returns>
     string GetLogFilePath();
 }

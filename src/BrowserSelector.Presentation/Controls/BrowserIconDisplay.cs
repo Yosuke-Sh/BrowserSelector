@@ -8,7 +8,7 @@ using System.Windows.Media.Imaging;
 namespace BrowserSelector.Presentation.Controls;
 
 /// <summary>
-/// ブラウザアイコン表示用のカスタムコントロール
+/// ブラウザアイコン表示用のカスタムコントロール.
 /// </summary>
 public class BrowserIconDisplay : Control
 {
@@ -35,7 +35,7 @@ public class BrowserIconDisplay : Control
             new PropertyMetadata(null));
 
     /// <summary>
-    /// ブラウザ情報
+    /// Gets or sets ブラウザ情報.
     /// </summary>
     public Browser Browser
     {
@@ -44,7 +44,7 @@ public class BrowserIconDisplay : Control
     }
 
     /// <summary>
-    /// アイコンのスケール
+    /// Gets or sets アイコンのスケール.
     /// </summary>
     public double IconScale
     {
@@ -53,7 +53,7 @@ public class BrowserIconDisplay : Control
     }
 
     /// <summary>
-    /// アイコンを表示するかどうか
+    /// Gets or sets a value indicating whether アイコンを表示するかどうか.
     /// </summary>
     public bool ShowIcon
     {
@@ -62,7 +62,7 @@ public class BrowserIconDisplay : Control
     }
 
     /// <summary>
-    /// アイコンのソース
+    /// Gets or sets アイコンのソース.
     /// </summary>
     public ImageSource? IconSource
     {
@@ -100,7 +100,7 @@ public class BrowserIconDisplay : Control
     }
 
     /// <summary>
-    /// アイコンを読み込み
+    /// アイコンを読み込み.
     /// </summary>
     private async void LoadIcon()
     {
@@ -143,7 +143,7 @@ public class BrowserIconDisplay : Control
     }
 
     /// <summary>
-    /// ファイルからアイコンを読み込み
+    /// ファイルからアイコンを読み込み.
     /// </summary>
     private ImageSource? LoadIconFromFile(string filePath)
     {
@@ -163,7 +163,7 @@ public class BrowserIconDisplay : Control
     }
 
     /// <summary>
-    /// 実行ファイルからアイコンを抽出
+    /// 実行ファイルからアイコンを抽出.
     /// </summary>
     private async Task<ImageSource?> LoadIconFromExecutableAsync(string executablePath)
     {
@@ -199,7 +199,7 @@ public class BrowserIconDisplay : Control
     }
 
     /// <summary>
-    /// デフォルトアイコンを取得
+    /// デフォルトアイコンを取得.
     /// </summary>
     private ImageSource? GetDefaultIcon()
     {
@@ -222,7 +222,7 @@ public class BrowserIconDisplay : Control
     }
 
     /// <summary>
-    /// アイコンのスケールを更新
+    /// アイコンのスケールを更新.
     /// </summary>
     private void UpdateIconScale()
     {
@@ -234,7 +234,7 @@ public class BrowserIconDisplay : Control
     }
 
     /// <summary>
-    /// アイコンをリフレッシュ
+    /// アイコンをリフレッシュ.
     /// </summary>
     public void RefreshIcon()
     {
@@ -242,7 +242,7 @@ public class BrowserIconDisplay : Control
     }
 
     /// <summary>
-    /// カスタムアイコンファイルを設定
+    /// カスタムアイコンファイルを設定.
     /// </summary>
     public void SetCustomIcon(string iconPath)
     {

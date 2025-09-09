@@ -6,7 +6,7 @@ using System.Windows.Controls;
 namespace BrowserSelector.Presentation.Views;
 
 /// <summary>
-/// SettingsWindow.xaml の相互作用ロジック
+/// SettingsWindow.xaml の相互作用ロジック.
 /// </summary>
 public partial class SettingsWindow : Window
 {
@@ -23,7 +23,7 @@ public partial class SettingsWindow : Window
     }
 
     /// <summary>
-    /// グラデーション方向コンボボックスの選択変更イベントハンドラー
+    /// グラデーション方向コンボボックスの選択変更イベントハンドラー.
     /// </summary>
     private void GradientDirectionComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
@@ -42,7 +42,7 @@ public partial class SettingsWindow : Window
     }
 
     /// <summary>
-    /// 言語管理ボタンのクリックイベントハンドラー
+    /// 言語管理ボタンのクリックイベントハンドラー.
     /// </summary>
     private void LanguageManagementButton_Click(object sender, RoutedEventArgs e)
     {

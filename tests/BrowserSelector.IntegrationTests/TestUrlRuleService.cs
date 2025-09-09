@@ -6,7 +6,7 @@ namespace BrowserSelector.IntegrationTests;
 
 /// <summary>
 /// テスト用のURLルールサービス実装
-/// 実際のファイルシステムではなく、テスト用の一時ディレクトリを使用
+/// 実際のファイルシステムではなく、テスト用の一時ディレクトリを使用.
 /// </summary>
 public class TestUrlRuleService : IUrlRuleService
 {
@@ -48,6 +48,7 @@ public class TestUrlRuleService : IUrlRuleService
         }
     }
 
+    /// <inheritdoc/>
     public Task<IEnumerable<UrlRule>> GetAllRulesAsync()
     {
         _logService?.LogTrace("URLルール一覧取得開始", "TestUrlRuleService");
@@ -67,6 +68,7 @@ public class TestUrlRuleService : IUrlRuleService
         }
     }
 
+    /// <inheritdoc/>
     public Task<IEnumerable<UrlRule>> GetEnabledRulesAsync()
     {
         _logService?.LogTrace("有効URLルール一覧取得開始", "TestUrlRuleService");
@@ -86,6 +88,7 @@ public class TestUrlRuleService : IUrlRuleService
         }
     }
 
+    /// <inheritdoc/>
     public async Task<bool> AddRuleAsync(UrlRule rule)
     {
         _logService?.LogTrace($"URLルール追加開始: {rule.Pattern}", "TestUrlRuleService");
@@ -120,6 +123,7 @@ public class TestUrlRuleService : IUrlRuleService
         }
     }
 
+    /// <inheritdoc/>
     public async Task<bool> UpdateRuleAsync(UrlRule rule)
     {
         _logService?.LogTrace($"URLルール更新開始: {rule.Pattern}", "TestUrlRuleService");
@@ -155,6 +159,7 @@ public class TestUrlRuleService : IUrlRuleService
         }
     }
 
+    /// <inheritdoc/>
     public async Task<bool> DeleteRuleAsync(Guid ruleId)
     {
         _logService?.LogTrace($"URLルール削除開始: {ruleId}", "TestUrlRuleService");
@@ -202,6 +207,7 @@ public class TestUrlRuleService : IUrlRuleService
         }
     }
 
+    /// <inheritdoc/>
     public async Task<bool> ToggleRuleAsync(Guid ruleId, bool isEnabled)
     {
         _logService?.LogTrace($"URLルール切り替え開始: {ruleId}, Enabled={isEnabled}", "TestUrlRuleService");
@@ -230,6 +236,7 @@ public class TestUrlRuleService : IUrlRuleService
         }
     }
 
+    /// <inheritdoc/>
     public Task<Browser?> FindMatchingBrowserAsync(string url, IEnumerable<Browser> browsers)
     {
         _logService?.LogTrace($"URLマッチング開始: {url}", "TestUrlRuleService");
@@ -263,6 +270,7 @@ public class TestUrlRuleService : IUrlRuleService
         }
     }
 
+    /// <inheritdoc/>
     public async Task<bool> ChangePriorityAsync(Guid ruleId, int newPriority)
     {
         _logService?.LogTrace($"URLルール優先度変更開始: {ruleId}, Priority={newPriority}", "TestUrlRuleService");
@@ -291,6 +299,7 @@ public class TestUrlRuleService : IUrlRuleService
         }
     }
 
+    /// <inheritdoc/>
     public async Task<bool> ReorderRulesAsync(IEnumerable<Guid> ruleIds)
     {
         _logService?.LogTrace("URLルール並び替え開始", "TestUrlRuleService");

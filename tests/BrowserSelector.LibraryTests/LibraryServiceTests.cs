@@ -30,6 +30,7 @@ public class LibraryServiceTests
     /// <summary>
     /// 有効なブラウザでValidateBrowserAsyncがtrueを返すことをテスト.
     /// </summary>
+    /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous unit test.</placeholder></returns>
     [Fact]
     public async Task ValidateBrowserAsync_WithValidBrowser_ShouldReturnTrue()
     {
@@ -50,7 +51,7 @@ public class LibraryServiceTests
     }
 
     /// <summary>
-    /// 空の名前のブラウザでValidateBrowserAsyncがfalseを返すことをテスト.
+    /// 空の名前を持つValidateBrowserAsyncがfalseを返すことを確認するテスト.
     /// </summary>
     [Fact]
     public async Task ValidateBrowserAsync_WithEmptyName_ShouldReturnFalse()
@@ -96,6 +97,7 @@ public class LibraryServiceTests
     /// <summary>
     /// 無効な拡張子でValidateBrowserAsyncがfalseを返すことをテスト.
     /// </summary>
+    /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous unit test.</placeholder></returns>
     [Fact]
     public async Task ValidateBrowserAsync_WithInvalidExtension_ShouldReturnFalse()
     {
@@ -115,6 +117,9 @@ public class LibraryServiceTests
         result.Should().BeFalse();
     }
 
+    /// <summary>
+    /// 有効なURLを持つNormalizeUrlAsyncが正規化されたURLを返すことを確認するテスト.
+    /// </summary>
     [Fact]
     public async Task NormalizeUrlAsync_WithValidUrl_ShouldReturnNormalizedUrl()
     {
@@ -130,6 +135,9 @@ public class LibraryServiceTests
         result.Should().Be(expectedUrl);
     }
 
+    /// <summary>
+    /// HTTP URLを持つNormalizeUrlAsyncが同じURLを返すことを確認するテスト.
+    /// </summary>
     [Fact]
     public async Task NormalizeUrlAsync_WithHttpUrl_ShouldReturnSameUrl()
     {
@@ -144,6 +152,9 @@ public class LibraryServiceTests
         result.Should().Be(inputUrl);
     }
 
+    /// <summary>
+    /// HTTPS URLを持つNormalizeUrlAsyncが同じURLを返すことを確認するテスト.
+    /// </summary>
     [Fact]
     public async Task NormalizeUrlAsync_WithHttpsUrl_ShouldReturnSameUrl()
     {
@@ -158,6 +169,9 @@ public class LibraryServiceTests
         result.Should().Be(inputUrl);
     }
 
+    /// <summary>
+    /// 空のURLを持つNormalizeUrlAsyncが空の文字列を返すことを確認するテスト.
+    /// </summary>
     [Fact]
     public async Task NormalizeUrlAsync_WithEmptyUrl_ShouldReturnEmptyString()
     {
@@ -172,6 +186,9 @@ public class LibraryServiceTests
         result.Should().Be("");
     }
 
+    /// <summary>
+    /// 無効なURLを持つNormalizeUrlAsyncが元のURLを返すことを確認するテスト.
+    /// </summary>
     [Fact]
     public async Task NormalizeUrlAsync_WithInvalidUrl_ShouldReturnOriginalUrl()
     {
@@ -186,6 +203,9 @@ public class LibraryServiceTests
         result.Should().Be(inputUrl);
     }
 
+    /// <summary>
+    /// 有効な設定を持つValidateSettingsAsyncがtrueを返すことを確認するテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateSettingsAsync_WithValidSettings_ShouldReturnTrue()
     {
@@ -205,6 +225,9 @@ public class LibraryServiceTests
         result.Should().BeTrue();
     }
 
+    /// <summary>
+    /// 無効な言語を持つValidateSettingsAsyncがfalseを返すことを確認するテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateSettingsAsync_WithInvalidLanguage_ShouldReturnFalse()
     {
@@ -223,6 +246,9 @@ public class LibraryServiceTests
         result.Should().BeFalse();
     }
 
+    /// <summary>
+    /// 無効なプロトコルを持つValidateSettingsAsyncがfalseを返すことを確認するテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateSettingsAsync_WithInvalidProtocol_ShouldReturnFalse()
     {
@@ -241,6 +267,9 @@ public class LibraryServiceTests
         result.Should().BeFalse();
     }
 
+    /// <summary>
+    /// 有効な設定を持つValidateVisualSettingsAsyncがtrueを返すことを確認するテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateVisualSettingsAsync_WithValidSettings_ShouldReturnTrue()
     {
@@ -260,6 +289,9 @@ public class LibraryServiceTests
         result.Should().BeTrue();
     }
 
+    /// <summary>
+    /// 無効な幅でValidateVisualSettingsAsyncがfalseを返すことをテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateVisualSettingsAsync_WithInvalidWidth_ShouldReturnFalse()
     {
@@ -278,6 +310,9 @@ public class LibraryServiceTests
         result.Should().BeFalse();
     }
 
+    /// <summary>
+    /// 無効な高さでValidateVisualSettingsAsyncがfalseを返すことをテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateVisualSettingsAsync_WithInvalidHeight_ShouldReturnFalse()
     {
@@ -296,6 +331,9 @@ public class LibraryServiceTests
         result.Should().BeFalse();
     }
 
+    /// <summary>
+    /// 同じグラデーション色でValidateVisualSettingsAsyncがfalseを返すことをテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateVisualSettingsAsync_WithSameGradientColors_ShouldReturnFalse()
     {
@@ -318,6 +356,9 @@ public class LibraryServiceTests
         result.Should().BeFalse();
     }
 
+    /// <summary>
+    /// 有効なルールを持つValidateUrlRuleAsyncがtrueを返すことを確認するテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateUrlRuleAsync_WithValidRule_ShouldReturnTrue()
     {
@@ -338,6 +379,9 @@ public class LibraryServiceTests
         result.Should().BeTrue();
     }
 
+    /// <summary>
+    /// 無効なパターンを持つValidateUrlRuleAsyncがfalseを返すことを確認するテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateUrlRuleAsync_WithInvalidPattern_ShouldReturnFalse()
     {
@@ -357,6 +401,9 @@ public class LibraryServiceTests
         result.Should().BeFalse();
     }
 
+    /// <summary>
+    /// 無効な優先度を持つValidateUrlRuleAsyncがfalseを返すことを確認するテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateUrlRuleAsync_WithInvalidPriority_ShouldReturnFalse()
     {
@@ -376,6 +423,9 @@ public class LibraryServiceTests
         result.Should().BeFalse();
     }
 
+    /// <summary>
+    /// 有効な設定でValidateLogSettingsAsyncがtrueを返すことをテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateLogSettingsAsync_WithValidSettings_ShouldReturnTrue()
     {
@@ -396,6 +446,9 @@ public class LibraryServiceTests
         result.Should().BeTrue();
     }
 
+    /// <summary>
+    /// 無効なファイルサイズでValidateLogSettingsAsyncがfalseを返すことをテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateLogSettingsAsync_WithInvalidFileSize_ShouldReturnFalse()
     {
@@ -415,6 +468,9 @@ public class LibraryServiceTests
         result.Should().BeFalse();
     }
 
+    /// <summary>
+    /// 無効な保持日数でValidateLogSettingsAsyncがfalseを返すことをテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateLogSettingsAsync_WithInvalidRetentionDays_ShouldReturnFalse()
     {
@@ -448,6 +504,9 @@ public class LibraryServiceTests
         result.Should().BeFalse();
     }
 
+    /// <summary>
+    /// null設定を持つValidateSettingsAsyncがfalseを返すことを確認するテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateSettingsAsync_WithNullSettings_ShouldReturnFalse()
     {
@@ -462,6 +521,9 @@ public class LibraryServiceTests
         result.Should().BeFalse();
     }
 
+    /// <summary>
+    /// null設定を持つValidateVisualSettingsAsyncがfalseを返すことを確認するテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateVisualSettingsAsync_WithNullSettings_ShouldReturnFalse()
     {
@@ -476,6 +538,9 @@ public class LibraryServiceTests
         result.Should().BeFalse();
     }
 
+    /// <summary>
+    /// nullルールを持つValidateUrlRuleAsyncがfalseを返すことを確認するテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateUrlRuleAsync_WithNullRule_ShouldReturnFalse()
     {
@@ -490,6 +555,9 @@ public class LibraryServiceTests
         result.Should().BeFalse();
     }
 
+    /// <summary>
+    /// null設定でValidateLogSettingsAsyncがfalseを返すことをテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateLogSettingsAsync_WithNullSettings_ShouldReturnFalse()
     {
@@ -523,6 +591,9 @@ public class LibraryServiceTests
         result.Should().BeFalse();
     }
 
+    /// <summary>
+    /// null実行パスでValidateBrowserAsyncがfalseを返すことをテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateBrowserAsync_WithNullExecutablePath_ShouldReturnFalse()
     {
@@ -542,6 +613,9 @@ public class LibraryServiceTests
         result.Should().BeFalse();
     }
 
+    /// <summary>
+    /// 空白名でValidateBrowserAsyncがfalseを返すことをテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateBrowserAsync_WithWhitespaceName_ShouldReturnFalse()
     {
@@ -561,6 +635,9 @@ public class LibraryServiceTests
         result.Should().BeFalse();
     }
 
+    /// <summary>
+    /// 空白URLでNormalizeUrlAsyncが空文字列を返すことをテスト.
+    /// </summary>
     [Fact]
     public async Task NormalizeUrlAsync_WithWhitespaceUrl_ShouldReturnEmptyString()
     {
@@ -575,6 +652,9 @@ public class LibraryServiceTests
         result.Should().Be("");
     }
 
+    /// <summary>
+    /// FTPURLでNormalizeUrlAsyncが同じURLを返すことをテスト.
+    /// </summary>
     [Fact]
     public async Task NormalizeUrlAsync_WithFtpUrl_ShouldReturnSameUrl()
     {
@@ -589,6 +669,9 @@ public class LibraryServiceTests
         result.Should().Be(inputUrl);
     }
 
+    /// <summary>
+    /// ファイルURLでNormalizeUrlAsyncが同じURLを返すことをテスト.
+    /// </summary>
     [Fact]
     public async Task NormalizeUrlAsync_WithFileUrl_ShouldReturnSameUrl()
     {
@@ -603,6 +686,9 @@ public class LibraryServiceTests
         result.Should().Be(inputUrl);
     }
 
+    /// <summary>
+    /// 空の言語でValidateSettingsAsyncがfalseを返すことをテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateSettingsAsync_WithEmptyLanguage_ShouldReturnFalse()
     {
@@ -621,6 +707,9 @@ public class LibraryServiceTests
         result.Should().BeFalse();
     }
 
+    /// <summary>
+    /// 空白言語でValidateSettingsAsyncがfalseを返すことをテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateSettingsAsync_WithWhitespaceLanguage_ShouldReturnFalse()
     {
@@ -639,6 +728,9 @@ public class LibraryServiceTests
         result.Should().BeFalse();
     }
 
+    /// <summary>
+    /// 有効な言語でValidateSettingsAsyncがtrueを返すことをテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateSettingsAsync_WithValidLanguage_ShouldReturnTrue()
     {
@@ -657,6 +749,9 @@ public class LibraryServiceTests
         result.Should().BeTrue();
     }
 
+    /// <summary>
+    /// 空のプロトコルでValidateSettingsAsyncがtrueを返すことをテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateSettingsAsync_WithEmptyProtocol_ShouldReturnTrue()
     {
@@ -675,6 +770,9 @@ public class LibraryServiceTests
         result.Should().BeTrue();
     }
 
+    /// <summary>
+    /// nullプロトコルでValidateSettingsAsyncがtrueを返すことをテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateSettingsAsync_WithNullProtocol_ShouldReturnTrue()
     {
@@ -693,6 +791,9 @@ public class LibraryServiceTests
         result.Should().BeTrue();
     }
 
+    /// <summary>
+    /// 有効なグラデーション色でValidateVisualSettingsAsyncがtrueを返すことをテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateVisualSettingsAsync_WithValidGradientColors_ShouldReturnTrue()
     {
@@ -714,6 +815,9 @@ public class LibraryServiceTests
         result.Should().BeTrue();
     }
 
+    /// <summary>
+    /// 無効なグラデーションでValidateVisualSettingsAsyncがtrueを返すことをテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateVisualSettingsAsync_WithDisabledGradient_ShouldReturnTrue()
     {
@@ -807,6 +911,9 @@ public class LibraryServiceTests
         result.Should().BeTrue();
     }
 
+    /// <summary>
+    /// 空のブラウザ名を持つValidateUrlRuleAsyncがfalseを返すことを確認するテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateUrlRuleAsync_WithEmptyBrowserName_ShouldReturnFalse()
     {
@@ -826,6 +933,9 @@ public class LibraryServiceTests
         result.Should().BeFalse();
     }
 
+    /// <summary>
+    /// 空白ブラウザ名を持つValidateUrlRuleAsyncがfalseを返すことを確認するテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateUrlRuleAsync_WithWhitespaceBrowserName_ShouldReturnFalse()
     {
@@ -845,6 +955,9 @@ public class LibraryServiceTests
         result.Should().BeFalse();
     }
 
+    /// <summary>
+    /// 最小優先度を持つValidateUrlRuleAsyncがtrueを返すことを確認するテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateUrlRuleAsync_WithMinimumPriority_ShouldReturnTrue()
     {
@@ -864,6 +977,9 @@ public class LibraryServiceTests
         result.Should().BeTrue();
     }
 
+    /// <summary>
+    /// 最大優先度を持つValidateUrlRuleAsyncがtrueを返すことを確認するテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateUrlRuleAsync_WithMaximumPriority_ShouldReturnTrue()
     {
@@ -883,6 +999,9 @@ public class LibraryServiceTests
         result.Should().BeTrue();
     }
 
+    /// <summary>
+    /// ゼロ優先度を持つValidateUrlRuleAsyncがfalseを返すことを確認するテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateUrlRuleAsync_WithZeroPriority_ShouldReturnFalse()
     {
@@ -902,6 +1021,9 @@ public class LibraryServiceTests
         result.Should().BeFalse();
     }
 
+    /// <summary>
+    /// 最小ファイルサイズでValidateLogSettingsAsyncがtrueを返すことをテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateLogSettingsAsync_WithMinimumFileSize_ShouldReturnTrue()
     {
@@ -921,6 +1043,9 @@ public class LibraryServiceTests
         result.Should().BeTrue();
     }
 
+    /// <summary>
+    /// 最大ファイルサイズでValidateLogSettingsAsyncがtrueを返すことをテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateLogSettingsAsync_WithMaximumFileSize_ShouldReturnTrue()
     {
@@ -978,6 +1103,9 @@ public class LibraryServiceTests
         result.Should().BeTrue();
     }
 
+    /// <summary>
+    /// ゼロファイルサイズでValidateLogSettingsAsyncがfalseを返すことをテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateLogSettingsAsync_WithZeroFileSize_ShouldReturnFalse()
     {
@@ -997,6 +1125,9 @@ public class LibraryServiceTests
         result.Should().BeFalse();
     }
 
+    /// <summary>
+    /// ゼロ保持日数でValidateLogSettingsAsyncがfalseを返すことをテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateLogSettingsAsync_WithZeroRetentionDays_ShouldReturnFalse()
     {
@@ -1016,6 +1147,9 @@ public class LibraryServiceTests
         result.Should().BeFalse();
     }
 
+    /// <summary>
+    /// TraceログレベルでValidateLogSettingsAsyncがtrueを返すことをテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateLogSettingsAsync_WithTraceLogLevel_ShouldReturnTrue()
     {
@@ -1035,6 +1169,9 @@ public class LibraryServiceTests
         result.Should().BeTrue();
     }
 
+    /// <summary>
+    /// CriticalログレベルでValidateLogSettingsAsyncがtrueを返すことをテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateLogSettingsAsync_WithCriticalLogLevel_ShouldReturnTrue()
     {
@@ -1055,6 +1192,9 @@ public class LibraryServiceTests
     }
 
     // 追加のテストケース - 未カバー部分をカバー
+    /// <summary>
+    /// 存在しない実行ファイルパスを持つValidateBrowserAsyncがfalseを返すことを確認するテスト.
+    /// </summary>
     [Fact]
     public async Task ValidateBrowserAsync_WithNonExistentExecutablePath_ShouldReturnFalse()
     {
@@ -1074,6 +1214,9 @@ public class LibraryServiceTests
         result.Should().BeFalse();
     }
 
+    /// <summary>
+    /// FTPURLでNormalizeUrlAsyncが元のURLを返すことをテスト.
+    /// </summary>
     [Fact]
     public async Task NormalizeUrlAsync_WithFtpUrl_ShouldReturnOriginalUrl()
     {
@@ -1088,6 +1231,9 @@ public class LibraryServiceTests
         result.Should().Be(url);
     }
 
+    /// <summary>
+    /// ファイルURLでNormalizeUrlAsyncが元のURLを返すことをテスト.
+    /// </summary>
     [Fact]
     public async Task NormalizeUrlAsync_WithFileUrl_ShouldReturnOriginalUrl()
     {

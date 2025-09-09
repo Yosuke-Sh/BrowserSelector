@@ -44,6 +44,7 @@ public class InfrastructureServicesTests : IDisposable
         _serviceProvider = services.BuildServiceProvider();
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         // テスト用の一時ディレクトリを削除

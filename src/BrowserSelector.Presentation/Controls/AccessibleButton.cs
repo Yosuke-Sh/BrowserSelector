@@ -7,7 +7,7 @@ using System.Windows.Media;
 namespace BrowserSelector.Presentation.Controls;
 
 /// <summary>
-/// アクセシビリティ対応のボタンコントロール
+/// アクセシビリティ対応のボタンコントロール.
 /// </summary>
 public class AccessibleButton : Button
 {
@@ -38,7 +38,7 @@ public class AccessibleButton : Button
             new PropertyMetadata(false, OnHighContrastModeChanged));
 
     /// <summary>
-    /// フォーカス時のボーダー色
+    /// Gets or sets フォーカス時のボーダー色.
     /// </summary>
     public Color FocusBorderColor
     {
@@ -47,7 +47,7 @@ public class AccessibleButton : Button
     }
 
     /// <summary>
-    /// フォーカス時のボーダー幅
+    /// Gets or sets フォーカス時のボーダー幅.
     /// </summary>
     public double FocusBorderWidth
     {
@@ -56,7 +56,7 @@ public class AccessibleButton : Button
     }
 
     /// <summary>
-    /// フォーカス時のボーダー太さ
+    /// Gets or sets フォーカス時のボーダー太さ.
     /// </summary>
     public Thickness FocusBorderThickness
     {
@@ -65,7 +65,7 @@ public class AccessibleButton : Button
     }
 
     /// <summary>
-    /// フォーカスインジケーターを表示するかどうか
+    /// Gets or sets a value indicating whether フォーカスインジケーターを表示するかどうか.
     /// </summary>
     public bool ShowFocusIndicator
     {
@@ -74,7 +74,7 @@ public class AccessibleButton : Button
     }
 
     /// <summary>
-    /// 高コントラストモード
+    /// Gets or sets a value indicating whether 高コントラストモード.
     /// </summary>
     public bool HighContrastMode
     {
@@ -105,6 +105,7 @@ public class AccessibleButton : Button
         LostFocus += OnLostFocus;
     }
 
+    /// <inheritdoc/>
     protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
     {
         base.OnMouseLeftButtonDown(e);
@@ -216,7 +217,7 @@ public class AccessibleButton : Button
     }
 
     /// <summary>
-    /// アクセシビリティ情報を設定
+    /// アクセシビリティ情報を設定.
     /// </summary>
     public void SetAccessibilityInfo(string name, string helpText, string description = "")
     {
@@ -230,7 +231,7 @@ public class AccessibleButton : Button
     }
 
     /// <summary>
-    /// キーボードショートカットを設定
+    /// キーボードショートカットを設定.
     /// </summary>
     public void SetKeyboardShortcut(string shortcut)
     {

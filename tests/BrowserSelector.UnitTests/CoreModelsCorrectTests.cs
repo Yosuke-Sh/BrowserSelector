@@ -4,7 +4,7 @@ using FluentAssertions;
 namespace BrowserSelector.UnitTests;
 
 /// <summary>
-/// Coreプロジェクトのモデルクラスの正しいテスト
+/// Coreプロジェクトのモデルクラスの正しいテスト.
 /// </summary>
 public class CoreModelsCorrectTests
 {
