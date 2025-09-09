@@ -73,7 +73,7 @@ namespace BrowserSelector.Core.Models
         /// <summary>
         /// メニューアイテムリスト.
         /// </summary>
-        public List<SystemTrayMenuItem> Items { get; set; } =[];
+        public List<SystemTrayMenuItem> Items { get; set; } = [];
     }
 
     /// <summary>
@@ -104,7 +104,7 @@ namespace BrowserSelector.Core.Models
         /// <summary>
         /// メニューアイテムがセパレーターかどうか.
         /// </summary>
-        public bool IsSeparator { get; set; } = false;
+        public bool IsSeparator { get; set; }
 
         /// <summary>
         /// サブメニューアイテム.

@@ -22,11 +22,6 @@ public interface ILocalizationService
     IEnumerable<CultureInfo> SupportedLanguages { get; }
 
     /// <summary>
-    /// 言語変更イベント
-    /// </summary>
-    event EventHandler<LanguageChangedEventArgs>? LanguageChanged;
-
-    /// <summary>
     /// 指定されたキーの文字列を取得.
     /// </summary>
     /// <returns></returns>
@@ -49,6 +44,11 @@ public interface ILocalizationService
     /// </summary>
     /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
     Task<IEnumerable<CultureInfo>> GetSupportedLanguagesAsync();
+
+    /// <summary>
+    /// 言語変更イベント
+    /// </summary>
+    event EventHandler<LanguageChangedEventArgs>? LanguageChanged;
 }
 
 /// <summary>
