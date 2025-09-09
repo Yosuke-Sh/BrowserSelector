@@ -21,8 +21,9 @@ public partial class MainViewModel : ObservableObject
     private readonly IUrlRuleService _urlRuleService;
     private readonly ILogService _logService = null!;
 
+
     [ObservableProperty]
-    private ObservableCollection<Browser> _browsers = [];
+    private ObservableCollection<Browser> _browsers =[];
 
     [ObservableProperty]
     private Browser? _selectedBrowser;

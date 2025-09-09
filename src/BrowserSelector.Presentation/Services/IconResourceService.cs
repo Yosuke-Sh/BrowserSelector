@@ -139,7 +139,7 @@ public class IconResourceService
             "Icon_Log"
         };
 
-        List<string> missingIcons = [];
+        List<string> missingIcons =[];
 
         foreach (string? iconName in requiredIcons)
         {

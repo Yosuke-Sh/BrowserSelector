@@ -99,7 +99,7 @@ public class UrlRuleService : IUrlRuleService
         {
             lock (_lockObject)
             {
-                UrlRule? existingRule = _rules.FirstOrDefault(r => r.Id == rule.Id);
+                UrlRule? existingRule = _rules.Find(r => r.Id == rule.Id);
                 if (existingRule == null)
                 {
                     Debug.WriteLine($"UrlRuleService: ルールが見つかりません - {rule.Id}");
@@ -149,7 +149,7 @@ public class UrlRuleService : IUrlRuleService
         {
             lock (_lockObject)
             {
-                UrlRule? rule = _rules.FirstOrDefault(r => r.Id == ruleId);
+                UrlRule? rule = _rules.Find(r => r.Id == ruleId);
                 if (rule == null)
                 {
                     Debug.WriteLine($"UrlRuleService: ルールが見つかりません - {ruleId}");
@@ -192,7 +192,7 @@ public class UrlRuleService : IUrlRuleService
         {
             lock (_lockObject)
             {
-                UrlRule? rule = _rules.FirstOrDefault(r => r.Id == ruleId);
+                UrlRule? rule = _rules.Find(r => r.Id == ruleId);
                 if (rule == null)
                 {
                     Debug.WriteLine($"UrlRuleService: ルールが見つかりません - {ruleId}");
@@ -279,7 +279,7 @@ public class UrlRuleService : IUrlRuleService
         {
             lock (_lockObject)
             {
-                UrlRule? rule = _rules.FirstOrDefault(r => r.Id == ruleId);
+                UrlRule? rule = _rules.Find(r => r.Id == ruleId);
                 if (rule == null)
                 {
                     Debug.WriteLine($"UrlRuleService: ルールが見つかりません - {ruleId}");
@@ -328,7 +328,7 @@ public class UrlRuleService : IUrlRuleService
 
                 for (int i = 0; i < ruleIdList.Count; i++)
                 {
-                    UrlRule? rule = _rules.FirstOrDefault(r => r.Id == ruleIdList[i]);
+                    UrlRule? rule = _rules.Find(r => r.Id == ruleIdList[i]);
                     if (rule != null)
                     {
                         rule.Priority = maxPriority - i;

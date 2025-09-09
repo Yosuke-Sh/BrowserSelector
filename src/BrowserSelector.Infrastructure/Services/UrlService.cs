@@ -20,6 +20,12 @@ public class UrlService : IUrlService
     }
 
     /// <inheritdoc/>
+    public Task<string> NormalizeUrlAsync(Uri url)
+    {
+        return NormalizeUrlAsync(url?.ToString() ?? string.Empty);
+    }
+
+    /// <inheritdoc/>
     public Task<string> NormalizeUrlAsync(string url)
     {
         _logService?.LogTrace($"URL正規化処理開始: 入力URL='{url}'", "UrlService");
@@ -51,6 +57,12 @@ public class UrlService : IUrlService
             _logService?.LogError($"URL正規化エラー（URI形式例外）: {ex.Message}", "UrlService", ex);
             return Task.FromResult(string.Empty);
         }
+    }
+
+    /// <inheritdoc/>
+    public Task<bool> ValidateUrlAsync(Uri url)
+    {
+        return ValidateUrlAsync(url?.ToString() ?? string.Empty);
     }
 
     /// <inheritdoc/>
@@ -95,6 +107,12 @@ public class UrlService : IUrlService
     }
 
     /// <inheritdoc/>
+    public string ExtractDomain(Uri url)
+    {
+        return url?.Host ?? string.Empty;
+    }
+
+    /// <inheritdoc/>
     public string ExtractDomain(string url)
     {
         try
@@ -114,6 +132,12 @@ public class UrlService : IUrlService
             _logService?.LogError($"ドメイン抽出エラー: {ex.Message}", "UrlService", ex);
             return string.Empty;
         }
+    }
+
+    /// <inheritdoc/>
+    public string AddProtocolIfNeeded(Uri url)
+    {
+        return url?.ToString() ?? string.Empty;
     }
 
     /// <inheritdoc/>

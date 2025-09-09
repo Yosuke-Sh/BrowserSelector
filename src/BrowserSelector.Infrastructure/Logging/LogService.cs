@@ -393,7 +393,7 @@ public class LogService : ILogService
     /// <summary>
     /// ログレベルの短縮形を取得.
     /// </summary>
-    private string GetLogLevelShortName(LogLevel level)
+    private static string GetLogLevelShortName(LogLevel level)
     {
         return level switch
         {
@@ -410,7 +410,7 @@ public class LogService : ILogService
     /// <summary>
     /// コンソールにログを出力.
     /// </summary>
-    private void WriteToConsole(LogLevel level, string message)
+    private static void WriteToConsole(LogLevel level, string message)
     {
         ConsoleColor originalColor = Console.ForegroundColor;
 

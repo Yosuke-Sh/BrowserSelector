@@ -22,13 +22,18 @@ public interface ILocalizationService
     IEnumerable<CultureInfo> SupportedLanguages { get; }
 
     /// <summary>
+    /// 言語変更イベント
+    /// </summary>
+    event EventHandler<LanguageChangedEventArgs>? LanguageChanged;
+
+    /// <summary>
     /// 指定されたキーの文字列を取得.
     /// </summary>
     /// <returns></returns>
     string GetString(string key);
 
     /// <summary>
-    /// 指定されたキーの文字列を取得（パラメータ付き）.
+    /// 指定されたキーの文字列を取得（パラメータ付き）。
     /// </summary>
     /// <returns></returns>
     string GetString(string key, params object[] args);
@@ -38,11 +43,6 @@ public interface ILocalizationService
     /// </summary>
     /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
     Task SetLanguage(CultureInfo culture);
-
-    /// <summary>
-    /// 言語変更イベント
-    /// </summary>
-    event EventHandler<LanguageChangedEventArgs>? LanguageChanged;
 
     /// <summary>
     /// サポートされている言語の一覧を非同期で取得.

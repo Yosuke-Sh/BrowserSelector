@@ -195,7 +195,7 @@ public class BrowserService : IBrowserService
         ArgumentNullException.ThrowIfNull(browser);
         try
         {
-            Browser? existingBrowser = _browsers.FirstOrDefault(b => b.Id == browser.Id);
+            Browser? existingBrowser = _browsers.Find(b => b.Id == browser.Id);
             if (existingBrowser == null)
             {
                 return false;
@@ -221,7 +221,7 @@ public class BrowserService : IBrowserService
     {
         try
         {
-            Browser? browser = _browsers.FirstOrDefault(b => b.Id == browserId);
+            Browser? browser = _browsers.Find(b => b.Id == browserId);
             if (browser == null)
             {
                 return false;
@@ -254,7 +254,7 @@ public class BrowserService : IBrowserService
     {
         try
         {
-            Browser? browser = _browsers.FirstOrDefault(b => b.Id == browserId);
+            Browser? browser = _browsers.Find(b => b.Id == browserId);
             if (browser == null)
             {
                 return false;
@@ -281,7 +281,7 @@ public class BrowserService : IBrowserService
     {
         try
         {
-            Browser? defaultBrowser = _browsers.FirstOrDefault(b => b.IsDefault);
+            Browser? defaultBrowser = _browsers.Find(b => b.IsDefault);
             if (defaultBrowser != null)
             {
                 return defaultBrowser;
@@ -315,7 +315,7 @@ public class BrowserService : IBrowserService
     {
         try
         {
-            Browser? browser = _browsers.FirstOrDefault(b => b.Id == browserId);
+            Browser? browser = _browsers.Find(b => b.Id == browserId);
             if (browser != null)
             {
                 await SaveBrowserUsageAsync(browser).ConfigureAwait(false);

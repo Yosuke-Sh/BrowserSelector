@@ -57,6 +57,34 @@ public partial class SettingsViewModel : ObservableObject
     private readonly IUrlRuleService _urlRuleService;
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="SettingsViewModel"/> class.
+    /// </summary>
+    /// <param name="settingsService">設定サービス.</param>
+    /// <param name="browserService">ブラウザサービス.</param>
+    /// <param name="localizationService">ローカライゼーションサービス.</param>
+    /// <param name="customLanguageService">カスタム言語サービス.</param>
+    /// <param name="urlRuleService">URLルールサービス.</param>
+    /// <param name="logService">ログサービス.</param>
+    public SettingsViewModel(
+        ISettingsService settingsService,
+        IBrowserService browserService,
+        ILocalizationService localizationService,
+        ICustomLanguageService customLanguageService,
+        IUrlRuleService urlRuleService,
+        ILogService logService)
+    {
+        _settingsService = settingsService;
+        _browserService = browserService;
+        _localizationService = localizationService;
+        CustomLanguageService = customLanguageService;
+        _urlRuleService = urlRuleService;
+        LogService = logService;
+
+        // 初期化処理
+        _ = Task.Run(InitializeAsync);
+    }
+
+    /// <summary>
     /// アプリケーション設定.
     /// </summary>
     [ObservableProperty]
@@ -156,34 +184,6 @@ public partial class SettingsViewModel : ObservableObject
 
 
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="SettingsViewModel"/> class.
-    /// </summary>
-    /// <param name="settingsService">設定サービス.</param>
-    /// <param name="browserService">ブラウザサービス.</param>
-    /// <param name="localizationService">ローカライゼーションサービス.</param>
-    /// <param name="customLanguageService">カスタム言語サービス.</param>
-    /// <param name="urlRuleService">URLルールサービス.</param>
-    /// <param name="logService">ログサービス.</param>
-    public SettingsViewModel(
-        ISettingsService settingsService,
-        IBrowserService browserService,
-        ILocalizationService localizationService,
-        ICustomLanguageService customLanguageService,
-        IUrlRuleService urlRuleService,
-        ILogService logService)
-    {
-        _settingsService = settingsService;
-        _browserService = browserService;
-        _localizationService = localizationService;
-        CustomLanguageService = customLanguageService;
-        _urlRuleService = urlRuleService;
-        LogService = logService;
-
-
-
-        InitializeAsync();
-    }
 
     /// <summary>
     /// 初期化処理.

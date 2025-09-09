@@ -68,7 +68,7 @@ namespace BrowserSelector.Core.Models
         /// <param name="pattern">ワイルドカードを含むパターン.</param>
         /// <param name="url">判定対象のURL.</param>
         /// <returns>マッチする場合true.</returns>
-        private bool IsWildcardMatch(string pattern, string url)
+        private static bool IsWildcardMatch(string pattern, string url)
         {
             // パターンをワイルドカードで分割
             string[] parts = pattern.Split('*', StringSplitOptions.RemoveEmptyEntries);

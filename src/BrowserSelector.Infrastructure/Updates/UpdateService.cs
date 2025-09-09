@@ -235,18 +235,18 @@ public class UpdateService : IUpdateService
         }
     }
 
-    private string GetBackupPath()
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        _httpClient?.Dispose();
+    }
+
+    private static string GetBackupPath()
     {
         string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
         string backupDir = Path.Combine(appDataPath, "BrowserSelector", "Backup");
         _ = Directory.CreateDirectory(backupDir);
         return Path.Combine(backupDir, "BrowserSelector.exe.backup");
-    }
-
-    /// <inheritdoc/>
-    public void Dispose()
-    {
-        _httpClient?.Dispose();
     }
 }
 
