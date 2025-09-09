@@ -143,9 +143,9 @@ public static class LocalizedMessageBox
             // 5. スタックトレースに"xunit"が含まれている
             bool isTest = System.Diagnostics.Debugger.IsAttached ||
                    Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true" ||
-                   System.Reflection.Assembly.GetExecutingAssembly().GetName().Name?.Contains("Test") == true ||
+                   System.Reflection.Assembly.GetExecutingAssembly().GetName().Name?.Contains("Test", StringComparison.OrdinalIgnoreCase) == true ||
                    Environment.GetEnvironmentVariable("TEST_ENVIRONMENT") == "true" ||
-                   System.Diagnostics.Process.GetCurrentProcess().ProcessName.ToLower().Contains("test") ||
+                   System.Diagnostics.Process.GetCurrentProcess().ProcessName.ToLowerInvariant().Contains("test", StringComparison.OrdinalIgnoreCase) ||
                    IsRunningInTestFramework();
 
             return isTest;
@@ -173,16 +173,16 @@ public static class LocalizedMessageBox
 
                 if (declaringType != null)
                 {
-                    string typeName = declaringType.FullName ?? "";
-                    string assemblyName = declaringType.Assembly.GetName().Name ?? "";
+                    string typeName = declaringType.FullName ?? string.Empty;
+                    string assemblyName = declaringType.Assembly.GetName().Name ?? string.Empty;
 
                     // xUnit、NUnit、MSTestなどのテストフレームワークを検出
-                    if (typeName.Contains("xunit") || typeName.Contains("Xunit") ||
-                        typeName.Contains("nunit") || typeName.Contains("NUnit") ||
-                        typeName.Contains("mstest") || typeName.Contains("MSTest") ||
-                        assemblyName.Contains("xunit") || assemblyName.Contains("Xunit") ||
-                        assemblyName.Contains("nunit") || assemblyName.Contains("NUnit") ||
-                        assemblyName.Contains("mstest") || assemblyName.Contains("MSTest"))
+                    if (typeName.Contains("xunit", StringComparison.OrdinalIgnoreCase) ||
+                        typeName.Contains("nunit", StringComparison.OrdinalIgnoreCase) ||
+                        typeName.Contains("mstest", StringComparison.OrdinalIgnoreCase) ||
+                        assemblyName.Contains("xunit", StringComparison.OrdinalIgnoreCase) ||
+                        assemblyName.Contains("nunit", StringComparison.OrdinalIgnoreCase) ||
+                        assemblyName.Contains("mstest", StringComparison.OrdinalIgnoreCase))
                     {
                         return true;
                     }

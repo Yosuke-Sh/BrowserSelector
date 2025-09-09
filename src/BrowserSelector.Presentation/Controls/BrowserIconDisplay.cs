@@ -17,11 +17,17 @@ public class BrowserIconDisplay : Control
             new PropertyMetadata(null, OnBrowserChanged));
 
     public static readonly DependencyProperty IconScaleProperty =
-        DependencyProperty.Register(nameof(IconScale), typeof(double), typeof(BrowserIconDisplay),
+        DependencyProperty.Register(
+            nameof(IconScale), 
+            typeof(double), 
+            typeof(BrowserIconDisplay),
             new PropertyMetadata(1.0, OnIconScaleChanged));
 
     public static readonly DependencyProperty ShowIconProperty =
-        DependencyProperty.Register(nameof(ShowIcon), typeof(bool), typeof(BrowserIconDisplay),
+        DependencyProperty.Register(
+            nameof(ShowIcon), 
+            typeof(bool), 
+            typeof(BrowserIconDisplay),
             new PropertyMetadata(true));
 
     public static readonly DependencyProperty IconSourceProperty =
@@ -112,12 +118,14 @@ public class BrowserIconDisplay : Control
                 ImageSource? iconFromFile = LoadIconFromFile(Browser.IconPath);
                 IconSource = iconFromFile ?? GetDefaultIcon();
             }
+
             // 実行ファイルからアイコンを抽出
             else if (!string.IsNullOrEmpty(Browser.ExecutablePath) && System.IO.File.Exists(Browser.ExecutablePath))
             {
                 ImageSource? iconFromExe = await LoadIconFromExecutableAsync(Browser.ExecutablePath).ConfigureAwait(false);
                 IconSource = iconFromExe ?? GetDefaultIcon();
             }
+
             // デフォルトアイコンを使用
             else
             {

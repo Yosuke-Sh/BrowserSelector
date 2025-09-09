@@ -18,7 +18,7 @@ public partial class IconSelectionDialog : Window
     public string? SelectedIconPath { get; private set; }
     public int SelectedIconIndex { get; private set; } = -1;
 
-    private readonly List<IconInfo> _icons = [];
+    private readonly List<IconInfo> _icons = new();
     private string? _currentSelectedPath;
     private string? _executablePath;
     private readonly ILogService? _logService;
@@ -69,7 +69,7 @@ public partial class IconSelectionDialog : Window
     /// <returns>抽出されたアイコンのリスト</returns>
     private List<IconInfo> ExtractIconsFromExecutable(string executablePath)
     {
-        List<IconInfo> icons = [];
+        List<IconInfo> icons = new();
 
         try
         {
@@ -201,7 +201,7 @@ public partial class IconSelectionDialog : Window
         {
             // 最近使用したアイコンのパスを設定ファイルから読み込み
             // ここではサンプルとして空のリストを使用
-            List<string> recentIcons = [];
+            List<string> recentIcons = new();
 
             // 最近使用したアイコンがあれば表示
             foreach (string iconPath in recentIcons)

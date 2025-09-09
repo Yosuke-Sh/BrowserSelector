@@ -45,10 +45,10 @@ public partial class SettingsViewModel : ObservableObject
     private VisualSettings _visualSettings = new();
 
     [ObservableProperty]
-    private ObservableCollection<Browser> _detectedBrowsers = [];
+    private ObservableCollection<Browser> _detectedBrowsers = new();
 
     [ObservableProperty]
-    private ObservableCollection<LanguageInfo> _availableLanguages = [];
+    private ObservableCollection<LanguageInfo> _availableLanguages = new();
 
     [ObservableProperty]
     private LanguageInfo? _selectedLanguage;
@@ -73,7 +73,7 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     [ObservableProperty]
-    private ObservableCollection<LogLevelInfo> _availableLogLevels = [];
+    private ObservableCollection<LogLevelInfo> _availableLogLevels = new();
 
     [ObservableProperty]
     private LogLevelInfo? _selectedLogLevel;
@@ -100,7 +100,7 @@ public partial class SettingsViewModel : ObservableObject
 
     // URLルール関連
     [ObservableProperty]
-    private ObservableCollection<UrlRule> _urlRules = [];
+    private ObservableCollection<UrlRule> _urlRules = new();
 
     [ObservableProperty]
     private string _testUrl = string.Empty;

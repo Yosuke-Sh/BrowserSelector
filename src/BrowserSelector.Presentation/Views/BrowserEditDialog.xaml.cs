@@ -31,9 +31,9 @@ public partial class BrowserEditDialog : Window
             {
                 Id = Guid.NewGuid(),
                 Name = "新しいブラウザ",
-                ExecutablePath = "",
-                IconPath = "",
-                Arguments = "",
+                ExecutablePath = string.Empty,
+                IconPath = string.Empty,
+                Arguments = string.Empty,
                 Type = BrowserType.Custom,
                 IsEnabled = true,
                 DisplayOrder = 0

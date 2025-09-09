@@ -15,7 +15,7 @@ public partial class UrlRuleEditDialog : Window
     private readonly ILogService _logService;
 
     public UrlRule UrlRule { get; set; } = new();
-    public ObservableCollection<Browser> AvailableBrowsers { get; set; } = [];
+    public ObservableCollection<Browser> AvailableBrowsers { get; set; } = new();
     public Browser? SelectedBrowser { get; set; }
 
     public UrlRuleEditDialog(IBrowserService browserService, ILogService logService)

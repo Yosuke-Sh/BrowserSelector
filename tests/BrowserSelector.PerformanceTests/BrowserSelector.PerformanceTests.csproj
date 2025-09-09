@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -9,6 +9,8 @@
     <OutputType>Exe</OutputType>
     <StartupObject>BrowserSelector.PerformanceTests.Program</StartupObject>
   </PropertyGroup>
+    <!-- テストプロジェクトの警告を無効化（テストコードの特性上、多くの警告は対処困難または不要） -->
+
 
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.13.12" />
