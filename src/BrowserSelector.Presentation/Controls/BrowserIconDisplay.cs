@@ -1,6 +1,5 @@
 using BrowserSelector.Core.Models;
 using System.Windows;
-using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -12,10 +11,16 @@ namespace BrowserSelector.Presentation.Controls;
 /// </summary>
 public class BrowserIconDisplay : Control
 {
+    /// <summary>
+    /// BrowserProperty.
+    /// </summary>
     public static readonly DependencyProperty BrowserProperty =
         DependencyProperty.Register(nameof(Browser), typeof(Browser), typeof(BrowserIconDisplay),
             new PropertyMetadata(null, OnBrowserChanged));
 
+    /// <summary>
+    /// IconScaleProperty.
+    /// </summary>
     public static readonly DependencyProperty IconScaleProperty =
         DependencyProperty.Register(
             nameof(IconScale),
@@ -23,6 +28,9 @@ public class BrowserIconDisplay : Control
             typeof(BrowserIconDisplay),
             new PropertyMetadata(1.0, OnIconScaleChanged));
 
+    /// <summary>
+    /// ShowIconProperty.
+    /// </summary>
     public static readonly DependencyProperty ShowIconProperty =
         DependencyProperty.Register(
             nameof(ShowIcon),
@@ -30,9 +38,26 @@ public class BrowserIconDisplay : Control
             typeof(BrowserIconDisplay),
             new PropertyMetadata(true));
 
+    /// <summary>
+    /// IconSourceProperty.
+    /// </summary>
     public static readonly DependencyProperty IconSourceProperty =
         DependencyProperty.Register(nameof(IconSource), typeof(ImageSource), typeof(BrowserIconDisplay),
             new PropertyMetadata(null));
+
+    static BrowserIconDisplay()
+    {
+        DefaultStyleKeyProperty.OverrideMetadata(typeof(BrowserIconDisplay),
+            new FrameworkPropertyMetadata(typeof(BrowserIconDisplay)));
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BrowserIconDisplay"/> class.
+    /// </summary>
+    public BrowserIconDisplay()
+    {
+        // InitializeComponent();
+    }
 
     /// <summary>
     /// Gets or sets ブラウザ情報.
@@ -61,17 +86,6 @@ public class BrowserIconDisplay : Control
         set => SetValue(ShowIconProperty, value);
     }
 
-    static BrowserIconDisplay()
-    {
-        DefaultStyleKeyProperty.OverrideMetadata(typeof(BrowserIconDisplay),
-            new FrameworkPropertyMetadata(typeof(BrowserIconDisplay)));
-    }
-
-    public BrowserIconDisplay()
-    {
-        // InitializeComponent();
-    }
-
     /// <summary>
     /// Gets or sets アイコンのソース.
     /// </summary>
@@ -79,6 +93,27 @@ public class BrowserIconDisplay : Control
     {
         get => (ImageSource?)GetValue(IconSourceProperty);
         set => SetValue(IconSourceProperty, value);
+    }
+
+    /// <summary>
+    /// アイコンをリフレッシュ.
+    /// </summary>
+    public void RefreshIcon()
+    {
+        LoadIcon();
+    }
+
+    /// <summary>
+    /// カスタムアイコンファイルを設定.
+    /// </summary>
+    /// <param name="iconPath">iconPath.</param>
+    public void SetCustomIcon(string iconPath)
+    {
+        if (!string.IsNullOrEmpty(iconPath) && System.IO.File.Exists(iconPath))
+        {
+            ImageSource? icon = LoadIconFromFile(iconPath);
+            IconSource = icon ?? GetDefaultIcon();
+        }
     }
 
     private static void OnBrowserChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -166,34 +201,34 @@ public class BrowserIconDisplay : Control
     private async Task<ImageSource?> LoadIconFromExecutableAsync(string executablePath)
     {
         return await Task.Run(() =>
-        {
-            try
-            {
-                // Windows APIを使用してアイコンを抽出
-                System.Drawing.Icon? icon = System.Drawing.Icon.ExtractAssociatedIcon(executablePath);
-                if (icon != null)
-                {
-                    using System.IO.MemoryStream stream = new();
-                    icon.Save(stream);
-                    stream.Position = 0;
+                                                                                                {
+                                                                                                    try
+                                                                                                    {
+                                                                                                        // Windows APIを使用してアイコンを抽出
+                                                                                                        System.Drawing.Icon? icon = System.Drawing.Icon.ExtractAssociatedIcon(executablePath);
+                                                                                                        if (icon != null)
+                                                                                                        {
+                                                                                                            using System.IO.MemoryStream stream = new();
+                                                                                                            icon.Save(stream);
+                                                                                                            stream.Position = 0;
 
-                    BitmapImage bitmap = new();
-                    bitmap.BeginInit();
-                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                    bitmap.StreamSource = stream;
-                    bitmap.EndInit();
-                    bitmap.Freeze(); // UIスレッドでの使用を可能にする
+                                                                                                            BitmapImage bitmap = new();
+                                                                                                            bitmap.BeginInit();
+                                                                                                            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                                                                                                            bitmap.StreamSource = stream;
+                                                                                                            bitmap.EndInit();
+                                                                                                            bitmap.Freeze(); // UIスレッドでの使用を可能にする
 
-                    return bitmap;
-                }
-            }
-            catch
-            {
-                // エラーが発生した場合はデフォルトアイコンを使用
-            }
+                                                                                                            return bitmap;
+                                                                                                        }
+                                                                                                    }
+                                                                                                    catch
+                                                                                                    {
+                                                                                                        // エラーが発生した場合はデフォルトアイコンを使用
+                                                                                                    }
 
-            return GetDefaultIcon();
-        }).ConfigureAwait(false);
+                                                                                                    return GetDefaultIcon();
+                                                                                                }).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -231,23 +266,4 @@ public class BrowserIconDisplay : Control
         }
     }
 
-    /// <summary>
-    /// アイコンをリフレッシュ.
-    /// </summary>
-    public void RefreshIcon()
-    {
-        LoadIcon();
-    }
-
-    /// <summary>
-    /// カスタムアイコンファイルを設定.
-    /// </summary>
-    public void SetCustomIcon(string iconPath)
-    {
-        if (!string.IsNullOrEmpty(iconPath) && System.IO.File.Exists(iconPath))
-        {
-            ImageSource? icon = LoadIconFromFile(iconPath);
-            IconSource = icon ?? GetDefaultIcon();
-        }
-    }
 }

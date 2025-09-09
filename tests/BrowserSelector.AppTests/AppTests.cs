@@ -14,6 +14,9 @@ public class AppTests : IDisposable
 {
     private readonly ServiceProvider _serviceProvider;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AppTests"/> class.
+    /// </summary>
     public AppTests()
     {
         var services = new ServiceCollection();

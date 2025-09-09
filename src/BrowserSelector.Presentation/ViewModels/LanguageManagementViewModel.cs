@@ -48,6 +48,11 @@ public partial class LanguageManagementViewModel : ObservableObject
         }
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LanguageManagementViewModel"/> class.
+    /// </summary>
+    /// <param name="customLanguageService"></param>
+    /// <param name="logService"></param>
     public LanguageManagementViewModel(ICustomLanguageService customLanguageService, ILogService? logService = null)
     {
         _customLanguageService = customLanguageService;

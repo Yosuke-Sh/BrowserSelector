@@ -10,6 +10,10 @@ namespace BrowserSelector.Presentation.Views;
 /// </summary>
 public partial class SettingsWindow : Window
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SettingsWindow"/> class.
+    /// </summary>
+    /// <param name="viewModel"></param>
     public SettingsWindow(SettingsViewModel viewModel)
     {
         InitializeComponent();

@@ -1,5 +1,3 @@
-using System.Windows;
-
 namespace BrowserSelector.App;
 
 /// <summary>

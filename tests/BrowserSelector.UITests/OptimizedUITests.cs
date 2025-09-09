@@ -31,6 +31,9 @@ public class OptimizedUITests : IDisposable
         return null;
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="OptimizedUITests"/> class.
+    /// </summary>
     public OptimizedUITests()
     {
         try

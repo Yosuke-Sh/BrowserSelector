@@ -10,12 +10,19 @@ public class UrlServiceTests
     private readonly Mock<ISettingsService> _mockSettingsService;
     private readonly UrlService _urlService;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UrlServiceTests"/> class.
+    /// </summary>
     public UrlServiceTests()
     {
         _mockSettingsService = new Mock<ISettingsService>();
         _urlService = new UrlService(_mockSettingsService.Object);
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task NormalizeUrlAsync_WithValidUrl_ShouldReturnNormalizedUrl()
     {
@@ -34,6 +41,10 @@ public class UrlServiceTests
         _ = result.Should().Be(expectedUrl);
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task NormalizeUrlAsync_WithHttpUrl_ShouldReturnSameUrl()
     {
@@ -51,6 +62,10 @@ public class UrlServiceTests
         _ = result.Should().Be(inputUrl);
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task NormalizeUrlAsync_WithHttpsUrl_ShouldReturnSameUrl()
     {
@@ -68,6 +83,10 @@ public class UrlServiceTests
         _ = result.Should().Be(inputUrl);
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task NormalizeUrlAsync_WithEmptyUrl_ShouldReturnEmptyString()
     {
@@ -85,6 +104,10 @@ public class UrlServiceTests
         _ = result.Should().BeEmpty();
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task NormalizeUrlAsync_WithWhitespaceUrl_ShouldReturnEmptyString()
     {
@@ -102,6 +125,10 @@ public class UrlServiceTests
         _ = result.Should().BeEmpty();
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task ValidateUrlAsync_WithValidHttpUrl_ShouldReturnTrue()
     {
@@ -115,6 +142,10 @@ public class UrlServiceTests
         _ = result.Should().BeTrue();
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task ValidateUrlAsync_WithValidHttpsUrl_ShouldReturnTrue()
     {
@@ -128,6 +159,10 @@ public class UrlServiceTests
         _ = result.Should().BeTrue();
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task ValidateUrlAsync_WithInvalidUrl_ShouldReturnFalse()
     {
@@ -141,6 +176,10 @@ public class UrlServiceTests
         _ = result.Should().BeFalse();
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task ValidateUrlAsync_WithEmptyUrl_ShouldReturnFalse()
     {

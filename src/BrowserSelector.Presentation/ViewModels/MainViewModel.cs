@@ -113,6 +113,15 @@ public partial class MainViewModel : ObservableObject
         }
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MainViewModel"/> class.
+    /// </summary>
+    /// <param name="browserService"></param>
+    /// <param name="settingsService"></param>
+    /// <param name="localizationService"></param>
+    /// <param name="customLanguageService"></param>
+    /// <param name="urlRuleService"></param>
+    /// <param name="logService"></param>
     public MainViewModel(
         IBrowserService browserService,
         ISettingsService settingsService,

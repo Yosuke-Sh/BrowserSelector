@@ -10,6 +10,11 @@ public class UrlService : IUrlService
 {
     private readonly ILogService? _logService;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UrlService"/> class.
+    /// </summary>
+    /// <param name="settingsService"></param>
+    /// <param name="logService"></param>
     public UrlService(ISettingsService settingsService, ILogService? logService = null)
     {
         _logService = logService;

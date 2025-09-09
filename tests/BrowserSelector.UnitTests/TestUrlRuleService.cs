@@ -15,6 +15,11 @@ public class TestUrlRuleService : IUrlRuleService
     private readonly object _lockObject = new();
     private readonly ILogService? _logService;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TestUrlRuleService"/> class.
+    /// </summary>
+    /// <param name="logService"></param>
+    /// <param name="tempDirectory"></param>
     public TestUrlRuleService(ILogService? logService, string tempDirectory)
     {
         _logService = logService;
@@ -216,6 +221,11 @@ public class TestUrlRuleService : IUrlRuleService
         }
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="ruleId"></param>
+    /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
     public Task<UrlRule?> GetRuleByIdAsync(Guid ruleId)
     {
         _logService?.LogTrace($"URLルール取得開始: {ruleId}", "TestUrlRuleService");
@@ -297,7 +307,7 @@ public class TestUrlRuleService : IUrlRuleService
                         // 無効なURLの場合はマッチしない
                         isMatch = false;
                     }
-                    
+
                     if (isMatch)
                     {
                         Browser? browser = browsers.FirstOrDefault(b => b.Name == rule.BrowserName);

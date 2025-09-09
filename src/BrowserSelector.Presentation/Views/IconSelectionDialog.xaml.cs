@@ -22,6 +22,10 @@ public partial class IconSelectionDialog : Window
 
     public int SelectedIconIndex { get; private set; } = -1;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IconSelectionDialog"/> class.
+    /// </summary>
+    /// <param name="logService"></param>
     public IconSelectionDialog(ILogService? logService = null)
     {
         _logService = logService;

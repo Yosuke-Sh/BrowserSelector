@@ -19,6 +19,9 @@ public class LogService : ILogService
     private LogSettings _settings;
     private int _eventCounter;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LogService"/> class.
+    /// </summary>
     public LogService()
     {
         _settings = new LogSettings();
@@ -59,6 +62,9 @@ public class LogService : ILogService
     /// <summary>
     /// トレースレベルのログを出力.
     /// </summary>
+    /// <param name="message">ログメッセージ.</param>
+    /// <param name="category">ログカテゴリ.</param>
+    /// <param name="exception">例外.</param>
     public void LogTrace(string message, string? category = null, Exception? exception = null)
     {
         Log(LogLevel.Trace, message, category, exception);
@@ -67,6 +73,9 @@ public class LogService : ILogService
     /// <summary>
     /// デバッグレベルのログを出力.
     /// </summary>
+    /// <param name="message">ログメッセージ.</param>
+    /// <param name="category">ログカテゴリ.</param>
+    /// <param name="exception">例外.</param>
     public void LogDebug(string message, string? category = null, Exception? exception = null)
     {
         Log(LogLevel.Debug, message, category, exception);
@@ -75,6 +84,9 @@ public class LogService : ILogService
     /// <summary>
     /// 情報レベルのログを出力.
     /// </summary>
+    /// <param name="message">ログメッセージ.</param>
+    /// <param name="category">ログカテゴリ.</param>
+    /// <param name="exception">例外.</param>
     public void LogInformation(string message, string? category = null, Exception? exception = null)
     {
         Log(LogLevel.Information, message, category, exception);
@@ -83,6 +95,9 @@ public class LogService : ILogService
     /// <summary>
     /// 警告レベルのログを出力.
     /// </summary>
+    /// <param name="message">ログメッセージ.</param>
+    /// <param name="category">ログカテゴリ.</param>
+    /// <param name="exception">例外.</param>
     public void LogWarning(string message, string? category = null, Exception? exception = null)
     {
         Log(LogLevel.Warning, message, category, exception);
@@ -91,6 +106,9 @@ public class LogService : ILogService
     /// <summary>
     /// エラーレベルのログを出力.
     /// </summary>
+    /// <param name="message">ログメッセージ.</param>
+    /// <param name="category">ログカテゴリ.</param>
+    /// <param name="exception">例外.</param>
     public void LogError(string message, string? category = null, Exception? exception = null)
     {
         Log(LogLevel.Error, message, category, exception);
@@ -99,6 +117,9 @@ public class LogService : ILogService
     /// <summary>
     /// 致命的エラーレベルのログを出力.
     /// </summary>
+    /// <param name="message">ログメッセージ.</param>
+    /// <param name="category">ログカテゴリ.</param>
+    /// <param name="exception">例外.</param>
     public void LogCritical(string message, string? category = null, Exception? exception = null)
     {
         Log(LogLevel.Critical, message, category, exception);
@@ -107,6 +128,10 @@ public class LogService : ILogService
     /// <summary>
     /// 指定されたレベルのログを出力.
     /// </summary>
+    /// <param name="level">ログレベル.</param>
+    /// <param name="message">ログメッセージ.</param>
+    /// <param name="category">ログカテゴリ.</param>
+    /// <param name="exception">例外.</param>
     public void Log(LogLevel level, string message, string? category = null, Exception? exception = null)
     {
         LogDetailed(level, message, category, null, null, null, null, null, null, exception);
@@ -115,6 +140,16 @@ public class LogService : ILogService
     /// <summary>
     /// 詳細情報付きのログを出力.
     /// </summary>
+    /// <param name="level">ログレベル.</param>
+    /// <param name="message">ログメッセージ.</param>
+    /// <param name="category">ログカテゴリ.</param>
+    /// <param name="eventId">イベントID.</param>
+    /// <param name="requestTarget">リクエスト.</param>
+    /// <param name="userInfo">ユーザー情報.</param>
+    /// <param name="processTarget">ターゲット.</param>
+    /// <param name="processAction">アクション.</param>
+    /// <param name="processResult">結果.</param>
+    /// <param name="exception">例外.</param>
     public void LogDetailed(
         LogLevel level,
         string message,
@@ -161,53 +196,10 @@ public class LogService : ILogService
             // ログ出力中のエラーは無視
         }
     }
-
-    /// <summary>
-    /// 設定ファイルからログ設定を読み込み.
-    /// </summary>
-    private void LoadSettingsFromFile()
-    {
-        try
-        {
-            string settingsDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BrowserSelector");
-            string logSettingsPath = Path.Combine(settingsDirectory, "logsettings.json");
-
-            if (File.Exists(logSettingsPath))
-            {
-                string json = File.ReadAllText(logSettingsPath);
-                LogSettings? loadedSettings = System.Text.Json.JsonSerializer.Deserialize<LogSettings>(json);
-                if (loadedSettings != null)
-                {
-                    _settings = loadedSettings;
-                    _settings.LogOutputFolder = _defaultLogFolder; // パスは常にデフォルトを使用
-                }
-            }
-        }
-        catch (UnauthorizedAccessException)
-        {
-            // 設定ファイル読み込みエラーは無視（デフォルト値を使用）
-        }
-        catch (System.Security.SecurityException)
-        {
-            // 設定ファイル読み込みエラーは無視（デフォルト値を使用）
-        }
-        catch (ArgumentException)
-        {
-            // 設定ファイル読み込みエラーは無視（デフォルト値を使用）
-        }
-        catch (IOException)
-        {
-            // 設定ファイル読み込みエラーは無視（デフォルト値を使用）
-        }
-        catch (System.Text.Json.JsonException)
-        {
-            // 設定ファイル読み込みエラーは無視（デフォルト値を使用）
-        }
-    }
-
     /// <summary>
     /// ログ設定を更新.
     /// </summary>
+    /// <param name="settings">設定.</param>
     public void UpdateSettings(LogSettings settings)
     {
         lock (_lockObject)
@@ -299,7 +291,8 @@ public class LogService : ILogService
     /// <summary>
     /// ログファイルの内容を取得.
     /// </summary>
-    /// <returns></returns>
+    /// <param name="maxLines">最大長.</param>
+    /// <returns> ログファイルの内容.</returns>
     public string GetLogContent(int maxLines = 1000)
     {
         try
@@ -324,10 +317,53 @@ public class LogService : ILogService
     /// <summary>
     /// ログファイルのパスを取得.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>ログファイルパス.</returns>
     public string GetLogFilePath()
     {
         return _settings.GetLogFilePath();
+    }
+
+    /// <summary>
+    /// 設定ファイルからログ設定を読み込み.
+    /// </summary>
+    private void LoadSettingsFromFile()
+    {
+        try
+        {
+            string settingsDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BrowserSelector");
+            string logSettingsPath = Path.Combine(settingsDirectory, "logsettings.json");
+
+            if (File.Exists(logSettingsPath))
+            {
+                string json = File.ReadAllText(logSettingsPath);
+                LogSettings? loadedSettings = System.Text.Json.JsonSerializer.Deserialize<LogSettings>(json);
+                if (loadedSettings != null)
+                {
+                    _settings = loadedSettings;
+                    _settings.LogOutputFolder = _defaultLogFolder; // パスは常にデフォルトを使用
+                }
+            }
+        }
+        catch (UnauthorizedAccessException)
+        {
+            // 設定ファイル読み込みエラーは無視（デフォルト値を使用）
+        }
+        catch (System.Security.SecurityException)
+        {
+            // 設定ファイル読み込みエラーは無視（デフォルト値を使用）
+        }
+        catch (ArgumentException)
+        {
+            // 設定ファイル読み込みエラーは無視（デフォルト値を使用）
+        }
+        catch (IOException)
+        {
+            // 設定ファイル読み込みエラーは無視（デフォルト値を使用）
+        }
+        catch (System.Text.Json.JsonException)
+        {
+            // 設定ファイル読み込みエラーは無視（デフォルト値を使用）
+        }
     }
 
     /// <summary>

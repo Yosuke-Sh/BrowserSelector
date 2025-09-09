@@ -12,6 +12,9 @@ public class SettingsServiceIntegrationTests : IDisposable
     private readonly ISettingsService _settingsService;
     private readonly string _tempDirectory;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SettingsServiceIntegrationTests"/> class.
+    /// </summary>
     public SettingsServiceIntegrationTests()
     {
         // テスト用の一時ディレクトリを作成
@@ -51,6 +54,10 @@ public class SettingsServiceIntegrationTests : IDisposable
         _host?.Dispose();
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task SettingsService_SaveAndLoad_ShouldPersistCorrectly()
     {
@@ -74,6 +81,10 @@ public class SettingsServiceIntegrationTests : IDisposable
         _ = loadedSettings.CustomProtocol.Should().Be(testSettings.CustomProtocol);
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task SettingsService_LoadVisualSettings_ShouldReturnDefaultValues()
     {
@@ -106,6 +117,10 @@ public class SettingsServiceIntegrationTests : IDisposable
         _ = visualSettings.BrowserIconSize.Should().Be(32.0);
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task SettingsService_ResetSettings_ShouldRestoreDefaults()
     {

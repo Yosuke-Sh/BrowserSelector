@@ -11,6 +11,9 @@ namespace BrowserSelector.Presentation.Controls;
 /// </summary>
 public class AccessibleButton : Button
 {
+    /// <summary>
+    /// FocusBorderColorProperty.
+    /// </summary>
     public static readonly DependencyProperty FocusBorderColorProperty =
         DependencyProperty.Register(
             nameof(FocusBorderColor),
@@ -18,6 +21,9 @@ public class AccessibleButton : Button
             typeof(AccessibleButton),
             new PropertyMetadata(Colors.Blue));
 
+    /// <summary>
+    /// FocusBorderWidthProperty.
+    /// </summary>
     public static readonly DependencyProperty FocusBorderWidthProperty =
         DependencyProperty.Register(
             nameof(FocusBorderWidth),
@@ -25,17 +31,52 @@ public class AccessibleButton : Button
             typeof(AccessibleButton),
             new PropertyMetadata(2.0));
 
+    /// <summary>
+    /// FocusBorderThicknessProperty.
+    /// </summary>
     public static readonly DependencyProperty FocusBorderThicknessProperty =
         DependencyProperty.Register(nameof(FocusBorderThickness), typeof(Thickness), typeof(AccessibleButton),
             new PropertyMetadata(new Thickness(2)));
 
+    /// <summary>
+    /// ShowFocusIndicatorProperty.
+    /// </summary>
     public static readonly DependencyProperty ShowFocusIndicatorProperty =
         DependencyProperty.Register(nameof(ShowFocusIndicator), typeof(bool), typeof(AccessibleButton),
             new PropertyMetadata(true));
 
+    /// <summary>
+    /// HighContrastModeProperty.
+    /// </summary>
     public static readonly DependencyProperty HighContrastModeProperty =
         DependencyProperty.Register(nameof(HighContrastMode), typeof(bool), typeof(AccessibleButton),
             new PropertyMetadata(false, OnHighContrastModeChanged));
+
+
+    /// <summary>
+    /// Initializes static members of the <see cref="AccessibleButton"/> class.
+    /// AccessibleButton.
+    /// </summary>
+    static AccessibleButton()
+    {
+        DefaultStyleKeyProperty.OverrideMetadata(typeof(AccessibleButton),
+            new FrameworkPropertyMetadata(typeof(AccessibleButton)));
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AccessibleButton"/> class.
+    /// </summary>
+    public AccessibleButton()
+    {
+        // アクセシビリティプロパティを設定
+        SetValue(AutomationProperties.NameProperty, "AccessibleButton");
+        SetValue(AutomationProperties.HelpTextProperty, "アクセシブルなボタンです");
+        SetValue(AutomationProperties.LabeledByProperty, this);
+
+        // キーボードナビゲーションを有効にする
+        Focusable = true;
+        TabIndex = 0;
+    }
 
     /// <summary>
     /// Gets or sets フォーカス時のボーダー色.
@@ -64,12 +105,6 @@ public class AccessibleButton : Button
         set => SetValue(FocusBorderThicknessProperty, value);
     }
 
-    static AccessibleButton()
-    {
-        DefaultStyleKeyProperty.OverrideMetadata(typeof(AccessibleButton),
-            new FrameworkPropertyMetadata(typeof(AccessibleButton)));
-    }
-
     /// <summary>
     /// Gets or sets a value indicating whether フォーカスインジケーターを表示するかどうか.
     /// </summary>
@@ -77,18 +112,6 @@ public class AccessibleButton : Button
     {
         get => (bool)GetValue(ShowFocusIndicatorProperty);
         set => SetValue(ShowFocusIndicatorProperty, value);
-    }
-
-    public AccessibleButton()
-    {
-        // アクセシビリティプロパティを設定
-        SetValue(AutomationProperties.NameProperty, "AccessibleButton");
-        SetValue(AutomationProperties.HelpTextProperty, "アクセシブルなボタンです");
-        SetValue(AutomationProperties.LabeledByProperty, this);
-
-        // キーボードナビゲーションを有効にする
-        Focusable = true;
-        TabIndex = 0;
     }
 
     /// <summary>
@@ -100,7 +123,39 @@ public class AccessibleButton : Button
         set => SetValue(HighContrastModeProperty, value);
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// アクセシビリティ情報を設定.
+    /// </summary>
+    /// <param name="name">name.</param>
+    /// <param name="helpText">helpText.</param>
+    /// <param name="description">description.</param>
+    public void SetAccessibilityInfo(string name, string helpText, string description = "")
+    {
+        SetValue(AutomationProperties.NameProperty, name);
+        SetValue(AutomationProperties.HelpTextProperty, helpText);
+
+        if (!string.IsNullOrEmpty(description))
+        {
+            SetValue(AutomationProperties.ItemStatusProperty, description);
+        }
+    }
+
+    /// <summary>
+    /// キーボードショートカットを設定.
+    /// </summary>
+    /// <param name="shortcut">shortcut.</param>
+    public void SetKeyboardShortcut(string shortcut)
+    {
+        if (!string.IsNullOrEmpty(shortcut))
+        {
+            SetValue(AutomationProperties.AcceleratorKeyProperty, shortcut);
+        }
+    }
+
+    /// <summary>
+    /// OnMouseLeftButtonDown.
+    /// </summary>
+    /// <param name="e">MouseButtonEventArgs.</param>
     protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
     {
         base.OnMouseLeftButtonDown(e);
@@ -109,7 +164,23 @@ public class AccessibleButton : Button
         _ = Focus();
     }
 
+    /// <summary>
+    /// OnHighContrastModeChanged.
+    /// </summary>
+    /// <param name="d">DependencyObject.</param>
+    /// <param name="e">DependencyPropertyChangedEventArgs.</param>
+    private static void OnHighContrastModeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        if (d is AccessibleButton button)
+        {
+            button.UpdateHighContrastMode();
+        }
+    }
 
+    /// <summary>
+    /// UpdateFocusIndicator.
+    /// </summary>
+    /// <param name="show">show.</param>
     private void UpdateFocusIndicator(bool show)
     {
         if (show)
@@ -148,38 +219,8 @@ public class AccessibleButton : Button
     }
 
     /// <summary>
-    /// アクセシビリティ情報を設定.
+    /// UpdateHighContrastMode.
     /// </summary>
-    public void SetAccessibilityInfo(string name, string helpText, string description = "")
-    {
-        SetValue(AutomationProperties.NameProperty, name);
-        SetValue(AutomationProperties.HelpTextProperty, helpText);
-
-        if (!string.IsNullOrEmpty(description))
-        {
-            SetValue(AutomationProperties.ItemStatusProperty, description);
-        }
-    }
-
-    /// <summary>
-    /// キーボードショートカットを設定.
-    /// </summary>
-    public void SetKeyboardShortcut(string shortcut)
-    {
-        if (!string.IsNullOrEmpty(shortcut))
-        {
-            SetValue(AutomationProperties.AcceleratorKeyProperty, shortcut);
-        }
-    }
-
-    private static void OnHighContrastModeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        if (d is AccessibleButton button)
-        {
-            button.UpdateHighContrastMode();
-        }
-    }
-
     private void UpdateHighContrastMode()
     {
         if (HighContrastMode)

@@ -17,6 +17,11 @@ public class LocalizationService : ILocalizationService
     private Dictionary<string, string> _customResources = [];
     private Dictionary<string, string> _jsonResources = [];
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LocalizationService"/> class.
+    /// </summary>
+    /// <param name="customLanguageService"></param>
+    /// <param name="logService"></param>
     public LocalizationService(ICustomLanguageService customLanguageService, ILogService? logService = null)
     {
         _resourceManager = new ResourceManager("BrowserSelector.Infrastructure.Localization.Resources", typeof(LocalizationService).Assembly);
@@ -109,7 +114,7 @@ public class LocalizationService : ILocalizationService
     /// <inheritdoc/>
     public async Task<IEnumerable<CultureInfo>> GetSupportedLanguagesAsync()
     {
-        List<CultureInfo> languages= [];
+        List<CultureInfo> languages = [];
 
         try
         {

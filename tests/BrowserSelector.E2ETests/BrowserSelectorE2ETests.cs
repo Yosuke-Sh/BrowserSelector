@@ -88,6 +88,10 @@ public class BrowserSelectorE2ETests
         }
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Test]
     public async Task CompleteWorkflow_OpenURL_ShouldWorkEndToEnd()
     {
@@ -122,6 +126,10 @@ public class BrowserSelectorE2ETests
         }
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Test]
     public async Task Settings_ShouldPersistCorrectly()
     {
@@ -147,6 +155,10 @@ public class BrowserSelectorE2ETests
         _ = loadedSettings.CheckForUpdates.Should().Be(testSettings.CheckForUpdates, "更新チェック設定が正しく保存・読み込みされること");
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Test]
     public async Task BrowserDetection_ShouldWorkCorrectly()
     {

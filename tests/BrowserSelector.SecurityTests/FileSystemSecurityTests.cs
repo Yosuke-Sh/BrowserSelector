@@ -31,6 +31,7 @@ public class FileSystemSecurityTests
     /// <summary>
     /// パストラバーサル攻撃の検証テスト.
     /// </summary>
+    /// <param name="maliciousPath">maliciousPath.</param>
     [Theory]
     [InlineData("../../../etc/passwd")]
     [InlineData("..\\..\\..\\windows\\system32\\config\\sam")]
@@ -48,8 +49,9 @@ public class FileSystemSecurityTests
     }
 
     /// <summary>
-    /// 予約されたファイル名の検証テスト.
+    /// FilePathShouldRejectReservedNames.
     /// </summary>
+    /// <param name="reservedName">reservedName.</param>
     [Theory]
     [InlineData("CON")]
     [InlineData("PRN")]
@@ -85,6 +87,7 @@ public class FileSystemSecurityTests
     /// <summary>
     /// 無効な文字を含むファイルパスの検証テスト.
     /// </summary>
+    /// <param name="invalidPath">invalidPath.</param>
     [Theory]
     [InlineData("file<name>.txt")]
     [InlineData("file>name.txt")]
@@ -157,6 +160,7 @@ public class FileSystemSecurityTests
                 }
                 catch
                 {
+                    throw;
                 }
             }
 
@@ -167,6 +171,7 @@ public class FileSystemSecurityTests
     /// <summary>
     /// 危険なディレクトリ作成の検証テスト.
     /// </summary>
+    /// <param name="dangerousPath">dangerousPath.</param>
     [Theory]
     [InlineData("C:\\Windows\\System32")]
     [InlineData("C:\\Program Files")]
@@ -220,6 +225,7 @@ public class FileSystemSecurityTests
     /// <summary>
     /// 危険なファイル読み取りの検証テスト.
     /// </summary>
+    /// <param name="dangerousFile">dangerousFile.</param>
     [Theory]
     [InlineData("C:\\Windows\\System32\\config\\SAM")]
     [InlineData("C:\\Windows\\System32\\drivers\\etc\\hosts")]
@@ -274,6 +280,7 @@ public class FileSystemSecurityTests
     /// <summary>
     /// 危険なファイル書き込みの検証テスト.
     /// </summary>
+    /// <param name="dangerousFile">dangerousFile.</param>
     [Theory]
     [InlineData("C:\\Windows\\System32\\config\\SAM")]
     [InlineData("C:\\Windows\\System32\\drivers\\etc\\hosts")]

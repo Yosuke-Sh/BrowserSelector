@@ -10,6 +10,10 @@ namespace BrowserSelector.Presentation.Views;
 /// </summary>
 public partial class LogViewerWindow : Window
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LogViewerWindow"/> class.
+    /// </summary>
+    /// <param name="logContent"></param>
     public LogViewerWindow(string logContent)
     {
         InitializeComponent();
@@ -25,6 +29,10 @@ public partial class LogViewerViewModel : ObservableObject
     [ObservableProperty]
     private string _logContent;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LogViewerViewModel"/> class.
+    /// </summary>
+    /// <param name="logContent"></param>
     public LogViewerViewModel(string logContent)
     {
         _logContent = logContent;

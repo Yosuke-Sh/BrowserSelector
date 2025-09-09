@@ -10,7 +10,7 @@ namespace BrowserSelector.Core.Models
     public class SystemTrayMenuItems
     {
         /// <summary>
-        /// メニューアイテムリスト.
+        /// Gets or sets メニューアイテムリスト.
         /// </summary>
         public List<SystemTrayMenuItem> Items { get; set; } = [];
     }

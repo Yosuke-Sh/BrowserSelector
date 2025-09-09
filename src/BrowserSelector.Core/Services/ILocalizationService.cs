@@ -57,6 +57,7 @@ public interface ILocalizationService
 public class LanguageChangedEventArgs : EventArgs
 {
     /// <summary>
+    /// Initializes a new instance of the <see cref="LanguageChangedEventArgs"/> class.
     /// 言語変更イベントの引数を初期化.
     /// </summary>
     /// <param name="oldCulture">変更前のカルチャ.</param>

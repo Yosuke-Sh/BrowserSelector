@@ -21,6 +21,9 @@ namespace BrowserSelector.UnitTests
         private readonly ICustomLanguageService _customLanguageService;
         private readonly string _tempDirectory;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ActualServiceTests"/> class.
+        /// </summary>
         public ActualServiceTests()
         {
             // テスト用の一時ディレクトリを作成
@@ -60,6 +63,10 @@ namespace BrowserSelector.UnitTests
             _customLanguageService = _serviceProvider.GetRequiredService<ICustomLanguageService>();
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Fact]
         public async Task BrowserService_DetectBrowsersAsync_ShouldExecuteActualLogic()
         {
@@ -71,6 +78,10 @@ namespace BrowserSelector.UnitTests
             // 実際のブラウザが検出される可能性がある
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Fact]
         public async Task BrowserService_AddBrowserAsync_ShouldExecuteActualLogic()
         {
@@ -92,6 +103,10 @@ namespace BrowserSelector.UnitTests
             _ = result.Should().BeTrue();
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Fact]
         public async Task SettingsService_LoadAppSettingsAsync_ShouldExecuteActualLogic()
         {
@@ -103,6 +118,10 @@ namespace BrowserSelector.UnitTests
             _ = settings.Should().BeOfType<AppSettings>();
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Fact]
         public async Task SettingsService_SaveAppSettingsAsync_ShouldExecuteActualLogic()
         {
@@ -129,6 +148,10 @@ namespace BrowserSelector.UnitTests
             _ = result.Should().BeTrue();
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Fact]
         public async Task UrlService_NormalizeUrlAsync_ShouldExecuteActualLogic()
         {
@@ -143,6 +166,10 @@ namespace BrowserSelector.UnitTests
             _ = result.Should().Be(testUrl); // 正規化されたURL
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Fact]
         public async Task UrlService_ValidateUrlAsync_ShouldExecuteActualLogic()
         {
@@ -159,6 +186,10 @@ namespace BrowserSelector.UnitTests
             _ = invalidResult.Should().BeFalse();
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Fact]
         public async Task UrlRuleService_GetAllRulesAsync_ShouldExecuteActualLogic()
         {
@@ -169,6 +200,10 @@ namespace BrowserSelector.UnitTests
             _ = rules.Should().NotBeNull();
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Fact]
         public async Task UrlRuleService_AddRuleAsync_ShouldExecuteActualLogic()
         {
@@ -191,6 +226,10 @@ namespace BrowserSelector.UnitTests
             _ = result.Should().BeTrue();
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Fact]
         public async Task CustomLanguageService_GetAvailableLanguagesAsync_ShouldExecuteActualLogic()
         {
@@ -202,6 +241,10 @@ namespace BrowserSelector.UnitTests
             _ = languages.Should().BeOfType<List<BrowserSelector.Core.Models.LanguageInfo>>();
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Fact]
         public async Task CustomLanguageService_AddCustomLanguageAsync_ShouldExecuteActualLogic()
         {
@@ -224,6 +267,10 @@ namespace BrowserSelector.UnitTests
             _ = result.Should().BeFalse();
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Fact]
         public async Task SettingsService_LoadVisualSettingsAsync_ShouldExecuteActualLogic()
         {
@@ -235,6 +282,10 @@ namespace BrowserSelector.UnitTests
             _ = settings.Should().BeOfType<VisualSettings>();
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Fact]
         public async Task SettingsService_SaveVisualSettingsAsync_ShouldExecuteActualLogic()
         {

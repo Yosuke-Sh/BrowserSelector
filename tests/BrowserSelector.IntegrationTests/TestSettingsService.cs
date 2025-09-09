@@ -15,6 +15,11 @@ public class TestSettingsService : ISettingsService
     private readonly string _logSettingsPath;
     private readonly ILogService? _logService;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TestSettingsService"/> class.
+    /// </summary>
+    /// <param name="logService"></param>
+    /// <param name="tempDirectory"></param>
     public TestSettingsService(ILogService? logService, string tempDirectory)
     {
         _logService = logService;

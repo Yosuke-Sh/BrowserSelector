@@ -23,6 +23,9 @@ namespace BrowserSelector.IntegrationTests
         private readonly string _testDataPath;
         private readonly string _tempDirectory;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RealBusinessLogicTests"/> class.
+        /// </summary>
         public RealBusinessLogicTests()
         {
             // テスト用の一時ディレクトリを作成
@@ -65,6 +68,10 @@ namespace BrowserSelector.IntegrationTests
             _ = Directory.CreateDirectory(_testDataPath);
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Fact]
         public async Task BrowserService_DetectBrowsersFromRegistry_ShouldExecuteRealLogic()
         {
@@ -76,6 +83,10 @@ namespace BrowserSelector.IntegrationTests
             // システムにインストールされているブラウザが検出される可能性がある
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Fact]
         public async Task SettingsService_FileSystemOperations_ShouldExecuteRealLogic()
         {
@@ -105,6 +116,10 @@ namespace BrowserSelector.IntegrationTests
             _ = loadedSettings.Should().BeOfType<AppSettings>();
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Fact]
         public async Task UrlService_UrlProcessing_ShouldExecuteRealLogic()
         {
@@ -135,6 +150,10 @@ namespace BrowserSelector.IntegrationTests
             _ = results[3].isValid.Should().BeFalse(); // invalid-url
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Fact]
         public async Task UrlRuleService_RuleManagement_ShouldExecuteRealLogic()
         {
@@ -163,6 +182,10 @@ namespace BrowserSelector.IntegrationTests
             _ = deleteResult.Should().BeTrue();
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Fact]
         public async Task CustomLanguageService_LanguageManagement_ShouldExecuteRealLogic()
         {
@@ -189,6 +212,10 @@ namespace BrowserSelector.IntegrationTests
             _ = deleteResult.Should().BeFalse();
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Fact]
         public async Task SettingsService_VisualSettingsPersistence_ShouldExecuteRealLogic()
         {
@@ -216,6 +243,10 @@ namespace BrowserSelector.IntegrationTests
             _ = loadedSettings.Should().BeOfType<VisualSettings>();
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Fact]
         public async Task BrowserService_BrowserManagement_ShouldExecuteRealLogic()
         {
@@ -243,6 +274,10 @@ namespace BrowserSelector.IntegrationTests
             _ = deleteResult.Should().BeTrue();
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Fact]
         public async Task SettingsService_ResetSettings_ShouldExecuteRealLogic()
         {
@@ -253,6 +288,10 @@ namespace BrowserSelector.IntegrationTests
             _ = result.Should().BeTrue();
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Fact]
         public async Task SettingsService_ExportImportSettings_ShouldExecuteRealLogic()
         {

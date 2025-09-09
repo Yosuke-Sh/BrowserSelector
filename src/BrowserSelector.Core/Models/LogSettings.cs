@@ -2,9 +2,9 @@
 // Copyright (c) 2024 BrowserSelector. All rights reserved.
 // </copyright>
 
-using System.IO;
 using BrowserSelector.Core.Enums;
 using CommunityToolkit.Mvvm.ComponentModel;
+using System.IO;
 
 namespace BrowserSelector.Core.Models
 {

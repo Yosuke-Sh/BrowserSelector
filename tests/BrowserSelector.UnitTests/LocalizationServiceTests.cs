@@ -51,6 +51,10 @@ public class LocalizationServiceTests
         _ = result.Should().Be("Save");
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task LocalizationService_SetLanguage_ShouldChangeCulture()
     {

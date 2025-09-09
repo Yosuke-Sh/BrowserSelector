@@ -490,6 +490,10 @@ public class LibraryServiceTests
         result.Should().BeFalse();
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task ValidateBrowserAsync_WithNullBrowser_ShouldReturnFalse()
     {
@@ -572,6 +576,10 @@ public class LibraryServiceTests
         result.Should().BeFalse();
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task ValidateBrowserAsync_WithNonExistentFile_ShouldReturnFalse()
     {
@@ -839,6 +847,10 @@ public class LibraryServiceTests
         result.Should().BeTrue();
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task ValidateVisualSettingsAsync_WithMaximumWidth_ShouldReturnTrue()
     {
@@ -857,6 +869,10 @@ public class LibraryServiceTests
         result.Should().BeTrue();
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task ValidateVisualSettingsAsync_WithMaximumHeight_ShouldReturnTrue()
     {
@@ -875,6 +891,10 @@ public class LibraryServiceTests
         result.Should().BeTrue();
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task ValidateVisualSettingsAsync_WithMinimumWidth_ShouldReturnTrue()
     {
@@ -893,6 +913,10 @@ public class LibraryServiceTests
         result.Should().BeTrue();
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task ValidateVisualSettingsAsync_WithMinimumHeight_ShouldReturnTrue()
     {
@@ -1065,6 +1089,10 @@ public class LibraryServiceTests
         result.Should().BeTrue();
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task ValidateLogSettingsAsync_WithMinimumRetentionDays_ShouldReturnTrue()
     {
@@ -1084,6 +1112,10 @@ public class LibraryServiceTests
         result.Should().BeTrue();
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task ValidateLogSettingsAsync_WithMaximumRetentionDays_ShouldReturnTrue()
     {

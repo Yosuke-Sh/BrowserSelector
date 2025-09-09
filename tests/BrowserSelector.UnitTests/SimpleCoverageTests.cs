@@ -273,6 +273,10 @@ public class SimpleCoverageTests
         _ = customLanguageService.Should().NotBeNull();
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task InfrastructureServices_ShouldExecuteBasicMethods()
     {

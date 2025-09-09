@@ -16,8 +16,12 @@ public partial class BrowserEditDialog : Window
     private readonly bool _isSystemBrowser;
     private readonly ILogService? _logService;
 
-    public Browser Browser { get; private set; }
-
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BrowserEditDialog"/> class.
+    /// </summary>
+    /// <param name="browser">browser.</param>
+    /// <param name="isSystemBrowser">isSystemBrowser.</param>
+    /// <param name="logService">logService.</param>
     public BrowserEditDialog(Browser? browser = null, bool isSystemBrowser = false, ILogService? logService = null)
     {
         _logService = logService;
@@ -66,6 +70,16 @@ public partial class BrowserEditDialog : Window
         }
     }
 
+    /// <summary>
+    /// Gets browser.
+    /// </summary>
+    public Browser Browser { get; private set; }
+
+    /// <summary>
+    /// BrowseExecutable_Click.
+    /// </summary>
+    /// <param name="sender">sender.</param>
+    /// <param name="e">e.</param>
     private void BrowseExecutable_Click(object sender, RoutedEventArgs e)
     {
         OpenFileDialog openFileDialog = new()
@@ -96,6 +110,11 @@ public partial class BrowserEditDialog : Window
         }
     }
 
+    /// <summary>
+    /// BrowseIcon_Click.
+    /// </summary>
+    /// <param name="sender">sender.</param>
+    /// <param name="e">e.</param>
     private void BrowseIcon_Click(object sender, RoutedEventArgs e)
     {
         OpenFileDialog openFileDialog = new()

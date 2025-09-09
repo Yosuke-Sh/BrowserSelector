@@ -12,6 +12,9 @@ public class BrowserServiceTests
     private readonly Mock<IUrlService> _mockUrlService;
     private readonly BrowserService _browserService;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BrowserServiceTests"/> class.
+    /// </summary>
     public BrowserServiceTests()
     {
         _mockRegistryService = new Mock<IRegistryService>();
@@ -19,6 +22,10 @@ public class BrowserServiceTests
         _browserService = new BrowserService(_mockRegistryService.Object, _mockUrlService.Object);
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task DetectBrowsersAsync_WithValidBrowsers_ShouldReturnBrowsers()
     {
@@ -53,6 +60,10 @@ public class BrowserServiceTests
         _ = result.Should().BeEquivalentTo(expectedBrowsers, options => options.Excluding(b => b.Id));
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task DetectBrowsersAsync_WithNoBrowsers_ShouldReturnEmpty()
     {
@@ -68,6 +79,10 @@ public class BrowserServiceTests
         _ = result.Should().BeEmpty();
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task DetectBrowsersAsync_WithException_ShouldReturnEmpty()
     {
@@ -83,6 +98,10 @@ public class BrowserServiceTests
         _ = result.Should().BeEmpty();
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task AddBrowserAsync_WithValidBrowser_ShouldReturnTrue()
     {
@@ -105,6 +124,10 @@ public class BrowserServiceTests
         _ = browser.Type.Should().Be(BrowserType.Custom);
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task AddBrowserAsync_WithInvalidBrowser_ShouldReturnFalse()
     {
@@ -122,6 +145,10 @@ public class BrowserServiceTests
         _ = result.Should().BeFalse();
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task RemoveBrowserAsync_WithCustomBrowser_ShouldReturnTrue()
     {
@@ -146,6 +173,10 @@ public class BrowserServiceTests
         _ = result.Should().BeTrue();
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task RemoveBrowserAsync_WithSystemBrowser_ShouldReturnFalse()
     {
@@ -170,6 +201,10 @@ public class BrowserServiceTests
         _ = result.Should().BeTrue();
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task GetAllBrowsersAsync_ShouldReturnOrderedBrowsers()
     {

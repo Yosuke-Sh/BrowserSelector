@@ -10,10 +10,17 @@ public class LocalizationExtension : MarkupExtension
 {
     private static ILocalizationService? _localizationService;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LocalizationExtension"/> class.
+    /// </summary>
     public LocalizationExtension()
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LocalizationExtension"/> class.
+    /// </summary>
+    /// <param name="key"></param>
     public LocalizationExtension(string key)
     {
         Key = key;

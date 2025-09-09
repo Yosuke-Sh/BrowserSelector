@@ -9,6 +9,9 @@ public class SettingsServiceTests
     private readonly string _testDirectory;
     private readonly SettingsService _settingsService;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SettingsServiceTests"/> class.
+    /// </summary>
     public SettingsServiceTests()
     {
         _testDirectory = Path.Combine(Path.GetTempPath(), "BrowserSelectorTests", Guid.NewGuid().ToString());
@@ -23,6 +26,10 @@ public class SettingsServiceTests
         _settingsService = new SettingsService();
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task ExportSettingsAsync_ShouldCreateZipFile()
     {
@@ -63,6 +70,10 @@ public class SettingsServiceTests
         _ = archive.Entries.Should().Contain(e => e.Name == "export-info.json");
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task ImportSettingsAsync_WithZipFile_ShouldExtractFiles()
     {
@@ -94,6 +105,10 @@ public class SettingsServiceTests
         _ = result.Should().BeTrue();
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task ImportSettingsAsync_WithJsonFile_ShouldImportSettings()
     {
@@ -115,6 +130,10 @@ public class SettingsServiceTests
         _ = result.Should().BeTrue();
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task ImportSettingsAsync_WithNonExistentFile_ShouldReturnFalse()
     {

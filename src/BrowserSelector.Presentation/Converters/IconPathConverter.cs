@@ -182,5 +182,4 @@ public class IconPathConverter : IMultiValueConverter
         // デフォルトのブラウザアイコンを返す
         return "/BrowserSelector.Presentation;component/Resources/Images/Icon_Browser.png";
     }
-
 }

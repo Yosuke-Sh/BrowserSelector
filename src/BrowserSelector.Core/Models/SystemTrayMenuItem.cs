@@ -10,32 +10,32 @@ namespace BrowserSelector.Core.Models
     public class SystemTrayMenuItem
     {
         /// <summary>
-        /// メニューアイテムのテキスト.
+        /// Gets or sets メニューアイテムのテキスト.
         /// </summary>
         public string Text { get; set; } = string.Empty;
 
         /// <summary>
-        /// メニューアイテムのアクション.
+        /// Gets or sets メニューアイテムのアクション.
         /// </summary>
         public SystemTrayActionType Action { get; set; }
 
         /// <summary>
-        /// メニューアイテムが有効かどうか.
+        /// Gets or sets a value indicating whether メニューアイテムが有効かどうか.
         /// </summary>
         public bool IsEnabled { get; set; } = true;
 
         /// <summary>
-        /// メニューアイテムが表示されるかどうか.
+        /// Gets or sets a value indicating whether メニューアイテムが表示されるかどうか.
         /// </summary>
         public bool IsVisible { get; set; } = true;
 
         /// <summary>
-        /// メニューアイテムがセパレーターかどうか.
+        /// Gets or sets a value indicating whether メニューアイテムがセパレーターかどうか.
         /// </summary>
         public bool IsSeparator { get; set; }
 
         /// <summary>
-        /// サブメニューアイテム.
+        /// Gets or sets サブメニューアイテム.
         /// </summary>
         public SystemTrayMenuItems? SubItems { get; set; }
     }

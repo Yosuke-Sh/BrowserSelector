@@ -4,7 +4,6 @@ using FlaUI.Core.Definitions;
 using FlaUI.UIA3;
 using FluentAssertions;
 using Xunit;
-using Xunit.Sdk;
 
 namespace BrowserSelector.UITests;
 
@@ -17,6 +16,9 @@ public class BrowserSelectionUITests : IDisposable
     private UIA3Automation? _automation = null;
     private Window? _mainWindow = null;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BrowserSelectionUITests"/> class.
+    /// </summary>
     public BrowserSelectionUITests()
     {
         try

@@ -16,6 +16,9 @@ public class SettingsViewModelTests
     private readonly Mock<ILogService> _mockLogService;
     private readonly SettingsViewModel _viewModel;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SettingsViewModelTests"/> class.
+    /// </summary>
     public SettingsViewModelTests()
     {
         _mockSettingsService = new Mock<ISettingsService>();
@@ -165,6 +168,10 @@ public class SettingsViewModelTests
         _ = _viewModel.VisualSettings.BrowserIconSize.Should().Be(32.0);
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task SettingsViewModel_RefreshBrowsers_ShouldCallBrowserService()
     {
@@ -187,6 +194,10 @@ public class SettingsViewModelTests
         _ = _viewModel.DetectedBrowsers.Should().HaveCount(2);
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task SettingsViewModel_ResetSettings_ShouldCallSettingsService()
     {
@@ -202,6 +213,10 @@ public class SettingsViewModelTests
         _mockSettingsService.Verify(x => x.ResetSettingsAsync(), Times.Once);
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task SettingsViewModel_SaveSettings_ShouldCallSettingsService()
     {

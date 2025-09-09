@@ -10,6 +10,7 @@ namespace BrowserSelector.Core.Models
     public class LanguageCodeInfo
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="LanguageCodeInfo"/> class.
         /// 言語コード情報を初期化.
         /// </summary>
         /// <param name="code">言語コード.</param>

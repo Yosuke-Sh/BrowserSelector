@@ -2,9 +2,9 @@
 // Copyright (c) BrowserSelector. All rights reserved.
 // </copyright>
 
-using System.Windows.Media;
 using BrowserSelector.Core.Enums;
 using CommunityToolkit.Mvvm.ComponentModel;
+using System.Windows.Media;
 
 namespace BrowserSelector.Core.Models;
 

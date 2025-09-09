@@ -12,6 +12,10 @@ public class WindowsRegistryService : IRegistryService
 {
     private readonly ILogService? _logService;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WindowsRegistryService"/> class.
+    /// </summary>
+    /// <param name="logService"></param>
     public WindowsRegistryService(ILogService? logService = null)
     {
         _logService = logService;
@@ -20,7 +24,7 @@ public class WindowsRegistryService : IRegistryService
     /// <inheritdoc/>
     public Task<IEnumerable<Browser>> DetectBrowsersFromRegistryAsync()
     {
-        List<Browser> browsers=[];
+        List<Browser> browsers = [];
 
         try
         {
@@ -37,7 +41,7 @@ public class WindowsRegistryService : IRegistryService
             browsers.AddRange(DetectOpera());
 
             // Brave検出
-            browsers.AddRange(DetectBrave());
+            browsers.AddRange(DetectBrave);
 
             // Vivaldi検出
             browsers.AddRange(DetectVivaldi());
@@ -79,7 +83,7 @@ public class WindowsRegistryService : IRegistryService
 
     private IEnumerable<Browser> DetectChrome()
     {
-        List<Browser> browsers=[];
+        List<Browser> browsers = [];
 
         try
         {
@@ -143,7 +147,7 @@ public class WindowsRegistryService : IRegistryService
 
     private IEnumerable<Browser> DetectFirefox()
     {
-        List<Browser> browsers=[];
+        List<Browser> browsers = [];
 
         try
         {
@@ -191,7 +195,7 @@ public class WindowsRegistryService : IRegistryService
 
     private IEnumerable<Browser> DetectEdge()
     {
-        List<Browser> browsers=[];
+        List<Browser> browsers = [];
 
         try
         {
@@ -234,7 +238,7 @@ public class WindowsRegistryService : IRegistryService
 
     private IEnumerable<Browser> DetectOpera()
     {
-        List<Browser> browsers=[];
+        List<Browser> browsers = [];
 
         try
         {
@@ -267,44 +271,47 @@ public class WindowsRegistryService : IRegistryService
         return browsers;
     }
 
-    private IEnumerable<Browser> DetectBrave()
+    private IEnumerable<Browser> DetectBrave
     {
-        List<Browser> browsers=[];
-
-        try
+        get
         {
-            // Brave
-            string bravePath = GetRegistryValue(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\brave.exe", string.Empty);
-            if (!string.IsNullOrEmpty(bravePath) && File.Exists(bravePath))
+            List<Browser> browsers = [];
+
+            try
             {
-                browsers.Add(new Browser
+                // Brave
+                string bravePath = GetRegistryValue(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\brave.exe", string.Empty);
+                if (!string.IsNullOrEmpty(bravePath) && File.Exists(bravePath))
                 {
-                    Name = "Brave Browser",
-                    ExecutablePath = bravePath,
-                    Type = BrowserType.Brave,
-                    DisplayOrder = 7
-                });
+                    browsers.Add(new Browser
+                    {
+                        Name = "Brave Browser",
+                        ExecutablePath = bravePath,
+                        Type = BrowserType.Brave,
+                        DisplayOrder = 7
+                    });
+                }
             }
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-            _logService?.LogError($"Brave検出エラー（アクセス権限なし）: {ex.Message}", "WindowsRegistryService", ex);
-        }
-        catch (System.Security.SecurityException ex)
-        {
-            _logService?.LogError($"Brave検出エラー（セキュリティ例外）: {ex.Message}", "WindowsRegistryService", ex);
-        }
-        catch (ArgumentException ex)
-        {
-            _logService?.LogError($"Brave検出エラー（引数例外）: {ex.Message}", "WindowsRegistryService", ex);
-        }
+            catch (UnauthorizedAccessException ex)
+            {
+                _logService?.LogError($"Brave検出エラー（アクセス権限なし）: {ex.Message}", "WindowsRegistryService", ex);
+            }
+            catch (System.Security.SecurityException ex)
+            {
+                _logService?.LogError($"Brave検出エラー（セキュリティ例外）: {ex.Message}", "WindowsRegistryService", ex);
+            }
+            catch (ArgumentException ex)
+            {
+                _logService?.LogError($"Brave検出エラー（引数例外）: {ex.Message}", "WindowsRegistryService", ex);
+            }
 
-        return browsers;
+            return browsers;
+        }
     }
 
     private IEnumerable<Browser> DetectVivaldi()
     {
-        List<Browser> browsers=[];
+        List<Browser> browsers = [];
 
         try
         {

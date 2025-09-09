@@ -2,7 +2,6 @@ using FlaUI.Core;
 using FlaUI.UIA3;
 using FluentAssertions;
 using Xunit;
-using Xunit.Sdk;
 
 namespace BrowserSelector.UITests;
 
@@ -15,6 +14,7 @@ public class BackgroundCustomizationUITests : IDisposable
     private UIA3Automation? _automation = null;
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="BackgroundCustomizationUITests"/> class.
     /// BackgroundCustomizationUITestsのインスタンスを初期化.
     /// </summary>
     public BackgroundCustomizationUITests()

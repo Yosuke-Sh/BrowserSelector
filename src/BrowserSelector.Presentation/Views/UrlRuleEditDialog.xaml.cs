@@ -14,6 +14,11 @@ public partial class UrlRuleEditDialog : Window
     private readonly IBrowserService _browserService;
     private readonly ILogService _logService;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UrlRuleEditDialog"/> class.
+    /// </summary>
+    /// <param name="browserService"></param>
+    /// <param name="logService"></param>
     public UrlRuleEditDialog(IBrowserService browserService, ILogService logService)
     {
         InitializeComponent();
@@ -31,6 +36,12 @@ public partial class UrlRuleEditDialog : Window
 
     public Browser? SelectedBrowser { get; set; }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UrlRuleEditDialog"/> class.
+    /// </summary>
+    /// <param name="urlRule"></param>
+    /// <param name="browserService"></param>
+    /// <param name="logService"></param>
     public UrlRuleEditDialog(UrlRule urlRule, IBrowserService browserService, ILogService logService)
         : this(browserService, logService)
     {

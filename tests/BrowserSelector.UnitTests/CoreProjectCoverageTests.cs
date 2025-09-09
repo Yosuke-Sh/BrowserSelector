@@ -16,6 +16,9 @@ public class CoreProjectCoverageTests
     private readonly Mock<IRegistryService> _mockRegistryService;
     private readonly Mock<ILogService> _mockLogService;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CoreProjectCoverageTests"/> class.
+    /// </summary>
     public CoreProjectCoverageTests()
     {
         _mockRegistryService = new Mock<IRegistryService>();
@@ -70,6 +73,10 @@ public class CoreProjectCoverageTests
         _ = customLanguageService.Should().NotBeNull();
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task InfrastructureServices_ShouldExecuteMethods()
     {
@@ -313,6 +320,10 @@ public class CoreProjectCoverageTests
         _ = visualSettings.BrowserIconSize.Should().Be(48.0);
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task InfrastructureServices_ShouldHandleEdgeCases()
     {

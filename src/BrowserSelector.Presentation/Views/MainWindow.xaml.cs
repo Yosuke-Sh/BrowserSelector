@@ -13,6 +13,11 @@ public partial class MainWindow : Window
 {
     private readonly ILogService _logService;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MainWindow"/> class.
+    /// </summary>
+    /// <param name="viewModel"></param>
+    /// <param name="logService"></param>
     public MainWindow(MainViewModel viewModel, ILogService logService)
     {
         _logService = logService;

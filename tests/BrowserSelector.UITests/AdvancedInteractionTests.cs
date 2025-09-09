@@ -4,7 +4,6 @@ using FlaUI.Core.Definitions;
 using FlaUI.UIA3;
 using FluentAssertions;
 using Xunit;
-using Xunit.Sdk;
 
 namespace BrowserSelector.UITests;
 
@@ -18,6 +17,9 @@ public class AdvancedInteractionTests : IDisposable
     private UIA3Automation? _automation = null;
     private Window? _mainWindow = null;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AdvancedInteractionTests"/> class.
+    /// </summary>
     public AdvancedInteractionTests()
     {
         try

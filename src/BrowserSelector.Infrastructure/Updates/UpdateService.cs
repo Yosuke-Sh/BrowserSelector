@@ -16,6 +16,7 @@ public class UpdateService : IUpdateService
     private readonly string _currentVersion;
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="UpdateService"/> class.
     /// アップデートサービスを初期化.
     /// </summary>
     public UpdateService(Uri updateCheckUrl, string currentVersion)
@@ -27,6 +28,7 @@ public class UpdateService : IUpdateService
     }
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="UpdateService"/> class.
     /// アップデートサービスを初期化.
     /// </summary>
     public UpdateService(string updateCheckUrl, string currentVersion)
@@ -279,16 +281,28 @@ public class UpdateService : IUpdateService
 /// </summary>
 public class UpdateException : Exception
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UpdateException"/> class.
+    /// </summary>
+    /// <param name="message"></param>
     public UpdateException(string message)
         : base(message)
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UpdateException"/> class.
+    /// </summary>
+    /// <param name="message"></param>
+    /// <param name="innerException"></param>
     public UpdateException(string message, Exception innerException)
         : base(message, innerException)
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UpdateException"/> class.
+    /// </summary>
     public UpdateException()
     {
     }

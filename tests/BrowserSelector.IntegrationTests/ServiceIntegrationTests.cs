@@ -14,6 +14,9 @@ public class ServiceIntegrationTests : IDisposable
     private readonly IServiceProvider _serviceProvider;
     private readonly string _tempDirectory;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ServiceIntegrationTests"/> class.
+    /// </summary>
     public ServiceIntegrationTests()
     {
         // テスト用の一時ディレクトリを作成
@@ -51,6 +54,10 @@ public class ServiceIntegrationTests : IDisposable
         }
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task BrowserService_ShouldDetectBrowsers()
     {
@@ -69,6 +76,10 @@ public class ServiceIntegrationTests : IDisposable
         }
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task SettingsService_ShouldSaveAndLoadSettings()
     {
@@ -95,6 +106,10 @@ public class ServiceIntegrationTests : IDisposable
         _ = loadedSettings.CheckForUpdates.Should().Be(testSettings.CheckForUpdates, "更新チェック設定が正しく保存・読み込みされること");
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task UrlService_ShouldProcessUrls()
     {
@@ -127,6 +142,10 @@ public class ServiceIntegrationTests : IDisposable
     }
 
     // 追加の統合テストケース - カバレッジ向上
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task SettingsService_ShouldHandleInvalidSettings()
     {
@@ -147,6 +166,10 @@ public class ServiceIntegrationTests : IDisposable
         loadedSettings.Should().BeOfType<AppSettings>("設定が正しい型であること");
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task UrlService_ShouldHandleInvalidUrls()
     {
@@ -165,6 +188,10 @@ public class ServiceIntegrationTests : IDisposable
         }
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task SettingsService_ShouldHandleVisualSettings()
     {
@@ -184,6 +211,10 @@ public class ServiceIntegrationTests : IDisposable
         loadedSettings.Should().BeOfType<VisualSettings>("視覚設定が正しい型であること");
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task SettingsService_ShouldHandleLogSettings()
     {
@@ -208,6 +239,10 @@ public class ServiceIntegrationTests : IDisposable
         loadedSettings.LogRetentionDays.Should().Be(30, "ログ保持日数が正しく保存されること");
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task UrlService_ShouldHandleVariousUrlFormats()
     {
@@ -231,6 +266,10 @@ public class ServiceIntegrationTests : IDisposable
         }
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task SettingsService_ShouldHandleConcurrentAccess()
     {
@@ -261,6 +300,10 @@ public class ServiceIntegrationTests : IDisposable
         tasks.Should().HaveCount(10, "すべてのタスクが完了すること");
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task SettingsService_ShouldHandleImportExport()
     {

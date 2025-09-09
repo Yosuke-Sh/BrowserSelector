@@ -14,6 +14,9 @@ public class InfrastructureServicesTests : IDisposable
     private readonly Mock<ILogService> _mockLogService;
     private readonly string _tempDirectory;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="InfrastructureServicesTests"/> class.
+    /// </summary>
     public InfrastructureServicesTests()
     {
         _mockRegistryService = new Mock<IRegistryService>();
@@ -61,6 +64,10 @@ public class InfrastructureServicesTests : IDisposable
         }
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     /// <summary>
     /// レジストリサービスが例外をスローした場合、ブラウザサービスは空のリストを返すことを確認するテスト.
@@ -81,6 +88,10 @@ public class InfrastructureServicesTests : IDisposable
         _ = browsers.Should().BeEmpty("例外発生時は空リストを返すこと");
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     /// <summary>
     /// 有効なブラウザを追加した場合、ブラウザサービスはtrueを返すことを確認するテスト.
@@ -103,6 +114,10 @@ public class InfrastructureServicesTests : IDisposable
         _ = result.Should().BeTrue("有効なブラウザの追加は成功すること");
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     /// <summary>
     /// 無効なブラウザを追加した場合、ブラウザサービスはfalseを返すことを確認するテスト.
@@ -125,6 +140,10 @@ public class InfrastructureServicesTests : IDisposable
         _ = result.Should().BeFalse("無効なブラウザの追加は失敗すること");
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     /// <summary>
     /// カスタムブラウザを削除した場合、ブラウザサービスはfalseを返すことを確認するテスト.
@@ -148,6 +167,10 @@ public class InfrastructureServicesTests : IDisposable
         _ = result.Should().BeFalse("存在しないブラウザの削除は失敗すること");
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     /// <summary>
     /// システムブラウザを削除した場合、ブラウザサービスはfalseを返すことを確認するテスト.
@@ -170,6 +193,10 @@ public class InfrastructureServicesTests : IDisposable
         _ = result.Should().BeFalse("システムブラウザの削除は失敗すること");
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     /// <summary>
     /// すべてのブラウザを取得した場合、ブラウザサービスは順序付けられたブラウザを返すことを確認するテスト.
@@ -187,6 +214,10 @@ public class InfrastructureServicesTests : IDisposable
         _ = browsers.Should().BeEmpty("初期状態では空リストであること");
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     /// <summary>
     /// アプリケーション設定の保存と読み込みが正しく動作することを確認するテスト.
@@ -216,6 +247,10 @@ public class InfrastructureServicesTests : IDisposable
         _ = loadedSettings.CheckForUpdates.Should().Be(testSettings.CheckForUpdates);
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact(Skip = "設定の永続化は実際のサービス実装に依存するためスキップ")]
     /// <summary>
     /// 視覚設定の保存と読み込みが正しく動作することを確認するテスト.
@@ -243,6 +278,10 @@ public class InfrastructureServicesTests : IDisposable
         _ = loadedSettings.ShowFocusIndicator.Should().BeTrue();
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     /// <summary>
     /// 設定のリセットがデフォルト値に復元することを確認するテスト.
@@ -269,6 +308,10 @@ public class InfrastructureServicesTests : IDisposable
         _ = visualSettings.IconScale.Should().Be(1.0);
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     /// <summary>
     /// 有効なURLを正規化した場合、URLサービスは正規化されたURLを返すことを確認するテスト.
@@ -287,6 +330,10 @@ public class InfrastructureServicesTests : IDisposable
         _ = normalizedUrl.Should().Be(testUrl, "有効なURLはそのまま返されること");
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     /// <summary>
     /// HTTPのURLを正規化した場合、URLサービスは同じURLを返すことを確認するテスト.
@@ -304,6 +351,10 @@ public class InfrastructureServicesTests : IDisposable
         _ = normalizedUrl.Should().Be(testUrl, "HTTP URLはそのまま返されること");
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     /// <summary>
     /// HTTPSのURLを正規化した場合、URLサービスは同じURLを返すことを確認するテスト.
@@ -321,6 +372,10 @@ public class InfrastructureServicesTests : IDisposable
         _ = normalizedUrl.Should().Be(testUrl, "HTTPS URLはそのまま返されること");
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     /// <summary>
     /// 空のURLを正規化した場合、URLサービスは空文字列を返すことを確認するテスト.
@@ -338,6 +393,10 @@ public class InfrastructureServicesTests : IDisposable
         _ = normalizedUrl.Should().BeEmpty("空URLは空文字列を返すこと");
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     /// <summary>
     /// 空白文字のURLを正規化した場合、URLサービスは空文字列を返すことを確認するテスト.
@@ -355,6 +414,10 @@ public class InfrastructureServicesTests : IDisposable
         _ = normalizedUrl.Should().BeEmpty("空白のみのURLは空文字列を返すこと");
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     /// <summary>
     /// 有効なHTTPのURLを検証した場合、URLサービスはtrueを返すことを確認するテスト.
@@ -372,6 +435,10 @@ public class InfrastructureServicesTests : IDisposable
         _ = isValid.Should().BeTrue("有効なHTTP URLはtrueを返すこと");
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     /// <summary>
     /// 有効なHTTPSのURLを検証した場合、URLサービスはtrueを返すことを確認するテスト.
@@ -389,6 +456,10 @@ public class InfrastructureServicesTests : IDisposable
         _ = isValid.Should().BeTrue("有効なHTTPS URLはtrueを返すこと");
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     /// <summary>
     /// 無効なURLを検証した場合、URLサービスはfalseを返すことを確認するテスト.
@@ -406,6 +477,10 @@ public class InfrastructureServicesTests : IDisposable
         _ = isValid.Should().BeFalse("無効なURLはfalseを返すこと");
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     /// <summary>
     /// 空のURLを検証した場合、URLサービスはfalseを返すことを確認するテスト.
@@ -542,6 +617,10 @@ public class InfrastructureServicesTests : IDisposable
         _ = urlWithProtocol.Should().BeEmpty("空URLは空文字列を返すこと");
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     /// <summary>
     /// すべてのURLルールを取得した場合、URLルールサービスはルールを返すことを確認するテスト.
@@ -560,6 +639,10 @@ public class InfrastructureServicesTests : IDisposable
         _ = urlRules.Should().NotBeNull("URLルールリストが取得できること");
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     /// <summary>
     /// 有効なURLルールを追加した場合、URLルールサービスはfalseを返すことを確認するテスト.
@@ -583,6 +666,10 @@ public class InfrastructureServicesTests : IDisposable
         _ = result.Should().BeTrue("URLルールの追加は成功すること");
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     /// <summary>
     /// 無効なURLルールを追加した場合、URLルールサービスはfalseを返すことを確認するテスト.
@@ -605,6 +692,10 @@ public class InfrastructureServicesTests : IDisposable
         _ = result.Should().BeFalse("無効なURLルールの追加は失敗すること");
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     /// <summary>
     /// 利用可能な言語を取得した場合、カスタム言語サービスは言語を返すことを確認するテスト.
@@ -623,6 +714,10 @@ public class InfrastructureServicesTests : IDisposable
         _ = availableLanguages.Should().NotBeEmpty("デフォルト言語が含まれること");
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     /// <summary>
     /// 有効なファイルでカスタム言語を追加した場合、カスタム言語サービスはfalseを返すことを確認するテスト.
@@ -641,6 +736,10 @@ public class InfrastructureServicesTests : IDisposable
         _ = result.Should().BeFalse("存在しないファイルの追加は失敗すること");
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     /// <summary>
     /// 無効なファイルでカスタム言語を追加した場合、カスタム言語サービスはfalseを返すことを確認するテスト.

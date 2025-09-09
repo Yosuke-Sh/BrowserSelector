@@ -5,6 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+    <NoWarn>SA1010</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

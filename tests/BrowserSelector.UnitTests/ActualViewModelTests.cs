@@ -19,6 +19,9 @@ namespace BrowserSelector.UnitTests
         private readonly IBrowserService _browserService;
         private readonly ISettingsService _settingsService;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ActualViewModelTests"/> class.
+        /// </summary>
         public ActualViewModelTests()
         {
             ServiceCollection services = new();
@@ -116,6 +119,10 @@ namespace BrowserSelector.UnitTests
             _ = logLevel.Should().NotBeNullOrEmpty();
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Fact]
         public async Task SettingsViewModel_SaveSettingsCommand_ShouldExecuteActualLogic()
         {
@@ -130,6 +137,10 @@ namespace BrowserSelector.UnitTests
             // 保存が成功したかどうかは実際のサービス実装に依存
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Fact]
         public async Task SettingsViewModel_ResetSettingsCommand_ShouldExecuteActualLogic()
         {

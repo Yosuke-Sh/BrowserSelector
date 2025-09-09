@@ -10,22 +10,22 @@ namespace BrowserSelector.Core.Models
     public class ProtocolRegistrationInfo
     {
         /// <summary>
-        /// プロトコル名.
+        /// Gets or sets プロトコル名.
         /// </summary>
         public string ProtocolName { get; set; } = string.Empty;
 
         /// <summary>
-        /// プロトコルの説明.
+        /// Gets or sets プロトコルの説明.
         /// </summary>
         public string Description { get; set; } = string.Empty;
 
         /// <summary>
-        /// 実行コマンド.
+        /// Gets or sets 実行コマンド.
         /// </summary>
         public string Command { get; set; } = string.Empty;
 
         /// <summary>
-        /// プロトコルが登録されているかどうか.
+        /// Gets or sets a value indicating whether プロトコルが登録されているかどうか.
         /// </summary>
         public bool IsRegistered { get; set; }
     }

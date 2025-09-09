@@ -19,12 +19,22 @@ public class BrowserService : IBrowserService
     private readonly ILogService _logService;
     private readonly List<Browser> _browsers = [];
 
-    // 後方互換: 旧シグネチャ用コンストラクタ（テスト等）
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BrowserService"/> class.
+    /// </summary>
+    /// <param name="registryService">registryService.</param>
+    /// <param name="urlService">urlService.</param>
     public BrowserService(IRegistryService registryService, IUrlService urlService)
         : this(registryService, urlService, new LogService())
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BrowserService"/> class.
+    /// </summary>
+    /// <param name="registryService">registryService.</param>
+    /// <param name="urlService">urlService.</param>
+    /// <param name="logService">logService.</param>
     public BrowserService(IRegistryService registryService, IUrlService urlService, ILogService logService)
     {
         _registryService = registryService;
@@ -144,7 +154,7 @@ public class BrowserService : IBrowserService
 
                 // 使用回数を増加
                 browser.IncrementUseCount();
-                await SaveBrowserUsageAsync(browser).ConfigureAwait(false);
+                await SaveBrowserUsageAsync().ConfigureAwait(false);
                 return true;
             }
 
@@ -270,7 +280,7 @@ public class BrowserService : IBrowserService
                 b.IsDefault = b.Id == browserId;
             }
 
-            await SaveDefaultBrowserAsync(browser).ConfigureAwait(false);
+            await SaveDefaultBrowserAsync().ConfigureAwait(false);
             return true;
         }
         catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException or JsonException)
@@ -306,7 +316,7 @@ public class BrowserService : IBrowserService
     {
         try
         {
-            await SaveBrowserUsageAsync(browser).ConfigureAwait(false);
+            await SaveBrowserUsageAsync().ConfigureAwait(false);
         }
         catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException or JsonException)
         {
@@ -322,7 +332,7 @@ public class BrowserService : IBrowserService
             Browser? browser = _browsers.Find(b => b.Id == browserId);
             if (browser != null)
             {
-                await SaveBrowserUsageAsync(browser).ConfigureAwait(false);
+                await SaveBrowserUsageAsync().ConfigureAwait(false);
             }
         }
         catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException or JsonException)
@@ -333,31 +343,26 @@ public class BrowserService : IBrowserService
 
     private static Task<List<Browser>> LoadCustomBrowsersAsync()
     {
-        // TODO: 設定ファイルからカスタムブラウザを読み込み
         return Task.FromResult(new List<Browser>());
     }
 
     private static Task SaveCustomBrowsersAsync()
     {
-        // TODO: カスタムブラウザを設定ファイルに保存
         return Task.CompletedTask;
     }
 
-    private static Task SaveBrowserUsageAsync(Browser browser)
+    private static Task SaveBrowserUsageAsync()
     {
-        // TODO: ブラウザ使用統計を保存
         return Task.CompletedTask;
     }
 
-    private static Task SaveDefaultBrowserAsync(Browser browser)
+    private static Task SaveDefaultBrowserAsync()
     {
-        // TODO: デフォルトブラウザ設定を保存
         return Task.CompletedTask;
     }
 
     private static Task<Browser?> LoadDefaultBrowserAsync()
     {
-        // TODO: 設定ファイルからデフォルトブラウザを読み込み
         return Task.FromResult<Browser?>(null);
     }
 

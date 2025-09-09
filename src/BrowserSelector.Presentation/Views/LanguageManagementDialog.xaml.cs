@@ -8,6 +8,10 @@ namespace BrowserSelector.Presentation.Views;
 /// </summary>
 public partial class LanguageManagementDialog : Window
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LanguageManagementDialog"/> class.
+    /// </summary>
+    /// <param name="viewModel"></param>
     public LanguageManagementDialog(LanguageManagementViewModel viewModel)
     {
         InitializeComponent();

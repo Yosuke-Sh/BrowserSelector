@@ -2,7 +2,6 @@ using FlaUI.Core;
 using FlaUI.UIA3;
 using FluentAssertions;
 using Xunit;
-using Xunit.Sdk;
 
 namespace BrowserSelector.UITests;
 
@@ -32,6 +31,9 @@ public class SettingsWindowIsolatedTests : IDisposable
         return null;
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SettingsWindowIsolatedTests"/> class.
+    /// </summary>
     public SettingsWindowIsolatedTests()
     {
         try

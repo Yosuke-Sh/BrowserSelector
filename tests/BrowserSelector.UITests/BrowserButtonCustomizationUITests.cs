@@ -2,7 +2,6 @@ using FlaUI.Core;
 using FlaUI.UIA3;
 using FluentAssertions;
 using Xunit;
-using Xunit.Sdk;
 
 namespace BrowserSelector.UITests;
 
@@ -15,6 +14,9 @@ public class BrowserButtonCustomizationUITests : IDisposable
     private Application? _app = null;
     private UIA3Automation? _automation = null;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BrowserButtonCustomizationUITests"/> class.
+    /// </summary>
     public BrowserButtonCustomizationUITests()
     {
         try

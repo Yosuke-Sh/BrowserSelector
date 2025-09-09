@@ -15,6 +15,10 @@ public class UrlRuleService : IUrlRuleService
     private readonly object _lockObject = new();
     private readonly ILogService? _logService;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UrlRuleService"/> class.
+    /// </summary>
+    /// <param name="logService"></param>
     public UrlRuleService(ILogService? logService = null)
     {
         _logService = logService;
