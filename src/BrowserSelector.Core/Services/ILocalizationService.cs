@@ -12,6 +12,21 @@ namespace BrowserSelector.Core.Services;
 public interface ILocalizationService
 {
     /// <summary>
+    /// Gets 現在の言語を取得.
+    /// </summary>
+    CultureInfo CurrentCulture { get; }
+
+    /// <summary>
+    /// Gets サポートされている言語の一覧を取得.
+    /// </summary>
+    IEnumerable<CultureInfo> SupportedLanguages { get; }
+
+    /// <summary>
+    /// 言語変更イベント
+    /// </summary>
+    event EventHandler<LanguageChangedEventArgs>? LanguageChanged;
+
+    /// <summary>
     /// 指定されたキーの文字列を取得.
     /// </summary>
     /// <returns></returns>
@@ -30,25 +45,10 @@ public interface ILocalizationService
     Task SetLanguage(CultureInfo culture);
 
     /// <summary>
-    /// Gets 現在の言語を取得.
-    /// </summary>
-    CultureInfo CurrentCulture { get; }
-
-    /// <summary>
-    /// Gets サポートされている言語の一覧を取得.
-    /// </summary>
-    IEnumerable<CultureInfo> SupportedLanguages { get; }
-
-    /// <summary>
     /// サポートされている言語の一覧を非同期で取得.
     /// </summary>
     /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
     Task<IEnumerable<CultureInfo>> GetSupportedLanguagesAsync();
-
-    /// <summary>
-    /// 言語変更イベント
-    /// </summary>
-    event EventHandler<LanguageChangedEventArgs>? LanguageChanged;
 }
 
 /// <summary>
@@ -56,13 +56,24 @@ public interface ILocalizationService
 /// </summary>
 public class LanguageChangedEventArgs : EventArgs
 {
-    public CultureInfo OldCulture { get; }
-
-    public CultureInfo NewCulture { get; }
-
+    /// <summary>
+    /// 言語変更イベントの引数を初期化.
+    /// </summary>
+    /// <param name="oldCulture">変更前のカルチャ.</param>
+    /// <param name="newCulture">変更後のカルチャ.</param>
     public LanguageChangedEventArgs(CultureInfo oldCulture, CultureInfo newCulture)
     {
         OldCulture = oldCulture;
         NewCulture = newCulture;
     }
+
+    /// <summary>
+    /// Gets 変更前のカルチャ.
+    /// </summary>
+    public CultureInfo OldCulture { get; }
+
+    /// <summary>
+    /// Gets 変更後のカルチャ.
+    /// </summary>
+    public CultureInfo NewCulture { get; }
 }

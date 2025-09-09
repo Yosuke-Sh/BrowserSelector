@@ -5,6 +5,67 @@
 namespace BrowserSelector.Core.Models
 {
     /// <summary>
+    /// システムトレイアクションタイプ.
+    /// </summary>
+    public enum SystemTrayActionType
+    {
+        /// <summary>
+        /// カスタムアクション.
+        /// </summary>
+        Custom,
+
+        /// <summary>
+        /// アプリケーションを終了.
+        /// </summary>
+        Exit,
+
+        /// <summary>
+        /// ウィンドウを非表示.
+        /// </summary>
+        Hide,
+
+        /// <summary>
+        /// アクションなし.
+        /// </summary>
+        None,
+
+        /// <summary>
+        /// 設定を開く.
+        /// </summary>
+        OpenSettings,
+
+        /// <summary>
+        /// ウィンドウを表示.
+        /// </summary>
+        Show,
+
+        /// <summary>
+        /// アプリケーションを終了.
+        /// </summary>
+        Quit,
+
+        /// <summary>
+        /// アプリケーションを再起動.
+        /// </summary>
+        Restart,
+
+        /// <summary>
+        /// アプリケーションを終了.
+        /// </summary>
+        Shutdown,
+
+        /// <summary>
+        /// アプリケーションを終了.
+        /// </summary>
+        Terminate,
+
+        /// <summary>
+        /// アプリケーションを終了.
+        /// </summary>
+        Unload
+    }
+
+    /// <summary>
     /// システムトレイメニューアイテム.
     /// </summary>
     public class SystemTrayMenuItems
@@ -49,42 +110,6 @@ namespace BrowserSelector.Core.Models
         /// サブメニューアイテム.
         /// </summary>
         public SystemTrayMenuItems? SubItems { get; set; }
-    }
-
-    /// <summary>
-    /// システムトレイアクションタイプ.
-    /// </summary>
-    public enum SystemTrayActionType
-    {
-        /// <summary>
-        /// カスタムアクション.
-        /// </summary>
-        Custom,
-
-        /// <summary>
-        /// アプリケーションを終了.
-        /// </summary>
-        Exit,
-
-        /// <summary>
-        /// ウィンドウを非表示.
-        /// </summary>
-        Hide,
-
-        /// <summary>
-        /// アクションなし.
-        /// </summary>
-        None,
-
-        /// <summary>
-        /// 設定を開く.
-        /// </summary>
-        Settings,
-
-        /// <summary>
-        /// ウィンドウを表示.
-        /// </summary>
-        Show
     }
 
     /// <summary>

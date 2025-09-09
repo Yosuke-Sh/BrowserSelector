@@ -58,6 +58,11 @@ namespace BrowserSelector.Core.Models
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
 
         /// <summary>
+        /// Gets ルールの表示名を取得.
+        /// </summary>
+        public string DisplayName => $"{Pattern} → {BrowserName} (優先度: {Priority})";
+
+        /// <summary>
         /// ルールが指定されたURLにマッチするかを判定.
         /// </summary>
         /// <param name="url">判定対象のURL.</param>
@@ -135,11 +140,6 @@ namespace BrowserSelector.Core.Models
 
             return true;
         }
-
-        /// <summary>
-        /// Gets ルールの表示名を取得.
-        /// </summary>
-        public string DisplayName => $"{Pattern} → {BrowserName} (優先度: {Priority})";
 
         /// <summary>
         /// ルールの詳細情報を取得.

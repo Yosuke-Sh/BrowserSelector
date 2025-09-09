@@ -10,16 +10,6 @@ namespace BrowserSelector.Core.Models
     public class LanguageInfo
     {
         /// <summary>
-        /// Gets or sets カルチャーコード（例: en-US, ja-JP）.
-        /// </summary>
-        public string CultureCode { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets 表示名（例: English, 日本語）.
-        /// </summary>
-        public string DisplayName { get; set; } = string.Empty;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="LanguageInfo"/> class.
         /// コンストラクタ.
         /// </summary>
@@ -38,6 +28,16 @@ namespace BrowserSelector.Core.Models
             CultureCode = cultureCode;
             DisplayName = displayName;
         }
+
+        /// <summary>
+        /// Gets or sets カルチャーコード（例: en-US, ja-JP）.
+        /// </summary>
+        public string CultureCode { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets 表示名（例: English, 日本語）.
+        /// </summary>
+        public string DisplayName { get; set; } = string.Empty;
 
         /// <summary>
         /// 文字列表現.

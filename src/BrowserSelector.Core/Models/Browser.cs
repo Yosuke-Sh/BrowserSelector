@@ -7,6 +7,52 @@ namespace BrowserSelector.Core.Models
     using CommunityToolkit.Mvvm.ComponentModel;
 
     /// <summary>
+    /// ブラウザの種類を表す列挙型.
+    /// </summary>
+    public enum BrowserType
+    {
+        /// <summary>
+        /// カスタムブラウザ
+        /// </summary>
+        Custom,
+
+        /// <summary>
+        /// Chrome
+        /// </summary>
+        Chrome,
+
+        /// <summary>
+        /// Firefox
+        /// </summary>
+        Firefox,
+
+        /// <summary>
+        /// Edge
+        /// </summary>
+        Edge,
+
+        /// <summary>
+        /// Safari
+        /// </summary>
+        Safari,
+
+        /// <summary>
+        /// Opera
+        /// </summary>
+        Opera,
+
+        /// <summary>
+        /// Brave
+        /// </summary>
+        Brave,
+
+        /// <summary>
+        /// Vivaldi
+        /// </summary>
+        Vivaldi
+    }
+
+    /// <summary>
     /// ブラウザ情報を表すモデル.
     /// </summary>
     public partial class Browser : ObservableObject
@@ -86,56 +132,5 @@ namespace BrowserSelector.Core.Models
                 Type = Type
             };
         }
-    }
-
-    /// <summary>
-    /// ブラウザの種類を表す列挙型.
-    /// </summary>
-    public enum BrowserType
-    {
-        /// <summary>
-        /// カスタムブラウザ
-        /// </summary>
-        Custom,
-
-        /// <summary>
-        /// Chrome
-        /// </summary>
-        Chrome,
-
-        /// <summary>
-        /// Firefox
-        /// </summary>
-        Firefox,
-
-        /// <summary>
-        /// Edge
-        /// </summary>
-        Edge,
-
-        /// <summary>
-        /// Safari
-        /// </summary>
-        Safari,
-
-        /// <summary>
-        /// Opera
-        /// </summary>
-        Opera,
-
-        /// <summary>
-        /// Internet Explorer
-        /// </summary>
-        InternetExplorer,
-
-        /// <summary>
-        /// Brave
-        /// </summary>
-        Brave,
-
-        /// <summary>
-        /// Vivaldi
-        /// </summary>
-        Vivaldi
     }
 }
