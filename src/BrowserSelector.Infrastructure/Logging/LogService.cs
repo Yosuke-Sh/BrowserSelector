@@ -13,6 +13,7 @@ namespace BrowserSelector.Infrastructure.Logging;
 /// </summary>
 public class LogService : ILogService
 {
+
     private readonly object _lockObject = new();
     private readonly string _defaultLogFolder;
     private LogSettings _settings;

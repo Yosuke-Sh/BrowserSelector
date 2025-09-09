@@ -19,8 +19,8 @@ public partial class IconSelectionDialog : Window
 
     public int SelectedIconIndex { get; private set; } = -1;
 
-    private string? _currentSelectedPath;
     private readonly ILogService? _logService;
+    private string? _currentSelectedPath;
 
     public IconSelectionDialog(ILogService? logService = null)
     {

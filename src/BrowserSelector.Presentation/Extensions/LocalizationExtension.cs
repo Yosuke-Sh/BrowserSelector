@@ -10,11 +10,6 @@ public class LocalizationExtension : MarkupExtension
 {
     private static ILocalizationService? _localizationService;
 
-    /// <summary>
-    /// Gets or sets リソースキー.
-    /// </summary>
-    public string Key { get; set; } = string.Empty;
-
     public LocalizationExtension()
     {
     }
@@ -23,6 +18,11 @@ public class LocalizationExtension : MarkupExtension
     {
         Key = key;
     }
+
+    /// <summary>
+    /// Gets or sets リソースキー.
+    /// </summary>
+    public string Key { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets パラメータ（文字列フォーマット用）.

@@ -11,6 +11,23 @@ namespace BrowserSelector.Infrastructure.SystemIntegration;
 /// </summary>
 public class SystemTrayService : ISystemTrayService, IDisposable
 {
+    private static Icon LoadIcon(string iconPath)
+    {
+        try
+        {
+            if (System.IO.File.Exists(iconPath))
+            {
+                return new Icon(iconPath);
+            }
+        }
+        catch (Exception)
+        {
+            // アイコン読み込みエラーは無視
+        }
+
+        return SystemIcons.Application;
+    }
+
     private NotifyIcon? _notifyIcon;
     private ContextMenuStrip? _contextMenu;
     private bool _disposed;
@@ -149,37 +166,19 @@ public class SystemTrayService : ISystemTrayService, IDisposable
         }
     }
 
-    private static Icon LoadIcon(string iconPath)
+    /// <inheritdoc/>
+    public void Dispose()
     {
-        try
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed && disposing)
         {
-            if (System.IO.File.Exists(iconPath))
-            {
-                return new Icon(iconPath);
-            }
-            else
-            {
-                // デフォルトアイコンを使用
-                return SystemIcons.Application;
-            }
-        }
-        catch (ArgumentException ex)
-        {
-            // エラー時はデフォルトアイコンを使用
-            System.Diagnostics.Debug.WriteLine($"Icon loading failed (ArgumentException): {ex.Message}");
-            return SystemIcons.Application;
-        }
-        catch (FileNotFoundException ex)
-        {
-            // エラー時はデフォルトアイコンを使用
-            System.Diagnostics.Debug.WriteLine($"Icon loading failed (FileNotFoundException): {ex.Message}");
-            return SystemIcons.Application;
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-            // エラー時はデフォルトアイコンを使用
-            System.Diagnostics.Debug.WriteLine($"Icon loading failed (UnauthorizedAccessException): {ex.Message}");
-            return SystemIcons.Application;
+            DisposeNotifyIcon();
+            _disposed = true;
         }
     }
 
@@ -214,22 +213,6 @@ public class SystemTrayService : ISystemTrayService, IDisposable
         {
             _contextMenu.Dispose();
             _contextMenu = null;
-        }
-    }
-
-    /// <inheritdoc/>
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!_disposed && disposing)
-        {
-            DisposeNotifyIcon();
-            _disposed = true;
         }
     }
 }

@@ -182,7 +182,7 @@ public class CoreProjectCoverageTests
         _ = urlRule.Id.Should().NotBe(Guid.Empty);
 
         // メソッドの実行
-        bool isMatch = urlRule.IsMatch("https://www.example.com");
+        bool isMatch = urlRule.IsMatch(new Uri("https://www.example.com"));
         _ = isMatch.Should().BeTrue();
 
         string displayName = urlRule.DisplayName;

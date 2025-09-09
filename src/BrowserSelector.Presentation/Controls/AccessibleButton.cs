@@ -109,33 +109,6 @@ public class AccessibleButton : Button
         _ = Focus();
     }
 
-    private void OnKeyDown(object sender, KeyEventArgs e)
-    {
-        // EnterキーまたはSpaceキーでクリック
-        if (e.Key is Key.Enter or Key.Space)
-        {
-            e.Handled = true;
-            OnClick();
-        }
-    }
-
-    private void OnGotFocus(object sender, RoutedEventArgs e)
-    {
-        if (ShowFocusIndicator)
-        {
-            // フォーカスインジケーターを表示
-            UpdateFocusIndicator(true);
-        }
-    }
-
-    private void OnLostFocus(object sender, RoutedEventArgs e)
-    {
-        if (ShowFocusIndicator)
-        {
-            // フォーカスインジケーターを非表示
-            UpdateFocusIndicator(false);
-        }
-    }
 
     private void UpdateFocusIndicator(bool show)
     {
@@ -174,6 +147,31 @@ public class AccessibleButton : Button
         }
     }
 
+    /// <summary>
+    /// アクセシビリティ情報を設定.
+    /// </summary>
+    public void SetAccessibilityInfo(string name, string helpText, string description = "")
+    {
+        SetValue(AutomationProperties.NameProperty, name);
+        SetValue(AutomationProperties.HelpTextProperty, helpText);
+
+        if (!string.IsNullOrEmpty(description))
+        {
+            SetValue(AutomationProperties.ItemStatusProperty, description);
+        }
+    }
+
+    /// <summary>
+    /// キーボードショートカットを設定.
+    /// </summary>
+    public void SetKeyboardShortcut(string shortcut)
+    {
+        if (!string.IsNullOrEmpty(shortcut))
+        {
+            SetValue(AutomationProperties.AcceleratorKeyProperty, shortcut);
+        }
+    }
+
     private static void OnHighContrastModeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         if (d is AccessibleButton button)
@@ -208,31 +206,6 @@ public class AccessibleButton : Button
             {
                 UpdateFocusIndicator(false);
             }
-        }
-    }
-
-    /// <summary>
-    /// アクセシビリティ情報を設定.
-    /// </summary>
-    public void SetAccessibilityInfo(string name, string helpText, string description = "")
-    {
-        SetValue(AutomationProperties.NameProperty, name);
-        SetValue(AutomationProperties.HelpTextProperty, helpText);
-
-        if (!string.IsNullOrEmpty(description))
-        {
-            SetValue(AutomationProperties.ItemStatusProperty, description);
-        }
-    }
-
-    /// <summary>
-    /// キーボードショートカットを設定.
-    /// </summary>
-    public void SetKeyboardShortcut(string shortcut)
-    {
-        if (!string.IsNullOrEmpty(shortcut))
-        {
-            SetValue(AutomationProperties.AcceleratorKeyProperty, shortcut);
         }
     }
 }

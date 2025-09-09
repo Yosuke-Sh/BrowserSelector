@@ -57,18 +57,19 @@ namespace BrowserSelector.Core.Models
         /// </summary>
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
 
-        /// <summary>
-        /// Gets ルールの表示名を取得.
-        /// </summary>
-        public string DisplayName => $"{Pattern} → {BrowserName} (優先度: {Priority})";
+    /// <summary>
+    /// Gets ルールの表示名を取得.
+    /// </summary>
+    public string DisplayName => $"{Pattern} → {BrowserName} (優先度: {Priority})";
 
-        /// <summary>
-        /// ワイルドカードパターンのマッチング.
-        /// </summary>
-        /// <param name="pattern">ワイルドカードを含むパターン.</param>
-        /// <param name="url">判定対象のURL.</param>
-        /// <returns>マッチする場合true.</returns>
-        private static bool IsWildcardMatch(string pattern, string url)
+
+    /// <summary>
+    /// ワイルドカードパターンのマッチング.
+    /// </summary>
+    /// <param name="pattern">ワイルドカードを含むパターン.</param>
+    /// <param name="url">判定対象のURL.</param>
+    /// <returns>マッチする場合true.</returns>
+    private static bool IsWildcardMatch(string pattern, string url)
         {
             // パターンをワイルドカードで分割
             string[] parts = pattern.Split('*', StringSplitOptions.RemoveEmptyEntries);
@@ -115,31 +116,42 @@ namespace BrowserSelector.Core.Models
             return true;
         }
 
-        /// <summary>
-        /// ルールが指定されたURLにマッチするかを判定.
-        /// </summary>
-        /// <param name="url">判定対象のURL.</param>
-        /// <returns>マッチする場合true.</returns>
-        public bool IsMatch(string url)
+
+    /// <summary>
+    /// ルールが指定されたURLにマッチするかを判定.
+    /// </summary>
+    /// <param name="url">判定対象のURL.</param>
+    /// <returns>マッチする場合true.</returns>
+    public bool IsMatch(string url)
+    {
+        if (string.IsNullOrWhiteSpace(url) || string.IsNullOrWhiteSpace(Pattern))
         {
-            if (string.IsNullOrWhiteSpace(url) || string.IsNullOrWhiteSpace(Pattern))
-            {
-                return false;
-            }
-
-            // パターンを大文字に変換
-            string pattern = Pattern.ToUpperInvariant();
-            string targetUrl = url.ToUpperInvariant();
-
-            // ワイルドカードパターンの処理
-            if (pattern.Contains('*', StringComparison.Ordinal))
-            {
-                return IsWildcardMatch(pattern, targetUrl);
-            }
-
-            // 完全一致
-            return targetUrl == pattern;
+            return false;
         }
+
+        // パターンを大文字に変換
+        string pattern = Pattern.ToUpperInvariant();
+        string targetUrl = url.ToUpperInvariant();
+
+        // ワイルドカードパターンの処理
+        if (pattern.Contains('*', StringComparison.Ordinal))
+        {
+            return IsWildcardMatch(pattern, targetUrl);
+        }
+
+        // 完全一致
+        return targetUrl == pattern;
+    }
+
+    /// <summary>
+    /// URLがパターンにマッチするかどうかを判定（Uri版）.
+    /// </summary>
+    /// <param name="url">判定対象のURL.</param>
+    /// <returns>マッチする場合true.</returns>
+    public bool IsMatch(Uri url)
+    {
+        return IsMatch(url?.ToString() ?? string.Empty);
+    }
 
         /// <summary>
         /// ルールの詳細情報を取得.
@@ -150,16 +162,6 @@ namespace BrowserSelector.Core.Models
             string status = IsEnabled ? "有効" : "無効";
             string desc = string.IsNullOrWhiteSpace(Description) ? "説明なし" : Description;
             return $"パターン: {Pattern}\nブラウザ: {BrowserName}\n優先度: {Priority}\n状態: {status}\n説明: {desc}";
-        }
-
-        /// <summary>
-        /// URLがパターンにマッチするかどうかを判定（Uri版）.
-        /// </summary>
-        /// <param name="url">判定対象のURL.</param>
-        /// <returns>マッチする場合true.</returns>
-        public bool IsMatch(Uri url)
-        {
-            return IsMatch(url?.ToString() ?? string.Empty);
         }
     }
 }

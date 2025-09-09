@@ -329,8 +329,8 @@ public class CoreModelsTests
         };
 
         // Act & Assert
-        _ = urlRule.IsMatch("https://www.example.com").Should().BeTrue("マッチするURLはtrueを返すこと");
-        _ = urlRule.IsMatch("https://sub.example.com").Should().BeTrue("サブドメインもマッチすること");
+        _ = urlRule.IsMatch(new Uri("https://www.example.com")).Should().BeTrue("マッチするURLはtrueを返すこと");
+        _ = urlRule.IsMatch(new Uri("https://sub.example.com")).Should().BeTrue("サブドメインもマッチすること");
     }
 
     [Fact]
@@ -344,8 +344,8 @@ public class CoreModelsTests
         };
 
         // Act & Assert
-        _ = urlRule.IsMatch("https://www.different.com").Should().BeFalse("マッチしないURLはfalseを返すこと");
-        _ = urlRule.IsMatch("").Should().BeFalse("空URLはfalseを返すこと");
+        _ = urlRule.IsMatch(new Uri("https://www.different.com")).Should().BeFalse("マッチしないURLはfalseを返すこと");
+        _ = urlRule.IsMatch(new Uri("https://www.other.com")).Should().BeFalse("マッチしないURLはfalseを返すこと");
     }
 
     [Fact]

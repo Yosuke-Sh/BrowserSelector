@@ -338,7 +338,7 @@ public class FileSystemSecurityTests
         try
         {
             // パスの正規化チェック
-            var normalizedPath = Path.GetFullPath(path);
+            _ = Path.GetFullPath(path);
             return true;
         }
         catch (Exception)

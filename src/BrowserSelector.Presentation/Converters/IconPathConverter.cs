@@ -15,6 +15,7 @@ public class IconPathConverter : IMultiValueConverter
     [DllImport("shell32.dll", CharSet = CharSet.Auto)]
     private static extern int ExtractIconEx(string szFileName, int nIconIndex, out IntPtr phiconLarge, out IntPtr phiconSmall, int nIcons);
     #endregion
+
     /// <inheritdoc/>
     public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
     {
@@ -148,9 +149,8 @@ public class IconPathConverter : IMultiValueConverter
     /// アイコンを高品質なBitmapImageに変換.
     /// </summary>
     /// <param name="icon">変換するアイコン.</param>
-    /// <param name="unusedSize">未使用パラメータ.</param>
     /// <returns>高品質なBitmapImage.</returns>
-    private BitmapImage ConvertIconToHighQualityBitmapImage(System.Drawing.Icon icon, System.Drawing.Size unusedSize)
+    private BitmapImage ConvertIconToHighQualityBitmapImage(System.Drawing.Icon icon, System.Drawing.Size size)
     {
         try
         {
@@ -177,7 +177,7 @@ public class IconPathConverter : IMultiValueConverter
     /// <summary>
     /// デフォルトアイコンを取得.
     /// </summary>
-    private object GetDefaultIcon(string? unusedBrowserName)
+    private object GetDefaultIcon(string? browserName)
     {
         // デフォルトのブラウザアイコンを返す
         return "/BrowserSelector.Presentation;component/Resources/Images/Icon_Browser.png";

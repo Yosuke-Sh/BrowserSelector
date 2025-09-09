@@ -286,7 +286,19 @@ public class TestUrlRuleService : IUrlRuleService
 
                 foreach (UrlRule? rule in enabledRules)
                 {
-                    if (Uri.TryCreate(url, UriKind.Absolute, out var uri) ? rule.IsMatch(uri) : rule.IsMatch(url))
+                    // Uri作成可能な場合はUri引数を使用、できない場合は無効なURLとして扱う
+                    bool isMatch = false;
+                    if (Uri.TryCreate(url, UriKind.Absolute, out var uri))
+                    {
+                        isMatch = rule.IsMatch(uri);
+                    }
+                    else
+                    {
+                        // 無効なURLの場合はマッチしない
+                        isMatch = false;
+                    }
+                    
+                    if (isMatch)
                     {
                         Browser? browser = browsers.FirstOrDefault(b => b.Name == rule.BrowserName);
                         if (browser != null)

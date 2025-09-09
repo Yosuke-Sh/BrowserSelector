@@ -125,10 +125,10 @@ public class SimpleCoverageTests
         };
 
         // Act & Assert
-        _ = urlRule.IsMatch("https://www.example.com").Should().BeTrue();
-        _ = urlRule.IsMatch("https://sub.example.com").Should().BeTrue();
-        _ = urlRule.IsMatch("https://www.different.com").Should().BeFalse();
-        _ = urlRule.IsMatch("").Should().BeFalse();
+        _ = urlRule.IsMatch(new Uri("https://www.example.com")).Should().BeTrue();
+        _ = urlRule.IsMatch(new Uri("https://sub.example.com")).Should().BeTrue();
+        _ = urlRule.IsMatch(new Uri("https://www.different.com")).Should().BeFalse();
+        _ = urlRule.IsMatch(new Uri("https://www.other.com")).Should().BeFalse();
     }
 
     [Fact]

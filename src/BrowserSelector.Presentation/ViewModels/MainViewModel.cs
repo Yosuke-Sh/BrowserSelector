@@ -19,7 +19,7 @@ public partial class MainViewModel : ObservableObject
     private readonly ILocalizationService _localizationService;
     private readonly ICustomLanguageService _customLanguageService;
     private readonly IUrlRuleService _urlRuleService;
-    private readonly ILogService _logService = null!;
+    private readonly ILogService _logService;
 
 
     [ObservableProperty]

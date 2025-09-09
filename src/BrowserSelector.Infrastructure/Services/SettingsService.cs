@@ -11,6 +11,18 @@ namespace BrowserSelector.Infrastructure.Services;
 /// </summary>
 public class SettingsService : ISettingsService
 {
+    /// <summary>
+    /// JSONシリアライザーオプションを取得.
+    /// </summary>
+    private static JsonSerializerOptions GetJsonSerializerOptions()
+    {
+        return new JsonSerializerOptions
+        {
+            WriteIndented = true,
+            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        };
+    }
+
     private readonly string _settingsDirectory;
     private readonly string _appSettingsPath;
     private readonly string _visualSettingsPath;
@@ -401,17 +413,6 @@ public class SettingsService : ISettingsService
         await exportInfoWriter.WriteAsync(exportInfoJson).ConfigureAwait(false);
     }
 
-    /// <summary>
-    /// JSONシリアライザーオプションを取得.
-    /// </summary>
-    private static JsonSerializerOptions GetJsonSerializerOptions()
-    {
-        return new JsonSerializerOptions
-        {
-            WriteIndented = true,
-            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-        };
-    }
 
     /// <summary>
     /// ファイルをZIPアーカイブに追加.

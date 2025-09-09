@@ -182,7 +182,7 @@ public class CustomLanguageService : ICustomLanguageService
             // カルチャーコードの形式検証
             try
             {
-                CultureInfo culture = new(languageFile.CultureCode);
+                _ = new CultureInfo(languageFile.CultureCode);
             }
             catch (Exception ex) when (ex is ArgumentException or CultureNotFoundException)
             {
@@ -467,10 +467,6 @@ public class CustomLanguageService : ICustomLanguageService
             // 現在はサイズ比較のみで高速化
 
             // オプション: ハッシュ値による詳細チェック（必要に応じて有効化）
-            // if (await ShouldCheckHashAsync())
-            // {
-            //     return await CompareFileHashesAsync(assembly, cultureCode, targetPath);
-            // }
             return Task.FromResult(false);
         }
         catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException or UnauthorizedAccessException or IOException)
@@ -521,15 +517,6 @@ public class CustomLanguageService : ICustomLanguageService
             "ja-JP" => "日本語",
             _ => originalDisplayName // その他の言語は元の表示名を使用
         };
-    }
-
-    /// <summary>
-    /// ストリームのハッシュ値を計算.
-    /// </summary>
-    private static async Task<byte[]> ComputeStreamHashAsync(System.IO.Stream stream)
-    {
-        using System.Security.Cryptography.SHA256 sha256 = System.Security.Cryptography.SHA256.Create();
-        return await Task.Run(() => sha256.ComputeHash(stream)).ConfigureAwait(false);
     }
 
     /// <summary>

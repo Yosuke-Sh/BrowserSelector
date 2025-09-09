@@ -99,32 +99,6 @@ public class IconResourceService
     }
 
     /// <summary>
-    /// デフォルトアイコンを作成（透明な32x32のPNG）.
-    /// </summary>
-    /// <param name="width">幅.</param>
-    /// <param name="height">高さ.</param>
-    /// <returns>作成されたBitmapSource.</returns>
-    private BitmapSource CreateDefaultIcon(int width, int height)
-    {
-        // 透明な32x32のビットマップを作成
-        System.Windows.Media.PixelFormat pixelFormat = System.Windows.Media.PixelFormats.Bgra32;
-        int bytesPerPixel = pixelFormat.BitsPerPixel / 8;
-        int stride = width * bytesPerPixel;
-        byte[] pixels = new byte[height * stride];
-
-        // 透明なピクセルで初期化
-        for (int i = 0; i < pixels.Length; i += bytesPerPixel)
-        {
-            pixels[i] = 0;     // Blue
-            pixels[i + 1] = 0; // Green
-            pixels[i + 2] = 0; // Red
-            pixels[i + 3] = 0; // Alpha (透明)
-        }
-
-        return BitmapSource.Create(width, height, 96, 96, pixelFormat, null, pixels, stride);
-    }
-
-    /// <summary>
     /// 不足しているアイコンの一覧を取得.
     /// </summary>
     /// <returns>不足しているアイコン名の配列.</returns>
@@ -150,5 +124,31 @@ public class IconResourceService
         }
 
         return missingIcons.ToArray();
+    }
+
+    /// <summary>
+    /// デフォルトアイコンを作成（透明な32x32のPNG）.
+    /// </summary>
+    /// <param name="width">幅.</param>
+    /// <param name="height">高さ.</param>
+    /// <returns>作成されたBitmapSource.</returns>
+    private BitmapSource CreateDefaultIcon(int width, int height)
+    {
+        // 透明な32x32のビットマップを作成
+        System.Windows.Media.PixelFormat pixelFormat = System.Windows.Media.PixelFormats.Bgra32;
+        int bytesPerPixel = pixelFormat.BitsPerPixel / 8;
+        int stride = width * bytesPerPixel;
+        byte[] pixels = new byte[height * stride];
+
+        // 透明なピクセルで初期化
+        for (int i = 0; i < pixels.Length; i += bytesPerPixel)
+        {
+            pixels[i] = 0;     // Blue
+            pixels[i + 1] = 0; // Green
+            pixels[i + 2] = 0; // Red
+            pixels[i + 3] = 0; // Alpha (透明)
+        }
+
+        return BitmapSource.Create(width, height, 96, 96, pixelFormat, null, pixels, stride);
     }
 }
