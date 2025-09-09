@@ -84,9 +84,19 @@ public class ProtocolHandler : IProtocolHandler
             using RegistryKey? key = Registry.CurrentUser.OpenSubKey(RegistryKeyPath);
             return key != null;
         }
-        catch (Exception ex)
+        catch (UnauthorizedAccessException ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Protocol registration check failed: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Protocol registration check failed (UnauthorizedAccessException): {ex.Message}");
+            return false;
+        }
+        catch (System.Security.SecurityException ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Protocol registration check failed (SecurityException): {ex.Message}");
+            return false;
+        }
+        catch (ArgumentException ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Protocol registration check failed (ArgumentException): {ex.Message}");
             return false;
         }
     }
@@ -148,9 +158,19 @@ public class ProtocolHandler : IProtocolHandler
                 IsRegistered = true
             };
         }
-        catch (Exception ex)
+        catch (UnauthorizedAccessException ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Protocol registration info retrieval failed: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Protocol registration info retrieval failed (UnauthorizedAccessException): {ex.Message}");
+            return null;
+        }
+        catch (System.Security.SecurityException ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Protocol registration info retrieval failed (SecurityException): {ex.Message}");
+            return null;
+        }
+        catch (ArgumentException ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Protocol registration info retrieval failed (ArgumentException): {ex.Message}");
             return null;
         }
     }

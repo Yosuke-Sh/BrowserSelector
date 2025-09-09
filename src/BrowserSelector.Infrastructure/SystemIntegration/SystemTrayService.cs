@@ -1,6 +1,7 @@
 using BrowserSelector.Core.Models;
 using BrowserSelector.Core.Services;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 
 namespace BrowserSelector.Infrastructure.SystemIntegration;
@@ -162,10 +163,22 @@ public class SystemTrayService : ISystemTrayService, IDisposable
                 return SystemIcons.Application;
             }
         }
-        catch (Exception ex)
+        catch (ArgumentException ex)
         {
             // エラー時はデフォルトアイコンを使用
-            System.Diagnostics.Debug.WriteLine($"Icon loading failed: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Icon loading failed (ArgumentException): {ex.Message}");
+            return SystemIcons.Application;
+        }
+        catch (FileNotFoundException ex)
+        {
+            // エラー時はデフォルトアイコンを使用
+            System.Diagnostics.Debug.WriteLine($"Icon loading failed (FileNotFoundException): {ex.Message}");
+            return SystemIcons.Application;
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            // エラー時はデフォルトアイコンを使用
+            System.Diagnostics.Debug.WriteLine($"Icon loading failed (UnauthorizedAccessException): {ex.Message}");
             return SystemIcons.Application;
         }
     }

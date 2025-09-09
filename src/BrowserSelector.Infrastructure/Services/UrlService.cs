@@ -41,9 +41,14 @@ public class UrlService : IUrlService
             _logService?.LogTrace($"URL正規化処理完了: '{originalUrl}' -> '{url}' (プロトコル追加: {originalUrl != url})", "UrlService");
             return Task.FromResult(url);
         }
-        catch (Exception ex)
+        catch (ArgumentException ex)
         {
-            _logService?.LogError($"URL正規化エラー: {ex.Message}", "UrlService", ex);
+            _logService?.LogError($"URL正規化エラー（引数例外）: {ex.Message}", "UrlService", ex);
+            return Task.FromResult(string.Empty);
+        }
+        catch (UriFormatException ex)
+        {
+            _logService?.LogError($"URL正規化エラー（URI形式例外）: {ex.Message}", "UrlService", ex);
             return Task.FromResult(string.Empty);
         }
     }
@@ -82,7 +87,7 @@ public class UrlService : IUrlService
 
             return Task.FromResult(isValid);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is UriFormatException or ArgumentException)
         {
             _logService?.LogError($"URL検証エラー: {ex.Message}", "UrlService", ex);
             return Task.FromResult(false);
@@ -104,7 +109,7 @@ public class UrlService : IUrlService
 
             return Uri.TryCreate(url, UriKind.Absolute, out Uri? uri) ? uri.Host : string.Empty;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is UriFormatException or ArgumentException)
         {
             _logService?.LogError($"ドメイン抽出エラー: {ex.Message}", "UrlService", ex);
             return string.Empty;

@@ -42,9 +42,17 @@ public class WindowsRegistryService : IRegistryService
             // Vivaldi検出
             browsers.AddRange(DetectVivaldi());
         }
-        catch (Exception ex)
+        catch (UnauthorizedAccessException ex)
         {
-            _logService?.LogError($"ブラウザ検出エラー: {ex.Message}", "WindowsRegistryService", ex);
+            _logService?.LogError($"ブラウザ検出エラー（アクセス権限なし）: {ex.Message}", "WindowsRegistryService", ex);
+        }
+        catch (System.Security.SecurityException ex)
+        {
+            _logService?.LogError($"ブラウザ検出エラー（セキュリティ例外）: {ex.Message}", "WindowsRegistryService", ex);
+        }
+        catch (ArgumentException ex)
+        {
+            _logService?.LogError($"ブラウザ検出エラー（引数例外）: {ex.Message}", "WindowsRegistryService", ex);
         }
 
         // 重複を除去（同じパスのブラウザは最初に見つかったもののみ保持）
@@ -117,9 +125,17 @@ public class WindowsRegistryService : IRegistryService
                 _logService?.LogDebug($"Chrome 32bit が見つかりません - パス: {chromePath32}, 存在: {File.Exists(chromePath32)}", "WindowsRegistryService");
             }
         }
-        catch (Exception ex)
+        catch (UnauthorizedAccessException ex)
         {
-            _logService?.LogError($"Chrome検出エラー: {ex.Message}", "WindowsRegistryService", ex);
+            _logService?.LogError($"Chrome検出エラー（アクセス権限なし）: {ex.Message}", "WindowsRegistryService", ex);
+        }
+        catch (System.Security.SecurityException ex)
+        {
+            _logService?.LogError($"Chrome検出エラー（セキュリティ例外）: {ex.Message}", "WindowsRegistryService", ex);
+        }
+        catch (ArgumentException ex)
+        {
+            _logService?.LogError($"Chrome検出エラー（引数例外）: {ex.Message}", "WindowsRegistryService", ex);
         }
 
         return browsers;
@@ -157,9 +173,17 @@ public class WindowsRegistryService : IRegistryService
                 });
             }
         }
-        catch (Exception ex)
+        catch (UnauthorizedAccessException ex)
         {
-            _logService?.LogError($"Firefox検出エラー: {ex.Message}", "WindowsRegistryService", ex);
+            _logService?.LogError($"Firefox検出エラー（アクセス権限なし）: {ex.Message}", "WindowsRegistryService", ex);
+        }
+        catch (System.Security.SecurityException ex)
+        {
+            _logService?.LogError($"Firefox検出エラー（セキュリティ例外）: {ex.Message}", "WindowsRegistryService", ex);
+        }
+        catch (ArgumentException ex)
+        {
+            _logService?.LogError($"Firefox検出エラー（引数例外）: {ex.Message}", "WindowsRegistryService", ex);
         }
 
         return browsers;
@@ -192,9 +216,17 @@ public class WindowsRegistryService : IRegistryService
                 _logService?.LogDebug($"Edge が見つかりません - パス: {edgePath}, 存在: {File.Exists(edgePath)}", "WindowsRegistryService");
             }
         }
-        catch (Exception ex)
+        catch (UnauthorizedAccessException ex)
         {
-            _logService?.LogError($"Edge検出エラー: {ex.Message}", "WindowsRegistryService", ex);
+            _logService?.LogError($"Edge検出エラー（アクセス権限なし）: {ex.Message}", "WindowsRegistryService", ex);
+        }
+        catch (System.Security.SecurityException ex)
+        {
+            _logService?.LogError($"Edge検出エラー（セキュリティ例外）: {ex.Message}", "WindowsRegistryService", ex);
+        }
+        catch (ArgumentException ex)
+        {
+            _logService?.LogError($"Edge検出エラー（引数例外）: {ex.Message}", "WindowsRegistryService", ex);
         }
 
         return browsers;
@@ -219,9 +251,17 @@ public class WindowsRegistryService : IRegistryService
                 });
             }
         }
-        catch (Exception ex)
+        catch (UnauthorizedAccessException ex)
         {
-            _logService?.LogError($"Opera検出エラー: {ex.Message}", "WindowsRegistryService", ex);
+            _logService?.LogError($"Opera検出エラー（アクセス権限なし）: {ex.Message}", "WindowsRegistryService", ex);
+        }
+        catch (System.Security.SecurityException ex)
+        {
+            _logService?.LogError($"Opera検出エラー（セキュリティ例外）: {ex.Message}", "WindowsRegistryService", ex);
+        }
+        catch (ArgumentException ex)
+        {
+            _logService?.LogError($"Opera検出エラー（引数例外）: {ex.Message}", "WindowsRegistryService", ex);
         }
 
         return browsers;
@@ -246,9 +286,17 @@ public class WindowsRegistryService : IRegistryService
                 });
             }
         }
-        catch (Exception ex)
+        catch (UnauthorizedAccessException ex)
         {
-            _logService?.LogError($"Brave検出エラー: {ex.Message}", "WindowsRegistryService", ex);
+            _logService?.LogError($"Brave検出エラー（アクセス権限なし）: {ex.Message}", "WindowsRegistryService", ex);
+        }
+        catch (System.Security.SecurityException ex)
+        {
+            _logService?.LogError($"Brave検出エラー（セキュリティ例外）: {ex.Message}", "WindowsRegistryService", ex);
+        }
+        catch (ArgumentException ex)
+        {
+            _logService?.LogError($"Brave検出エラー（引数例外）: {ex.Message}", "WindowsRegistryService", ex);
         }
 
         return browsers;
@@ -273,9 +321,17 @@ public class WindowsRegistryService : IRegistryService
                 });
             }
         }
-        catch (Exception ex)
+        catch (UnauthorizedAccessException ex)
         {
-            _logService?.LogError($"Vivaldi検出エラー: {ex.Message}", "WindowsRegistryService", ex);
+            _logService?.LogError($"Vivaldi検出エラー（アクセス権限なし）: {ex.Message}", "WindowsRegistryService", ex);
+        }
+        catch (System.Security.SecurityException ex)
+        {
+            _logService?.LogError($"Vivaldi検出エラー（セキュリティ例外）: {ex.Message}", "WindowsRegistryService", ex);
+        }
+        catch (ArgumentException ex)
+        {
+            _logService?.LogError($"Vivaldi検出エラー（引数例外）: {ex.Message}", "WindowsRegistryService", ex);
         }
 
         return browsers;
@@ -292,9 +348,17 @@ public class WindowsRegistryService : IRegistryService
                 return value ?? string.Empty;
             }
         }
-        catch (Exception ex)
+        catch (UnauthorizedAccessException ex)
         {
-            _logService?.LogError($"レジストリ読み取りエラー {keyPath}: {ex.Message}", "WindowsRegistryService", ex);
+            _logService?.LogError($"レジストリ読み取りエラー（アクセス権限なし） {keyPath}: {ex.Message}", "WindowsRegistryService", ex);
+        }
+        catch (System.Security.SecurityException ex)
+        {
+            _logService?.LogError($"レジストリ読み取りエラー（セキュリティ例外） {keyPath}: {ex.Message}", "WindowsRegistryService", ex);
+        }
+        catch (ArgumentException ex)
+        {
+            _logService?.LogError($"レジストリ読み取りエラー（引数例外） {keyPath}: {ex.Message}", "WindowsRegistryService", ex);
         }
 
         return string.Empty;

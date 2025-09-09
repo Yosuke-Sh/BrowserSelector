@@ -57,24 +57,9 @@ namespace BrowserSelector.Core.Models
     public enum SystemTrayActionType
     {
         /// <summary>
-        /// アクションなし.
+        /// カスタムアクション.
         /// </summary>
-        None,
-
-        /// <summary>
-        /// ウィンドウを表示.
-        /// </summary>
-        Show,
-
-        /// <summary>
-        /// ウィンドウを非表示.
-        /// </summary>
-        Hide,
-
-        /// <summary>
-        /// 設定を開く.
-        /// </summary>
-        Settings,
+        Custom,
 
         /// <summary>
         /// アプリケーションを終了.
@@ -82,9 +67,24 @@ namespace BrowserSelector.Core.Models
         Exit,
 
         /// <summary>
-        /// カスタムアクション.
+        /// ウィンドウを非表示.
         /// </summary>
-        Custom
+        Hide,
+
+        /// <summary>
+        /// アクションなし.
+        /// </summary>
+        None,
+
+        /// <summary>
+        /// 設定を開く.
+        /// </summary>
+        Settings,
+
+        /// <summary>
+        /// ウィンドウを表示.
+        /// </summary>
+        Show
     }
 
     /// <summary>
@@ -93,11 +93,6 @@ namespace BrowserSelector.Core.Models
     public class SystemTrayEventArgs : EventArgs
     {
         /// <summary>
-        /// アクションタイプ.
-        /// </summary>
-        public SystemTrayActionType ActionType { get; }
-
-        /// <summary>
         /// SystemTrayEventArgsのインスタンスを初期化.
         /// </summary>
         /// <param name="actionType">アクションタイプ.</param>
@@ -105,6 +100,11 @@ namespace BrowserSelector.Core.Models
         {
             ActionType = actionType;
         }
+
+        /// <summary>
+        /// アクションタイプ.
+        /// </summary>
+        public SystemTrayActionType ActionType { get; }
     }
 
     /// <summary>
@@ -180,11 +180,6 @@ namespace BrowserSelector.Core.Models
     public class UpdateAvailableEventArgs : EventArgs
     {
         /// <summary>
-        /// アップデート情報.
-        /// </summary>
-        public UpdateInfo UpdateInfo { get; }
-
-        /// <summary>
         /// UpdateAvailableEventArgsのインスタンスを初期化.
         /// </summary>
         /// <param name="updateInfo">アップデート情報.</param>
@@ -192,5 +187,10 @@ namespace BrowserSelector.Core.Models
         {
             UpdateInfo = updateInfo;
         }
+
+        /// <summary>
+        /// アップデート情報.
+        /// </summary>
+        public UpdateInfo UpdateInfo { get; }
     }
 }

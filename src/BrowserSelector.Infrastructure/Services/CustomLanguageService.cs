@@ -1,6 +1,7 @@
 using BrowserSelector.Core.Models;
 using BrowserSelector.Core.Services;
 using System.Globalization;
+using System.IO;
 using System.Resources;
 using System.Text.Json;
 
@@ -58,7 +59,7 @@ public class CustomLanguageService : ICustomLanguageService
                             languages.Add(new LanguageInfo(languageFile.CultureCode, displayName));
                         }
                     }
-                    catch (Exception ex)
+                    catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException or UnauthorizedAccessException or IOException or JsonException)
                     {
                         _logService?.LogWarning($"言語ファイルの読み込みに失敗しました: {filePath} - {ex.Message}", "CustomLanguageService");
                     }
@@ -74,7 +75,7 @@ public class CustomLanguageService : ICustomLanguageService
 
             _logService?.LogDebug($"利用可能な言語数: {languages.Count}", "CustomLanguageService");
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException)
         {
             _logService?.LogError($"利用可能な言語の取得に失敗しました: {ex.Message}", "CustomLanguageService", ex);
         }
@@ -116,7 +117,7 @@ public class CustomLanguageService : ICustomLanguageService
             _logService?.LogInformation($"カスタム言語ファイルを追加しました: {languageFile.CultureCode} - {languageFile.DisplayName}", "CustomLanguageService");
             return true;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException or JsonException)
         {
             _logService?.LogError($"カスタム言語ファイルの追加に失敗しました: {ex.Message}", "CustomLanguageService", ex);
             return false;
@@ -141,7 +142,7 @@ public class CustomLanguageService : ICustomLanguageService
             _logService?.LogInformation($"カスタム言語ファイルを削除しました: {cultureCode}", "CustomLanguageService");
             return Task.FromResult(true);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException or UnauthorizedAccessException or IOException)
         {
             _logService?.LogError($"カスタム言語ファイルの削除に失敗しました: {ex.Message}", "CustomLanguageService", ex);
             return Task.FromResult(false);
@@ -183,7 +184,7 @@ public class CustomLanguageService : ICustomLanguageService
             {
                 CultureInfo culture = new(languageFile.CultureCode);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is ArgumentException or CultureNotFoundException)
             {
                 _logService?.LogWarning($"無効なカルチャーコードです: {languageFile.CultureCode} - {ex.Message}", "CustomLanguageService");
                 return false;
@@ -192,7 +193,7 @@ public class CustomLanguageService : ICustomLanguageService
             _logService?.LogDebug($"言語ファイルの検証が完了しました: {languageFile.CultureCode}", "CustomLanguageService");
             return true;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException or UnauthorizedAccessException or IOException or JsonException)
         {
             _logService?.LogError($"言語ファイルの検証に失敗しました: {ex.Message}", "CustomLanguageService", ex);
             return false;
@@ -222,7 +223,7 @@ public class CustomLanguageService : ICustomLanguageService
             CustomLanguageFile? languageFile = await LoadLanguageFileAsync(filePath).ConfigureAwait(false);
             return languageFile?.Resources;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException or UnauthorizedAccessException or IOException or JsonException)
         {
             _logService?.LogError($"カスタム言語の読み込みに失敗しました: {ex.Message}", "CustomLanguageService", ex);
             return null;
@@ -256,7 +257,7 @@ public class CustomLanguageService : ICustomLanguageService
             _logService?.LogInformation($"カスタム言語ファイルを保存しました: {cultureCode} - {displayName}", "CustomLanguageService");
             return true;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException or JsonException)
         {
             _logService?.LogError($"カスタム言語ファイルの保存に失敗しました: {ex.Message}", "CustomLanguageService", ex);
             return false;
@@ -319,7 +320,7 @@ public class CustomLanguageService : ICustomLanguageService
             _logService?.LogInformation($"言語ファイルテンプレートを生成しました: {cultureCode} - {displayName}", "CustomLanguageService");
             return true;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException or JsonException)
         {
             _logService?.LogError($"言語ファイルテンプレートの生成に失敗しました: {ex.Message}", "CustomLanguageService", ex);
             return false;
@@ -354,7 +355,7 @@ public class CustomLanguageService : ICustomLanguageService
             _logService?.LogDebug($"利用可能なリソースキー数: {resourceKeys.Count}", "CustomLanguageService");
             return Task.FromResult<IEnumerable<string>>(resourceKeys.OrderBy(k => k));
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is MissingManifestResourceException or ArgumentException)
         {
             _logService?.LogError($"リソースキーの取得に失敗しました: {ex.Message}", "CustomLanguageService", ex);
             return Task.FromResult<IEnumerable<string>>([]);
@@ -372,7 +373,7 @@ public class CustomLanguageService : ICustomLanguageService
             await SyncLanguageFilesFastAsync().ConfigureAwait(false);
             _logService?.LogDebug("言語ファイルの高速同期完了", "CustomLanguageService");
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException)
         {
             _logService?.LogError($"言語ファイルの同期に失敗しました: {ex.Message}", "CustomLanguageService", ex);
         }
@@ -414,7 +415,7 @@ public class CustomLanguageService : ICustomLanguageService
                         _logService?.LogDebug($"言語ファイルは最新: {cultureCode}", "CustomLanguageService");
                     }
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException)
                 {
                     _logService?.LogError($"言語ファイル同期エラー ({cultureCode}): {ex.Message}", "CustomLanguageService", ex);
                 }
@@ -422,7 +423,7 @@ public class CustomLanguageService : ICustomLanguageService
 
             await Task.WhenAll(tasks).ConfigureAwait(false);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException)
         {
             _logService?.LogError($"高速同期処理エラー: {ex.Message}", "CustomLanguageService", ex);
         }
@@ -472,7 +473,7 @@ public class CustomLanguageService : ICustomLanguageService
             // }
             return Task.FromResult(false);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException or UnauthorizedAccessException or IOException)
         {
             _logService?.LogWarning($"更新チェックエラー ({cultureCode}): {ex.Message}", "CustomLanguageService");
             return Task.FromResult(false); // エラーの場合は更新しない
@@ -501,7 +502,7 @@ public class CustomLanguageService : ICustomLanguageService
 
             _logService?.LogDebug($"言語ファイルを配置しました: {targetPath}", "CustomLanguageService");
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException)
         {
             _logService?.LogError($"言語ファイルのコピーに失敗しました: {cultureCode} -> {targetPath} - {ex.Message}", "CustomLanguageService", ex);
         }
@@ -542,7 +543,7 @@ public class CustomLanguageService : ICustomLanguageService
             CustomLanguageFile? languageFile = JsonSerializer.Deserialize<CustomLanguageFile>(json);
             return languageFile;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException or UnauthorizedAccessException or IOException or JsonException)
         {
             _logService?.LogError($"言語ファイルの読み込みに失敗しました: {filePath} - {ex.Message}", "CustomLanguageService", ex);
             return null;

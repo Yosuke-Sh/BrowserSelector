@@ -1,6 +1,7 @@
 using BrowserSelector.Core.Models;
 using BrowserSelector.Core.Services;
 using System.Globalization;
+using System.IO;
 using System.Resources;
 
 namespace BrowserSelector.Infrastructure.Localization;
@@ -106,19 +107,20 @@ public class LocalizationService : ILocalizationService
 
             foreach (LanguageInfo languageInfo in availableLanguages)
             {
-                try
-                {
-                    languages.Add(new CultureInfo(languageInfo.CultureCode));
-                }
-                catch (Exception ex)
-                {
-                    _logService?.LogWarning($"無効なカルチャーコードです: {languageInfo.CultureCode} - {ex.Message}", "LocalizationService");
-                }
+                languages.Add(new CultureInfo(languageInfo.CultureCode));
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is ArgumentException or CultureNotFoundException)
         {
             _logService?.LogError($"サポート言語の取得に失敗しました: {ex.Message}", "LocalizationService", ex);
+
+            // フォールバック: デフォルト言語のみ
+            languages.Add(new CultureInfo("en-US"));
+            languages.Add(new CultureInfo("ja-JP"));
+        }
+        catch (IOException ex)
+        {
+            _logService?.LogError($"サポート言語の取得に失敗しました（I/O例外）: {ex.Message}", "LocalizationService", ex);
 
             // フォールバック: デフォルト言語のみ
             languages.Add(new CultureInfo("en-US"));
@@ -167,9 +169,17 @@ public class LocalizationService : ILocalizationService
                 _logService?.LogDebug($"JSONリソースを読み込みました: {cultureCode} ({languageFile.Resources.Count}個のリソース)", "LocalizationService");
             }
         }
-        catch (Exception ex)
+        catch (ArgumentException ex)
         {
-            _logService?.LogWarning($"JSONリソースの読み込みに失敗しました: {cultureCode} - {ex.Message}", "LocalizationService");
+            _logService?.LogWarning($"JSONリソースの読み込みに失敗しました（引数例外）: {cultureCode} - {ex.Message}", "LocalizationService");
+        }
+        catch (IOException ex)
+        {
+            _logService?.LogWarning($"JSONリソースの読み込みに失敗しました（I/O例外）: {cultureCode} - {ex.Message}", "LocalizationService");
+        }
+        catch (System.Text.Json.JsonException ex)
+        {
+            _logService?.LogWarning($"JSONリソースの読み込みに失敗しました（JSON例外）: {cultureCode} - {ex.Message}", "LocalizationService");
         }
     }
 
@@ -194,9 +204,17 @@ public class LocalizationService : ILocalizationService
                 _logService?.LogDebug($"カスタム言語リソースが見つかりません: {cultureCode}", "LocalizationService");
             }
         }
-        catch (Exception ex)
+        catch (ArgumentException ex)
         {
-            _logService?.LogError($"カスタム言語リソースの読み込みに失敗しました: {ex.Message}", "LocalizationService", ex);
+            _logService?.LogError($"カスタム言語リソースの読み込みに失敗しました（引数例外）: {ex.Message}", "LocalizationService", ex);
+        }
+        catch (IOException ex)
+        {
+            _logService?.LogError($"カスタム言語リソースの読み込みに失敗しました（I/O例外）: {ex.Message}", "LocalizationService", ex);
+        }
+        catch (System.Text.Json.JsonException ex)
+        {
+            _logService?.LogError($"カスタム言語リソースの読み込みに失敗しました（JSON例外）: {ex.Message}", "LocalizationService", ex);
         }
     }
 }

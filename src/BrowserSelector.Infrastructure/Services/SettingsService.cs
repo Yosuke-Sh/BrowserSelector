@@ -71,7 +71,7 @@ public class SettingsService : ISettingsService
             _logService?.LogTrace($"アプリケーション設定読み込み完了: Language={result.Language}, CloseAfterUrlRuleMatch={result.CloseAfterUrlRuleMatch}", "SettingsService");
             return result;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException or UnauthorizedAccessException or IOException or JsonException)
         {
             _logService?.LogError($"アプリケーション設定の読み込みエラー: {ex.Message}", "SettingsService", ex);
             return new AppSettings();
@@ -87,9 +87,29 @@ public class SettingsService : ISettingsService
             await File.WriteAllTextAsync(_appSettingsPath, json).ConfigureAwait(false);
             return true;
         }
-        catch (Exception ex)
+        catch (UnauthorizedAccessException ex)
         {
-            _logService?.LogError($"アプリケーション設定の保存エラー: {ex.Message}", "SettingsService", ex);
+            _logService?.LogError($"アプリケーション設定の保存エラー（アクセス権限なし）: {ex.Message}", "SettingsService", ex);
+            return false;
+        }
+        catch (System.Security.SecurityException ex)
+        {
+            _logService?.LogError($"アプリケーション設定の保存エラー（セキュリティ例外）: {ex.Message}", "SettingsService", ex);
+            return false;
+        }
+        catch (ArgumentException ex)
+        {
+            _logService?.LogError($"アプリケーション設定の保存エラー（引数例外）: {ex.Message}", "SettingsService", ex);
+            return false;
+        }
+        catch (IOException ex)
+        {
+            _logService?.LogError($"アプリケーション設定の保存エラー（I/O例外）: {ex.Message}", "SettingsService", ex);
+            return false;
+        }
+        catch (System.Text.Json.JsonException ex)
+        {
+            _logService?.LogError($"アプリケーション設定の保存エラー（JSON例外）: {ex.Message}", "SettingsService", ex);
             return false;
         }
     }
@@ -115,7 +135,7 @@ public class SettingsService : ISettingsService
             _logService?.LogTrace($"視覚設定読み込み完了: BackgroundColor={result.BackgroundColor}, UseBackgroundGradient={result.UseBackgroundGradient}, GradientDirection={result.GradientDirection}, InitialWindowWidth={result.InitialWindowWidth}, InitialWindowHeight={result.InitialWindowHeight}, ShowLogo={result.ShowLogo}, ShowUrlInput={result.ShowUrlInput}, BrowserButtonOpacity={result.BrowserButtonOpacity}", "SettingsService");
             return result;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException or UnauthorizedAccessException or IOException or JsonException)
         {
             _logService?.LogError($"視覚設定の読み込みエラー: {ex.Message}", "SettingsService", ex);
             return new VisualSettings();
@@ -137,7 +157,7 @@ public class SettingsService : ISettingsService
             await File.WriteAllTextAsync(_visualSettingsPath, json).ConfigureAwait(false);
             return true;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException or JsonException)
         {
             _logService?.LogError($"視覚設定の保存エラー: {ex.Message}", "SettingsService", ex);
             return false;
@@ -172,7 +192,7 @@ public class SettingsService : ISettingsService
 
             return true;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException or JsonException)
         {
             _logService?.LogError($"設定リセットエラー: {ex.Message}", "SettingsService", ex);
             return false;
@@ -202,7 +222,7 @@ public class SettingsService : ISettingsService
                 return await ImportSettingsFromJsonAsync(filePath).ConfigureAwait(false);
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException or UnauthorizedAccessException or IOException or JsonException or InvalidDataException)
         {
             _logService?.LogError($"設定インポートエラー: {ex.Message}", "SettingsService", ex);
             return false;
@@ -250,7 +270,7 @@ public class SettingsService : ISettingsService
                 importedFiles.Add(entry.FullName);
                 _logService?.LogDebug($"インポート完了: {entry.FullName} -> {targetPath}", "SettingsService");
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException or JsonException)
             {
                 _logService?.LogWarning($"ファイルインポートエラー: {entry.FullName} - {ex.Message}", "SettingsService");
             }
@@ -328,7 +348,7 @@ public class SettingsService : ISettingsService
             _logService?.LogInformation($"設定ファイル群のエクスポート完了: {filePath}", "SettingsService");
             return true;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException or JsonException)
         {
             _logService?.LogError($"設定エクスポートエラー: {ex.Message}", "SettingsService", ex);
             return false;
@@ -435,7 +455,7 @@ public class SettingsService : ISettingsService
                 return defaultSettings;
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException or UnauthorizedAccessException or IOException or JsonException)
         {
             _logService?.LogError($"ログ設定読み込みエラー: {ex.Message}", "SettingsService", ex);
             return new LogSettings();
@@ -451,7 +471,7 @@ public class SettingsService : ISettingsService
             await File.WriteAllTextAsync(_logSettingsPath, json).ConfigureAwait(false);
             return true;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException or JsonException)
         {
             _logService?.LogError($"ログ設定保存エラー: {ex.Message}", "SettingsService", ex);
             return false;

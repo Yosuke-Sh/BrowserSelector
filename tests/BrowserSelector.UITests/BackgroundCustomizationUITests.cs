@@ -14,6 +14,9 @@ public class BackgroundCustomizationUITests : IDisposable
     private Application? _app = null;
     private UIA3Automation? _automation = null;
 
+    /// <summary>
+    /// BackgroundCustomizationUITestsのインスタンスを初期化.
+    /// </summary>
     public BackgroundCustomizationUITests()
     {
         try
@@ -34,13 +37,18 @@ public class BackgroundCustomizationUITests : IDisposable
         }
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// リソースを解放.
+    /// </summary>
     public void Dispose()
     {
         _automation?.Dispose();
         _app?.Close();
     }
 
+    /// <summary>
+    /// 背景設定に色選択機能があることを確認するUIテスト.
+    /// </summary>
     [Fact]
     public void BackgroundSettingsShouldHaveColorSelection()
     {
@@ -88,6 +96,9 @@ public class BackgroundCustomizationUITests : IDisposable
         }
     }
 
+    /// <summary>
+    /// 背景設定にグラデーションオプションがあることを確認するUIテスト.
+    /// </summary>
     [Fact]
     public void BackgroundSettingsShouldHaveGradientOptions()
     {
@@ -138,6 +149,9 @@ public class BackgroundCustomizationUITests : IDisposable
         }
     }
 
+    /// <summary>
+    /// 背景設定にグラデーション方向オプションがあることを確認するUIテスト.
+    /// </summary>
     [Fact]
     public void BackgroundSettingsShouldHaveGradientDirectionOptions()
     {
@@ -193,6 +207,9 @@ public class BackgroundCustomizationUITests : IDisposable
         }
     }
 
+    /// <summary>
+    /// ウィンドウ設定にサイズ設定があることを確認するUIテスト.
+    /// </summary>
     [Fact]
     public void WindowSettingsShouldHaveSizeConfiguration()
     {
@@ -240,6 +257,9 @@ public class BackgroundCustomizationUITests : IDisposable
         }
     }
 
+    /// <summary>
+    /// ウィンドウ設定にロゴ表示オプションがあることを確認するUIテスト.
+    /// </summary>
     [Fact]
     public void WindowSettingsShouldHaveLogoDisplayOption()
     {
@@ -284,6 +304,9 @@ public class BackgroundCustomizationUITests : IDisposable
         }
     }
 
+    /// <summary>
+    /// ウィンドウ設定にURL入力表示オプションがあることを確認するUIテスト.
+    /// </summary>
     [Fact]
     public void WindowSettingsShouldHaveUrlInputDisplayOption()
     {

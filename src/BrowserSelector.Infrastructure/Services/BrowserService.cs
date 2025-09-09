@@ -1,8 +1,11 @@
 using BrowserSelector.Core.Models;
 using BrowserSelector.Core.Services;
 using BrowserSelector.Infrastructure.Logging;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Security;
+using System.Text.Json;
 
 namespace BrowserSelector.Infrastructure.Services;
 
@@ -59,7 +62,7 @@ public class BrowserService : IBrowserService
             _logService.LogTrace($"ブラウザ検出処理完了: {_browsers.Count}個のブラウザを検出 - {browserDetails}", "BrowserService");
             return _browsers.OrderBy(b => b.DisplayOrder);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is UnauthorizedAccessException or IOException or SecurityException)
         {
             _logService.LogCritical($"ブラウザ検出で致命的エラーが発生: {ex.Message}", nameof(BrowserService), ex);
             return Enumerable.Empty<Browser>();
@@ -134,7 +137,7 @@ public class BrowserService : IBrowserService
                     Process processInfo = Process.GetProcessById(process.Id);
                     _logService.LogDebug($"実際に起動されたプロセス - 名前: {processInfo.ProcessName}, ファイル名: {processInfo.MainModule?.FileName}", nameof(BrowserService));
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (ex is InvalidOperationException or NotSupportedException)
                 {
                     _logService.LogDebug($"プロセス情報取得エラー - {ex.Message}", nameof(BrowserService), ex);
                 }
@@ -148,7 +151,7 @@ public class BrowserService : IBrowserService
             _logService.LogError("プロセス起動失敗", nameof(BrowserService));
             return false;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException or UnauthorizedAccessException or IOException or Win32Exception)
         {
             _logService.LogError($"ブラウザ起動エラー - {ex.Message}", nameof(BrowserService), ex);
             return false;
@@ -179,7 +182,7 @@ public class BrowserService : IBrowserService
             await SaveCustomBrowsersAsync().ConfigureAwait(false);
             return true;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException or JsonException)
         {
             _logService.LogError($"ブラウザ追加エラー: {ex.Message}", nameof(BrowserService), ex);
             return false;
@@ -206,7 +209,7 @@ public class BrowserService : IBrowserService
             await SaveCustomBrowsersAsync().ConfigureAwait(false);
             return true;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException or JsonException)
         {
             _logService.LogError($"ブラウザ更新エラー: {ex.Message}", nameof(BrowserService), ex);
             return false;
@@ -231,7 +234,7 @@ public class BrowserService : IBrowserService
             await SaveCustomBrowsersAsync().ConfigureAwait(false);
             return true;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException or JsonException)
         {
             _logService.LogError($"ブラウザ削除エラー: {ex.Message}", nameof(BrowserService), ex);
             return false;
@@ -266,7 +269,7 @@ public class BrowserService : IBrowserService
             await SaveDefaultBrowserAsync(browser).ConfigureAwait(false);
             return true;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException or JsonException)
         {
             _logService.LogError($"デフォルトブラウザ設定エラー: {ex.Message}", nameof(BrowserService), ex);
             return false;
@@ -287,7 +290,7 @@ public class BrowserService : IBrowserService
             // 設定から読み込み
             return await LoadDefaultBrowserAsync().ConfigureAwait(false);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException or JsonException)
         {
             _logService.LogError($"デフォルトブラウザ取得エラー: {ex.Message}", nameof(BrowserService), ex);
             return null;
@@ -301,7 +304,7 @@ public class BrowserService : IBrowserService
         {
             await SaveBrowserUsageAsync(browser).ConfigureAwait(false);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException or JsonException)
         {
             _logService.LogError($"使用統計更新エラー: {ex.Message}", nameof(BrowserService), ex);
         }
@@ -318,7 +321,7 @@ public class BrowserService : IBrowserService
                 await SaveBrowserUsageAsync(browser).ConfigureAwait(false);
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException or JsonException)
         {
             _logService.LogError($"使用統計更新エラー: {ex.Message}", nameof(BrowserService), ex);
         }

@@ -29,10 +29,20 @@ public class LogService : ILogService
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8;
         }
-        catch (Exception ex)
+        catch (ArgumentException ex)
         {
             // コンソールエンコーディング設定に失敗しても続行
-            System.Diagnostics.Debug.WriteLine($"Console encoding setup failed: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Console encoding setup failed (ArgumentException): {ex.Message}");
+        }
+        catch (System.Security.SecurityException ex)
+        {
+            // コンソールエンコーディング設定に失敗しても続行
+            System.Diagnostics.Debug.WriteLine($"Console encoding setup failed (SecurityException): {ex.Message}");
+        }
+        catch (InvalidOperationException ex)
+        {
+            // コンソールエンコーディング設定に失敗しても続行
+            System.Diagnostics.Debug.WriteLine($"Console encoding setup failed (InvalidOperationException): {ex.Message}");
         }
 
         // 設定ファイルからログ設定を読み込み
@@ -130,7 +140,15 @@ public class LogService : ILogService
                 WriteToFile(logMessage);
             }
         }
-        catch (Exception)
+        catch (ArgumentException)
+        {
+            // ログ出力中のエラーは無視
+        }
+        catch (InvalidOperationException)
+        {
+            // ログ出力中のエラーは無視
+        }
+        catch (IOException)
         {
             // ログ出力中のエラーは無視
         }
@@ -157,7 +175,23 @@ public class LogService : ILogService
                 }
             }
         }
-        catch (Exception)
+        catch (UnauthorizedAccessException)
+        {
+            // 設定ファイル読み込みエラーは無視（デフォルト値を使用）
+        }
+        catch (System.Security.SecurityException)
+        {
+            // 設定ファイル読み込みエラーは無視（デフォルト値を使用）
+        }
+        catch (ArgumentException)
+        {
+            // 設定ファイル読み込みエラーは無視（デフォルト値を使用）
+        }
+        catch (IOException)
+        {
+            // 設定ファイル読み込みエラーは無視（デフォルト値を使用）
+        }
+        catch (System.Text.Json.JsonException)
         {
             // 設定ファイル読み込みエラーは無視（デフォルト値を使用）
         }
@@ -193,9 +227,21 @@ public class LogService : ILogService
                 LogInformation("ログファイルをクリアしました", "LogService");
             }
         }
-        catch (Exception ex)
+        catch (UnauthorizedAccessException ex)
         {
-            LogError($"ログファイルのクリアに失敗しました: {ex.Message}", "LogService", ex);
+            LogError($"ログファイルのクリアに失敗しました（アクセス権限なし）: {ex.Message}", "LogService", ex);
+        }
+        catch (System.Security.SecurityException ex)
+        {
+            LogError($"ログファイルのクリアに失敗しました（セキュリティ例外）: {ex.Message}", "LogService", ex);
+        }
+        catch (ArgumentException ex)
+        {
+            LogError($"ログファイルのクリアに失敗しました（引数例外）: {ex.Message}", "LogService", ex);
+        }
+        catch (IOException ex)
+        {
+            LogError($"ログファイルのクリアに失敗しました（I/O例外）: {ex.Message}", "LogService", ex);
         }
     }
 
@@ -224,9 +270,21 @@ public class LogService : ILogService
                 }
             }
         }
-        catch (Exception ex)
+        catch (UnauthorizedAccessException ex)
         {
-            LogError($"古いログファイルの削除に失敗しました: {ex.Message}", "LogService", ex);
+            LogError($"古いログファイルの削除に失敗しました（アクセス権限なし）: {ex.Message}", "LogService", ex);
+        }
+        catch (System.Security.SecurityException ex)
+        {
+            LogError($"古いログファイルの削除に失敗しました（セキュリティ例外）: {ex.Message}", "LogService", ex);
+        }
+        catch (ArgumentException ex)
+        {
+            LogError($"古いログファイルの削除に失敗しました（引数例外）: {ex.Message}", "LogService", ex);
+        }
+        catch (IOException ex)
+        {
+            LogError($"古いログファイルの削除に失敗しました（I/O例外）: {ex.Message}", "LogService", ex);
         }
     }
 
@@ -249,7 +307,7 @@ public class LogService : ILogService
 
             return string.Join(Environment.NewLine, recentLines);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException or UnauthorizedAccessException or IOException)
         {
             return $"ログファイルの読み込みに失敗しました: {ex.Message}";
         }
@@ -379,7 +437,7 @@ public class LogService : ILogService
             // ログファイルに追記
             File.AppendAllText(logFilePath, logMessage, Encoding.UTF8);
         }
-        catch (Exception)
+        catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException)
         {
             // ログファイル出力エラーは無視
         }
@@ -411,7 +469,7 @@ public class LogService : ILogService
                 LogInformation($"ログファイルをローテーションしました: {backupPath}", "LogService");
             }
         }
-        catch (Exception)
+        catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException)
         {
             // ログファイルローテーションエラーは無視
         }
@@ -429,7 +487,7 @@ public class LogService : ILogService
                 _ = Directory.CreateDirectory(_settings.LogOutputFolder);
             }
         }
-        catch (Exception)
+        catch (Exception ex) when (ex is UnauthorizedAccessException or IOException or PathTooLongException)
         {
             // ログディレクトリ作成エラーは無視
         }

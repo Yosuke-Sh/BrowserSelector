@@ -69,9 +69,24 @@ public class UrlRuleService : IUrlRuleService
             await SaveRulesAsync().ConfigureAwait(false);
             return true;
         }
-        catch (Exception ex)
+        catch (UnauthorizedAccessException ex)
         {
-            Debug.WriteLine($"UrlRuleService: ルール追加エラー - {ex.Message}");
+            Debug.WriteLine($"UrlRuleService: ルール追加エラー（アクセス権限なし） - {ex.Message}");
+            return false;
+        }
+        catch (System.Security.SecurityException ex)
+        {
+            Debug.WriteLine($"UrlRuleService: ルール追加エラー（セキュリティ例外） - {ex.Message}");
+            return false;
+        }
+        catch (ArgumentException ex)
+        {
+            Debug.WriteLine($"UrlRuleService: ルール追加エラー（引数例外） - {ex.Message}");
+            return false;
+        }
+        catch (IOException ex)
+        {
+            Debug.WriteLine($"UrlRuleService: ルール追加エラー（I/O例外） - {ex.Message}");
             return false;
         }
     }
@@ -105,9 +120,24 @@ public class UrlRuleService : IUrlRuleService
             await SaveRulesAsync().ConfigureAwait(false);
             return true;
         }
-        catch (Exception ex)
+        catch (UnauthorizedAccessException ex)
         {
-            Debug.WriteLine($"UrlRuleService: ルール更新エラー - {ex.Message}");
+            Debug.WriteLine($"UrlRuleService: ルール更新エラー（アクセス権限なし） - {ex.Message}");
+            return false;
+        }
+        catch (System.Security.SecurityException ex)
+        {
+            Debug.WriteLine($"UrlRuleService: ルール更新エラー（セキュリティ例外） - {ex.Message}");
+            return false;
+        }
+        catch (ArgumentException ex)
+        {
+            Debug.WriteLine($"UrlRuleService: ルール更新エラー（引数例外） - {ex.Message}");
+            return false;
+        }
+        catch (IOException ex)
+        {
+            Debug.WriteLine($"UrlRuleService: ルール更新エラー（I/O例外） - {ex.Message}");
             return false;
         }
     }
@@ -133,9 +163,24 @@ public class UrlRuleService : IUrlRuleService
             await SaveRulesAsync().ConfigureAwait(false);
             return true;
         }
-        catch (Exception ex)
+        catch (UnauthorizedAccessException ex)
         {
-            Debug.WriteLine($"UrlRuleService: ルール削除エラー - {ex.Message}");
+            Debug.WriteLine($"UrlRuleService: ルール削除エラー（アクセス権限なし） - {ex.Message}");
+            return false;
+        }
+        catch (System.Security.SecurityException ex)
+        {
+            Debug.WriteLine($"UrlRuleService: ルール削除エラー（セキュリティ例外） - {ex.Message}");
+            return false;
+        }
+        catch (ArgumentException ex)
+        {
+            Debug.WriteLine($"UrlRuleService: ルール削除エラー（引数例外） - {ex.Message}");
+            return false;
+        }
+        catch (IOException ex)
+        {
+            Debug.WriteLine($"UrlRuleService: ルール削除エラー（I/O例外） - {ex.Message}");
             return false;
         }
     }
@@ -162,9 +207,24 @@ public class UrlRuleService : IUrlRuleService
             await SaveRulesAsync().ConfigureAwait(false);
             return true;
         }
-        catch (Exception ex)
+        catch (UnauthorizedAccessException ex)
         {
-            Debug.WriteLine($"UrlRuleService: ルール状態変更エラー - {ex.Message}");
+            Debug.WriteLine($"UrlRuleService: ルール状態変更エラー（アクセス権限なし） - {ex.Message}");
+            return false;
+        }
+        catch (System.Security.SecurityException ex)
+        {
+            Debug.WriteLine($"UrlRuleService: ルール状態変更エラー（セキュリティ例外） - {ex.Message}");
+            return false;
+        }
+        catch (ArgumentException ex)
+        {
+            Debug.WriteLine($"UrlRuleService: ルール状態変更エラー（引数例外） - {ex.Message}");
+            return false;
+        }
+        catch (IOException ex)
+        {
+            Debug.WriteLine($"UrlRuleService: ルール状態変更エラー（I/O例外） - {ex.Message}");
             return false;
         }
     }
@@ -200,9 +260,14 @@ public class UrlRuleService : IUrlRuleService
                 return Task.FromResult<Browser?>(null);
             }
         }
-        catch (Exception ex)
+        catch (ArgumentException ex)
         {
-            _logService?.LogError($"ブラウザ検索エラー - {ex.Message}", "UrlRuleService", ex);
+            _logService?.LogError($"ブラウザ検索エラー（引数例外） - {ex.Message}", "UrlRuleService", ex);
+            return Task.FromResult<Browser?>(null);
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logService?.LogError($"ブラウザ検索エラー（無効な操作例外） - {ex.Message}", "UrlRuleService", ex);
             return Task.FromResult<Browser?>(null);
         }
     }
@@ -229,9 +294,24 @@ public class UrlRuleService : IUrlRuleService
             await SaveRulesAsync().ConfigureAwait(false);
             return true;
         }
-        catch (Exception ex)
+        catch (UnauthorizedAccessException ex)
         {
-            Debug.WriteLine($"UrlRuleService: 優先度変更エラー - {ex.Message}");
+            Debug.WriteLine($"UrlRuleService: 優先度変更エラー（アクセス権限なし） - {ex.Message}");
+            return false;
+        }
+        catch (System.Security.SecurityException ex)
+        {
+            Debug.WriteLine($"UrlRuleService: 優先度変更エラー（セキュリティ例外） - {ex.Message}");
+            return false;
+        }
+        catch (ArgumentException ex)
+        {
+            Debug.WriteLine($"UrlRuleService: 優先度変更エラー（引数例外） - {ex.Message}");
+            return false;
+        }
+        catch (IOException ex)
+        {
+            Debug.WriteLine($"UrlRuleService: 優先度変更エラー（I/O例外） - {ex.Message}");
             return false;
         }
     }
@@ -262,9 +342,24 @@ public class UrlRuleService : IUrlRuleService
             await SaveRulesAsync().ConfigureAwait(false);
             return true;
         }
-        catch (Exception ex)
+        catch (UnauthorizedAccessException ex)
         {
-            Debug.WriteLine($"UrlRuleService: ルール並び替えエラー - {ex.Message}");
+            Debug.WriteLine($"UrlRuleService: ルール並び替えエラー（アクセス権限なし） - {ex.Message}");
+            return false;
+        }
+        catch (System.Security.SecurityException ex)
+        {
+            Debug.WriteLine($"UrlRuleService: ルール並び替えエラー（セキュリティ例外） - {ex.Message}");
+            return false;
+        }
+        catch (ArgumentException ex)
+        {
+            Debug.WriteLine($"UrlRuleService: ルール並び替えエラー（引数例外） - {ex.Message}");
+            return false;
+        }
+        catch (IOException ex)
+        {
+            Debug.WriteLine($"UrlRuleService: ルール並び替えエラー（I/O例外） - {ex.Message}");
             return false;
         }
     }
@@ -295,9 +390,37 @@ public class UrlRuleService : IUrlRuleService
                 }
             }
         }
-        catch (Exception ex)
+        catch (UnauthorizedAccessException ex)
         {
-            Debug.WriteLine($"UrlRuleService: 同期読み込みエラー - {ex.Message}");
+            Debug.WriteLine($"UrlRuleService: 同期読み込みエラー（アクセス権限なし） - {ex.Message}");
+
+            // 失敗時はデフォルトルールで初期化
+            CreateDefaultRulesSync();
+        }
+        catch (System.Security.SecurityException ex)
+        {
+            Debug.WriteLine($"UrlRuleService: 同期読み込みエラー（セキュリティ例外） - {ex.Message}");
+
+            // 失敗時はデフォルトルールで初期化
+            CreateDefaultRulesSync();
+        }
+        catch (ArgumentException ex)
+        {
+            Debug.WriteLine($"UrlRuleService: 同期読み込みエラー（引数例外） - {ex.Message}");
+
+            // 失敗時はデフォルトルールで初期化
+            CreateDefaultRulesSync();
+        }
+        catch (IOException ex)
+        {
+            Debug.WriteLine($"UrlRuleService: 同期読み込みエラー（I/O例外） - {ex.Message}");
+
+            // 失敗時はデフォルトルールで初期化
+            CreateDefaultRulesSync();
+        }
+        catch (System.Text.Json.JsonException ex)
+        {
+            Debug.WriteLine($"UrlRuleService: 同期読み込みエラー（JSON例外） - {ex.Message}");
 
             // 失敗時はデフォルトルールで初期化
             CreateDefaultRulesSync();
@@ -322,9 +445,25 @@ public class UrlRuleService : IUrlRuleService
 
             Debug.WriteLine($"UrlRuleService: {rulesToSave.Count} 個のルールを保存しました");
         }
-        catch (Exception ex)
+        catch (UnauthorizedAccessException ex)
         {
-            Debug.WriteLine($"UrlRuleService: ルール保存エラー - {ex.Message}");
+            Debug.WriteLine($"UrlRuleService: ルール保存エラー（アクセス権限なし） - {ex.Message}");
+        }
+        catch (System.Security.SecurityException ex)
+        {
+            Debug.WriteLine($"UrlRuleService: ルール保存エラー（セキュリティ例外） - {ex.Message}");
+        }
+        catch (ArgumentException ex)
+        {
+            Debug.WriteLine($"UrlRuleService: ルール保存エラー（引数例外） - {ex.Message}");
+        }
+        catch (IOException ex)
+        {
+            Debug.WriteLine($"UrlRuleService: ルール保存エラー（I/O例外） - {ex.Message}");
+        }
+        catch (System.Text.Json.JsonException ex)
+        {
+            Debug.WriteLine($"UrlRuleService: ルール保存エラー（JSON例外） - {ex.Message}");
         }
     }
 
@@ -344,9 +483,25 @@ public class UrlRuleService : IUrlRuleService
             string json = System.Text.Json.JsonSerializer.Serialize(_rules, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText(_rulesFilePath, json);
         }
-        catch (Exception ex)
+        catch (UnauthorizedAccessException ex)
         {
-            Debug.WriteLine($"UrlRuleService: デフォルトルール保存エラー - {ex.Message}");
+            Debug.WriteLine($"UrlRuleService: デフォルトルール保存エラー（アクセス権限なし） - {ex.Message}");
+        }
+        catch (System.Security.SecurityException ex)
+        {
+            Debug.WriteLine($"UrlRuleService: デフォルトルール保存エラー（セキュリティ例外） - {ex.Message}");
+        }
+        catch (ArgumentException ex)
+        {
+            Debug.WriteLine($"UrlRuleService: デフォルトルール保存エラー（引数例外） - {ex.Message}");
+        }
+        catch (IOException ex)
+        {
+            Debug.WriteLine($"UrlRuleService: デフォルトルール保存エラー（I/O例外） - {ex.Message}");
+        }
+        catch (System.Text.Json.JsonException ex)
+        {
+            Debug.WriteLine($"UrlRuleService: デフォルトルール保存エラー（JSON例外） - {ex.Message}");
         }
     }
 }

@@ -27,6 +27,9 @@ public class ProgramTests
         mainMethod.IsPublic.Should().BeTrue();
     }
 
+    /// <summary>
+    /// Programクラスがstring[]パラメータを持つMainメソッドを持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveMainMethodWithStringArrayParameter()
     {
@@ -41,6 +44,9 @@ public class ProgramTests
         parameters[0].Name.Should().Be("args");
     }
 
+    /// <summary>
+    /// Programクラスがパブリッククラスであることを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldBePublicClass()
     {
@@ -52,6 +58,9 @@ public class ProgramTests
         programType.IsClass.Should().BeTrue();
     }
 
+    /// <summary>
+    /// Programクラスが有効な名前空間を持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveValidNamespace()
     {
@@ -62,6 +71,9 @@ public class ProgramTests
         programType.Namespace.Should().Be("BrowserSelector.App");
     }
 
+    /// <summary>
+    /// ProgramクラスがSTAThreadAttributeを持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveSTAThreadAttribute()
     {
@@ -75,6 +87,9 @@ public class ProgramTests
         attributes.Should().Contain(a => a.GetType().Name == "STAThreadAttribute");
     }
 
+    /// <summary>
+    /// Programクラスがデフォルトコンストラクタを持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveDefaultConstructor()
     {
@@ -87,6 +102,9 @@ public class ProgramTests
         constructors.Should().Contain(c => c.GetParameters().Length == 0);
     }
 
+    /// <summary>
+    /// Programクラスが有効なアセンブリを持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveValidAssembly()
     {
@@ -100,6 +118,9 @@ public class ProgramTests
         assemblyName.Name.Should().Be("BrowserSelector.App");
     }
 
+    /// <summary>
+    /// Programクラスが有効なアセンブリアトリビュートを持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveValidAssemblyAttributes()
     {
@@ -113,6 +134,9 @@ public class ProgramTests
         attributes.Should().NotBeEmpty();
     }
 
+    /// <summary>
+    /// Programクラスが必要なusing文を持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveRequiredUsingStatements()
     {
@@ -128,6 +152,9 @@ public class ProgramTests
         referencedAssemblies.Should().Contain(a => a.Name == "WindowsBase");
     }
 
+    /// <summary>
+    /// Programクラスが有効な型アトリビュートを持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveValidTypeAttributes()
     {
@@ -139,6 +166,9 @@ public class ProgramTests
         attributes.Should().NotBeNull();
     }
 
+    /// <summary>
+    /// Programクラスが有効なメソッドアトリビュートを持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveValidMethodAttributes()
     {
@@ -151,6 +181,9 @@ public class ProgramTests
         attributes.Should().NotBeEmpty();
     }
 
+    /// <summary>
+    /// Programクラスが有効なパラメータアトリビュートを持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveValidParameterAttributes()
     {
@@ -164,6 +197,9 @@ public class ProgramTests
         parameterAttributes.Should().NotBeNull();
     }
 
+    /// <summary>
+    /// Programクラスが有効な戻り値の型を持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveValidReturnType()
     {
@@ -175,6 +211,9 @@ public class ProgramTests
         mainMethod.ReturnType.Should().Be(typeof(void));
     }
 
+    /// <summary>
+    /// Programクラスが有効なメソッドシグネチャを持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveValidMethodSignature()
     {
@@ -191,6 +230,9 @@ public class ProgramTests
         parameters[0].ParameterType.Should().Be(typeof(string[]));
     }
 
+    /// <summary>
+    /// Programクラスが正しいメソッド可視性を持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveCorrectMethodVisibility()
     {
@@ -205,6 +247,9 @@ public class ProgramTests
         mainMethod.IsAbstract.Should().BeFalse();
     }
 
+    /// <summary>
+    /// Programクラスが正しいクラス修飾子を持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveCorrectClassModifiers()
     {
@@ -218,6 +263,9 @@ public class ProgramTests
         programType.IsSealed.Should().BeFalse();
     }
 
+    /// <summary>
+    /// Programクラスが正しいアセンブリ参照を持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveCorrectAssemblyReferences()
     {
@@ -238,6 +286,9 @@ public class ProgramTests
         wpfAssemblies.Should().HaveCount(3);
     }
 
+    /// <summary>
+    /// Programクラスが正しいメソッドパラメータを持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveCorrectMethodParameters()
     {
@@ -257,6 +308,9 @@ public class ProgramTests
     }
 
     // 追加のテストケース - Program.csのカバレッジ向上
+    /// <summary>
+    /// Programクラスが正しいクラス構造を持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveCorrectClassStructure()
     {
@@ -272,6 +326,9 @@ public class ProgramTests
         programType.IsEnum.Should().BeFalse();
     }
 
+    /// <summary>
+    /// Programクラスが正しいメソッド構造を持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveCorrectMethodStructure()
     {
@@ -288,6 +345,9 @@ public class ProgramTests
         mainMethod.IsFinal.Should().BeFalse();
     }
 
+    /// <summary>
+    /// Programクラスが正しいパラメータ構造を持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveCorrectParameterStructure()
     {
@@ -306,6 +366,9 @@ public class ProgramTests
         argsParameter.IsOptional.Should().BeFalse();
     }
 
+    /// <summary>
+    /// Programクラスが正しい属性構造を持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveCorrectAttributeStructure()
     {
@@ -319,6 +382,9 @@ public class ProgramTests
         attributes.Should().Contain(a => a.GetType().Name == "STAThreadAttribute");
     }
 
+    /// <summary>
+    /// Programクラスが正しいアセンブリ構造を持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveCorrectAssemblyStructure()
     {
@@ -334,6 +400,9 @@ public class ProgramTests
         assemblyName.CultureInfo.Should().NotBeNull();
     }
 
+    /// <summary>
+    /// Programクラスが正しい型階層を持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveCorrectTypeHierarchy()
     {
@@ -346,6 +415,9 @@ public class ProgramTests
         programType.GetInterfaces().Should().BeEmpty();
     }
 
+    /// <summary>
+    /// Programクラスが正しいジェネリック構造を持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveCorrectGenericStructure()
     {
@@ -358,6 +430,9 @@ public class ProgramTests
         programType.ContainsGenericParameters.Should().BeFalse();
     }
 
+    /// <summary>
+    /// Programクラスが正しいメソッド数を持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveCorrectMethodCount()
     {
@@ -370,6 +445,9 @@ public class ProgramTests
         methods.Should().Contain(m => m.Name == "Main");
     }
 
+    /// <summary>
+    /// Programクラスが正しいコンストラクタ数を持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveCorrectConstructorCount()
     {
@@ -382,6 +460,9 @@ public class ProgramTests
         constructors.Should().Contain(c => c.GetParameters().Length == 0);
     }
 
+    /// <summary>
+    /// Programクラスが正しいプロパティ数を持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveCorrectPropertyCount()
     {
@@ -393,6 +474,9 @@ public class ProgramTests
         properties.Should().BeEmpty();
     }
 
+    /// <summary>
+    /// Programクラスが正しいイベント数を持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveCorrectEventCount()
     {
@@ -404,6 +488,9 @@ public class ProgramTests
         events.Should().BeEmpty();
     }
 
+    /// <summary>
+    /// Programクラスが正しいフィールド数を持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveCorrectFieldCount()
     {
@@ -415,6 +502,9 @@ public class ProgramTests
         fields.Should().BeEmpty();
     }
 
+    /// <summary>
+    /// Programクラスが正しいネストされた型数を持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveCorrectNestedTypeCount()
     {
@@ -426,6 +516,9 @@ public class ProgramTests
         nestedTypes.Should().BeEmpty();
     }
 
+    /// <summary>
+    /// Programクラスが正しいアセンブリロケーションを持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveCorrectAssemblyLocation()
     {
@@ -439,6 +532,9 @@ public class ProgramTests
         location.Should().Contain("BrowserSelector.App.dll");
     }
 
+    /// <summary>
+    /// Programクラスが正しいアセンブリマニフェストを持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveCorrectAssemblyManifest()
     {
@@ -452,6 +548,9 @@ public class ProgramTests
         manifestModule.Name.Should().Contain("BrowserSelector.App.dll");
     }
 
+    /// <summary>
+    /// Programクラスが正しいアセンブリモジュールを持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveCorrectAssemblyModules()
     {
@@ -465,6 +564,9 @@ public class ProgramTests
         modules.Should().HaveCount(1);
     }
 
+    /// <summary>
+    /// Programクラスが正しいアセンブリ型を持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveCorrectAssemblyTypes()
     {
@@ -478,6 +580,9 @@ public class ProgramTests
         types.Should().Contain(typeof(Program));
     }
 
+    /// <summary>
+    /// Programクラスが正しいアセンブリエクスポート型を持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveCorrectAssemblyExportedTypes()
     {
@@ -491,6 +596,9 @@ public class ProgramTests
         exportedTypes.Should().Contain(typeof(Program));
     }
 
+    /// <summary>
+    /// Programクラスが正しいアセンブリカスタム属性を持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveCorrectAssemblyCustomAttributes()
     {
@@ -503,6 +611,9 @@ public class ProgramTests
         attributes.Should().NotBeNull();
     }
 
+    /// <summary>
+    /// Programクラスが正しいアセンブリセキュリティルールを持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveCorrectAssemblySecurityRules()
     {
@@ -515,6 +626,9 @@ public class ProgramTests
         securityRules.Should().NotBeNull();
     }
 
+    /// <summary>
+    /// Programクラスが正しいアセンブリ設定を持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveCorrectAssemblyConfiguration()
     {
@@ -527,6 +641,9 @@ public class ProgramTests
         configuration.Should().NotBeNull();
     }
 
+    /// <summary>
+    /// Programクラスが正しいアセンブリ会社情報を持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveCorrectAssemblyCompany()
     {
@@ -539,6 +656,9 @@ public class ProgramTests
         company.Should().NotBeNull();
     }
 
+    /// <summary>
+    /// Programクラスが正しいアセンブリ製品情報を持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveCorrectAssemblyProduct()
     {
@@ -551,6 +671,9 @@ public class ProgramTests
         product.Should().NotBeNull();
     }
 
+    /// <summary>
+    /// Programクラスが正しいアセンブリ著作権情報を持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveCorrectAssemblyCopyright()
     {
@@ -563,6 +686,9 @@ public class ProgramTests
         copyright.Should().NotBeNull();
     }
 
+    /// <summary>
+    /// Programクラスが正しいアセンブリ商標情報を持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveCorrectAssemblyTrademark()
     {
@@ -575,6 +701,9 @@ public class ProgramTests
         trademark.Should().NotBeNull();
     }
 
+    /// <summary>
+    /// Programクラスが正しいアセンブリ説明情報を持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveCorrectAssemblyDescription()
     {
@@ -587,6 +716,9 @@ public class ProgramTests
         description.Should().NotBeNull();
     }
 
+    /// <summary>
+    /// Programクラスが正しいアセンブリタイトル情報を持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveCorrectAssemblyTitle()
     {
@@ -599,6 +731,9 @@ public class ProgramTests
         title.Should().NotBeNull();
     }
 
+    /// <summary>
+    /// Programクラスが正しいアセンブリファイルバージョン情報を持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveCorrectAssemblyFileVersion()
     {
@@ -611,6 +746,9 @@ public class ProgramTests
         fileVersion.Should().NotBeNull();
     }
 
+    /// <summary>
+    /// Programクラスが正しいアセンブリ情報バージョンを持つことを確認するテスト.
+    /// </summary>
     [Fact]
     public void Program_ShouldHaveCorrectAssemblyInformationalVersion()
     {

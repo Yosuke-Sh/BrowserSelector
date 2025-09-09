@@ -62,6 +62,9 @@ public class InfrastructureServicesTests : IDisposable
     }
 
     [Fact]
+    /// <summary>
+    /// レジストリサービスが例外をスローした場合、ブラウザサービスは空のリストを返すことを確認するテスト.
+    /// </summary>
     public async Task BrowserService_DetectBrowsersAsync_ShouldReturnEmptyList_WhenRegistryServiceThrows()
     {
         // Arrange
@@ -79,6 +82,9 @@ public class InfrastructureServicesTests : IDisposable
     }
 
     [Fact]
+    /// <summary>
+    /// 有効なブラウザを追加した場合、ブラウザサービスはtrueを返すことを確認するテスト.
+    /// </summary>
     public async Task BrowserService_AddBrowserAsync_WithValidBrowser_ShouldReturnTrue()
     {
         // Arrange
@@ -98,6 +104,9 @@ public class InfrastructureServicesTests : IDisposable
     }
 
     [Fact]
+    /// <summary>
+    /// 無効なブラウザを追加した場合、ブラウザサービスはfalseを返すことを確認するテスト.
+    /// </summary>
     public async Task BrowserService_AddBrowserAsync_WithInvalidBrowser_ShouldReturnFalse()
     {
         // Arrange
@@ -117,6 +126,9 @@ public class InfrastructureServicesTests : IDisposable
     }
 
     [Fact]
+    /// <summary>
+    /// カスタムブラウザを削除した場合、ブラウザサービスはfalseを返すことを確認するテスト.
+    /// </summary>
     public async Task BrowserService_RemoveBrowserAsync_WithCustomBrowser_ShouldReturnFalse()
     {
         // Arrange
@@ -137,6 +149,9 @@ public class InfrastructureServicesTests : IDisposable
     }
 
     [Fact]
+    /// <summary>
+    /// システムブラウザを削除した場合、ブラウザサービスはfalseを返すことを確認するテスト.
+    /// </summary>
     public async Task BrowserService_RemoveBrowserAsync_WithSystemBrowser_ShouldReturnFalse()
     {
         // Arrange
@@ -156,6 +171,9 @@ public class InfrastructureServicesTests : IDisposable
     }
 
     [Fact]
+    /// <summary>
+    /// すべてのブラウザを取得した場合、ブラウザサービスは順序付けられたブラウザを返すことを確認するテスト.
+    /// </summary>
     public async Task BrowserService_GetAllBrowsersAsync_ShouldReturnOrderedBrowsers()
     {
         // Arrange
@@ -170,6 +188,9 @@ public class InfrastructureServicesTests : IDisposable
     }
 
     [Fact]
+    /// <summary>
+    /// アプリケーション設定の保存と読み込みが正しく動作することを確認するテスト.
+    /// </summary>
     public async Task SettingsService_SaveAndLoadAppSettings_ShouldPersistCorrectly()
     {
         // Arrange
@@ -196,6 +217,9 @@ public class InfrastructureServicesTests : IDisposable
     }
 
     [Fact(Skip = "設定の永続化は実際のサービス実装に依存するためスキップ")]
+    /// <summary>
+    /// 視覚設定の保存と読み込みが正しく動作することを確認するテスト.
+    /// </summary>
     public async Task SettingsService_SaveAndLoadVisualSettings_ShouldPersistCorrectly()
     {
         // Arrange
@@ -220,6 +244,9 @@ public class InfrastructureServicesTests : IDisposable
     }
 
     [Fact]
+    /// <summary>
+    /// 設定のリセットがデフォルト値に復元することを確認するテスト.
+    /// </summary>
     public async Task SettingsService_ResetSettings_ShouldRestoreDefaults()
     {
         // Arrange
@@ -243,6 +270,9 @@ public class InfrastructureServicesTests : IDisposable
     }
 
     [Fact]
+    /// <summary>
+    /// 有効なURLを正規化した場合、URLサービスは正規化されたURLを返すことを確認するテスト.
+    /// </summary>
     public async Task UrlService_NormalizeUrlAsync_WithValidUrl_ShouldReturnNormalizedUrl()
     {
         // Arrange
@@ -258,6 +288,9 @@ public class InfrastructureServicesTests : IDisposable
     }
 
     [Fact]
+    /// <summary>
+    /// HTTPのURLを正規化した場合、URLサービスは同じURLを返すことを確認するテスト.
+    /// </summary>
     public async Task UrlService_NormalizeUrlAsync_WithHttpUrl_ShouldReturnSameUrl()
     {
         // Arrange
@@ -272,6 +305,9 @@ public class InfrastructureServicesTests : IDisposable
     }
 
     [Fact]
+    /// <summary>
+    /// HTTPSのURLを正規化した場合、URLサービスは同じURLを返すことを確認するテスト.
+    /// </summary>
     public async Task UrlService_NormalizeUrlAsync_WithHttpsUrl_ShouldReturnSameUrl()
     {
         // Arrange
@@ -286,6 +322,9 @@ public class InfrastructureServicesTests : IDisposable
     }
 
     [Fact]
+    /// <summary>
+    /// 空のURLを正規化した場合、URLサービスは空文字列を返すことを確認するテスト.
+    /// </summary>
     public async Task UrlService_NormalizeUrlAsync_WithEmptyUrl_ShouldReturnEmptyString()
     {
         // Arrange
@@ -300,6 +339,9 @@ public class InfrastructureServicesTests : IDisposable
     }
 
     [Fact]
+    /// <summary>
+    /// 空白文字のURLを正規化した場合、URLサービスは空文字列を返すことを確認するテスト.
+    /// </summary>
     public async Task UrlService_NormalizeUrlAsync_WithWhitespaceUrl_ShouldReturnEmptyString()
     {
         // Arrange
@@ -314,6 +356,9 @@ public class InfrastructureServicesTests : IDisposable
     }
 
     [Fact]
+    /// <summary>
+    /// 有効なHTTPのURLを検証した場合、URLサービスはtrueを返すことを確認するテスト.
+    /// </summary>
     public async Task UrlService_ValidateUrlAsync_WithValidHttpUrl_ShouldReturnTrue()
     {
         // Arrange
@@ -328,6 +373,9 @@ public class InfrastructureServicesTests : IDisposable
     }
 
     [Fact]
+    /// <summary>
+    /// 有効なHTTPSのURLを検証した場合、URLサービスはtrueを返すことを確認するテスト.
+    /// </summary>
     public async Task UrlService_ValidateUrlAsync_WithValidHttpsUrl_ShouldReturnTrue()
     {
         // Arrange
@@ -342,6 +390,9 @@ public class InfrastructureServicesTests : IDisposable
     }
 
     [Fact]
+    /// <summary>
+    /// 無効なURLを検証した場合、URLサービスはfalseを返すことを確認するテスト.
+    /// </summary>
     public async Task UrlService_ValidateUrlAsync_WithInvalidUrl_ShouldReturnFalse()
     {
         // Arrange
@@ -356,6 +407,9 @@ public class InfrastructureServicesTests : IDisposable
     }
 
     [Fact]
+    /// <summary>
+    /// 空のURLを検証した場合、URLサービスはfalseを返すことを確認するテスト.
+    /// </summary>
     public async Task UrlService_ValidateUrlAsync_WithEmptyUrl_ShouldReturnFalse()
     {
         // Arrange
@@ -370,6 +424,9 @@ public class InfrastructureServicesTests : IDisposable
     }
 
     [Fact]
+    /// <summary>
+    /// 有効なURLからドメインを抽出した場合、URLサービスはドメインを返すことを確認するテスト.
+    /// </summary>
     public void UrlService_ExtractDomain_WithValidUrl_ShouldReturnDomain()
     {
         // Arrange
@@ -384,6 +441,9 @@ public class InfrastructureServicesTests : IDisposable
     }
 
     [Fact]
+    /// <summary>
+    /// プロトコルなしのURLからドメインを抽出した場合、URLサービスはドメインを返すことを確認するテスト.
+    /// </summary>
     public void UrlService_ExtractDomain_WithUrlWithoutProtocol_ShouldReturnDomain()
     {
         // Arrange
@@ -398,6 +458,9 @@ public class InfrastructureServicesTests : IDisposable
     }
 
     [Fact]
+    /// <summary>
+    /// 空のURLからドメインを抽出した場合、URLサービスは空文字列を返すことを確認するテスト.
+    /// </summary>
     public void UrlService_ExtractDomain_WithEmptyUrl_ShouldReturnEmptyString()
     {
         // Arrange
@@ -412,6 +475,9 @@ public class InfrastructureServicesTests : IDisposable
     }
 
     [Fact]
+    /// <summary>
+    /// プロトコルなしのURLにプロトコルを追加した場合、URLサービスはHTTPSを追加することを確認するテスト.
+    /// </summary>
     public void UrlService_AddProtocolIfNeeded_WithUrlWithoutProtocol_ShouldAddHttps()
     {
         // Arrange
@@ -426,6 +492,9 @@ public class InfrastructureServicesTests : IDisposable
     }
 
     [Fact]
+    /// <summary>
+    /// HTTPのURLにプロトコルを追加した場合、URLサービスは同じURLを返すことを確認するテスト.
+    /// </summary>
     public void UrlService_AddProtocolIfNeeded_WithHttpUrl_ShouldReturnSameUrl()
     {
         // Arrange
@@ -440,6 +509,9 @@ public class InfrastructureServicesTests : IDisposable
     }
 
     [Fact]
+    /// <summary>
+    /// HTTPSのURLにプロトコルを追加した場合、URLサービスは同じURLを返すことを確認するテスト.
+    /// </summary>
     public void UrlService_AddProtocolIfNeeded_WithHttpsUrl_ShouldReturnSameUrl()
     {
         // Arrange
@@ -454,6 +526,9 @@ public class InfrastructureServicesTests : IDisposable
     }
 
     [Fact]
+    /// <summary>
+    /// 空のURLにプロトコルを追加した場合、URLサービスは空文字列を返すことを確認するテスト.
+    /// </summary>
     public void UrlService_AddProtocolIfNeeded_WithEmptyUrl_ShouldReturnEmptyString()
     {
         // Arrange
@@ -468,6 +543,9 @@ public class InfrastructureServicesTests : IDisposable
     }
 
     [Fact]
+    /// <summary>
+    /// すべてのURLルールを取得した場合、URLルールサービスはルールを返すことを確認するテスト.
+    /// </summary>
     public async Task UrlRuleService_GetAllRulesAsync_ShouldReturnRules()
     {
         // Arrange
@@ -483,6 +561,9 @@ public class InfrastructureServicesTests : IDisposable
     }
 
     [Fact]
+    /// <summary>
+    /// 有効なURLルールを追加した場合、URLルールサービスはfalseを返すことを確認するテスト.
+    /// </summary>
     public async Task UrlRuleService_AddRuleAsync_WithValidRule_ShouldReturnFalse()
     {
         // Arrange
@@ -503,6 +584,9 @@ public class InfrastructureServicesTests : IDisposable
     }
 
     [Fact]
+    /// <summary>
+    /// 無効なURLルールを追加した場合、URLルールサービスはfalseを返すことを確認するテスト.
+    /// </summary>
     public async Task UrlRuleService_AddRuleAsync_WithInvalidRule_ShouldReturnFalse()
     {
         // Arrange
@@ -522,6 +606,9 @@ public class InfrastructureServicesTests : IDisposable
     }
 
     [Fact]
+    /// <summary>
+    /// 利用可能な言語を取得した場合、カスタム言語サービスは言語を返すことを確認するテスト.
+    /// </summary>
     public async Task CustomLanguageService_GetAvailableLanguagesAsync_ShouldReturnLanguages()
     {
         // Arrange
@@ -537,6 +624,9 @@ public class InfrastructureServicesTests : IDisposable
     }
 
     [Fact]
+    /// <summary>
+    /// 有効なファイルでカスタム言語を追加した場合、カスタム言語サービスはfalseを返すことを確認するテスト.
+    /// </summary>
     public async Task CustomLanguageService_AddCustomLanguageAsync_WithValidFile_ShouldReturnFalse()
     {
         // Arrange
@@ -552,6 +642,9 @@ public class InfrastructureServicesTests : IDisposable
     }
 
     [Fact]
+    /// <summary>
+    /// 無効なファイルでカスタム言語を追加した場合、カスタム言語サービスはfalseを返すことを確認するテスト.
+    /// </summary>
     public async Task CustomLanguageService_AddCustomLanguageAsync_WithInvalidFile_ShouldReturnFalse()
     {
         // Arrange

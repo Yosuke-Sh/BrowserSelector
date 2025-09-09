@@ -215,9 +215,19 @@ public class UpdateService : IUpdateService
             Version newer = new(newVersion);
             return newer > current;
         }
-        catch (Exception ex)
+        catch (ArgumentException ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Version comparison failed: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Version comparison failed (ArgumentException): {ex.Message}");
+            return false;
+        }
+        catch (FormatException ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Version comparison failed (FormatException): {ex.Message}");
+            return false;
+        }
+        catch (OverflowException ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Version comparison failed (OverflowException): {ex.Message}");
             return false;
         }
     }
