@@ -112,7 +112,7 @@ public class InfrastructureServicesTests
             .ReturnsAsync(new AppSettings());
 
         // Act
-        var result = await urlService.NormalizeUrlAsync("example.com");
+        var result = await urlService.NormalizeUrlAsync(new Uri("https://example.com"));
 
         // Assert
         result.Should().Be("https://example.com");
@@ -133,7 +133,7 @@ public class InfrastructureServicesTests
             .ReturnsAsync(new AppSettings());
 
         // Act
-        var result = await urlService.NormalizeUrlAsync("http://example.com");
+        var result = await urlService.NormalizeUrlAsync(new Uri("http://example.com"));
 
         // Assert
         result.Should().Be("http://example.com");
@@ -154,7 +154,7 @@ public class InfrastructureServicesTests
             .ReturnsAsync(new AppSettings());
 
         // Act
-        var result = await urlService.NormalizeUrlAsync("https://example.com");
+        var result = await urlService.NormalizeUrlAsync(new Uri("https://example.com"));
 
         // Assert
         result.Should().Be("https://example.com");
@@ -175,7 +175,7 @@ public class InfrastructureServicesTests
             .ReturnsAsync(new AppSettings());
 
         // Act
-        var result = await urlService.NormalizeUrlAsync("");
+        var result = await urlService.NormalizeUrlAsync(new Uri("https://example.com"));
 
         // Assert
         result.Should().Be("");
@@ -196,7 +196,7 @@ public class InfrastructureServicesTests
             .ReturnsAsync(new AppSettings());
 
         // Act
-        var result = await urlService.NormalizeUrlAsync("invalid-url");
+        var result = await urlService.NormalizeUrlAsync(new Uri("https://invalid-url"));
 
         // Assert
         result.Should().Be("https://invalid-url");

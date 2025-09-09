@@ -113,7 +113,14 @@ public partial class App : Application
             // 起動引数でURLが指定されている場合は設定
             if (!string.IsNullOrEmpty(initialUrl))
             {
-                mainViewModel.SetInitialUrl(initialUrl);
+                if (Uri.TryCreate(initialUrl, UriKind.Absolute, out var uri))
+                {
+                    mainViewModel.SetInitialUrl(uri);
+                }
+                else
+                {
+                    mainViewModel.SetInitialUrl(initialUrl);
+                }
             }
 
             _logService.LogInformation("テストモード: MainWindowを作成", "App");
