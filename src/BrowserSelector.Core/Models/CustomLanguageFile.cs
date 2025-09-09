@@ -22,7 +22,7 @@ namespace BrowserSelector.Core.Models
         /// <summary>
         /// Gets or sets リソース辞書（キー: リソースキー, 値: 翻訳文字列）.
         /// </summary>
-        public Dictionary<string, string> Resources { get; set; } = [];
+        public Dictionary<string, string> Resources { get; set; } =[];
 
         /// <summary>
         /// Gets or sets ファイルの作成日時.

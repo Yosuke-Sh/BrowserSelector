@@ -42,6 +42,11 @@ namespace BrowserSelector.Core.Models
         Opera,
 
         /// <summary>
+        /// Internet Explorer
+        /// </summary>
+        InternetExplorer,
+
+        /// <summary>
         /// Brave
         /// </summary>
         Brave,

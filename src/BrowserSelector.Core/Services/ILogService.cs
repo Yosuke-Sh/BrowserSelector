@@ -49,10 +49,17 @@ public interface ILogService
     /// <summary>
     /// 隧ｳ邏ｰ諠・ｱ莉倥″縺ｮ繝ｭ繧ｰ繧貞・蜉・.
     /// </summary>
-    void LogDetailed(LogLevel level, string message, string? category = null,
-                    string? eventId = null, string? requestTarget = null, string? userInfo = null,
-                    string? processTarget = null, string? processAction = null, string? processResult = null,
-                    Exception? exception = null);
+    void LogDetailed(
+        LogLevel level,
+        string message,
+        string? category = null,
+        string? eventId = null,
+        string? requestTarget = null,
+        string? userInfo = null,
+        string? processTarget = null,
+        string? processAction = null,
+        string? processResult = null,
+        Exception? exception = null);
 
     /// <summary>
     /// 繝ｭ繧ｰ險ｭ螳壹ｒ譖ｴ譁ｰ.

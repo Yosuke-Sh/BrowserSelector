@@ -63,32 +63,6 @@ namespace BrowserSelector.Core.Models
         public string DisplayName => $"{Pattern} → {BrowserName} (優先度: {Priority})";
 
         /// <summary>
-        /// ルールが指定されたURLにマッチするかを判定.
-        /// </summary>
-        /// <param name="url">判定対象のURL.</param>
-        /// <returns>マッチする場合true.</returns>
-        public bool IsMatch(string url)
-        {
-            if (string.IsNullOrWhiteSpace(url) || string.IsNullOrWhiteSpace(Pattern))
-            {
-                return false;
-            }
-
-            // パターンを大文字に変換
-            string pattern = Pattern.ToUpperInvariant();
-            string targetUrl = url.ToUpperInvariant();
-
-            // ワイルドカードパターンの処理
-            if (pattern.Contains('*', StringComparison.Ordinal))
-            {
-                return IsWildcardMatch(pattern, targetUrl);
-            }
-
-            // 完全一致
-            return targetUrl == pattern;
-        }
-
-        /// <summary>
         /// ワイルドカードパターンのマッチング.
         /// </summary>
         /// <param name="pattern">ワイルドカードを含むパターン.</param>
@@ -139,6 +113,32 @@ namespace BrowserSelector.Core.Models
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// ルールが指定されたURLにマッチするかを判定.
+        /// </summary>
+        /// <param name="url">判定対象のURL.</param>
+        /// <returns>マッチする場合true.</returns>
+        public bool IsMatch(string url)
+        {
+            if (string.IsNullOrWhiteSpace(url) || string.IsNullOrWhiteSpace(Pattern))
+            {
+                return false;
+            }
+
+            // パターンを大文字に変換
+            string pattern = Pattern.ToUpperInvariant();
+            string targetUrl = url.ToUpperInvariant();
+
+            // ワイルドカードパターンの処理
+            if (pattern.Contains('*', StringComparison.Ordinal))
+            {
+                return IsWildcardMatch(pattern, targetUrl);
+            }
+
+            // 完全一致
+            return targetUrl == pattern;
         }
 
         /// <summary>

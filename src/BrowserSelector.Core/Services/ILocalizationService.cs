@@ -40,15 +40,15 @@ public interface ILocalizationService
     Task SetLanguage(CultureInfo culture);
 
     /// <summary>
+    /// 言語変更イベント
+    /// </summary>
+    event EventHandler<LanguageChangedEventArgs>? LanguageChanged;
+
+    /// <summary>
     /// サポートされている言語の一覧を非同期で取得.
     /// </summary>
     /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
     Task<IEnumerable<CultureInfo>> GetSupportedLanguagesAsync();
-
-    /// <summary>
-    /// 言語変更イベント
-    /// </summary>
-    event EventHandler<LanguageChangedEventArgs>? LanguageChanged;
 }
 
 /// <summary>

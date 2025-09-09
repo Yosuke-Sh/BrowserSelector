@@ -17,7 +17,7 @@ public class BrowserService : IBrowserService
     private readonly IRegistryService _registryService;
     private readonly IUrlService _urlService;
     private readonly ILogService _logService;
-    private readonly List<Browser> _browsers = [];
+    private readonly List<Browser> _browsers =[];
 
     // 後方互換: 旧シグネチャ用コンストラクタ（テスト等）
     public BrowserService(IRegistryService registryService, IUrlService urlService)

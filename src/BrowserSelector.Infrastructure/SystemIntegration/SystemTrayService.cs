@@ -103,7 +103,7 @@ public class SystemTrayService : ISystemTrayService, IDisposable
         _ = _contextMenu.Items.Add(showItem);
 
         ToolStripMenuItem settingsItem = new("設定(&O)");
-        settingsItem.Click += (s, e) => OnSystemTrayAction(SystemTrayActionType.Settings);
+        settingsItem.Click += (s, e) => OnSystemTrayAction(SystemTrayActionType.OpenSettings);
         _ = _contextMenu.Items.Add(settingsItem);
 
         _ = _contextMenu.Items.Add(new ToolStripSeparator());

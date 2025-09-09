@@ -14,8 +14,8 @@ namespace BrowserSelector.Infrastructure.Logging;
 public class LogService : ILogService
 {
     private readonly object _lockObject = new();
-    private LogSettings _settings;
     private readonly string _defaultLogFolder;
+    private LogSettings _settings;
     private int _eventCounter = 0;
 
     public LogService()
@@ -114,10 +114,17 @@ public class LogService : ILogService
     /// <summary>
     /// 詳細情報付きのログを出力.
     /// </summary>
-    public void LogDetailed(LogLevel level, string message, string? category = null,
-                           string? eventId = null, string? requestTarget = null, string? userInfo = null,
-                           string? processTarget = null, string? processAction = null, string? processResult = null,
-                           Exception? exception = null)
+    public void LogDetailed(
+        LogLevel level,
+        string message,
+        string? category = null,
+        string? eventId = null,
+        string? requestTarget = null,
+        string? userInfo = null,
+        string? processTarget = null,
+        string? processAction = null,
+        string? processResult = null,
+        Exception? exception = null)
     {
         if (!_settings.EnableLogging || level < _settings.LogLevel)
         {
@@ -325,10 +332,17 @@ public class LogService : ILogService
     /// <summary>
     /// 詳細ログメッセージをフォーマット.
     /// </summary>
-    private string FormatDetailedLogMessage(LogLevel level, string message, string? category,
-                                          string? eventId, string? requestTarget, string? userInfo,
-                                          string? processTarget, string? processAction, string? processResult,
-                                          Exception? exception)
+    private string FormatDetailedLogMessage(
+        LogLevel level,
+        string message,
+        string? category,
+        string? eventId,
+        string? requestTarget,
+        string? userInfo,
+        string? processTarget,
+        string? processAction,
+        string? processResult,
+        Exception? exception)
     {
         string timestamp = DateTime.Now.ToString(_settings.TimestampFormat, CultureInfo.InvariantCulture);
         string levelText = GetLogLevelShortName(level);

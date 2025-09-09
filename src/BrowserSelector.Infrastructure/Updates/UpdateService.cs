@@ -15,9 +15,9 @@ public class UpdateService : IUpdateService
     private readonly string _updateCheckUrl;
     private readonly string _currentVersion;
 
-    /// <inheritdoc/>
-    public event EventHandler<UpdateAvailableEventArgs>? UpdateAvailable;
-
+    /// <summary>
+    /// アップデートサービスを初期化.
+    /// </summary>
     public UpdateService(string updateCheckUrl, string currentVersion)
     {
         _updateCheckUrl = updateCheckUrl;
@@ -25,6 +25,9 @@ public class UpdateService : IUpdateService
         _httpClient = new HttpClient();
         _httpClient.DefaultRequestHeaders.Add("User-Agent", "BrowserSelector-UpdateChecker");
     }
+
+    /// <inheritdoc/>
+    public event EventHandler<UpdateAvailableEventArgs>? UpdateAvailable;
 
     /// <summary>
     /// アップデートをチェック.
@@ -261,6 +264,7 @@ public class UpdateException : Exception
         : base(message, innerException)
     {
     }
+
     public UpdateException()
     {
     }
