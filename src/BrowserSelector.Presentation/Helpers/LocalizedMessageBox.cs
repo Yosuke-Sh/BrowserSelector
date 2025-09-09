@@ -145,7 +145,7 @@ public static class LocalizedMessageBox
                    Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true" ||
                    System.Reflection.Assembly.GetExecutingAssembly().GetName().Name?.Contains("Test", StringComparison.OrdinalIgnoreCase) == true ||
                    Environment.GetEnvironmentVariable("TEST_ENVIRONMENT") == "true" ||
-                   System.Diagnostics.Process.GetCurrentProcess().ProcessName.ToLowerInvariant().Contains("test", StringComparison.OrdinalIgnoreCase) ||
+                   System.Diagnostics.Process.GetCurrentProcess().ProcessName.ToUpperInvariant().Contains("TEST", StringComparison.OrdinalIgnoreCase) ||
                    IsRunningInTestFramework();
 
             return isTest;

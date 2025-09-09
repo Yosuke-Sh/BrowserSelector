@@ -89,11 +89,11 @@ public class IconPathConverter : IMultiValueConverter
     }
 
     /// <summary>
-    /// 高解像度アイコンを抽出します
+    /// 高解像度アイコンを抽出します.
     /// </summary>
-    /// <param name="filePath">ファイルパス</param>
-    /// <param name="iconIndex">アイコンインデックス（0が最初のアイコン）</param>
-    /// <returns>高解像度BitmapImage</returns>
+    /// <param name="filePath">ファイルパス.</param>
+    /// <param name="iconIndex">アイコンインデックス（0が最初のアイコン）.</param>
+    /// <returns>高解像度BitmapImage.</returns>
     private BitmapImage? ExtractHighQualityIcon(string filePath, int iconIndex)
     {
         try
@@ -104,19 +104,16 @@ public class IconPathConverter : IMultiValueConverter
             if (iconCount > 0 && iconIndex < iconCount)
             {
                 // 指定されたインデックスのアイコンを抽出
-                if (ExtractIconEx(filePath, iconIndex, out IntPtr largeIcon, out IntPtr smallIcon, 1) > 0)
+                if (ExtractIconEx(filePath, iconIndex, out IntPtr largeIcon, out IntPtr smallIcon, 1) > 0 && largeIcon != IntPtr.Zero)
                 {
-                    if (largeIcon != IntPtr.Zero)
-                    {
-                        using System.Drawing.Icon icon = System.Drawing.Icon.FromHandle(largeIcon);
+                    using System.Drawing.Icon icon = System.Drawing.Icon.FromHandle(largeIcon);
 
-                        // アイコンの元のサイズを取得
-                        System.Drawing.Size originalSize = icon.Size;
+                    // アイコンの元のサイズを取得
+                    System.Drawing.Size originalSize = icon.Size;
 
-                        // リサイズせずに元のアイコンをそのまま使用
-                        BitmapImage bitmap = ConvertIconToHighQualityBitmapImage(icon, originalSize);
-                        return bitmap;
-                    }
+                    // リサイズせずに元のアイコンをそのまま使用
+                    BitmapImage bitmap = ConvertIconToHighQualityBitmapImage(icon, originalSize);
+                    return bitmap;
                 }
             }
             else
@@ -142,12 +139,12 @@ public class IconPathConverter : IMultiValueConverter
 
 
     /// <summary>
-    /// アイコンを高品質なBitmapImageに変換
+    /// アイコンを高品質なBitmapImageに変換.
     /// </summary>
-    /// <param name="icon">変換するアイコン</param>
-    /// <param name="originalSize">元のアイコンサイズ</param>
-    /// <returns>高品質なBitmapImage</returns>
-    private BitmapImage ConvertIconToHighQualityBitmapImage(System.Drawing.Icon icon, System.Drawing.Size originalSize)
+    /// <param name="icon">変換するアイコン.</param>
+    /// <param name="unusedSize">未使用パラメータ.</param>
+    /// <returns>高品質なBitmapImage.</returns>
+    private BitmapImage ConvertIconToHighQualityBitmapImage(System.Drawing.Icon icon, System.Drawing.Size unusedSize)
     {
         try
         {
@@ -172,9 +169,9 @@ public class IconPathConverter : IMultiValueConverter
     }
 
     /// <summary>
-    /// デフォルトアイコンを取得
+    /// デフォルトアイコンを取得.
     /// </summary>
-    private object GetDefaultIcon(string? browserName)
+    private object GetDefaultIcon(string? unusedBrowserName)
     {
         // デフォルトのブラウザアイコンを返す
         return "/BrowserSelector.Presentation;component/Resources/Images/Icon_Browser.png";

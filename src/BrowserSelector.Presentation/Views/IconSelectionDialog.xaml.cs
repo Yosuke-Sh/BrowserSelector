@@ -18,9 +18,7 @@ public partial class IconSelectionDialog : Window
     public string? SelectedIconPath { get; private set; }
     public int SelectedIconIndex { get; private set; } = -1;
 
-    private readonly List<IconInfo> _icons = new();
     private string? _currentSelectedPath;
-    private string? _executablePath;
     private readonly ILogService? _logService;
 
     public IconSelectionDialog(ILogService? logService = null)
@@ -39,7 +37,6 @@ public partial class IconSelectionDialog : Window
     {
         try
         {
-            _executablePath = executablePath;
 
             if (File.Exists(executablePath))
             {
@@ -195,16 +192,24 @@ public partial class IconSelectionDialog : Window
         }
     }
 
+    private List<string> GetRecentIcons()
+    {
+        // 実際の実装では設定ファイルから読み込む
+        // ここではサンプルとして空のリストを返す
+        return new List<string>();
+    }
+
     private void LoadRecentIcons()
     {
         try
         {
             // 最近使用したアイコンのパスを設定ファイルから読み込み
-            // ここではサンプルとして空のリストを使用
-            List<string> recentIcons = new();
+            var recentIcons = GetRecentIcons();
 
             // 最近使用したアイコンがあれば表示
-            foreach (string iconPath in recentIcons)
+            if (recentIcons.Count > 0)
+            {
+                foreach (string iconPath in recentIcons)
             {
                 if (File.Exists(iconPath))
                 {
@@ -216,6 +221,7 @@ public partial class IconSelectionDialog : Window
                         Name = Path.GetFileName(iconPath)
                     }, RecentIconsPanel);
                 }
+            }
             }
         }
         catch (Exception ex)

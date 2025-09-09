@@ -18,15 +18,15 @@ public class BrowserIconDisplay : Control
 
     public static readonly DependencyProperty IconScaleProperty =
         DependencyProperty.Register(
-            nameof(IconScale), 
-            typeof(double), 
+            nameof(IconScale),
+            typeof(double),
             typeof(BrowserIconDisplay),
             new PropertyMetadata(1.0, OnIconScaleChanged));
 
     public static readonly DependencyProperty ShowIconProperty =
         DependencyProperty.Register(
-            nameof(ShowIcon), 
-            typeof(bool), 
+            nameof(ShowIcon),
+            typeof(bool),
             typeof(BrowserIconDisplay),
             new PropertyMetadata(true));
 

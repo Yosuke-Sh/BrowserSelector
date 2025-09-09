@@ -13,15 +13,15 @@ public class AccessibleButton : Button
 {
     public static readonly DependencyProperty FocusBorderColorProperty =
         DependencyProperty.Register(
-            nameof(FocusBorderColor), 
-            typeof(Color), 
+            nameof(FocusBorderColor),
+            typeof(Color),
             typeof(AccessibleButton),
             new PropertyMetadata(Colors.Blue));
 
     public static readonly DependencyProperty FocusBorderWidthProperty =
         DependencyProperty.Register(
-            nameof(FocusBorderWidth), 
-            typeof(double), 
+            nameof(FocusBorderWidth),
+            typeof(double),
             typeof(AccessibleButton),
             new PropertyMetadata(2.0));
 

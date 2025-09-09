@@ -10,7 +10,7 @@ using System.Windows;
 namespace BrowserSelector.Presentation.ViewModels;
 
 /// <summary>
-/// メインウィンドウのViewModel
+/// メインウィンドウのViewModel.
 /// </summary>
 public partial class MainViewModel : ObservableObject
 {
@@ -55,12 +55,12 @@ public partial class MainViewModel : ObservableObject
     }
 
     /// <summary>
-    /// VisualSettingsのプロパティ変更を監視
+    /// VisualSettingsのプロパティ変更を監視.
     /// </summary>
     private void OnVisualSettingsPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         // ブラウザボタン設定の変更を即座に反映
-        if (e.PropertyName?.StartsWith("BrowserButton") == true || e.PropertyName == "ShowBrowserName" || e.PropertyName == "BrowserIconSize")
+        if (e.PropertyName?.StartsWith("BrowserButton", StringComparison.Ordinal) == true || e.PropertyName == "ShowBrowserName" || e.PropertyName == "BrowserIconSize")
         {
             // UIの更新を強制
             OnPropertyChanged(nameof(VisualSettings));
@@ -68,7 +68,7 @@ public partial class MainViewModel : ObservableObject
     }
 
     /// <summary>
-    /// 設定変更通知を受け取る
+    /// 設定変更通知を受け取る.
     /// </summary>
     public void OnSettingsChanged(object? sender, SettingsChangedEventArgs e)
     {
@@ -86,7 +86,7 @@ public partial class MainViewModel : ObservableObject
     }
 
     /// <summary>
-    /// ウィンドウサイズの変更を適用
+    /// ウィンドウサイズの変更を適用.
     /// </summary>
     private void ApplyWindowSizeChanges(Views.MainWindow mainWindow, VisualSettings visualSettings)
     {
@@ -192,32 +192,32 @@ public partial class MainViewModel : ObservableObject
     }
 
     /// <summary>
-    /// ブラウザ一覧を読み込み
+    /// ブラウザ一覧を読み込み.
     /// </summary>
     public IAsyncRelayCommand LoadBrowsersCommand { get; }
 
     /// <summary>
-    /// ブラウザを起動
+    /// ブラウザを起動.
     /// </summary>
     public IAsyncRelayCommand<Browser> LaunchBrowserCommand { get; }
 
     /// <summary>
-    /// 設定を開く
+    /// 設定を開く.
     /// </summary>
     public IRelayCommand OpenSettingsCommand { get; }
 
     /// <summary>
-    /// 設定を閉じる
+    /// 設定を閉じる.
     /// </summary>
     public IRelayCommand CloseSettingsCommand { get; }
 
     /// <summary>
-    /// URLをクリア
+    /// URLをクリア.
     /// </summary>
     public IRelayCommand ClearUrlCommand { get; }
 
     /// <summary>
-    /// ブラウザ一覧を読み込み
+    /// ブラウザ一覧を読み込み.
     /// </summary>
     private async Task LoadBrowsersAsync()
     {
@@ -269,7 +269,7 @@ public partial class MainViewModel : ObservableObject
     }
 
     /// <summary>
-    /// ブラウザを起動
+    /// ブラウザを起動.
     /// </summary>
     private async Task LaunchBrowserAsync(Browser? browser)
     {
@@ -322,7 +322,7 @@ public partial class MainViewModel : ObservableObject
     }
 
     /// <summary>
-    /// ブラウザ起動が可能かどうかを判定
+    /// ブラウザ起動が可能かどうかを判定.
     /// </summary>
     private bool CanLaunchBrowser(Browser? browser)
     {
@@ -330,7 +330,7 @@ public partial class MainViewModel : ObservableObject
     }
 
     /// <summary>
-    /// 設定を開く
+    /// 設定を開く.
     /// </summary>
     private void OpenSettings()
     {
@@ -371,7 +371,7 @@ public partial class MainViewModel : ObservableObject
     }
 
     /// <summary>
-    /// 視覚設定を再読み込みしてメイン画面に反映
+    /// 視覚設定を再読み込みしてメイン画面に反映.
     /// </summary>
     private async Task RefreshVisualSettingsAsync()
     {
@@ -440,7 +440,7 @@ public partial class MainViewModel : ObservableObject
     }
 
     /// <summary>
-    /// 設定を閉じる
+    /// 設定を閉じる.
     /// </summary>
     private void CloseSettings()
     {
@@ -448,7 +448,7 @@ public partial class MainViewModel : ObservableObject
     }
 
     /// <summary>
-    /// URLをクリア
+    /// URLをクリア.
     /// </summary>
     private void ClearUrl()
     {
@@ -456,9 +456,9 @@ public partial class MainViewModel : ObservableObject
     }
 
     /// <summary>
-    /// 起動引数で指定されたURLを設定
+    /// 起動引数で指定されたURLを設定.
     /// </summary>
-    /// <param name="url">設定するURL</param>
+    /// <param name="url">設定するURL.</param>
     public async void SetInitialUrl(string url)
     {
         if (!string.IsNullOrWhiteSpace(url))
@@ -472,9 +472,9 @@ public partial class MainViewModel : ObservableObject
     }
 
     /// <summary>
-    /// URLルールに基づいてブラウザを自動選択
+    /// URLルールに基づいてブラウザを自動選択.
     /// </summary>
-    /// <param name="url">対象URL</param>
+    /// <param name="url">対象URL.</param>
     private async Task ApplyUrlRulesAsync(string url)
     {
         try
@@ -505,7 +505,7 @@ public partial class MainViewModel : ObservableObject
     }
 
     /// <summary>
-    /// URLが変更された時の処理
+    /// URLが変更された時の処理.
     /// </summary>
     partial void OnUrlChanged(string value)
     {
@@ -522,7 +522,7 @@ public partial class MainViewModel : ObservableObject
     }
 
     /// <summary>
-    /// タイトルメッセージを更新
+    /// タイトルメッセージを更新.
     /// </summary>
     private void UpdateTitleMessage()
     {

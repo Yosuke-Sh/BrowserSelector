@@ -13,14 +13,31 @@ using System.Windows.Media;
 namespace BrowserSelector.Presentation.ViewModels;
 
 /// <summary>
-/// 設定変更イベントの引数
+/// 設定変更イベントの引数.
 /// </summary>
 public class SettingsChangedEventArgs : EventArgs
 {
+    /// <summary>
+    /// Gets the setting type.
+    /// </summary>
     public string SettingType { get; }
+
+    /// <summary>
+    /// Gets the old value.
+    /// </summary>
     public object? OldValue { get; }
+
+    /// <summary>
+    /// Gets the new value.
+    /// </summary>
     public object? NewValue { get; }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SettingsChangedEventArgs"/> class.
+    /// </summary>
+    /// <param name="settingType">設定タイプ.</param>
+    /// <param name="oldValue">古い値.</param>
+    /// <param name="newValue">新しい値.</param>
     public SettingsChangedEventArgs(string settingType, object? oldValue, object? newValue)
     {
         SettingType = settingType;
@@ -30,7 +47,7 @@ public class SettingsChangedEventArgs : EventArgs
 }
 
 /// <summary>
-/// 設定画面のViewModel
+/// 設定画面のViewModel.
 /// </summary>
 public partial class SettingsViewModel : ObservableObject
 {
@@ -38,18 +55,34 @@ public partial class SettingsViewModel : ObservableObject
     private readonly IBrowserService _browserService;
     private readonly ILocalizationService _localizationService;
     private readonly IUrlRuleService _urlRuleService;
+
+    /// <summary>
+    /// アプリケーション設定.
+    /// </summary>
     [ObservableProperty]
     private AppSettings _appSettings = new();
 
+    /// <summary>
+    /// 視覚設定.
+    /// </summary>
     [ObservableProperty]
     private VisualSettings _visualSettings = new();
 
+    /// <summary>
+    /// 検出されたブラウザ一覧.
+    /// </summary>
     [ObservableProperty]
     private ObservableCollection<Browser> _detectedBrowsers = new();
 
+    /// <summary>
+    /// 利用可能な言語一覧.
+    /// </summary>
     [ObservableProperty]
     private ObservableCollection<LanguageInfo> _availableLanguages = new();
 
+    /// <summary>
+    /// 選択された言語.
+    /// </summary>
     [ObservableProperty]
     private LanguageInfo? _selectedLanguage;
 
@@ -123,6 +156,15 @@ public partial class SettingsViewModel : ObservableObject
 
 
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SettingsViewModel"/> class.
+    /// </summary>
+    /// <param name="settingsService">設定サービス.</param>
+    /// <param name="browserService">ブラウザサービス.</param>
+    /// <param name="localizationService">ローカライゼーションサービス.</param>
+    /// <param name="customLanguageService">カスタム言語サービス.</param>
+    /// <param name="urlRuleService">URLルールサービス.</param>
+    /// <param name="logService">ログサービス.</param>
     public SettingsViewModel(
         ISettingsService settingsService,
         IBrowserService browserService,
@@ -314,12 +356,12 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     /// <summary>
-    /// カスタム言語サービス（外部からアクセス可能）
+    /// Gets the custom language service.
     /// </summary>
     public ICustomLanguageService CustomLanguageService { get; }
 
     /// <summary>
-    /// ログサービス（外部からアクセス可能）
+    /// Gets the log service.
     /// </summary>
     public ILogService LogService { get; }
 
@@ -1419,13 +1461,25 @@ public partial class SettingsViewModel : ObservableObject
 }
 
 /// <summary>
-/// 言語情報を表すクラス
+/// 言語情報を表すクラス.
 /// </summary>
 public class LanguageInfo
 {
+    /// <summary>
+    /// Gets or sets the culture code.
+    /// </summary>
     public string CultureCode { get; set; }
+
+    /// <summary>
+    /// Gets or sets the display name.
+    /// </summary>
     public string DisplayName { get; set; }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LanguageInfo"/> class.
+    /// </summary>
+    /// <param name="cultureCode">カルチャーコード.</param>
+    /// <param name="displayName">表示名.</param>
     public LanguageInfo(string cultureCode, string displayName)
     {
         CultureCode = cultureCode;
@@ -1435,13 +1489,25 @@ public class LanguageInfo
 
 
 /// <summary>
-/// ログレベル情報を表すクラス
+/// ログレベル情報を表すクラス.
 /// </summary>
 public class LogLevelInfo
 {
+    /// <summary>
+    /// Gets or sets the log level.
+    /// </summary>
     public LogLevel LogLevel { get; set; }
+
+    /// <summary>
+    /// Gets or sets the display name.
+    /// </summary>
     public string DisplayName { get; set; }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LogLevelInfo"/> class.
+    /// </summary>
+    /// <param name="logLevel">ログレベル.</param>
+    /// <param name="displayName">表示名.</param>
     public LogLevelInfo(LogLevel logLevel, string displayName)
     {
         LogLevel = logLevel;

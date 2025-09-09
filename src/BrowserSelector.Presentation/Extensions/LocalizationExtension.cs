@@ -18,7 +18,7 @@ public class LocalizationExtension : MarkupExtension
     /// <summary>
     /// パラメータ（文字列フォーマット用）
     /// </summary>
-    public object[]? Parameters { get; set; }
+    public IList<object>? Parameters { get; }
 
     public LocalizationExtension()
     {
@@ -45,7 +45,7 @@ public class LocalizationExtension : MarkupExtension
 
         try
         {
-            return Parameters != null && Parameters.Length > 0
+            return Parameters != null && Parameters.Count > 0
                 ? _localizationService.GetString(Key, Parameters)
                 : _localizationService.GetString(Key);
         }

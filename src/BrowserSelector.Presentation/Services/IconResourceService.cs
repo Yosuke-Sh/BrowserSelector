@@ -5,25 +5,27 @@ using System.Windows.Media.Imaging;
 namespace BrowserSelector.Presentation.Services;
 
 /// <summary>
-/// アイコンリソース管理サービス
+/// アイコンリソース管理サービス.
 /// </summary>
 public class IconResourceService
 {
-    private readonly string _resourcePath;
     private readonly string _imagesPath;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IconResourceService"/> class.
+    /// </summary>
     public IconResourceService()
     {
         Assembly assembly = Assembly.GetExecutingAssembly();
-        _resourcePath = Path.GetDirectoryName(assembly.Location) ?? "";
-        _imagesPath = Path.Combine(_resourcePath, "Resources", "Images");
+        string resourcePath = Path.GetDirectoryName(assembly.Location) ?? string.Empty;
+        _imagesPath = Path.Combine(resourcePath, "Resources", "Images");
     }
 
     /// <summary>
-    /// 不足しているアイコンファイルを作成
+    /// 不足しているアイコンファイルを作成.
     /// </summary>
-    /// <param name="iconName">アイコン名（例: "Icon_Rules"）</param>
-    /// <returns>作成されたファイルのパス</returns>
+    /// <param name="iconName">アイコン名（例: "Icon_Rules"）.</param>
+    /// <returns>作成されたファイルのパス.</returns>
     public string CreateMissingIcon(string iconName)
     {
         try
@@ -56,15 +58,15 @@ public class IconResourceService
         }
         catch (Exception)
         {
-            return "";
+            return string.Empty;
         }
     }
 
     /// <summary>
-    /// アイコンファイルの存在確認
+    /// アイコンファイルの存在確認.
     /// </summary>
-    /// <param name="iconName">アイコン名</param>
-    /// <returns>存在する場合はtrue</returns>
+    /// <param name="iconName">アイコン名.</param>
+    /// <returns>存在する場合はtrue.</returns>
     public bool IconExists(string iconName)
     {
         string fileName = $"{iconName}.png";
@@ -73,10 +75,10 @@ public class IconResourceService
     }
 
     /// <summary>
-    /// 不足しているアイコンを一括作成
+    /// 不足しているアイコンを一括作成.
     /// </summary>
-    /// <param name="iconNames">アイコン名の配列</param>
-    /// <returns>作成されたファイル数の配列</returns>
+    /// <param name="iconNames">アイコン名の配列.</param>
+    /// <returns>作成されたファイル数の配列.</returns>
     public int CreateMissingIcons(string[] iconNames)
     {
         int createdCount = 0;
@@ -97,11 +99,11 @@ public class IconResourceService
     }
 
     /// <summary>
-    /// デフォルトアイコンを作成（透明な32x32のPNG）
+    /// デフォルトアイコンを作成（透明な32x32のPNG）.
     /// </summary>
-    /// <param name="width">幅</param>
-    /// <param name="height">高さ</param>
-    /// <returns>作成されたBitmapSource</returns>
+    /// <param name="width">幅.</param>
+    /// <param name="height">高さ.</param>
+    /// <returns>作成されたBitmapSource.</returns>
     private BitmapSource CreateDefaultIcon(int width, int height)
     {
         // 透明な32x32のビットマップを作成
@@ -123,9 +125,9 @@ public class IconResourceService
     }
 
     /// <summary>
-    /// 不足しているアイコンの一覧を取得
+    /// 不足しているアイコンの一覧を取得.
     /// </summary>
-    /// <returns>不足しているアイコン名の配列</returns>
+    /// <returns>不足しているアイコン名の配列.</returns>
     public string[] GetMissingIcons()
     {
         string[] requiredIcons = new[]
