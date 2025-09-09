@@ -24,7 +24,7 @@ public class InputValidationSecurityTests
     [InlineData("onmouseover=alert('XSS')")]
     [InlineData("onfocus=alert('XSS')")]
     [InlineData("onblur=alert('XSS')")]
-    public void UrlInput_ShouldRejectXSSAttacks(string maliciousUrl)
+    public void UrlInputShouldRejectXSSAttacks(string maliciousUrl)
     {
         // Arrange
         var isValidUrl = IsValidUrl(maliciousUrl);
@@ -43,7 +43,7 @@ public class InputValidationSecurityTests
     [InlineData("'; INSERT INTO users VALUES ('hacker', 'password'); --")]
     [InlineData("' OR 1=1 --")]
     [InlineData("'; DELETE FROM users WHERE '1'='1")]
-    public void UrlInput_ShouldRejectSQLInjectionAttacks(string maliciousUrl)
+    public void UrlInputShouldRejectSQLInjectionAttacks(string maliciousUrl)
     {
         // Arrange
         var isValidUrl = IsValidUrl(maliciousUrl);
@@ -61,7 +61,7 @@ public class InputValidationSecurityTests
     [InlineData("file:///etc/passwd")]
     [InlineData("file:///C:/Windows/System32/config/SAM")]
     [InlineData("\\\\server\\share\\..\\..\\windows\\system32")]
-    public void UrlInput_ShouldRejectPathTraversalAttacks(string maliciousUrl)
+    public void UrlInputShouldRejectPathTraversalAttacks(string maliciousUrl)
     {
         // Arrange
         var isValidUrl = IsValidUrl(maliciousUrl);
@@ -79,7 +79,7 @@ public class InputValidationSecurityTests
     [InlineData("https://example.com && format C:")]
     [InlineData("https://example.com; cat /etc/passwd")]
     [InlineData("https://example.com | type C:\\Windows\\System32\\drivers\\etc\\hosts")]
-    public void UrlInput_ShouldRejectCommandInjectionAttacks(string maliciousUrl)
+    public void UrlInputShouldRejectCommandInjectionAttacks(string maliciousUrl)
     {
         // Arrange
         var isValidUrl = IsValidUrl(maliciousUrl);
@@ -102,7 +102,7 @@ public class InputValidationSecurityTests
     [InlineData("https://user:pass@example.com")]
     [InlineData("https://example.com/path?param=value")]
     [InlineData("https://example.com/path#fragment")]
-    public void UrlInput_ShouldAcceptValidUrls(string validUrl)
+    public void UrlInputShouldAcceptValidUrls(string validUrl)
     {
         // Arrange
         var isValidUrl = IsValidUrl(validUrl);
@@ -115,7 +115,7 @@ public class InputValidationSecurityTests
     /// 長すぎるURLの検証テスト.
     /// </summary>
     [Fact]
-    public void UrlInput_ShouldRejectExcessivelyLongUrls()
+    public void UrlInputShouldRejectExcessivelyLongUrls()
     {
         // Arrange
         var longUrl = "https://example.com/" + new string('a', 10000);
@@ -136,7 +136,7 @@ public class InputValidationSecurityTests
     [InlineData("https://example.com/path\nwith\nnewlines")]
     [InlineData("https://example.com/path\rwith\rcarriage")]
     [InlineData("https://example.com/path\0with\0null")]
-    public void UrlInput_ShouldRejectUrlsWithSpecialCharacters(string urlWithSpecialChars)
+    public void UrlInputShouldRejectUrlsWithSpecialCharacters(string urlWithSpecialChars)
     {
         // Arrange
         var isValidUrl = IsValidUrl(urlWithSpecialChars);
@@ -155,7 +155,7 @@ public class InputValidationSecurityTests
     [InlineData("Safari")]
     [InlineData("Opera")]
     [InlineData("Brave")]
-    public void BrowserNameInput_ShouldAcceptValidNames(string browserName)
+    public void BrowserNameInputShouldAcceptValidNames(string browserName)
     {
         // Arrange
         var isValidName = IsValidBrowserName(browserName);
@@ -174,7 +174,7 @@ public class InputValidationSecurityTests
     [InlineData("Safari\n\n\n")]
     [InlineData("Opera\t\t\t")]
     [InlineData("Brave\r\r\r")]
-    public void BrowserNameInput_ShouldRejectMaliciousNames(string maliciousName)
+    public void BrowserNameInputShouldRejectMaliciousNames(string maliciousName)
     {
         // Arrange
         var isValidName = IsValidBrowserName(maliciousName);
@@ -192,7 +192,7 @@ public class InputValidationSecurityTests
     [InlineData("setting_with_underscores")]
     [InlineData("setting.with.dots")]
     [InlineData("setting123with456numbers")]
-    public void SettingValueInput_ShouldAcceptValidValues(string settingValue)
+    public void SettingValueInputShouldAcceptValidValues(string settingValue)
     {
         // Arrange
         var isValidValue = IsValidSettingValue(settingValue);
@@ -213,7 +213,7 @@ public class InputValidationSecurityTests
     [InlineData("setting\r\r\r")]
     [InlineData("../../../etc/passwd")]
     [InlineData("..\\..\\..\\windows\\system32")]
-    public void SettingValueInput_ShouldRejectMaliciousValues(string maliciousValue)
+    public void SettingValueInputShouldRejectMaliciousValues(string maliciousValue)
     {
         // Arrange
         var isValidValue = IsValidSettingValue(maliciousValue);

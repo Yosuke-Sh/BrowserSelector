@@ -19,7 +19,7 @@ public class RegistrySecurityTests
     [InlineData("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths")]
     [InlineData("HKEY_CURRENT_USER\\Software\\Classes\\http")]
     [InlineData("HKEY_CURRENT_USER\\Software\\Classes\\https")]
-    public void RegistryKey_ShouldAcceptValidKeys(string validKey)
+    public void RegistryKeyShouldAcceptValidKeys(string validKey)
     {
         // Arrange
         var isValidKey = IsValidRegistryKey(validKey);
@@ -39,7 +39,7 @@ public class RegistrySecurityTests
     [InlineData("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon")]
     [InlineData("HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\LanmanServer")]
     [InlineData("HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\LanmanWorkstation")]
-    public void RegistryKey_ShouldRejectDangerousKeys(string dangerousKey)
+    public void RegistryKeyShouldRejectDangerousKeys(string dangerousKey)
     {
         // Arrange
         var isValidKey = IsValidRegistryKey(dangerousKey);
@@ -59,7 +59,7 @@ public class RegistrySecurityTests
     [InlineData("HKEY_CURRENT_USER\\Software\\Test\n\n\n")]
     [InlineData("HKEY_CURRENT_USER\\Software\\Test\t\t\t")]
     [InlineData("HKEY_CURRENT_USER\\Software\\Test\r\r\r")]
-    public void RegistryKey_ShouldRejectInvalidKeys(string invalidKey)
+    public void RegistryKeyShouldRejectInvalidKeys(string invalidKey)
     {
         // Arrange
         var isValidKey = IsValidRegistryKey(invalidKey);
@@ -77,7 +77,7 @@ public class RegistrySecurityTests
     [InlineData("LastUsedBrowser")]
     [InlineData("SettingsVersion")]
     [InlineData("InstallationDate")]
-    public void RegistryValue_ShouldAcceptValidValues(string validValue)
+    public void RegistryValueShouldAcceptValidValues(string validValue)
     {
         // Arrange
         var isValidValue = IsValidRegistryValue(validValue);
@@ -99,7 +99,7 @@ public class RegistrySecurityTests
     [InlineData("Value|cmd.exe")]
     [InlineData("Value&format C:")]
     [InlineData("Value;rm -rf /")]
-    public void RegistryValue_ShouldRejectDangerousValues(string dangerousValue)
+    public void RegistryValueShouldRejectDangerousValues(string dangerousValue)
     {
         // Arrange
         var isValidValue = IsValidRegistryValue(dangerousValue);
@@ -118,7 +118,7 @@ public class RegistrySecurityTests
     [InlineData("Firefox")]
     [InlineData("Edge")]
     [InlineData("Safari")]
-    public void RegistryData_ShouldAcceptValidData(string validData)
+    public void RegistryDataShouldAcceptValidData(string validData)
     {
         // Arrange
         var isValidData = IsValidRegistryData(validData);
@@ -140,7 +140,7 @@ public class RegistrySecurityTests
     [InlineData("C:\\Program Files\\BrowserSelector\\BrowserSelector.exe|cmd.exe")]
     [InlineData("https://www.google.com&format C:")]
     [InlineData("Chrome;rm -rf /")]
-    public void RegistryData_ShouldRejectDangerousData(string dangerousData)
+    public void RegistryDataShouldRejectDangerousData(string dangerousData)
     {
         // Arrange
         var isValidData = IsValidRegistryData(dangerousData);
@@ -153,7 +153,7 @@ public class RegistrySecurityTests
     /// 長すぎるレジストリキーの検証テスト.
     /// </summary>
     [Fact]
-    public void RegistryKey_ShouldRejectExcessivelyLongKeys()
+    public void RegistryKeyShouldRejectExcessivelyLongKeys()
     {
         // Arrange
         var longKey = "HKEY_CURRENT_USER\\Software\\" + new string('a', 300);
@@ -169,7 +169,7 @@ public class RegistrySecurityTests
     /// 長すぎるレジストリ値の検証テスト.
     /// </summary>
     [Fact]
-    public void RegistryValue_ShouldRejectExcessivelyLongValues()
+    public void RegistryValueShouldRejectExcessivelyLongValues()
     {
         // Arrange
         var longValue = new string('a', 1000);
@@ -185,7 +185,7 @@ public class RegistrySecurityTests
     /// 長すぎるレジストリデータの検証テスト.
     /// </summary>
     [Fact]
-    public void RegistryData_ShouldRejectExcessivelyLongData()
+    public void RegistryDataShouldRejectExcessivelyLongData()
     {
         // Arrange
         var longData = new string('a', 10000);

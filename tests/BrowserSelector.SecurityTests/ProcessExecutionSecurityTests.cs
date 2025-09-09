@@ -20,7 +20,7 @@ public class ProcessExecutionSecurityTests
     [InlineData("C:\\Program Files\\Safari\\Safari.exe")]
     [InlineData("C:\\Program Files\\Opera\\opera.exe")]
     [InlineData("C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe")]
-    public void BrowserExecutablePath_ShouldAcceptValidPaths(string validPath)
+    public void BrowserExecutablePathShouldAcceptValidPaths(string validPath)
     {
         // Arrange
         var isValidPath = IsValidExecutablePath(validPath);
@@ -43,7 +43,7 @@ public class ProcessExecutionSecurityTests
     [InlineData("C:\\Windows\\System32\\services.msc")]
     [InlineData("C:\\Windows\\System32\\eventvwr.msc")]
     [InlineData("C:\\Windows\\System32\\compmgmt.msc")]
-    public void BrowserExecutablePath_ShouldRejectDangerousPaths(string dangerousPath)
+    public void BrowserExecutablePathShouldRejectDangerousPaths(string dangerousPath)
     {
         // Arrange
         var isValidPath = IsValidExecutablePath(dangerousPath);
@@ -64,7 +64,7 @@ public class ProcessExecutionSecurityTests
     [InlineData("brave.exe\r\r\r")]
     [InlineData("../../../etc/passwd")]
     [InlineData("..\\..\\..\\windows\\system32\\config\\sam")]
-    public void BrowserExecutablePath_ShouldRejectInvalidPaths(string invalidPath)
+    public void BrowserExecutablePathShouldRejectInvalidPaths(string invalidPath)
     {
         // Arrange
         var isValidPath = IsValidExecutablePath(invalidPath);
@@ -85,7 +85,7 @@ public class ProcessExecutionSecurityTests
     [InlineData("https://user:pass@example.com")]
     [InlineData("https://example.com/path?param=value")]
     [InlineData("https://example.com/path#fragment")]
-    public void CommandLineArguments_ShouldAcceptValidArguments(string validArgument)
+    public void CommandLineArgumentsShouldAcceptValidArguments(string validArgument)
     {
         // Arrange
         var isValidArgument = IsValidCommandLineArgument(validArgument);
@@ -106,7 +106,7 @@ public class ProcessExecutionSecurityTests
     [InlineData("https://example.com && net user hacker password /add")]
     [InlineData("https://example.com; shutdown -s -t 0")]
     [InlineData("https://example.com | taskkill /f /im explorer.exe")]
-    public void CommandLineArguments_ShouldRejectDangerousArguments(string dangerousArgument)
+    public void CommandLineArgumentsShouldRejectDangerousArguments(string dangerousArgument)
     {
         // Arrange
         var isValidArgument = IsValidCommandLineArgument(dangerousArgument);
@@ -125,7 +125,7 @@ public class ProcessExecutionSecurityTests
     [InlineData("https://example.com\n\n\n")]
     [InlineData("https://example.com\t\t\t")]
     [InlineData("https://example.com\r\r\r")]
-    public void CommandLineArguments_ShouldRejectInvalidArguments(string invalidArgument)
+    public void CommandLineArgumentsShouldRejectInvalidArguments(string invalidArgument)
     {
         // Arrange
         var isValidArgument = IsValidCommandLineArgument(invalidArgument);
@@ -138,7 +138,7 @@ public class ProcessExecutionSecurityTests
     /// 長すぎるコマンドライン引数の検証テスト.
     /// </summary>
     [Fact]
-    public void CommandLineArguments_ShouldRejectExcessivelyLongArguments()
+    public void CommandLineArgumentsShouldRejectExcessivelyLongArguments()
     {
         // Arrange
         var longArgument = "https://example.com/" + new string('a', 10000);
@@ -154,7 +154,7 @@ public class ProcessExecutionSecurityTests
     /// プロセス実行のセキュリティテスト.
     /// </summary>
     [Fact]
-    public void ProcessExecution_ShouldBeSecure()
+    public void ProcessExecutionShouldBeSecure()
     {
         // Arrange
         var validPath = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
@@ -176,7 +176,7 @@ public class ProcessExecutionSecurityTests
     [InlineData("C:\\Windows\\System32\\regedit.exe", "https://www.github.com")]
     [InlineData("C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe", "https://www.google.com; rm -rf /")]
     [InlineData("C:\\Program Files\\Mozilla Firefox\\firefox.exe", "https://www.microsoft.com | del /f /q C:\\")]
-    public void ProcessExecution_ShouldRejectDangerousProcesses(string dangerousPath, string dangerousArguments)
+    public void ProcessExecutionShouldRejectDangerousProcesses(string dangerousPath, string dangerousArguments)
     {
         // Act
         var canExecute = CanExecuteProcess(dangerousPath, dangerousArguments);
@@ -189,7 +189,7 @@ public class ProcessExecutionSecurityTests
     /// プロセス実行の権限チェックテスト.
     /// </summary>
     [Fact]
-    public void ProcessExecution_ShouldCheckPermissions()
+    public void ProcessExecutionShouldCheckPermissions()
     {
         // Arrange
         var validPath = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
@@ -210,7 +210,7 @@ public class ProcessExecutionSecurityTests
     [InlineData("C:\\Windows\\System32\\regedit.exe")]
     [InlineData("C:\\Windows\\System32\\gpedit.msc")]
     [InlineData("C:\\Windows\\System32\\mmc.exe")]
-    public void ProcessExecution_ShouldRejectDangerousPermissions(string dangerousPath)
+    public void ProcessExecutionShouldRejectDangerousPermissions(string dangerousPath)
     {
         // Act
         var hasPermission = HasExecutionPermission(dangerousPath);
