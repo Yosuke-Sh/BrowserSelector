@@ -62,14 +62,14 @@ public class UrlService : IUrlService
                 {
                     // プロトコルを追加してからUri型に変換
                     string normalizedUrl = url.Trim();
-                    if (!normalizedUrl.StartsWith("http://", StringComparison.Ordinal) && 
+                    if (!normalizedUrl.StartsWith("http://", StringComparison.Ordinal) &&
                         !normalizedUrl.StartsWith("https://", StringComparison.Ordinal) &&
-                        !normalizedUrl.StartsWith("ftp://", StringComparison.Ordinal) && 
+                        !normalizedUrl.StartsWith("ftp://", StringComparison.Ordinal) &&
                         !normalizedUrl.StartsWith("file://", StringComparison.Ordinal))
                     {
                         normalizedUrl = "https://" + normalizedUrl;
                     }
-                    
+
                     if (Uri.TryCreate(normalizedUrl, UriKind.Absolute, out var normalizedUri))
                     {
                         url = AddProtocolIfNeeded(normalizedUri);
@@ -175,14 +175,14 @@ public class UrlService : IUrlService
                 {
                     // プロトコルを追加してからUri型に変換
                     string normalizedUrl = url.Trim();
-                    if (!normalizedUrl.StartsWith("http://", StringComparison.Ordinal) && 
+                    if (!normalizedUrl.StartsWith("http://", StringComparison.Ordinal) &&
                         !normalizedUrl.StartsWith("https://", StringComparison.Ordinal) &&
-                        !normalizedUrl.StartsWith("ftp://", StringComparison.Ordinal) && 
+                        !normalizedUrl.StartsWith("ftp://", StringComparison.Ordinal) &&
                         !normalizedUrl.StartsWith("file://", StringComparison.Ordinal))
                     {
                         normalizedUrl = "https://" + normalizedUrl;
                     }
-                    
+
                     if (Uri.TryCreate(normalizedUrl, UriKind.Absolute, out var normalizedUri))
                     {
                         url = AddProtocolIfNeeded(normalizedUri);
