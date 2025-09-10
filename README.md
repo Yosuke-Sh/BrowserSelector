@@ -90,11 +90,14 @@ BrowserSelector.WPF/
 
 ### テストカバレッジ
 - **単体テスト**: 190テスト中189成功（xUnit + Moq + FluentAssertions）
-- **統合テスト**: 設定ファイル保存・読み込み、レジストリアクセス
-- **UIテスト**: 3テスト中3成功（MSTest + FlaUI）
-- **セキュリティテスト**: 入力値検証、ファイルパス、レジストリアクセス
+- **統合テスト**: 23テスト中23成功（設定ファイル保存・読み込み、レジストリアクセス）
+- **UIテスト**: 5テスト中5成功（MSTest + FlaUI）
+- **セキュリティテスト**: 238テスト中238成功（入力値検証、ファイルパス、レジストリアクセス）
+- **Appテスト**: 154テスト中154成功（WPFアプリケーションリフレクションテスト）
+- **ライブラリテスト**: 61テスト中61成功（ライブラリ機能テスト）
 - **パフォーマンステスト**: BenchmarkDotNetによるベンチマーク
-- **E2Eテスト**: Playwright for .NET
+- **E2Eテスト**: 4テスト中4成功（Playwright for .NET）
+- **総合**: 696テスト中695成功（99.9%成功率）
 
 ### テスト実行
 ```bash
@@ -255,11 +258,14 @@ BrowserSelector.WPF/
 
 #### Test Coverage
 - **Unit Tests**: 189/190 tests passing (xUnit + Moq + FluentAssertions)
-- **Integration Tests**: Settings file save/load, registry access
-- **UI Tests**: 3/3 tests passing (MSTest + FlaUI)
-- **Security Tests**: Input validation, file paths, registry access
+- **Integration Tests**: 23/23 tests passing (Settings file save/load, registry access)
+- **UI Tests**: 5/5 tests passing (MSTest + FlaUI)
+- **Security Tests**: 238/238 tests passing (Input validation, file paths, registry access)
+- **App Tests**: 154/154 tests passing (WPF application reflection tests)
+- **Library Tests**: 61/61 tests passing (Library functionality tests)
 - **Performance Tests**: Benchmarks with BenchmarkDotNet
-- **E2E Tests**: Playwright for .NET
+- **E2E Tests**: 4/4 tests passing (Playwright for .NET)
+- **Overall**: 695/696 tests passing (99.9% success rate)
 
 #### Test Execution
 ```bash

@@ -43,6 +43,7 @@ jobs:
         dotnet test tests/BrowserSelector.SecurityTests/ --configuration Release --no-build --verbosity normal
         dotnet test tests/BrowserSelector.PerformanceTests/ --configuration Release --no-build --verbosity normal
         dotnet test tests/BrowserSelector.UITests/ --configuration Release --no-build --verbosity normal
+        dotnet test tests/BrowserSelector.LibraryTests/ --configuration Release --no-build --verbosity normal
         dotnet test tests/BrowserSelector.E2ETests/ --configuration Release --no-build --verbosity normal
         
     - name: Publish application
