@@ -1,4 +1,5 @@
 using BrowserSelector.Core.Services;
+using System.Globalization;
 using System.Net.Http;
 
 namespace BrowserSelector.Infrastructure.Services;
@@ -206,7 +207,35 @@ public class UrlService : IUrlService
     /// <inheritdoc/>
     public string AddProtocolIfNeeded(Uri url)
     {
-        return url?.ToString() ?? string.Empty;
+        if (url == null)
+        {
+            return string.Empty;
+        }
+
+        // UriのToString()は末尾スラッシュを追加するため、手動で構築
+        string result = $"{url.Scheme}://{url.Host}";
+
+        if (!string.IsNullOrEmpty(url.Port.ToString(CultureInfo.InvariantCulture)) && url.Port != 80 && url.Port != 443)
+        {
+            result += $":{url.Port}";
+        }
+
+        if (!string.IsNullOrEmpty(url.AbsolutePath) && url.AbsolutePath != "/")
+        {
+            result += url.AbsolutePath;
+        }
+
+        if (!string.IsNullOrEmpty(url.Query))
+        {
+            result += url.Query;
+        }
+
+        if (!string.IsNullOrEmpty(url.Fragment))
+        {
+            result += url.Fragment;
+        }
+
+        return result;
     }
 
     /// <inheritdoc/>

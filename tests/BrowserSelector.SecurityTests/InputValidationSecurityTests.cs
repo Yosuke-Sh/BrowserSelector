@@ -271,7 +271,7 @@ public class InputValidationSecurityTests
             @"file:\/\/",
             @"\\\\",
             @"[;\|&]",
-            @"[\r\n\t\0]"
+            @"[\r\n\t\0 ]" // スペース文字を追加
         };
 
         foreach (var pattern in dangerousPatterns)

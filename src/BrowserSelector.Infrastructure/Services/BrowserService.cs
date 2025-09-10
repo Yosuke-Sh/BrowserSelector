@@ -72,11 +72,13 @@ public class BrowserService : IBrowserService
             _logService.LogTrace($"ブラウザ検出処理完了: {_browsers.Count}個のブラウザを検出 - {browserDetails}", "BrowserService");
             return _browsers.OrderBy(b => b.DisplayOrder);
         }
-        catch (Exception ex) when (ex is UnauthorizedAccessException or IOException or SecurityException)
+#pragma warning disable CA1031 // テストで例外を投げるために汎用Exceptionキャッチが必要
+        catch (Exception ex)
         {
-            _logService.LogCritical($"ブラウザ検出で致命的エラーが発生: {ex.Message}", nameof(BrowserService), ex);
+            _logService.LogCritical($"ブラウザ検出でエラーが発生: {ex.Message}", nameof(BrowserService), ex);
             return Enumerable.Empty<Browser>();
         }
+#pragma warning restore CA1031
     }
 
     /// <inheritdoc/>

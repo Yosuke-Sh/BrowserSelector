@@ -335,16 +335,16 @@ public class CoreProjectCoverageTests
         ICustomLanguageService customLanguageService = _serviceProvider.GetRequiredService<ICustomLanguageService>();
 
         // Act & Assert - エッジケースのテスト
-        string emptyUrl = await urlService.NormalizeUrlAsync(new Uri("https://example.com"));
-        _ = emptyUrl.Should().BeEmpty();
+        string normalUrl = await urlService.NormalizeUrlAsync("https://example.com");
+        _ = normalUrl.Should().Be("https://example.com");
 
-        string whitespaceUrl = await urlService.NormalizeUrlAsync(new Uri("https://example.com"));
+        string whitespaceUrl = await urlService.NormalizeUrlAsync("   ");
         _ = whitespaceUrl.Should().BeEmpty();
 
-        bool invalidUrl = await urlService.ValidateUrlAsync(new Uri("https://example.com"));
+        bool invalidUrl = await urlService.ValidateUrlAsync("invalid-url");
         _ = invalidUrl.Should().BeFalse();
 
-        string emptyDomain = urlService.ExtractDomain(new Uri("https://example.com"));
+        string emptyDomain = urlService.ExtractDomain("");
         _ = emptyDomain.Should().BeEmpty();
 
         string urlWithProtocol = urlService.AddProtocolIfNeeded(new Uri("http://example.com"));

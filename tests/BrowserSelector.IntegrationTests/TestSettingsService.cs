@@ -28,7 +28,20 @@ public class TestSettingsService : ISettingsService
         // 設定ディレクトリが存在しない場合は作成
         if (!Directory.Exists(_settingsDirectory))
         {
-            _ = Directory.CreateDirectory(_settingsDirectory);
+            try
+            {
+                _ = Directory.CreateDirectory(_settingsDirectory);
+                
+                // ディレクトリ作成の確認
+                if (!Directory.Exists(_settingsDirectory))
+                {
+                    throw new InvalidOperationException($"テスト用設定ディレクトリの作成に失敗しました: {_settingsDirectory}");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"テスト用設定ディレクトリの作成中にエラーが発生しました: {_settingsDirectory}", ex);
+            }
         }
 
         _appSettingsPath = Path.Combine(_settingsDirectory, "appsettings.json");

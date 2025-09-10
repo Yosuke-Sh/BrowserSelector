@@ -387,7 +387,7 @@ public class InfrastructureServicesTests : IDisposable
         string testUrl = "";
 
         // Act
-        string normalizedUrl = await urlService.NormalizeUrlAsync(new Uri(testUrl));
+        string normalizedUrl = await urlService.NormalizeUrlAsync(testUrl);
 
         // Assert
         _ = normalizedUrl.Should().BeEmpty("空URLは空文字列を返すこと");
@@ -408,7 +408,7 @@ public class InfrastructureServicesTests : IDisposable
         string testUrl = "   ";
 
         // Act
-        string normalizedUrl = await urlService.NormalizeUrlAsync(new Uri(testUrl));
+        string normalizedUrl = await urlService.NormalizeUrlAsync(testUrl);
 
         // Assert
         _ = normalizedUrl.Should().BeEmpty("空白のみのURLは空文字列を返すこと");
@@ -471,7 +471,7 @@ public class InfrastructureServicesTests : IDisposable
         string testUrl = "invalid-url";
 
         // Act
-        bool isValid = await urlService.ValidateUrlAsync(new Uri(testUrl));
+        bool isValid = await urlService.ValidateUrlAsync(testUrl);
 
         // Assert
         _ = isValid.Should().BeFalse("無効なURLはfalseを返すこと");
@@ -492,7 +492,7 @@ public class InfrastructureServicesTests : IDisposable
         string testUrl = "";
 
         // Act
-        bool isValid = await urlService.ValidateUrlAsync(new Uri(testUrl));
+        bool isValid = await urlService.ValidateUrlAsync(testUrl);
 
         // Assert
         _ = isValid.Should().BeFalse("空URLはfalseを返すこと");
@@ -526,7 +526,7 @@ public class InfrastructureServicesTests : IDisposable
         string testUrl = "www.example.com/path";
 
         // Act
-        string domain = urlService.ExtractDomain(new Uri(testUrl));
+        string domain = urlService.ExtractDomain(testUrl);
 
         // Assert
         _ = domain.Should().Be("www.example.com", "プロトコルなしURLからもドメインが抽出されること");
@@ -543,7 +543,7 @@ public class InfrastructureServicesTests : IDisposable
         string testUrl = "";
 
         // Act
-        string domain = urlService.ExtractDomain(new Uri(testUrl));
+        string domain = urlService.ExtractDomain(testUrl);
 
         // Assert
         _ = domain.Should().BeEmpty("空URLからは空文字列が返されること");
@@ -560,7 +560,7 @@ public class InfrastructureServicesTests : IDisposable
         string testUrl = "www.example.com";
 
         // Act
-        string urlWithProtocol = urlService.AddProtocolIfNeeded(new Uri(testUrl));
+        string urlWithProtocol = urlService.AddProtocolIfNeeded(testUrl);
 
         // Assert
         _ = urlWithProtocol.Should().Be("https://www.example.com", "プロトコルなしURLにHTTPSが追加されること");
@@ -611,7 +611,7 @@ public class InfrastructureServicesTests : IDisposable
         string testUrl = "";
 
         // Act
-        string urlWithProtocol = urlService.AddProtocolIfNeeded(new Uri(testUrl));
+        string urlWithProtocol = urlService.AddProtocolIfNeeded(testUrl);
 
         // Assert
         _ = urlWithProtocol.Should().BeEmpty("空URLは空文字列を返すこと");

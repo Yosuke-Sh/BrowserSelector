@@ -38,7 +38,10 @@ public class LibraryService : ILibraryService
     /// <returns>検証結果.</returns>
     public Task<bool> ValidateBrowserAsync(Browser browser)
     {
-        ArgumentNullException.ThrowIfNull(browser);
+        if (browser == null)
+        {
+            return Task.FromResult(false);
+        }
 
         _logService?.LogTrace($"ブラウザ検証開始: {browser.Name}", "LibraryService");
 
@@ -145,7 +148,10 @@ public class LibraryService : ILibraryService
     /// <returns>検証結果.</returns>
     public Task<bool> ValidateSettingsAsync(AppSettings settings)
     {
-        ArgumentNullException.ThrowIfNull(settings);
+        if (settings == null)
+        {
+            return Task.FromResult(false);
+        }
 
         _logService?.LogTrace("アプリケーション設定検証開始", "LibraryService");
 
@@ -190,7 +196,10 @@ public class LibraryService : ILibraryService
     /// <returns>検証結果.</returns>
     public Task<bool> ValidateVisualSettingsAsync(VisualSettings settings)
     {
-        ArgumentNullException.ThrowIfNull(settings);
+        if (settings == null)
+        {
+            return Task.FromResult(false);
+        }
 
         _logService?.LogTrace("ビジュアル設定検証開始", "LibraryService");
 
@@ -226,7 +235,10 @@ public class LibraryService : ILibraryService
     /// <returns>検証結果.</returns>
     public Task<bool> ValidateUrlRuleAsync(UrlRule rule)
     {
-        ArgumentNullException.ThrowIfNull(rule);
+        if (rule == null)
+        {
+            return Task.FromResult(false);
+        }
 
         _logService?.LogTrace($"URLルール検証開始: {rule.Pattern}", "LibraryService");
 
@@ -281,7 +293,10 @@ public class LibraryService : ILibraryService
     /// <returns>検証結果.</returns>
     public Task<bool> ValidateLogSettingsAsync(LogSettings settings)
     {
-        ArgumentNullException.ThrowIfNull(settings);
+        if (settings == null)
+        {
+            return Task.FromResult(false);
+        }
 
         _logService?.LogTrace("ログ設定検証開始", "LibraryService");
 

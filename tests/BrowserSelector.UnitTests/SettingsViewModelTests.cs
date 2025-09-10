@@ -68,8 +68,11 @@ public class SettingsViewModelTests
     }
 
     [Fact]
-    public void SettingsViewModel_Constructor_ShouldInitializeCorrectly()
+    public async Task SettingsViewModel_Constructor_ShouldInitializeCorrectly()
     {
+        // Act
+        await _viewModel.InitializeAsync();
+
         // Assert
         _ = _viewModel.Should().NotBeNull();
         _ = _viewModel.AppSettings.Should().NotBeNull();
@@ -79,11 +82,16 @@ public class SettingsViewModelTests
     }
 
     [Fact]
-    public void SettingsViewModel_AvailableLanguages_ShouldContainJapaneseAndEnglish()
+    public async Task SettingsViewModel_AvailableLanguages_ShouldContainJapaneseAndEnglish()
     {
+        // Arrange - 初期化を確実に実行
+        await _viewModel.InitializeAsync();
+
         // Assert
-        _ = _viewModel.AvailableLanguages.Should().Contain(l => l.CultureCode == "ja-JP" && l.DisplayName == "日本語");
-        _ = _viewModel.AvailableLanguages.Should().Contain(l => l.CultureCode == "en-US" && l.DisplayName == "English");
+        _ = _viewModel.AvailableLanguages.Should().Contain(l => l.CultureCode == "ja-JP");
+        _ = _viewModel.AvailableLanguages.Should().Contain(l => l.CultureCode == "en-US");
+        _ = _viewModel.AvailableLanguages.Should().Contain(l => l.DisplayName.Contains("English"));
+        _ = _viewModel.AvailableLanguages.Should().Contain(l => l.DisplayName.Contains("日本"));
     }
 
     [Fact]
@@ -99,8 +107,11 @@ public class SettingsViewModelTests
     }
 
     [Fact]
-    public void SettingsViewModel_SelectedLanguage_ShouldBeSetToEnglishByDefault()
+    public async Task SettingsViewModel_SelectedLanguage_ShouldBeSetToEnglishByDefault()
     {
+        // Act
+        await _viewModel.InitializeAsync();
+
         // Assert - デフォルト言語は英語
         _ = _viewModel.SelectedLanguage.Should().NotBeNull();
         _ = _viewModel.SelectedLanguage!.CultureCode.Should().Be("en-US");

@@ -156,7 +156,7 @@ public class RegistrySecurityTests
     public void RegistryKeyShouldRejectExcessivelyLongKeys()
     {
         // Arrange
-        var longKey = "HKEY_CURRENT_USER\\Software\\" + new string('a', 300);
+        var longKey = "HKEY_CURRENT_USER\\Software\\" + new string('a', 600); // 512文字制限を超える
 
         // Act
         var isValidKey = IsValidRegistryKey(longKey);
@@ -172,7 +172,7 @@ public class RegistrySecurityTests
     public void RegistryValueShouldRejectExcessivelyLongValues()
     {
         // Arrange
-        var longValue = new string('a', 1000);
+        var longValue = new string('a', 1500); // 1000文字制限を超える
 
         // Act
         var isValidValue = IsValidRegistryValue(longValue);
@@ -188,7 +188,7 @@ public class RegistrySecurityTests
     public void RegistryDataShouldRejectExcessivelyLongData()
     {
         // Arrange
-        var longData = new string('a', 10000);
+        var longData = new string('a', 15000); // 10000文字制限を超える
 
         // Act
         var isValidData = IsValidRegistryData(longData);

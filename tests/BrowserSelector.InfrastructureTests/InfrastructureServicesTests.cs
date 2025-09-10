@@ -175,7 +175,7 @@ public class InfrastructureServicesTests
             .ReturnsAsync(new AppSettings());
 
         // Act
-        var result = await urlService.NormalizeUrlAsync(new Uri("https://example.com"));
+        var result = await urlService.NormalizeUrlAsync("");
 
         // Assert
         result.Should().Be("");
@@ -263,7 +263,8 @@ public class InfrastructureServicesTests
         var newSettings = new LogSettings
         {
             LogLevel = LogLevel.Information,
-            EnableFileLogging = true
+            EnableFileLogging = true,
+            LogOutputFolder = Path.GetTempPath()
         };
 
         // Act

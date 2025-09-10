@@ -95,7 +95,28 @@ namespace BrowserSelector.Core.Models
         /// <returns>マッチする場合true.</returns>
         public bool IsMatch(Uri url)
         {
-            return IsMatch(url?.ToString() ?? string.Empty);
+            if (url == null)
+            {
+                return false;
+            }
+
+            // フルURLでマッチングを試行
+            string fullUrl = url.ToString().TrimEnd('/');
+            if (IsMatch(fullUrl))
+            {
+                return true;
+            }
+
+            // ドメイン名のみでマッチングを試行
+            string hostOnly = url.Host;
+            if (IsMatch(hostOnly))
+            {
+                return true;
+            }
+
+            // ドメイン名 + パスでマッチングを試行（プロトコル除く）
+            string hostAndPath = url.Host + url.PathAndQuery.TrimEnd('/');
+            return IsMatch(hostAndPath);
         }
 
         /// <summary>

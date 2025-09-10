@@ -35,7 +35,7 @@ public class UrlServiceTests
             .ReturnsAsync(new BrowserSelector.Core.Models.AppSettings());
 
         // Act
-        string result = await _urlService.NormalizeUrlAsync(new Uri(inputUrl));
+        string result = await _urlService.NormalizeUrlAsync(inputUrl);
 
         // Assert
         _ = result.Should().Be(expectedUrl);
@@ -98,7 +98,7 @@ public class UrlServiceTests
             .ReturnsAsync(new BrowserSelector.Core.Models.AppSettings());
 
         // Act
-        string result = await _urlService.NormalizeUrlAsync(new Uri(inputUrl));
+        string result = await _urlService.NormalizeUrlAsync(inputUrl);
 
         // Assert
         _ = result.Should().BeEmpty();
@@ -119,7 +119,7 @@ public class UrlServiceTests
             .ReturnsAsync(new BrowserSelector.Core.Models.AppSettings());
 
         // Act
-        string result = await _urlService.NormalizeUrlAsync(new Uri(inputUrl));
+        string result = await _urlService.NormalizeUrlAsync(inputUrl);
 
         // Assert
         _ = result.Should().BeEmpty();
@@ -170,7 +170,7 @@ public class UrlServiceTests
         string url = "invalid-url";
 
         // Act
-        bool result = await _urlService.ValidateUrlAsync(new Uri(url));
+        bool result = await _urlService.ValidateUrlAsync(url);
 
         // Assert
         _ = result.Should().BeFalse();
@@ -187,7 +187,7 @@ public class UrlServiceTests
         string url = "";
 
         // Act
-        bool result = await _urlService.ValidateUrlAsync(new Uri(url));
+        bool result = await _urlService.ValidateUrlAsync(url);
 
         // Assert
         _ = result.Should().BeFalse();
@@ -215,7 +215,7 @@ public class UrlServiceTests
         string expectedDomain = "example.com";
 
         // Act
-        string result = _urlService.ExtractDomain(new Uri(url));
+        string result = _urlService.ExtractDomain(url);
 
         // Assert
         _ = result.Should().Be(expectedDomain);
@@ -228,7 +228,7 @@ public class UrlServiceTests
         string url = "";
 
         // Act
-        string result = _urlService.ExtractDomain(new Uri(url));
+        string result = _urlService.ExtractDomain(url);
 
         // Assert
         _ = result.Should().BeEmpty();
@@ -242,7 +242,7 @@ public class UrlServiceTests
         string expectedUrl = "https://example.com";
 
         // Act
-        string result = _urlService.AddProtocolIfNeeded(new Uri(url));
+        string result = _urlService.AddProtocolIfNeeded(url);
 
         // Assert
         _ = result.Should().Be(expectedUrl);
@@ -281,7 +281,7 @@ public class UrlServiceTests
         string url = "";
 
         // Act
-        string result = _urlService.AddProtocolIfNeeded(new Uri(url));
+        string result = _urlService.AddProtocolIfNeeded(url);
 
         // Assert
         _ = result.Should().BeEmpty();

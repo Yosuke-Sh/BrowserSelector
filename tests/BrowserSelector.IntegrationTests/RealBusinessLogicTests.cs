@@ -137,8 +137,8 @@ namespace BrowserSelector.IntegrationTests
 
             foreach (string? url in testUrls)
             {
-                bool isValid = await _urlService.ValidateUrlAsync(new Uri(url));
-                string normalized = await _urlService.NormalizeUrlAsync(new Uri(url));
+                bool isValid = await _urlService.ValidateUrlAsync(url);
+                string normalized = await _urlService.NormalizeUrlAsync(url);
                 results.Add((url, isValid, normalized));
             }
 

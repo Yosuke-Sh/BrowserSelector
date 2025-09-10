@@ -21,7 +21,21 @@ public class ServiceIntegrationTests : IDisposable
     {
         // テスト用の一時ディレクトリを作成
         _tempDirectory = Path.Combine(Path.GetTempPath(), "BrowserSelectorTest", Guid.NewGuid().ToString());
-        _ = Directory.CreateDirectory(_tempDirectory);
+        
+        try
+        {
+            _ = Directory.CreateDirectory(_tempDirectory);
+            
+            // ディレクトリ作成の確認
+            if (!Directory.Exists(_tempDirectory))
+            {
+                throw new InvalidOperationException($"テスト用ディレクトリの作成に失敗しました: {_tempDirectory}");
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"テスト用ディレクトリの作成中にエラーが発生しました: {_tempDirectory}", ex);
+        }
 
         ServiceCollection services = new();
         _ = services.AddLogging(builder => builder.AddConsole());
@@ -180,8 +194,8 @@ public class ServiceIntegrationTests : IDisposable
         // Act & Assert
         foreach (string invalidUrl in invalidUrls)
         {
-            string normalizedUrl = await urlService.NormalizeUrlAsync(new Uri(invalidUrl));
-            bool isValid = await urlService.ValidateUrlAsync(new Uri(invalidUrl));
+            string normalizedUrl = await urlService.NormalizeUrlAsync(invalidUrl);
+            bool isValid = await urlService.ValidateUrlAsync(invalidUrl);
 
             normalizedUrl.Should().NotBeNull($"無効なURL '{invalidUrl}' の正規化結果がnullでないこと");
             isValid.Should().BeFalse($"無効なURL '{invalidUrl}' が正しく無効と判定されること");

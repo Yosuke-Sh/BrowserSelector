@@ -155,7 +155,7 @@ public partial class SettingsViewModel : ObservableObject
         LogService = logService;
 
         // 初期化処理
-        _ = Task.Run(InitializeAsync);
+        _ = Task.Run(InitializeInternal);
     }
 
     /// <summary>
@@ -172,6 +172,14 @@ public partial class SettingsViewModel : ObservableObject
     /// Gets the log service.
     /// </summary>
     public ILogService LogService { get; }
+
+    /// <summary>
+    /// 初期化処理（テスト用）.
+    /// </summary>
+    public Task InitializeAsync()
+    {
+        return Task.Run(() => InitializeInternal());
+    }
 
     /// <summary>
     /// 言語一覧を更新（外部から呼び出し可能）.
@@ -212,7 +220,7 @@ public partial class SettingsViewModel : ObservableObject
     /// <summary>
     /// 初期化処理.
     /// </summary>
-    private async void InitializeAsync()
+    private async void InitializeInternal()
     {
         try
         {
@@ -278,6 +286,9 @@ public partial class SettingsViewModel : ObservableObject
             // ログ設定の読み込み
             await LoadLogSettingsAsync().ConfigureAwait(false);
             LogService?.LogDebug("ログ設定読み込み完了", "SettingsViewModel");
+
+            // 言語リストを初期化
+            InitializeLanguages();
 
             // プロパティ変更イベントを監視
             PropertyChanged += OnPropertyChanged;

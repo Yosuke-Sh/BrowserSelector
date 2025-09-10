@@ -178,8 +178,8 @@ namespace BrowserSelector.UnitTests
             string invalidUrl = "invalid-url";
 
             // Act - 実際のURL検証ロジックを実行
-            bool validResult = await _urlService.ValidateUrlAsync(new Uri(validUrl));
-            bool invalidResult = await _urlService.ValidateUrlAsync(new Uri(invalidUrl));
+            bool validResult = await _urlService.ValidateUrlAsync(validUrl);
+            bool invalidResult = await _urlService.ValidateUrlAsync(invalidUrl);
 
             // Assert - 実際のロジックが実行されたことを確認
             _ = validResult.Should().BeTrue();

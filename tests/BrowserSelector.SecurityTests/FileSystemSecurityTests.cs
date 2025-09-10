@@ -332,9 +332,9 @@ public class FileSystemSecurityTests
             return false;
         }
 
-        // 無効な文字チェック
-        var invalidChars = Path.GetInvalidPathChars();
-        if (path.IndexOfAny(invalidChars) >= 0)
+        // 無効な文字チェック（ファイル名のみ）
+        var invalidFileNameChars = Path.GetInvalidFileNameChars();
+        if (fileName.IndexOfAny(invalidFileNameChars) >= 0)
         {
             return false;
         }
@@ -459,10 +459,12 @@ public class FileSystemSecurityTests
                 }
             }
 
-            // 実際の書き込みは行わず、パスの妥当性のみチェック
+            // 実際にファイルに書き込んでテストする
+            const string testContent = "Test content for security validation";
+            File.WriteAllText(path, testContent);
             return true;
         }
-        catch (Exception ex) when (ex is ArgumentException or UnauthorizedAccessException or PathTooLongException)
+        catch (Exception ex) when (ex is ArgumentException or UnauthorizedAccessException or PathTooLongException or IOException or DirectoryNotFoundException)
         {
             return false;
         }
