@@ -50,11 +50,10 @@ jobs:
       run: |
         dotnet publish src/BrowserSelector.App/ --configuration Release --output ./publish/
         
-    - name: Create portable package
+    - name: Create release artifacts
       run: |
         mkdir -p ./release-artifacts
-        Copy-Item -Path "./publish/*" -Destination "./release-artifacts/BrowserSelector-Portable/" -Recurse
-        Compress-Archive -Path "./release-artifacts/BrowserSelector-Portable/*" -DestinationPath "./release-artifacts/BrowserSelector-Portable.zip" -Force
+        Copy-Item -Path "./publish/*" -Destination "./release-artifacts/" -Recurse
         
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
@@ -103,12 +102,12 @@ jobs:
           - 詳細は[CHANGELOG.md](CHANGELOG.md)を参照してください
           
           ### ダウンロード
-          - **ポータブル版**: BrowserSelector-Portable.zip
-          - **インストーラー**: 今後追加予定
+          - **インストーラー**: BrowserSelector-Setup-v${{ steps.version.outputs.VERSION }}.exe
           
           ### インストール方法
-          1. ポータブル版の場合: ZIPファイルを解凍してBrowserSelector.exeを実行
-          2. インストーラーの場合: setup.exeを実行してインストール
+          1. インストーラーをダウンロード
+          2. setup.exeを実行してインストール
+          3. 必要に応じてデフォルトブラウザとして設定
           
           ### システム要件
           - Windows 10/11
@@ -122,8 +121,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create-release.outputs.upload_url }}
-        asset_path: ./release-artifacts/BrowserSelector-Portable.zip
-        asset_name: BrowserSelector-Portable.zip
-        asset_content_type: application/zip
+        asset_path: ./release-artifacts/BrowserSelector-Setup-v${{ steps.version.outputs.VERSION }}.exe
+        asset_name: BrowserSelector-Setup-v${{ steps.version.outputs.VERSION }}.exe
+        asset_content_type: application/octet-stream
 
 

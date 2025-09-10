@@ -132,17 +132,16 @@ dotnet build --configuration Release
 - Visual Studio 2022 または VS Code
 - Windows 10/11
 
-### 開発環境セットアップ
-1. リポジトリをクローン
-2. 依存関係を復元: `dotnet restore`
-3. ビルド: `dotnet build`
-4. テスト実行: `dotnet test`
+### インストール方法
+1. インストーラーをダウンロード
+2. インストーラーを実行してインストール
+3. 必要に応じてデフォルトブラウザとして設定
 
 ## 📦 ダウンロード・インストール
 
 ### リリース版
 - [GitHub Releases](https://github.com/Yosuke-Sh/BrowserSelector/releases)から最新版をダウンロード
-- ポータブル版（ZIP）またはインストーラー版を選択
+- インストーラー版をダウンロード
 
 ### システム要件
 - **OS**: Windows 10/11
@@ -285,7 +284,7 @@ dotnet test --collect:"XPlat Code Coverage"
 
 #### Release Version
 - Download the latest version from [GitHub Releases](https://github.com/Yosuke-Sh/BrowserSelector/releases)
-- Choose between portable version (ZIP) or installer version
+- Download the installer version
 
 #### System Requirements
 - **OS**: Windows 10/11

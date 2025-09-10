@@ -1,0 +1,227 @@
+; BrowserSelector Inno Setup Script
+; Version: 0.1.0
+; Author: Yosuke-Sh
+; Description: BrowserSelector WPF Application Installer
+
+#define MyAppName "BrowserSelector"
+#define MyAppVersion "0.1.0"
+#define MyAppPublisher "Yosuke-Sh"
+#define MyAppURL "https://github.com/Yosuke-Sh/BrowserSelector"
+#define MyAppExeName "BrowserSelector.exe"
+#define MyAppDescription "A modern WPF application for selecting and opening URLs with multiple browsers on Windows"
+
+[Setup]
+; NOTE: The value of AppId uniquely identifies this application.
+; Do not use the same AppId value in installers for other applications.
+AppId={{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}
+AppName={#MyAppName}
+AppVersion={#MyAppVersion}
+AppVerName={#MyAppName} {#MyAppVersion}
+AppPublisher={#MyAppPublisher}
+AppPublisherURL={#MyAppURL}
+AppSupportURL={#MyAppURL}
+AppUpdatesURL={#MyAppURL}
+DefaultDirName={autopf}\{#MyAppName}
+DefaultGroupName={#MyAppName}
+AllowNoIcons=yes
+LicenseFile=..\..\docs\LICENSE
+InfoBeforeFile=..\..\README.md
+OutputDir=..\..\release-artifacts
+OutputBaseFilename=BrowserSelector-Setup-v{#MyAppVersion}
+SetupIconFile=..\..\src\BrowserSelector.App\BrowserSelector_Icon_256.ico
+Compression=lzma
+SolidCompression=yes
+WizardStyle=modern
+PrivilegesRequired=lowest
+ArchitecturesAllowed=x64
+ArchitecturesInstallIn64BitMode=x64
+MinVersion=10.0.17763
+DisableProgramGroupPage=yes
+DisableReadyPage=no
+DisableFinishedPage=no
+UninstallDisplayIcon={app}\{#MyAppExeName}
+UninstallDisplayName={#MyAppName}
+VersionInfoVersion={#MyAppVersion}
+VersionInfoCompany={#MyAppPublisher}
+VersionInfoDescription={#MyAppDescription}
+VersionInfoCopyright=Copyright (C) 2025 {#MyAppPublisher}
+
+[Languages]
+Name: "english"; MessagesFile: "compiler:Default.isl"
+Name: "japanese"; MessagesFile: "compiler:Languages\Japanese.isl"
+
+[Tasks]
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 6.1; Check: not IsAdminInstallMode
+Name: "set_default_browser"; Description: "BrowserSelectorを既定のブラウザとして設定する"; GroupDescription: "Default Browser Settings"; Flags: checkedonce
+Name: "open_default_apps"; Description: "インストール後に既定のアプリ設定を開く"; GroupDescription: "Default Browser Settings"; Flags: unchecked
+Name: "associateurl"; Description: "Associate with browser:// protocol"; GroupDescription: "Protocol Association"; Flags: checkedonce
+
+[Files]
+Source: "..\..\src\BrowserSelector.App\bin\Release\net8.0-windows\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\..\src\BrowserSelector.App\BrowserSelector_Icon_256.ico"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\README.md"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\CHANGELOG.md"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\docs\USER_MANUAL.md"; DestDir: "{app}\docs"; Flags: ignoreversion
+Source: "..\..\docs\API.md"; DestDir: "{app}\docs"; Flags: ignoreversion
+Source: "..\..\docs\CONTRIBUTING.md"; DestDir: "{app}\docs"; Flags: ignoreversion
+Source: "..\..\docs\LICENSE"; DestDir: "{app}\docs"; Flags: ignoreversion
+
+[Icons]
+Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\BrowserSelector_Icon_256.ico"
+Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
+Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\BrowserSelector_Icon_256.ico"; Tasks: desktopicon
+Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\BrowserSelector_Icon_256.ico"; Tasks: quicklaunchicon
+
+[Run]
+Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+Filename: "{cmd}"; Parameters: "/c start ms-settings:defaultapps"; Tasks: open_default_apps; Flags: postinstall skipifsilent nowait
+
+[UninstallDelete]
+Type: filesandordirs; Name: "{app}\logs"
+Type: filesandordirs; Name: "{app}\backup"
+Type: files; Name: "{app}\settings.json"
+
+[Registry]
+; HTTPプロトコルハンドラーの設定
+Root: HKLM; Subkey: "SOFTWARE\Classes\http\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""; Flags: uninsdeletekey; Tasks: set_default_browser
+Root: HKLM; Subkey: "SOFTWARE\Classes\http\shell\open\ddeexec"; ValueType: string; ValueName: ""; ValueData: ""; Flags: uninsdeletekey; Tasks: set_default_browser
+Root: HKLM; Subkey: "SOFTWARE\Classes\http\shell\open\ddeexec\Application"; ValueType: string; ValueName: ""; ValueData: "BrowserSelector"; Flags: uninsdeletekey; Tasks: set_default_browser
+Root: HKLM; Subkey: "SOFTWARE\Classes\http\shell\open\ddeexec\Topic"; ValueType: string; ValueName: ""; ValueData: "WWW_OpenURL"; Flags: uninsdeletekey; Tasks: set_default_browser
+
+; HTTPSプロトコルハンドラーの設定
+Root: HKLM; Subkey: "SOFTWARE\Classes\https\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""; Flags: uninsdeletekey; Tasks: set_default_browser
+Root: HKLM; Subkey: "SOFTWARE\Classes\https\shell\open\ddeexec"; ValueType: string; ValueName: ""; ValueData: ""; Flags: uninsdeletekey; Tasks: set_default_browser
+Root: HKLM; Subkey: "SOFTWARE\Classes\https\shell\open\ddeexec\Application"; ValueType: string; ValueName: ""; ValueData: "BrowserSelector"; Flags: uninsdeletekey; Tasks: set_default_browser
+Root: HKLM; Subkey: "SOFTWARE\Classes\https\shell\open\ddeexec\Topic"; ValueType: string; ValueName: ""; ValueData: "WWW_OpenURL"; Flags: uninsdeletekey; Tasks: set_default_browser
+
+; ファイル拡張子の関連付け
+Root: HKLM; Subkey: "SOFTWARE\Classes\.htm\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""; Flags: uninsdeletekey; Tasks: set_default_browser
+Root: HKLM; Subkey: "SOFTWARE\Classes\.html\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""; Flags: uninsdeletekey; Tasks: set_default_browser
+
+; アプリケーションの登録
+Root: HKLM; Subkey: "SOFTWARE\BrowserSelector"; ValueType: string; ValueName: "InstallPath"; ValueData: "{app}"; Flags: uninsdeletekey
+Root: HKLM; Subkey: "SOFTWARE\BrowserSelector"; ValueType: string; ValueName: "Version"; ValueData: "{#MyAppVersion}"; Flags: uninsdeletekey
+
+; Windowsの既定アプリ一覧に表示されるための登録
+Root: HKLM; Subkey: "SOFTWARE\RegisteredApplications"; ValueType: string; ValueName: "BrowserSelector"; ValueData: "SOFTWARE\BrowserSelector\Capabilities"; Flags: uninsdeletekey; Tasks: set_default_browser
+Root: HKLM; Subkey: "SOFTWARE\BrowserSelector\Capabilities"; ValueType: string; ValueName: "ApplicationDescription"; ValueData: "BrowserSelector - 複数のブラウザから選択できるアプリケーション"; Flags: uninsdeletekey; Tasks: set_default_browser
+Root: HKLM; Subkey: "SOFTWARE\BrowserSelector\Capabilities"; ValueType: string; ValueName: "ApplicationName"; ValueData: "BrowserSelector"; Flags: uninsdeletekey; Tasks: set_default_browser
+
+; プロトコル関連付けの登録
+Root: HKLM; Subkey: "SOFTWARE\BrowserSelector\Capabilities\URLAssociations"; ValueType: string; ValueName: "http"; ValueData: "BrowserSelector.http"; Flags: uninsdeletekey; Tasks: set_default_browser
+Root: HKLM; Subkey: "SOFTWARE\BrowserSelector\Capabilities\URLAssociations"; ValueType: string; ValueName: "https"; ValueData: "BrowserSelector.https"; Flags: uninsdeletekey; Tasks: set_default_browser
+
+; ファイル関連付けの登録
+Root: HKLM; Subkey: "SOFTWARE\BrowserSelector\Capabilities\FileAssociations"; ValueType: string; ValueName: ".htm"; ValueData: "BrowserSelector.htm"; Flags: uninsdeletekey; Tasks: set_default_browser
+Root: HKLM; Subkey: "SOFTWARE\BrowserSelector\Capabilities\FileAssociations"; ValueType: string; ValueName: ".html"; ValueData: "BrowserSelector.html"; Flags: uninsdeletekey; Tasks: set_default_browser
+
+; カスタムプロトコルクラスの登録
+Root: HKLM; Subkey: "SOFTWARE\Classes\BrowserSelector.http"; ValueType: string; ValueName: ""; ValueData: "BrowserSelector HTTP Protocol"; Flags: uninsdeletekey; Tasks: set_default_browser
+Root: HKLM; Subkey: "SOFTWARE\Classes\BrowserSelector.http\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""; Flags: uninsdeletekey; Tasks: set_default_browser
+
+Root: HKLM; Subkey: "SOFTWARE\Classes\BrowserSelector.https"; ValueType: string; ValueName: ""; ValueData: "BrowserSelector HTTPS Protocol"; Flags: uninsdeletekey; Tasks: set_default_browser
+Root: HKLM; Subkey: "SOFTWARE\Classes\BrowserSelector.https\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""; Flags: uninsdeletekey; Tasks: set_default_browser
+
+Root: HKLM; Subkey: "SOFTWARE\Classes\BrowserSelector.htm"; ValueType: string; ValueName: ""; ValueData: "BrowserSelector HTML File"; Flags: uninsdeletekey; Tasks: set_default_browser
+Root: HKLM; Subkey: "SOFTWARE\Classes\BrowserSelector.htm\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""; Flags: uninsdeletekey; Tasks: set_default_browser
+
+Root: HKLM; Subkey: "SOFTWARE\Classes\BrowserSelector.html"; ValueType: string; ValueName: ""; ValueData: "BrowserSelector HTML File"; Flags: uninsdeletekey; Tasks: set_default_browser
+Root: HKLM; Subkey: "SOFTWARE\Classes\BrowserSelector.html\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""; Flags: uninsdeletekey; Tasks: set_default_browser
+
+; カスタムプロトコル（browser://）
+Root: HKCU; Subkey: "Software\Classes\browser"; ValueType: string; ValueName: ""; ValueData: "URL:BrowserSelector Protocol"; Flags: uninsdeletevalue; Tasks: associateurl
+Root: HKCU; Subkey: "Software\Classes\browser"; ValueType: string; ValueName: "URL Protocol"; ValueData: ""; Flags: uninsdeletevalue; Tasks: associateurl
+Root: HKCU; Subkey: "Software\Classes\browser\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\{#MyAppExeName},1"; Flags: uninsdeletevalue; Tasks: associateurl
+Root: HKCU; Subkey: "Software\Classes\browser\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""; Flags: uninsdeletevalue; Tasks: associateurl
+
+[Code]
+function InitializeSetup(): Boolean;
+begin
+  Result := True;
+  
+  // Check for .NET 8.0 Runtime
+  if not IsDotNetInstalled('Microsoft.NETCore.App', '8.0.0') then
+  begin
+    if MsgBox('BrowserSelector requires .NET 8.0 Runtime to be installed.' + #13#10 + #13#10 +
+              'Would you like to download it now?', mbConfirmation, MB_YESNO) = IDYES then
+    begin
+      ShellExec('open', 'https://dotnet.microsoft.com/download/dotnet/8.0', '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);
+    end;
+    Result := False;
+  end;
+end;
+
+function IsDotNetInstalled(const FrameworkName, Version: string): Boolean;
+var
+  RegKey: string;
+  VersionKey: string;
+  InstalledVersion: string;
+begin
+  Result := False;
+  RegKey := 'SOFTWARE\Microsoft\NET Framework Setup\NDP\' + FrameworkName;
+  
+  if RegQueryStringValue(HKLM, RegKey, 'Version', InstalledVersion) then
+  begin
+    if CompareVersion(InstalledVersion, Version) >= 0 then
+      Result := True;
+  end;
+  
+  // Also check in WOW6432Node for 32-bit apps on 64-bit systems
+  if not Result then
+  begin
+    RegKey := 'SOFTWARE\WOW6432Node\Microsoft\NET Framework Setup\NDP\' + FrameworkName;
+    if RegQueryStringValue(HKLM, RegKey, 'Version', InstalledVersion) then
+    begin
+      if CompareVersion(InstalledVersion, Version) >= 0 then
+        Result := True;
+    end;
+  end;
+end;
+
+function CompareVersion(Version1, Version2: string): Integer;
+var
+  V1, V2: TStringList;
+  I: Integer;
+  N1, N2: Integer;
+begin
+  Result := 0;
+  V1 := TStringList.Create;
+  V2 := TStringList.Create;
+  try
+    V1.Delimiter := '.';
+    V1.DelimitedText := Version1;
+    V2.Delimiter := '.';
+    V2.DelimitedText := Version2;
+    
+    for I := 0 to Min(V1.Count - 1, V2.Count - 1) do
+    begin
+      N1 := StrToIntDef(V1[I], 0);
+      N2 := StrToIntDef(V2[I], 0);
+      if N1 > N2 then
+      begin
+        Result := 1;
+        Break;
+      end
+      else if N1 < N2 then
+      begin
+        Result := -1;
+        Break;
+      end;
+    end;
+  finally
+    V1.Free;
+    V2.Free;
+  end;
+end;
+
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+  if CurStep = ssPostInstall then
+  begin
+    // Create application data directory
+    ForceDirectories(ExpandConstant('{userappdata}\BrowserSelector'));
+    ForceDirectories(ExpandConstant('{userappdata}\BrowserSelector\logs'));
+    ForceDirectories(ExpandConstant('{userappdata}\BrowserSelector\backup'));
+  end;
+end;
