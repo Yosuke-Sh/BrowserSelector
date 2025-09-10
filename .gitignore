@@ -7,3 +7,4 @@ coverage-integrated
 coverage-results
 BenchmarkDotNet.Artifacts
 /tmp
+publish

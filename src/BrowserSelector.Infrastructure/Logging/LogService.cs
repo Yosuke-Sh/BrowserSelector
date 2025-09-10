@@ -28,24 +28,15 @@ public class LogService : ILogService
         _settings.LogOutputFolder = _defaultLogFolder;
 
         // コンソールの文字エンコーディングをUTF-8に設定（文字化け対策）
+        // WPFアプリケーションではコンソールハンドルが無効なため、IOExceptionが発生する可能性がある
         try
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8;
         }
-        catch (ArgumentException ex)
+        catch (Exception ex) when (ex is ArgumentException or IOException or InvalidOperationException or System.Security.SecurityException)
         {
-            // コンソールエンコーディング設定に失敗しても続行
-            System.Diagnostics.Debug.WriteLine($"Console encoding setup failed (ArgumentException): {ex.Message}");
-        }
-        catch (System.Security.SecurityException ex)
-        {
-            // コンソールエンコーディング設定に失敗しても続行
-            System.Diagnostics.Debug.WriteLine($"Console encoding setup failed (SecurityException): {ex.Message}");
-        }
-        catch (InvalidOperationException ex)
-        {
-            // コンソールエンコーディング設定に失敗しても続行
-            System.Diagnostics.Debug.WriteLine($"Console encoding setup failed (InvalidOperationException): {ex.Message}");
+            // コンソールエンコーディング設定に失敗しても続行（WPFアプリではコンソールハンドルが無効）
+            System.Diagnostics.Debug.WriteLine($"Console encoding setup failed ({ex.GetType().Name}): {ex.Message}");
         }
 
         // 設定ファイルからログ設定を読み込み

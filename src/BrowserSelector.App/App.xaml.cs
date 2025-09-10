@@ -21,7 +21,7 @@ public partial class App : Application
     private ILogService? _logService;
 
     /// <inheritdoc/>
-    protected override async void OnStartup(StartupEventArgs e)
+    protected override void OnStartup(StartupEventArgs e)
     {
         try
         {
@@ -40,7 +40,7 @@ public partial class App : Application
                 .Build();
 
             // ホストの開始
-            await _host.StartAsync().ConfigureAwait(false);
+            _host.StartAsync().GetAwaiter().GetResult();
 
             // ログサービスの取得
             _logService = _host.Services.GetRequiredService<ILogService>();
@@ -55,10 +55,20 @@ public partial class App : Application
             LocalizedFormatHelper.SetLocalizationService(localizationService);
 
             // 設定された言語を適用
-            ISettingsService settingsService = _host.Services.GetRequiredService<ISettingsService>();
-            Core.Models.AppSettings appSettings = await settingsService.LoadAppSettingsAsync().ConfigureAwait(false);
-            System.Globalization.CultureInfo culture = new(appSettings.Language);
-            await localizationService.SetLanguage(culture).ConfigureAwait(false);
+            try
+            {
+                ISettingsService settingsService = _host.Services.GetRequiredService<ISettingsService>();
+                Core.Models.AppSettings appSettings = settingsService.LoadAppSettingsAsync().GetAwaiter().GetResult();
+                System.Globalization.CultureInfo culture = new(appSettings.Language);
+                localizationService.SetLanguage(culture).GetAwaiter().GetResult();
+            }
+            catch (Exception ex)
+            {
+                // 設定読み込みに失敗した場合はデフォルト言語（日本語）を使用
+                _logService?.LogWarning($"設定読み込みに失敗、デフォルト言語を使用: {ex.Message}", "App");
+                System.Globalization.CultureInfo defaultCulture = new("ja-JP");
+                localizationService.SetLanguage(defaultCulture).GetAwaiter().GetResult();
+            }
 
             // 不足アイコンの作成
             try
@@ -131,7 +141,7 @@ public partial class App : Application
             try
             {
                 ISettingsService settingsSvc = _host.Services.GetRequiredService<ISettingsService>();
-                Core.Models.VisualSettings v = await settingsSvc.LoadVisualSettingsAsync().ConfigureAwait(false);
+                Core.Models.VisualSettings v = settingsSvc.LoadVisualSettingsAsync().GetAwaiter().GetResult();
                 _logService.LogDebug($"Startup.VisualSettings.Load.Success BackgroundColor={v.BackgroundColor}, UseBackgroundGradient={v.UseBackgroundGradient}, GradientDirection={v.GradientDirection}", "App");
 
                 // 起動時即座に背景色設定を実行
@@ -270,7 +280,7 @@ public partial class App : Application
     }
 
     /// <inheritdoc/>
-    protected override async void OnExit(ExitEventArgs e)
+    protected override void OnExit(ExitEventArgs e)
     {
         try
         {
@@ -278,7 +288,7 @@ public partial class App : Application
 
             if (_host != null)
             {
-                await _host.StopAsync().ConfigureAwait(false);
+                _host.StopAsync().GetAwaiter().GetResult();
                 _host.Dispose();
             }
 
