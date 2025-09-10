@@ -33,15 +33,6 @@ public class InputValidationSecurityTests
         isValidUrl.Should().BeFalse($"悪意のあるURL '{maliciousUrl}' は拒否されるべきです");
     }
 
-    /// <summary>
-    /// URL入力のXSS攻撃検証テスト（Uri版）.
-    /// </summary>
-    /// <param name="maliciousUrl">maliciousUrl.</param>
-    public void UrlInputShouldRejectXSSAttacksUri(Uri maliciousUrl)
-    {
-        ArgumentNullException.ThrowIfNull(maliciousUrl);
-        UrlInputShouldRejectXSSAttacks(maliciousUrl.ToString());
-    }
 
     /// <summary>
     /// URL入力のSQLインジェクション攻撃検証テスト.
@@ -62,15 +53,6 @@ public class InputValidationSecurityTests
         isValidUrl.Should().BeFalse($"SQLインジェクション攻撃URL '{maliciousUrl}' は拒否されるべきです");
     }
 
-    /// <summary>
-    /// URL入力のSQLインジェクション攻撃検証テスト（Uri版）.
-    /// </summary>
-    /// <param name="maliciousUrl">maliciousUrl.</param>
-    public void UrlInputShouldRejectSQLInjectionAttacksUri(Uri maliciousUrl)
-    {
-        ArgumentNullException.ThrowIfNull(maliciousUrl);
-        UrlInputShouldRejectSQLInjectionAttacks(maliciousUrl.ToString());
-    }
 
     /// <summary>
     /// URL入力のパストラバーサル攻撃検証テスト.
@@ -90,15 +72,6 @@ public class InputValidationSecurityTests
         isValidUrl.Should().BeFalse($"パストラバーサル攻撃URL '{maliciousUrl}' は拒否されるべきです");
     }
 
-    /// <summary>
-    /// URL入力のパストラバーサル攻撃検証テスト（Uri版）.
-    /// </summary>
-    /// <param name="maliciousUrl">maliciousUrl.</param>
-    public void UrlInputShouldRejectPathTraversalAttacksUri(Uri maliciousUrl)
-    {
-        ArgumentNullException.ThrowIfNull(maliciousUrl);
-        UrlInputShouldRejectPathTraversalAttacks(maliciousUrl.ToString());
-    }
 
     /// <summary>
     /// URL入力のコマンドインジェクション攻撃検証テスト.
@@ -119,15 +92,6 @@ public class InputValidationSecurityTests
         isValidUrl.Should().BeFalse($"コマンドインジェクション攻撃URL '{maliciousUrl}' は拒否されるべきです");
     }
 
-    /// <summary>
-    /// URL入力のコマンドインジェクション攻撃検証テスト（Uri版）.
-    /// </summary>
-    /// <param name="maliciousUrl">maliciousUrl.</param>
-    public void UrlInputShouldRejectCommandInjectionAttacksUri(Uri maliciousUrl)
-    {
-        ArgumentNullException.ThrowIfNull(maliciousUrl);
-        UrlInputShouldRejectCommandInjectionAttacks(maliciousUrl.ToString());
-    }
 
     /// <summary>
     /// 有効なURLの検証テスト.
@@ -153,14 +117,6 @@ public class InputValidationSecurityTests
         isValidUrl.Should().BeTrue($"有効なURL '{validUrl}' は受け入れられるべきです");
     }
 
-    /// <summary>
-    /// 有効なURLの検証テスト（Uri版）.
-    /// </summary>
-    /// <param name="validUrl">validUrl.</param>
-    public void UrlInputShouldAcceptValidUrlsUri(Uri validUrl)
-    {
-        UrlInputShouldAcceptValidUrls(validUrl.ToString());
-    }
 
     /// <summary>
     /// 長すぎるURLの検証テスト.
@@ -197,15 +153,6 @@ public class InputValidationSecurityTests
         isValidUrl.Should().BeFalse($"特殊文字を含むURL '{urlWithSpecialChars}' は拒否されるべきです");
     }
 
-    /// <summary>
-    /// 特殊文字を含むURLの検証テスト（Uri版）.
-    /// </summary>
-    /// <param name="urlWithSpecialChars">urlWithSpecialChars.</param>
-    public void UrlInputShouldRejectUrlsWithSpecialCharactersUri(Uri urlWithSpecialChars)
-    {
-        ArgumentNullException.ThrowIfNull(urlWithSpecialChars);
-        UrlInputShouldRejectUrlsWithSpecialCharacters(urlWithSpecialChars.ToString());
-    }
 
     /// <summary>
     /// ブラウザ名入力の検証テスト.

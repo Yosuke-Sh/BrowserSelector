@@ -11,6 +11,11 @@ namespace BrowserSelector.Presentation.Converters;
 /// </summary>
 public class IconPathConverter : IMultiValueConverter
 {
+    /// <summary>
+    /// デフォルトアイコンのパス.
+    /// </summary>
+    private const string DefaultIconPath = "/BrowserSelector.Presentation;component/Resources/Images/Icon_Browser.png";
+
     /// <inheritdoc/>
     public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
     {
@@ -74,12 +79,12 @@ public class IconPathConverter : IMultiValueConverter
             }
 
             // 3. デフォルトアイコンを返す
-            return GetDefaultIcon(name);
+            return DefaultIconPath;
         }
         catch (Exception)
         {
             // エラーが発生した場合はデフォルトアイコンを返す
-            return GetDefaultIcon(null);
+            return DefaultIconPath;
         }
     }
 
@@ -170,12 +175,4 @@ public class IconPathConverter : IMultiValueConverter
         }
     }
 
-    /// <summary>
-    /// デフォルトアイコンを取得.
-    /// </summary>
-    private object GetDefaultIcon(string? browserName)
-    {
-        // デフォルトのブラウザアイコンを返す
-        return "/BrowserSelector.Presentation;component/Resources/Images/Icon_Browser.png";
-    }
 }

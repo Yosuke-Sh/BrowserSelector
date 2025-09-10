@@ -120,7 +120,7 @@ public class WindowsRegistryService : IRegistryService
         return Task.FromResult<IEnumerable<Browser>>(browsersList);
     }
 
-    private IEnumerable<Browser> DetectChrome()
+    private List<Browser> DetectChrome()
     {
         List<Browser> browsers = [];
 
@@ -184,7 +184,7 @@ public class WindowsRegistryService : IRegistryService
         return browsers;
     }
 
-    private IEnumerable<Browser> DetectFirefox()
+    private List<Browser> DetectFirefox()
     {
         List<Browser> browsers = [];
 
@@ -232,7 +232,7 @@ public class WindowsRegistryService : IRegistryService
         return browsers;
     }
 
-    private IEnumerable<Browser> DetectEdge()
+    private List<Browser> DetectEdge()
     {
         List<Browser> browsers = [];
 
@@ -275,7 +275,7 @@ public class WindowsRegistryService : IRegistryService
         return browsers;
     }
 
-    private IEnumerable<Browser> DetectOpera()
+    private List<Browser> DetectOpera()
     {
         List<Browser> browsers = [];
 
@@ -310,7 +310,7 @@ public class WindowsRegistryService : IRegistryService
         return browsers;
     }
 
-    private IEnumerable<Browser> DetectVivaldi()
+    private List<Browser> DetectVivaldi()
     {
         List<Browser> browsers = [];
 

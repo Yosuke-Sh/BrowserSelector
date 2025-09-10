@@ -18,7 +18,7 @@ public class LibraryServiceTests
     public void LibraryService_GetLibraryMessage_ShouldReturnCorrectMessage()
     {
         // Arrange
-        ILibraryService libraryService = new LibraryService();
+        LibraryService libraryService = new LibraryService();
 
         // Act
         string message = libraryService.GetLibraryMessage();

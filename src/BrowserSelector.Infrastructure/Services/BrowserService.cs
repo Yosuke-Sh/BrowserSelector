@@ -123,7 +123,7 @@ public class BrowserService : IBrowserService
             }
 
             // ブラウザタイプに応じた起動引数を設定
-            string arguments = GetBrowserArguments(browser.Type, normalizedUrl);
+            string arguments = GetBrowserArguments(normalizedUrl);
 
             // ブラウザを起動
             ProcessStartInfo startInfo = new()
@@ -189,7 +189,7 @@ public class BrowserService : IBrowserService
             }
 
             // 重複チェック
-            if (_browsers.Any(b => b.ExecutablePath.Equals(browser.ExecutablePath, StringComparison.OrdinalIgnoreCase)))
+            if (_browsers.Exists(b => b.ExecutablePath.Equals(browser.ExecutablePath, StringComparison.OrdinalIgnoreCase)))
             {
                 return false;
             }
@@ -372,18 +372,9 @@ public class BrowserService : IBrowserService
     /// <summary>
     /// ブラウザタイプに応じた起動引数を取得.
     /// </summary>
-    private static string GetBrowserArguments(BrowserType browserType, string url)
+    private static string GetBrowserArguments(string url)
     {
-        return browserType switch
-        {
-            BrowserType.Chrome => url,
-            BrowserType.Firefox => url,
-            BrowserType.Edge => url,
-            BrowserType.Opera => url,
-            BrowserType.Brave => url,
-            BrowserType.Vivaldi => url,
-            BrowserType.Custom => url,
-            _ => url
-        };
+        // すべてのブラウザタイプで同じURLを返す
+        return url;
     }
 }

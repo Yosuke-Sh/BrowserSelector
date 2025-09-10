@@ -284,8 +284,8 @@ public class ProcessExecutionSecurityTests
         }
 
         // 実行可能ファイル拡張子チェック
-        var validExtensions = new[] { ".exe", ".msc", ".bat", ".cmd", ".com", ".scr" };
-        var extension = System.IO.Path.GetExtension(path).ToLowerInvariant();
+        var validExtensions = new[] { ".EXE", ".MSC", ".BAT", ".CMD", ".COM", ".SCR" };
+        var extension = System.IO.Path.GetExtension(path).ToUpperInvariant();
         if (!validExtensions.Contains(extension))
         {
             return false;

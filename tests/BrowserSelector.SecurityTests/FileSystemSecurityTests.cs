@@ -256,7 +256,7 @@ public class FileSystemSecurityTests
         try
         {
             // Act
-            var canWrite = CanWriteFile(tempFile, testContent);
+            var canWrite = CanWriteFile(tempFile);
 
             // Assert
             canWrite.Should().BeTrue("有効なファイルは書き込めるべきです");
@@ -289,11 +289,8 @@ public class FileSystemSecurityTests
     [InlineData("C:\\Windows\\System32\\config\\SYSTEM")]
     public void FileWritingShouldRejectDangerousFiles(string dangerousFile)
     {
-        // Arrange
-        var testContent = "Malicious content";
-
         // Act
-        var canWrite = CanWriteFile(dangerousFile, testContent);
+        var canWrite = CanWriteFile(dangerousFile);
 
         // Assert
         canWrite.Should().BeFalse($"危険なファイル '{dangerousFile}' への書き込みは拒否されるべきです");
@@ -435,7 +432,7 @@ public class FileSystemSecurityTests
     /// <summary>
     /// ファイルに書き込めるかどうかを検証するメソッド.
     /// </summary>
-    private static bool CanWriteFile(string path, string content)
+    private static bool CanWriteFile(string path)
     {
         if (!IsValidFilePath(path))
         {
