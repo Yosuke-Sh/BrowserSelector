@@ -7,43 +7,22 @@
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
     <UseWPF>true</UseWPF>
-    <!-- UIテストの並列実行を無効化（STAスレッド問題の解決） -->
-    <MSTestParallelize>false</MSTestParallelize>
-    <MSTestWorkers>1</MSTestWorkers>
-    <MSTestParallelizeWorkers>1</MSTestParallelizeWorkers>
-    <MSTestParallelizeScope>ClassLevel</MSTestParallelizeScope>
-    <!-- 追加の並列実行無効化設定 -->
-    <MSTestV2Parallelize>false</MSTestV2Parallelize>
-    <MSTestV2Workers>1</MSTestV2Workers>
-    <MSTestV2ParallelizeWorkers>1</MSTestV2ParallelizeWorkers>
-    <MSTestV2ParallelizeScope>ClassLevel</MSTestV2ParallelizeScope>
-    <!-- 並列実行無効化 -->
-    <Parallelize>false</Parallelize>
-    <MaxParallelThreads>1</MaxParallelThreads>
-    <DisableParallelization>true</DisableParallelization>
-    <!-- UIテスト専用のカバレッジ測定 -->
-    <CollectCoverage>true</CollectCoverage>
-    <CoverletOutputFormat>cobertura</CoverletOutputFormat>
-    <CoverletOutput>./TestResults/</CoverletOutput>
-    <!-- UIテストではPresentation層を重点的に測定 -->
-    <Include>[BrowserSelector.Presentation]*</Include>
-    <Include>[BrowserSelector.App]*</Include>
-    <!-- Core/Infrastructureは軽微な測定 -->
-    <Include>[BrowserSelector.Core]*</Include>
-    <Include>[BrowserSelector.Infrastructure]*</Include>
-    <Exclude>[*.Tests]*</Exclude>
-    <Exclude>[*.Test]*</Exclude>
-    <Exclude>[xunit.*]*</Exclude>
-    <Exclude>[Moq]*</Exclude>
-    <Exclude>[FluentAssertions]*</Exclude>
-    <Exclude>[Microsoft.*]*</Exclude>
-    <Exclude>[System.*]*</Exclude>
-    <Exclude>[NUnit.*]*</Exclude>
-    <Exclude>[MSTest.*]*</Exclude>
-    <Exclude>[FlaUI.*]*</Exclude>
-    <SkipAutoProps>true</SkipAutoProps>
-    <UseSourceLink>true</UseSourceLink>
-    <IncludeTestAssembly>false</IncludeTestAssembly>
+    <!-- UIテストの並列実行を有効化（STAスレッド問題を解決） -->
+    <MSTestParallelize>true</MSTestParallelize>
+    <MSTestWorkers>4</MSTestWorkers>
+    <MSTestParallelizeWorkers>4</MSTestParallelizeWorkers>
+    <MSTestParallelizeScope>MethodLevel</MSTestParallelizeScope>
+    <!-- 追加の並列実行設定 -->
+    <MSTestV2Parallelize>true</MSTestV2Parallelize>
+    <MSTestV2Workers>4</MSTestV2Workers>
+    <MSTestV2ParallelizeWorkers>4</MSTestV2ParallelizeWorkers>
+    <MSTestV2ParallelizeScope>MethodLevel</MSTestV2ParallelizeScope>
+    <!-- 並列実行有効化 -->
+    <Parallelize>true</Parallelize>
+    <MaxParallelThreads>4</MaxParallelThreads>
+    <DisableParallelization>false</DisableParallelization>
+    <!-- UIテスト専用のカバレッジ測定（簡素化） -->
+    <CollectCoverage>false</CollectCoverage>
     <!-- テストプロジェクトの警告を無効化（テストコードの特性上、多くの警告は対処困難または不要） -->
     <NoWarn>$(NoWarn);CS0168;SYSLIB0006;S101;CA1063;CA1816;S3881;SA1201;SA1202;SA1137;SA1503;SA1127;CA1805;S2933;SA0001;SA1124;SA1513;SA1028;SA1122;SA1500;SA1508;SA1515;SA1117;SA1116;SA1108;SA1005;SA1009;SA1025;SA1028;SA1505;SA1507;SA1518;SA1111;CA1031;CA1062;CA1303;CA1305;CA1054;CA1822;CA2213;CA2201;S1075;S108;S6561;S1144;S2699;S6605;S6602;CA1851;CA1869;CA1849;CA1707;SA1010;S2925;SA1210;SA1119;SA1501;S1135</NoWarn>
   </PropertyGroup>
@@ -57,15 +36,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="coverlet.collector" Version="6.0.2">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="AltCover" Version="9.0.1">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="FlaUI.Core" Version="4.0.0" />
-    <PackageReference Include="FlaUI.UIA3" Version="4.0.0" />
     <PackageReference Include="FluentAssertions" Version="6.12.0" />
   </ItemGroup>
 
