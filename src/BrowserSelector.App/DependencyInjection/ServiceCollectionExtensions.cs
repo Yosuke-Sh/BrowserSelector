@@ -8,8 +8,16 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace BrowserSelector.App.DependencyInjection;
 
+/// <summary>
+/// 依存性注入のためのサービスコレクション拡張メソッドを提供します.
+/// </summary>
 public static class ServiceCollectionExtensions
 {
+    /// <summary>
+    /// BrowserSelectorアプリケーションに必要なすべてのサービスをサービスコレクションに追加します.
+    /// </summary>
+    /// <param name="services">サービスコレクション.</param>
+    /// <returns>設定されたサービスコレクション.</returns>
     public static IServiceCollection AddBrowserSelectorServices(this IServiceCollection services)
     {
         // Core Services

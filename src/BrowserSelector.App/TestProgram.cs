@@ -5,6 +5,10 @@ namespace BrowserSelector.App;
 /// </summary>
 public class TestProgram
 {
+    /// <summary>
+    /// テスト用のアプリケーションエントリーポイント.
+    /// </summary>
+    /// <param name="args">コマンドライン引数.</param>
     [STAThread]
     public static void Main(string[] args)
     {
@@ -22,5 +26,6 @@ public class TestProgram
         }
     }
 }
+
 
 

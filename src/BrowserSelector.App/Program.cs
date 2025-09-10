@@ -7,6 +7,11 @@ namespace BrowserSelector.App;
 /// </summary>
 public class Program
 {
+    /// <summary>
+    /// アプリケーションのメインエントリーポイント。
+    /// テストモードと通常モードの両方に対応しています.
+    /// </summary>
+    /// <param name="args">コマンドライン引数.</param>
     [STAThread]
     public static void Main(string[] args)
     {
