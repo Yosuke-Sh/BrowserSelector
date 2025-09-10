@@ -85,9 +85,6 @@
   <data name="Settings.App.LanguageManagement" xml:space="preserve">
     <value>言語管理</value>
   </data>
-  <data name="Settings.App.PortableMode" xml:space="preserve">
-    <value>ポータブルモード</value>
-  </data>
   <data name="Settings.App.CustomProtocol" xml:space="preserve">
     <value>カスタムプロトコル</value>
   </data>

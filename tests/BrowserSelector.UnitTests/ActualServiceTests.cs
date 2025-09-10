@@ -128,13 +128,11 @@ namespace BrowserSelector.UnitTests
             // Arrange
             AppSettings settings = new()
             {
-                StartupMessage = "Test Message",
                 EnableLogging = true,
                 LogLevel = "Information",
                 CheckForUpdates = true,
                 UpdateCheckInterval = 24,
                 Language = "en-US",
-                PortableMode = false,
                 CustomProtocol = "browserselector",
                 RegisterProtocol = true,
                 CloseAfterUrlRuleMatch = true

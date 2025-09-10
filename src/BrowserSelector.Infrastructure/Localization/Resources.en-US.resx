@@ -85,9 +85,6 @@
   <data name="Settings.App.LanguageManagement" xml:space="preserve">
     <value>Language Management</value>
   </data>
-  <data name="Settings.App.PortableMode" xml:space="preserve">
-    <value>Portable Mode</value>
-  </data>
   <data name="Settings.App.CustomProtocol" xml:space="preserve">
     <value>Custom Protocol</value>
   </data>

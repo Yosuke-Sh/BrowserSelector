@@ -200,13 +200,11 @@ public class SimpleCoverageTests
         AppSettings appSettings = new();
 
         // Assert
-        _ = appSettings.StartupMessage.Should().BeEmpty();
         _ = appSettings.EnableLogging.Should().BeTrue();
         _ = appSettings.LogLevel.Should().Be("Information");
         _ = appSettings.CheckForUpdates.Should().BeTrue();
         _ = appSettings.UpdateCheckInterval.Should().Be(24);
         _ = appSettings.Language.Should().Be("en-US");
-        _ = appSettings.PortableMode.Should().BeFalse();
         _ = appSettings.CustomProtocol.Should().Be("browserselector");
         _ = appSettings.RegisterProtocol.Should().BeTrue();
         _ = appSettings.CloseAfterUrlRuleMatch.Should().BeTrue();

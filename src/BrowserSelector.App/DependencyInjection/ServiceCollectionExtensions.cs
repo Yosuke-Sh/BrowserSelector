@@ -37,7 +37,6 @@ public static class ServiceCollectionExtensions
         _ = services.AddSingleton<ILogService, BrowserSelector.Infrastructure.Logging.LogService>();
         _ = services.AddScoped<IRegistryService>(provider =>
             new WindowsRegistryService(provider.GetRequiredService<ILogService>()));
-        _ = services.AddScoped<ISystemTrayService, SystemTrayService>();
         _ = services.AddScoped<IProtocolHandler, ProtocolHandler>();
         _ = services.AddScoped<IUpdateService>(provider =>
             new UpdateService("https://api.github.com/repos/your-repo/releases/latest", "1.0.0"));

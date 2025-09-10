@@ -110,9 +110,6 @@ public class AppTests : IDisposable
         var protocolHandler = provider.GetService<BrowserSelector.Core.Services.IProtocolHandler>();
         protocolHandler.Should().NotBeNull();
 
-        var systemTrayService = provider.GetService<BrowserSelector.Core.Services.ISystemTrayService>();
-        systemTrayService.Should().NotBeNull();
-
         var updateService = provider.GetService<BrowserSelector.Core.Services.IUpdateService>();
         updateService.Should().NotBeNull();
     }
@@ -261,10 +258,6 @@ public class AppTests : IDisposable
         registryService.Should().NotBeNull();
         registryService.Should().BeOfType<BrowserSelector.Infrastructure.SystemIntegration.WindowsRegistryService>();
 
-        var systemTrayService = provider.GetService<BrowserSelector.Core.Services.ISystemTrayService>();
-        systemTrayService.Should().NotBeNull();
-        systemTrayService.Should().BeOfType<BrowserSelector.Infrastructure.SystemIntegration.SystemTrayService>();
-
         var protocolHandler = provider.GetService<BrowserSelector.Core.Services.IProtocolHandler>();
         protocolHandler.Should().NotBeNull();
         protocolHandler.Should().BeOfType<BrowserSelector.Infrastructure.SystemIntegration.ProtocolHandler>();
@@ -360,7 +353,6 @@ public class AppTests : IDisposable
             typeof(BrowserSelector.Core.Services.IUrlService),
             typeof(BrowserSelector.Core.Services.ILogService),
             typeof(BrowserSelector.Core.Services.IProtocolHandler),
-            typeof(BrowserSelector.Core.Services.ISystemTrayService),
             typeof(BrowserSelector.Core.Services.IUpdateService),
             typeof(BrowserSelector.Core.Services.IRegistryService)
         };
@@ -448,7 +440,6 @@ public class AppTests : IDisposable
             provider.GetService<BrowserSelector.Core.Services.IUrlService>(),
             provider.GetService<BrowserSelector.Core.Services.ILogService>(),
             provider.GetService<BrowserSelector.Core.Services.IProtocolHandler>(),
-            provider.GetService<BrowserSelector.Core.Services.ISystemTrayService>(),
             provider.GetService<BrowserSelector.Core.Services.IUpdateService>(),
             provider.GetService<BrowserSelector.Core.Services.IRegistryService>(),
             provider.GetService<BrowserSelector.Presentation.ViewModels.MainViewModel>(),

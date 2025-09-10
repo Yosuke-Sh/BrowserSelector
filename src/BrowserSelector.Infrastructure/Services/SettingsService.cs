@@ -25,23 +25,10 @@ public class SettingsService : ISettingsService
     {
         _logService = logService;
 
-        // ポータブルモードかどうかを判定
-        string executablePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
-        string executableDirectory = Path.GetDirectoryName(executablePath) ?? Environment.CurrentDirectory;
-        string portableMarkerPath = Path.Combine(executableDirectory, "portable.txt");
-
-        if (File.Exists(portableMarkerPath))
-        {
-            // ポータブルモード：実行ファイルと同じディレクトリに設定を保存
-            _settingsDirectory = executableDirectory;
-        }
-        else
-        {
-            // 通常モード：ユーザーのアプリケーションデータフォルダに保存
-            _settingsDirectory = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "BrowserSelector");
-        }
+        // ユーザーのアプリケーションデータフォルダに設定を保存
+        _settingsDirectory = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "BrowserSelector");
 
         // 設定ディレクトリが存在しない場合は作成
         if (!Directory.Exists(_settingsDirectory))

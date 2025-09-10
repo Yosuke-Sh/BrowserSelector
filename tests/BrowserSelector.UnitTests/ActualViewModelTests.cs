@@ -91,7 +91,6 @@ namespace BrowserSelector.UnitTests
         public void SettingsViewModel_AppSettingsProperties_ShouldExecuteActualLogic()
         {
             // Act - 実際のAppSettingsプロパティアクセスロジックを実行
-            string startupMessage = _settingsViewModel.AppSettings.StartupMessage;
             bool enableLogging = _settingsViewModel.AppSettings.EnableLogging;
             string logLevel = _settingsViewModel.AppSettings.LogLevel;
             bool checkForUpdates = _settingsViewModel.AppSettings.CheckForUpdates;
@@ -99,7 +98,6 @@ namespace BrowserSelector.UnitTests
             string language = _settingsViewModel.AppSettings.Language;
 
             // Assert - 実際のロジックが実行されたことを確認
-            _ = startupMessage.Should().NotBeNull();
             _ = enableLogging.Should().BeTrue();
             _ = logLevel.Should().NotBeNull();
             _ = checkForUpdates.Should().BeTrue();
@@ -200,7 +198,6 @@ namespace BrowserSelector.UnitTests
             _settingsViewModel.AppSettings.PropertyChanged += (sender, e) => propertyChangedRaised = true;
 
             // Act - 実際のAppSettingsプロパティ変更ロジックを実行
-            _settingsViewModel.AppSettings.StartupMessage = "Test Message";
             _settingsViewModel.AppSettings.EnableLogging = false;
             _settingsViewModel.AppSettings.LogLevel = "Warning";
             _settingsViewModel.AppSettings.CheckForUpdates = false;

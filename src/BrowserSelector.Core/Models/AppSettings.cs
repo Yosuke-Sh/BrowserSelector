@@ -12,9 +12,6 @@ namespace BrowserSelector.Core.Models
     public partial class AppSettings : ObservableObject
     {
         [ObservableProperty]
-        private string _startupMessage = string.Empty;
-
-        [ObservableProperty]
         private bool _enableLogging = true;
 
         [ObservableProperty]
@@ -28,9 +25,6 @@ namespace BrowserSelector.Core.Models
 
         [ObservableProperty]
         private string _language = "en-US";
-
-        [ObservableProperty]
-        private bool _portableMode;
 
         [ObservableProperty]
         private string _customProtocol = "browserselector";

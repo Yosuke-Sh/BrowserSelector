@@ -14,13 +14,11 @@ public class CoreModelsTests
         AppSettings settings = new();
 
         // Assert
-        _ = settings.StartupMessage.Should().BeEmpty("スタートアップメッセージは空文字列");
         _ = settings.EnableLogging.Should().BeTrue("ログは有効");
         _ = settings.LogLevel.Should().Be("Information", "ログレベルはInformation");
         _ = settings.CheckForUpdates.Should().BeTrue("更新チェックは有効");
         _ = settings.UpdateCheckInterval.Should().Be(24, "更新チェック間隔は24時間");
         _ = settings.Language.Should().Be("en-US", "デフォルト言語は英語");
-        _ = settings.PortableMode.Should().BeFalse("ポータブルモードは無効");
         _ = settings.CustomProtocol.Should().Be("browserselector", "カスタムプロトコルはbrowserselector");
         _ = settings.RegisterProtocol.Should().BeTrue("プロトコル登録は有効");
         _ = settings.CloseAfterUrlRuleMatch.Should().BeTrue("URLルールマッチ後は閉じる");
@@ -36,25 +34,21 @@ public class CoreModelsTests
         settings.PropertyChanged += (sender, e) => propertyChangedEvents.Add(e.PropertyName!);
 
         // Act
-        settings.StartupMessage = "Test Message";
         settings.EnableLogging = false;
         settings.LogLevel = "Debug";
         settings.CheckForUpdates = false;
         settings.UpdateCheckInterval = 12;
         settings.Language = "ja-JP";
-        settings.PortableMode = true;
         settings.CustomProtocol = "test";
         settings.RegisterProtocol = false;
         settings.CloseAfterUrlRuleMatch = false;
 
         // Assert
-        _ = propertyChangedEvents.Should().Contain("StartupMessage");
         _ = propertyChangedEvents.Should().Contain("EnableLogging");
         _ = propertyChangedEvents.Should().Contain("LogLevel");
         _ = propertyChangedEvents.Should().Contain("CheckForUpdates");
         _ = propertyChangedEvents.Should().Contain("UpdateCheckInterval");
         _ = propertyChangedEvents.Should().Contain("Language");
-        _ = propertyChangedEvents.Should().Contain("PortableMode");
         _ = propertyChangedEvents.Should().Contain("CustomProtocol");
         _ = propertyChangedEvents.Should().Contain("RegisterProtocol");
         _ = propertyChangedEvents.Should().Contain("CloseAfterUrlRuleMatch");

@@ -240,26 +240,22 @@ public class CoreProjectCoverageTests
         // Arrange
         AppSettings appSettings = new()
         {
-            StartupMessage = "Test startup message",
             EnableLogging = false,
             LogLevel = "Debug",
             CheckForUpdates = false,
             UpdateCheckInterval = 12,
             Language = "ja-JP",
-            PortableMode = true,
             CustomProtocol = "test-protocol",
             RegisterProtocol = false,
             CloseAfterUrlRuleMatch = false
         };
 
         // Act & Assert
-        _ = appSettings.StartupMessage.Should().Be("Test startup message");
         _ = appSettings.EnableLogging.Should().BeFalse();
         _ = appSettings.LogLevel.Should().Be("Debug");
         _ = appSettings.CheckForUpdates.Should().BeFalse();
         _ = appSettings.UpdateCheckInterval.Should().Be(12);
         _ = appSettings.Language.Should().Be("ja-JP");
-        _ = appSettings.PortableMode.Should().BeTrue();
         _ = appSettings.CustomProtocol.Should().Be("test-protocol");
         _ = appSettings.RegisterProtocol.Should().BeFalse();
         _ = appSettings.CloseAfterUrlRuleMatch.Should().BeFalse();

@@ -173,13 +173,14 @@ Application configuration settings.
 ```csharp
 public class AppSettings
 {
-    public bool StartMinimized { get; set; }
-    public bool StartInSystemTray { get; set; }
-    public int StartupDelay { get; set; }
-    public string StartupMessage { get; set; }
-    public bool PortableMode { get; set; }
     public bool EnableLogging { get; set; }
     public LogLevel LogLevel { get; set; }
+    public bool CheckForUpdates { get; set; }
+    public int UpdateCheckInterval { get; set; }
+    public string Language { get; set; }
+    public string CustomProtocol { get; set; }
+    public bool RegisterProtocol { get; set; }
+    public bool CloseAfterUrlRuleMatch { get; set; }
 }
 ```
 

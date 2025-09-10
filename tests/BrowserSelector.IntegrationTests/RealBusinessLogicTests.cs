@@ -93,13 +93,11 @@ namespace BrowserSelector.IntegrationTests
             // Arrange
             AppSettings testSettings = new()
             {
-                StartupMessage = "Integration Test Message",
                 EnableLogging = true,
                 LogLevel = "Debug",
                 CheckForUpdates = false,
                 UpdateCheckInterval = 12,
                 Language = "en-US",
-                PortableMode = true,
                 CustomProtocol = "browserselector",
                 RegisterProtocol = true,
                 CloseAfterUrlRuleMatch = false
