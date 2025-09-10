@@ -36,7 +36,7 @@ public class LibraryService : ILibraryService
     /// </summary>
     /// <param name="browser">検証するブラウザ.</param>
     /// <returns>検証結果.</returns>
-    public async Task<bool> ValidateBrowserAsync(Browser browser)
+    public Task<bool> ValidateBrowserAsync(Browser browser)
     {
         ArgumentNullException.ThrowIfNull(browser);
 
@@ -48,20 +48,20 @@ public class LibraryService : ILibraryService
             if (string.IsNullOrWhiteSpace(browser.Name))
             {
                 _logService?.LogWarning("ブラウザ名が空です", "LibraryService");
-                return false;
+                return Task.FromResult(false);
             }
 
             if (string.IsNullOrWhiteSpace(browser.ExecutablePath))
             {
                 _logService?.LogWarning($"ブラウザ '{browser.Name}' の実行パスが空です", "LibraryService");
-                return false;
+                return Task.FromResult(false);
             }
 
             // 実行ファイルの存在確認
             if (!File.Exists(browser.ExecutablePath))
             {
                 _logService?.LogWarning($"ブラウザ '{browser.Name}' の実行ファイルが存在しません: {browser.ExecutablePath}", "LibraryService");
-                return false;
+                return Task.FromResult(false);
             }
 
             // 拡張子の確認
@@ -69,21 +69,21 @@ public class LibraryService : ILibraryService
             if (extension != ".EXE")
             {
                 _logService?.LogWarning($"ブラウザ '{browser.Name}' の実行ファイルが無効です: {browser.ExecutablePath}", "LibraryService");
-                return false;
+                return Task.FromResult(false);
             }
 
             _logService?.LogInformation($"ブラウザ検証成功: {browser.Name}", "LibraryService");
-            return true;
+            return Task.FromResult(true);
         }
         catch (ArgumentException ex)
         {
             _logService?.LogError($"ブラウザ検証エラー（引数エラー）: {ex.Message}", "LibraryService", ex);
-            return false;
+            return Task.FromResult(false);
         }
         catch (InvalidOperationException ex)
         {
             _logService?.LogError($"ブラウザ検証エラー（操作エラー）: {ex.Message}", "LibraryService", ex);
-            return false;
+            return Task.FromResult(false);
         }
     }
 

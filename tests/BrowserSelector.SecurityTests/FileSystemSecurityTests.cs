@@ -348,7 +348,7 @@ public class FileSystemSecurityTests
             _ = Path.GetFullPath(path);
             return true;
         }
-        catch (Exception)
+        catch (Exception ex) when (ex is ArgumentException or UnauthorizedAccessException or PathTooLongException)
         {
             return false;
         }
@@ -387,7 +387,7 @@ public class FileSystemSecurityTests
             // 実際の作成は行わず、パスの妥当性のみチェック
             return true;
         }
-        catch (Exception)
+        catch (Exception ex) when (ex is ArgumentException or UnauthorizedAccessException or PathTooLongException)
         {
             return false;
         }
@@ -426,7 +426,7 @@ public class FileSystemSecurityTests
             // ファイルの存在チェック
             return File.Exists(path);
         }
-        catch (Exception)
+        catch (Exception ex) when (ex is ArgumentException or UnauthorizedAccessException or PathTooLongException)
         {
             return false;
         }
@@ -465,7 +465,7 @@ public class FileSystemSecurityTests
             // 実際の書き込みは行わず、パスの妥当性のみチェック
             return true;
         }
-        catch (Exception)
+        catch (Exception ex) when (ex is ArgumentException or UnauthorizedAccessException or PathTooLongException)
         {
             return false;
         }

@@ -12,6 +12,12 @@ namespace BrowserSelector.Infrastructure.Services;
 /// </summary>
 public class CustomLanguageService : ICustomLanguageService
 {
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        WriteIndented = true,
+        Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+    };
+
     private readonly string _customLanguageFolder;
     private readonly ILogService? _logService;
 
@@ -250,11 +256,7 @@ public class CustomLanguageService : ICustomLanguageService
             string fileName = $"{cultureCode}.json";
             string filePath = System.IO.Path.Combine(_customLanguageFolder, fileName);
 
-            string json = JsonSerializer.Serialize(languageFile, new JsonSerializerOptions
-            {
-                WriteIndented = true,
-                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-            });
+            string json = JsonSerializer.Serialize(languageFile, JsonOptions);
 
             await System.IO.File.WriteAllTextAsync(filePath, json).ConfigureAwait(false);
 
@@ -313,11 +315,7 @@ public class CustomLanguageService : ICustomLanguageService
             string fileName = $"{cultureCode}.json";
             string filePath = System.IO.Path.Combine(_customLanguageFolder, fileName);
 
-            string json = JsonSerializer.Serialize(languageFile, new JsonSerializerOptions
-            {
-                WriteIndented = true,
-                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-            });
+            string json = JsonSerializer.Serialize(languageFile, JsonOptions);
 
             await System.IO.File.WriteAllTextAsync(filePath, json).ConfigureAwait(false);
 

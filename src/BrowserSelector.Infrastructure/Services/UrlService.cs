@@ -53,7 +53,32 @@ public class UrlService : IUrlService
             }
             else
             {
-                url = AddProtocolIfNeeded(url);
+                // string型のURLをUri型に変換してからAddProtocolIfNeeded(Uri)を呼び出し
+                if (Uri.TryCreate(url, UriKind.Absolute, out var tempUri))
+                {
+                    url = AddProtocolIfNeeded(tempUri);
+                }
+                else
+                {
+                    // プロトコルを追加してからUri型に変換
+                    string normalizedUrl = url.Trim();
+                    if (!normalizedUrl.StartsWith("http://", StringComparison.Ordinal) && 
+                        !normalizedUrl.StartsWith("https://", StringComparison.Ordinal) &&
+                        !normalizedUrl.StartsWith("ftp://", StringComparison.Ordinal) && 
+                        !normalizedUrl.StartsWith("file://", StringComparison.Ordinal))
+                    {
+                        normalizedUrl = "https://" + normalizedUrl;
+                    }
+                    
+                    if (Uri.TryCreate(normalizedUrl, UriKind.Absolute, out var normalizedUri))
+                    {
+                        url = AddProtocolIfNeeded(normalizedUri);
+                    }
+                    else
+                    {
+                        url = normalizedUrl;
+                    }
+                }
             }
 
             _logService?.LogTrace($"URL正規化処理完了: '{originalUrl}' -> '{url}' (プロトコル追加: {originalUrl != url})", "UrlService");
@@ -141,7 +166,32 @@ public class UrlService : IUrlService
             }
             else
             {
-                url = AddProtocolIfNeeded(url);
+                // string型のURLをUri型に変換してからAddProtocolIfNeeded(Uri)を呼び出し
+                if (Uri.TryCreate(url, UriKind.Absolute, out var tempUri))
+                {
+                    url = AddProtocolIfNeeded(tempUri);
+                }
+                else
+                {
+                    // プロトコルを追加してからUri型に変換
+                    string normalizedUrl = url.Trim();
+                    if (!normalizedUrl.StartsWith("http://", StringComparison.Ordinal) && 
+                        !normalizedUrl.StartsWith("https://", StringComparison.Ordinal) &&
+                        !normalizedUrl.StartsWith("ftp://", StringComparison.Ordinal) && 
+                        !normalizedUrl.StartsWith("file://", StringComparison.Ordinal))
+                    {
+                        normalizedUrl = "https://" + normalizedUrl;
+                    }
+                    
+                    if (Uri.TryCreate(normalizedUrl, UriKind.Absolute, out var normalizedUri))
+                    {
+                        url = AddProtocolIfNeeded(normalizedUri);
+                    }
+                    else
+                    {
+                        url = normalizedUrl;
+                    }
+                }
             }
 
             return Uri.TryCreate(url, UriKind.Absolute, out Uri? resultUri) ? resultUri.Host : string.Empty;

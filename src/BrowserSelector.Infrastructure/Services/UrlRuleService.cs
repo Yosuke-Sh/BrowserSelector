@@ -2,6 +2,7 @@ using BrowserSelector.Core.Models;
 using BrowserSelector.Core.Services;
 using System.Diagnostics;
 using System.IO;
+using System.Text.Json;
 
 namespace BrowserSelector.Infrastructure.Services;
 
@@ -10,6 +11,11 @@ namespace BrowserSelector.Infrastructure.Services;
 /// </summary>
 public class UrlRuleService : IUrlRuleService
 {
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        WriteIndented = true
+    };
+
     private readonly List<UrlRule> _rules = [];
     private readonly string _rulesFilePath;
     private readonly object _lockObject = new();
@@ -245,7 +251,9 @@ public class UrlRuleService : IUrlRuleService
 
                 foreach (UrlRule? rule in enabledRules)
                 {
-                    if (rule.IsMatch(url))
+                    // string型のURLをUri型に変換してからIsMatch(Uri)を呼び出し
+                    Uri urlUri = new(url);
+                    if (rule.IsMatch(urlUri))
                     {
                         Browser? browser = browsers.FirstOrDefault(b => b.Name.Equals(rule.BrowserName, StringComparison.OrdinalIgnoreCase));
                         if (browser != null)
@@ -450,7 +458,7 @@ public class UrlRuleService : IUrlRuleService
                 rulesToSave = _rules.ToList();
             }
 
-            string json = System.Text.Json.JsonSerializer.Serialize(rulesToSave, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+            string json = System.Text.Json.JsonSerializer.Serialize(rulesToSave, JsonOptions);
             await File.WriteAllTextAsync(_rulesFilePath, json).ConfigureAwait(false);
 
             Debug.WriteLine($"UrlRuleService: {rulesToSave.Count} 個のルールを保存しました");
@@ -490,7 +498,7 @@ public class UrlRuleService : IUrlRuleService
 
         try
         {
-            string json = System.Text.Json.JsonSerializer.Serialize(_rules, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+            string json = System.Text.Json.JsonSerializer.Serialize(_rules, JsonOptions);
             File.WriteAllText(_rulesFilePath, json);
         }
         catch (UnauthorizedAccessException ex)

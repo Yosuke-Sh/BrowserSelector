@@ -39,6 +39,7 @@ public class InputValidationSecurityTests
     /// <param name="maliciousUrl">maliciousUrl.</param>
     public void UrlInputShouldRejectXSSAttacksUri(Uri maliciousUrl)
     {
+        ArgumentNullException.ThrowIfNull(maliciousUrl);
         UrlInputShouldRejectXSSAttacks(maliciousUrl.ToString());
     }
 
@@ -67,6 +68,7 @@ public class InputValidationSecurityTests
     /// <param name="maliciousUrl">maliciousUrl.</param>
     public void UrlInputShouldRejectSQLInjectionAttacksUri(Uri maliciousUrl)
     {
+        ArgumentNullException.ThrowIfNull(maliciousUrl);
         UrlInputShouldRejectSQLInjectionAttacks(maliciousUrl.ToString());
     }
 
@@ -94,6 +96,7 @@ public class InputValidationSecurityTests
     /// <param name="maliciousUrl">maliciousUrl.</param>
     public void UrlInputShouldRejectPathTraversalAttacksUri(Uri maliciousUrl)
     {
+        ArgumentNullException.ThrowIfNull(maliciousUrl);
         UrlInputShouldRejectPathTraversalAttacks(maliciousUrl.ToString());
     }
 
@@ -122,6 +125,7 @@ public class InputValidationSecurityTests
     /// <param name="maliciousUrl">maliciousUrl.</param>
     public void UrlInputShouldRejectCommandInjectionAttacksUri(Uri maliciousUrl)
     {
+        ArgumentNullException.ThrowIfNull(maliciousUrl);
         UrlInputShouldRejectCommandInjectionAttacks(maliciousUrl.ToString());
     }
 
@@ -199,6 +203,7 @@ public class InputValidationSecurityTests
     /// <param name="urlWithSpecialChars">urlWithSpecialChars.</param>
     public void UrlInputShouldRejectUrlsWithSpecialCharactersUri(Uri urlWithSpecialChars)
     {
+        ArgumentNullException.ThrowIfNull(urlWithSpecialChars);
         UrlInputShouldRejectUrlsWithSpecialCharacters(urlWithSpecialChars.ToString());
     }
 

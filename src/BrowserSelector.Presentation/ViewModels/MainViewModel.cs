@@ -326,7 +326,8 @@ public partial class MainViewModel : ObservableObject
 
             StatusMessage = $"ブラウザ {browser.Name} を起動中...";
 
-            bool success = await _browserService.LaunchBrowserAsync(browser, Url).ConfigureAwait(false);
+            Uri urlUri = new(Url);
+            bool success = await _browserService.LaunchBrowserAsync(browser, urlUri).ConfigureAwait(false);
 
             if (success)
             {
@@ -504,7 +505,8 @@ public partial class MainViewModel : ObservableObject
         {
             _logService?.LogInformation($"URLルール適用開始: {url}", "MainViewModel");
 
-            Browser? matchingBrowser = await _urlRuleService.FindMatchingBrowserAsync(url, Browsers).ConfigureAwait(false);
+            Uri urlUri = new(url);
+            Browser? matchingBrowser = await _urlRuleService.FindMatchingBrowserAsync(urlUri, Browsers).ConfigureAwait(false);
             if (matchingBrowser != null)
             {
                 SelectedBrowser = matchingBrowser;

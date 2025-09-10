@@ -100,8 +100,9 @@ public class BrowserService : IBrowserService
                 return false;
             }
 
-            // URLを正規化
-            string normalizedUrl = await _urlService.NormalizeUrlAsync(url).ConfigureAwait(false);
+            // URLを正規化（Uri型に変換してから呼び出し）
+            Uri urlUri = new(url);
+            string normalizedUrl = await _urlService.NormalizeUrlAsync(urlUri).ConfigureAwait(false);
             _logService.LogDebug($"正規化されたURL - {normalizedUrl}", nameof(BrowserService));
 
             if (string.IsNullOrEmpty(normalizedUrl))
@@ -110,8 +111,9 @@ public class BrowserService : IBrowserService
                 return false;
             }
 
-            // URLを検証
-            bool isValidUrl = await _urlService.ValidateUrlAsync(normalizedUrl).ConfigureAwait(false);
+            // URLを検証（Uri型に変換してから呼び出し）
+            Uri normalizedUri = new(normalizedUrl);
+            bool isValidUrl = await _urlService.ValidateUrlAsync(normalizedUri).ConfigureAwait(false);
             _logService.LogDebug($"URL検証結果 - {isValidUrl}", nameof(BrowserService));
 
             if (!isValidUrl)
@@ -171,6 +173,7 @@ public class BrowserService : IBrowserService
     /// <inheritdoc/>
     public async Task<bool> LaunchBrowserAsync(Browser browser, Uri url)
     {
+        ArgumentNullException.ThrowIfNull(url);
         return await LaunchBrowserAsync(browser, url.ToString()).ConfigureAwait(false);
     }
 

@@ -151,11 +151,7 @@ public class SettingsService : ISettingsService
     {
         try
         {
-            JsonSerializerOptions options = new()
-            {
-                WriteIndented = true,
-                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-            };
+            JsonSerializerOptions options = GetJsonSerializerOptions();
 
             string json = JsonSerializer.Serialize(settings, options);
             await File.WriteAllTextAsync(_visualSettingsPath, json).ConfigureAwait(false);

@@ -870,7 +870,8 @@ public partial class SettingsViewModel : ObservableObject
 
         try
         {
-            Browser? matchingBrowser = await _urlRuleService.FindMatchingBrowserAsync(TestUrl, DetectedBrowsers).ConfigureAwait(false);
+            Uri testUrlUri = new(TestUrl);
+            Browser? matchingBrowser = await _urlRuleService.FindMatchingBrowserAsync(testUrlUri, DetectedBrowsers).ConfigureAwait(false);
             if (matchingBrowser != null)
             {
                 TestResult = LocalizedLogHelper.GetString("Settings.UrlRules.MatchFound", matchingBrowser.Name);
