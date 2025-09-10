@@ -19,7 +19,7 @@ public partial class MainViewModel : ObservableObject
     private readonly ILocalizationService _localizationService;
     private readonly ICustomLanguageService _customLanguageService;
     private readonly IUrlRuleService _urlRuleService;
-    private readonly ILogService _logService;
+    private readonly ILogService? _logService;
 
     [ObservableProperty]
     private ObservableCollection<Browser> _browsers = [];
@@ -182,7 +182,7 @@ public partial class MainViewModel : ObservableObject
     /// 起動引数で指定されたURLを設定.
     /// </summary>
     /// <param name="url">設定するURL.</param>
-    public async void SetInitialUrl(Uri url)
+    public void SetInitialUrl(Uri url)
     {
         if (url != null)
         {
@@ -377,7 +377,7 @@ public partial class MainViewModel : ObservableObject
         try
         {
             // 設定画面を開く
-            SettingsViewModel settingsViewModel = new(_settingsService, _browserService, _localizationService, _customLanguageService, _urlRuleService, _logService);
+            SettingsViewModel settingsViewModel = new(_settingsService, _browserService, _localizationService, _customLanguageService, _urlRuleService, _logService ?? throw new InvalidOperationException("LogService is not available"));
             Views.SettingsWindow settingsWindow = new(settingsViewModel);
 
             // 設定変更通知のイベントハンドラーを登録

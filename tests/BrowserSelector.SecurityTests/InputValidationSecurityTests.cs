@@ -13,6 +13,7 @@ public class InputValidationSecurityTests
     /// <summary>
     /// URL入力のXSS攻撃検証テスト.
     /// </summary>
+    /// <param name="maliciousUrl">maliciousUrl.</param>
     [Theory]
     [InlineData("<script>alert('XSS')</script>")]
     [InlineData("javascript:alert('XSS')")]
@@ -37,6 +38,7 @@ public class InputValidationSecurityTests
     /// <summary>
     /// URL入力のSQLインジェクション攻撃検証テスト.
     /// </summary>
+    /// <param name="maliciousUrl">maliciousUrl.</param>
     [Theory]
     [InlineData("'; DROP TABLE users; --")]
     [InlineData("' OR '1'='1")]
@@ -57,6 +59,7 @@ public class InputValidationSecurityTests
     /// <summary>
     /// URL入力のパストラバーサル攻撃検証テスト.
     /// </summary>
+    /// <param name="maliciousUrl">maliciousUrl.</param>
     [Theory]
     [InlineData("../../../etc/passwd")]
     [InlineData("..\\..\\..\\windows\\system32\\config\\sam")]

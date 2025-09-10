@@ -137,7 +137,7 @@ public class UpdateService : IUpdateService
             }
 
             // インストーラーを起動
-            System.Diagnostics.Process process = new()
+            using System.Diagnostics.Process process = new()
             {
                 StartInfo = new System.Diagnostics.ProcessStartInfo
                 {
@@ -186,7 +186,7 @@ public class UpdateService : IUpdateService
                 File.Copy(backupPath, currentExePath, true);
 
                 // アプリケーションを再起動
-                System.Diagnostics.Process process = new()
+                using System.Diagnostics.Process process = new()
                 {
                     StartInfo = new System.Diagnostics.ProcessStartInfo
                     {
