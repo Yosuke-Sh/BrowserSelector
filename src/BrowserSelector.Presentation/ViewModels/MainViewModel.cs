@@ -40,7 +40,7 @@ public partial class MainViewModel : ObservableObject
     private bool _isSettingsVisible;
 
     [ObservableProperty]
-    private string _titleMessage = LocalizedLogHelper.GetString("MainWindow.TitleMessage");
+    private string _titleMessage = string.Empty;
 
     [ObservableProperty]
     private VisualSettings _visualSettings = new();
@@ -120,6 +120,7 @@ public partial class MainViewModel : ObservableObject
             _logService?.LogDebug("BrowserLoad.Init Enqueued", "MainViewModel");
 
             // 初期タイトルメッセージを設定
+            TitleMessage = LocalizedLogHelper.GetString("MainWindow.TitleMessage");
             UpdateTitleMessage();
 
             _logService?.LogDetailed(LogLevel.Information, "MainViewModel初期化完了", "MainViewModel",
@@ -423,13 +424,15 @@ public partial class MainViewModel : ObservableObject
             VisualSettings visualSettings = await _settingsService.LoadVisualSettingsAsync().ConfigureAwait(false);
             _logService?.LogDebug($"視覚設定読み込み完了: BackgroundColor={visualSettings.BackgroundColor}", "MainViewModel");
 
-            // メイン画面に視覚設定を適用
-            if (Application.Current?.MainWindow is Window mainWindow)
+            // メイン画面に視覚設定を適用（UIスレッドで実行）
+            Application.Current?.Dispatcher.Invoke(() =>
             {
-                _logService?.LogDebug("メイン画面に視覚設定を適用開始", "MainViewModel");
+                if (Application.Current?.MainWindow is Window mainWindow)
+                {
+                    _logService?.LogDebug("メイン画面に視覚設定を適用開始", "MainViewModel");
 
-                // 背景色またはグラデーションを適用
-                if (visualSettings.UseBackgroundGradient)
+                    // 背景色またはグラデーションを適用
+                    if (visualSettings.UseBackgroundGradient)
                 {
                     // グラデーション方向に応じてStartPointとEndPointを設定
                     System.Windows.Point startPoint, endPoint;
@@ -465,14 +468,15 @@ public partial class MainViewModel : ObservableObject
                     mainWindow.Background = new System.Windows.Media.SolidColorBrush(visualSettings.BackgroundColor);
                 }
 
-                // VisualSettingsを反映
-                VisualSettings = visualSettings;
-                _logService?.LogDebug("メイン画面への視覚設定適用完了", "MainViewModel");
-            }
-            else
-            {
-                _logService?.LogWarning("メイン画面が見つかりません", "MainViewModel");
-            }
+                    // VisualSettingsを反映
+                    VisualSettings = visualSettings;
+                    _logService?.LogDebug("メイン画面への視覚設定適用完了", "MainViewModel");
+                }
+                else
+                {
+                    _logService?.LogWarning("メイン画面が見つかりません", "MainViewModel");
+                }
+            });
         }
         catch (Exception ex)
         {

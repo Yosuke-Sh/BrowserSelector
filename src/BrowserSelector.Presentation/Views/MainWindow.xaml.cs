@@ -22,7 +22,9 @@ public partial class MainWindow : Window
     {
         _logService = logService;
         InitializeComponent();
-        DataContext = viewModel;
+
+        // DataContextの設定を遅延させる
+        Dispatcher.BeginInvoke(new Action(() => DataContext = viewModel));
 
         // 初期サイズ設定を適用（InitializeComponentの後）
         ApplyInitialSizeSettings(viewModel);
@@ -140,8 +142,8 @@ public partial class MainWindow : Window
         if (e.PropertyName == nameof(MainViewModel.VisualSettings))
         {
             _logService?.LogDebug("MainWindow: VisualSettingsプロパティ変更を検知しました。UI更新を通知します。", "MainWindow");
-            // UI更新を強制
-            InvalidateVisual();
+            // UI更新を強制（UIスレッドで実行）
+            Dispatcher.Invoke(() => InvalidateVisual());
         }
     }
 
