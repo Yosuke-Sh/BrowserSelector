@@ -47,10 +47,42 @@ public class SettingsChangedEventArgs : EventArgs
 }
 
 /// <summary>
+/// ブラウザ変更イベントの引数.
+/// </summary>
+public class BrowserChangedEventArgs : EventArgs
+{
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BrowserChangedEventArgs"/> class.
+    /// </summary>
+    /// <param name="browser">変更されたブラウザ.</param>
+    /// <param name="changeType">変更タイプ.</param>
+    public BrowserChangedEventArgs(Browser browser, string changeType)
+    {
+        Browser = browser;
+        ChangeType = changeType;
+    }
+
+    /// <summary>
+    /// Gets the browser.
+    /// </summary>
+    public Browser Browser { get; }
+
+    /// <summary>
+    /// Gets the change type.
+    /// </summary>
+    public string ChangeType { get; }
+}
+
+/// <summary>
 /// 設定画面のViewModel.
 /// </summary>
 public partial class SettingsViewModel : ObservableObject
 {
+    /// <summary>
+    /// ブラウザ変更イベント.
+    /// </summary>
+    public event EventHandler<BrowserChangedEventArgs>? BrowserChanged;
+
     private readonly ISettingsService _settingsService;
     private readonly IBrowserService _browserService;
     private readonly ILocalizationService _localizationService;
@@ -303,39 +335,11 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     /// <summary>
-    /// 言語リストを初期化.
+    /// 言語リストを初期化（同期版）.
     /// </summary>
-    private async void InitializeLanguages()
+    private void InitializeLanguages()
     {
-        try
-        {
-            AvailableLanguages.Clear();
-
-            // カスタム言語サービスから利用可能な言語を取得（ローカライズ不要の表示名）
-            IEnumerable<Core.Models.LanguageInfo> availableLanguages = await CustomLanguageService.GetAvailableLanguagesAsync().ConfigureAwait(false);
-
-            foreach (Core.Models.LanguageInfo languageInfo in availableLanguages)
-            {
-                AvailableLanguages.Add(new LanguageInfo(languageInfo.CultureCode, languageInfo.DisplayName));
-            }
-
-            // 現在の言語を選択
-            SelectedLanguage = AvailableLanguages.FirstOrDefault(l => l.CultureCode == AppSettings.Language)
-                              ?? AvailableLanguages.First();
-
-            LogService?.LogDebug($"言語リスト初期化完了: {AvailableLanguages.Count}個の言語", "SettingsViewModel");
-        }
-        catch (Exception ex)
-        {
-            LogService?.LogError($"言語リストの初期化に失敗しました: {ex.Message}", "SettingsViewModel", ex);
-
-            // フォールバック: デフォルト言語のみ
-            AvailableLanguages.Clear();
-            AvailableLanguages.Add(new LanguageInfo("en-US", "English"));
-            AvailableLanguages.Add(new LanguageInfo("ja-JP", "日本語"));
-            SelectedLanguage = AvailableLanguages.FirstOrDefault(l => l.CultureCode == AppSettings.Language)
-                              ?? AvailableLanguages.First();
-        }
+        _ = Task.Run(InitializeLanguagesAsync);
     }
 
     /// <summary>
@@ -733,6 +737,9 @@ public partial class SettingsViewModel : ObservableObject
                     await RefreshBrowsersAsync().ConfigureAwait(false);
                     LogService?.LogInformation("ブラウザ追加完了", "SettingsViewModel");
                     _ = LocalizedMessageBox.Show("ブラウザを追加しました。", "完了");
+
+                    // ブラウザ変更イベントを発生
+                    BrowserChanged?.Invoke(this, new BrowserChangedEventArgs(newBrowser, "Added"));
                 }
                 else
                 {
@@ -1003,7 +1010,7 @@ public partial class SettingsViewModel : ObservableObject
                 // 設定を再読み込み
                 AppSettings = await _settingsService.LoadAppSettingsAsync().ConfigureAwait(false);
                 VisualSettings = await _settingsService.LoadVisualSettingsAsync().ConfigureAwait(false);
-                InitializeLanguages();
+                await InitializeLanguagesAsync().ConfigureAwait(false);
             }
         }
         catch (Exception)
@@ -1127,21 +1134,25 @@ public partial class SettingsViewModel : ObservableObject
             {
                 LogService?.LogDebug("設定保存成功、メイン画面への反映開始", "SettingsViewModel");
 
-                // 設定変更通知を送信
-                SettingsChanged?.Invoke(this, new SettingsChangedEventArgs("VisualSettings", null, VisualSettings));
-
-                // メイン画面へ反映
-                ApplyVisualToActiveWindow(VisualSettings);
-
-                LogService?.LogDebug("メイン画面への反映完了", "SettingsViewModel");
-
-                // 成功時はウィンドウを閉じる
-                if (Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.DataContext == this) is Window window)
+                // UIスレッドで設定変更通知とウィンドウ操作を実行
+                Application.Current.Dispatcher.Invoke(() =>
                 {
-                    LogService?.LogDebug($"設定ウィンドウを閉じる: {window.GetType().Name}", "SettingsViewModel");
-                    window.DialogResult = true;
-                    window.Close();
-                }
+                    // 設定変更通知を送信
+                    SettingsChanged?.Invoke(this, new SettingsChangedEventArgs("VisualSettings", null, VisualSettings));
+
+                    // メイン画面へ反映
+                    ApplyVisualToActiveWindow(VisualSettings);
+
+                    LogService?.LogDebug("メイン画面への反映完了", "SettingsViewModel");
+
+                    // 成功時はウィンドウを閉じる
+                    if (Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.DataContext == this) is Window window)
+                    {
+                        LogService?.LogDebug($"設定ウィンドウを閉じる: {window.GetType().Name}", "SettingsViewModel");
+                        window.DialogResult = true;
+                        window.Close();
+                    }
+                });
             }
             else
             {
@@ -1313,6 +1324,9 @@ public partial class SettingsViewModel : ObservableObject
                         await RefreshBrowsersAsync().ConfigureAwait(false);
                         LogService?.LogInformation($"システムブラウザ編集完了: {updatedBrowser.Name}", "SettingsViewModel");
                         _ = MessageBox.Show("ブラウザ設定を更新しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                        // ブラウザ変更イベントを発生
+                        BrowserChanged?.Invoke(this, new BrowserChangedEventArgs(targetBrowser, "Updated"));
                     }
                     else
                     {
@@ -1334,6 +1348,9 @@ public partial class SettingsViewModel : ObservableObject
                     await RefreshBrowsersAsync().ConfigureAwait(false);
                     LogService?.LogInformation($"ブラウザ編集完了: {updatedBrowser.Name}", "SettingsViewModel");
                     _ = MessageBox.Show("ブラウザを更新しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                    // ブラウザ変更イベントを発生
+                    BrowserChanged?.Invoke(this, new BrowserChangedEventArgs(updatedBrowser, "Updated"));
                 }
                 else
                 {

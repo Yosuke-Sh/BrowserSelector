@@ -225,6 +225,9 @@ public class BrowserService : IBrowserService
             // プロパティを更新
             existingBrowser.Name = browser.Name;
             existingBrowser.ExecutablePath = browser.ExecutablePath;
+            existingBrowser.IconPath = browser.IconPath;
+            existingBrowser.Arguments = browser.Arguments;
+            existingBrowser.IsEnabled = browser.IsEnabled;
             existingBrowser.DisplayOrder = browser.DisplayOrder;
 
             await SaveCustomBrowsersAsync().ConfigureAwait(false);

@@ -180,6 +180,19 @@ public partial class MainViewModel : ObservableObject
     }
 
     /// <summary>
+    /// ブラウザ変更通知を受け取る.
+    /// </summary>
+    /// <param name="sender">sender.</param>
+    /// <param name="e">e.</param>
+    public void OnBrowserChanged(object? sender, BrowserChangedEventArgs e)
+    {
+        _logService?.LogDebug($"ブラウザ変更通知を受信: {e.Browser.Name}, 変更タイプ: {e.ChangeType}", "MainViewModel");
+
+        // ブラウザ一覧を再読み込み
+        _ = LoadBrowsersAsync();
+    }
+
+    /// <summary>
     /// 起動引数で指定されたURLを設定.
     /// </summary>
     /// <param name="url">設定するURL.</param>
@@ -384,11 +397,13 @@ public partial class MainViewModel : ObservableObject
 
             // 設定変更通知のイベントハンドラーを登録
             settingsViewModel.SettingsChanged += OnSettingsChanged;
+            settingsViewModel.BrowserChanged += OnBrowserChanged;
 
             bool? result = settingsWindow.ShowDialog();
 
             // イベントハンドラーを解除
             settingsViewModel.SettingsChanged -= OnSettingsChanged;
+            settingsViewModel.BrowserChanged -= OnBrowserChanged;
 
             // 設定画面が閉じられた後、設定が保存された場合は再読み込み
             if (result == true)

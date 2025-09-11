@@ -60,6 +60,18 @@ public class BrowserIconDisplay : Control
     }
 
     /// <summary>
+    /// デストラクタ.
+    /// </summary>
+    ~BrowserIconDisplay()
+    {
+        // イベントハンドラーを解除
+        if (Browser != null)
+        {
+            Browser.PropertyChanged -= OnBrowserPropertyChanged;
+        }
+    }
+
+    /// <summary>
     /// Gets or sets ブラウザ情報.
     /// </summary>
     public Browser Browser
@@ -120,6 +132,18 @@ public class BrowserIconDisplay : Control
     {
         if (d is BrowserIconDisplay display)
         {
+            // 前のBrowserオブジェクトのイベントハンドラーを解除
+            if (e.OldValue is Browser oldBrowser)
+            {
+                oldBrowser.PropertyChanged -= display.OnBrowserPropertyChanged;
+            }
+
+            // 新しいBrowserオブジェクトのイベントハンドラーを設定
+            if (e.NewValue is Browser newBrowser)
+            {
+                newBrowser.PropertyChanged += display.OnBrowserPropertyChanged;
+            }
+
             display.LoadIcon();
         }
     }
@@ -129,6 +153,18 @@ public class BrowserIconDisplay : Control
         if (d is BrowserIconDisplay display)
         {
             display.UpdateIconScale();
+        }
+    }
+
+    /// <summary>
+    /// Browserオブジェクトのプロパティ変更を監視.
+    /// </summary>
+    private void OnBrowserPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        // IconPathまたはExecutablePathが変更された場合はアイコンを再読み込み
+        if (e.PropertyName == nameof(Browser.IconPath) || e.PropertyName == nameof(Browser.ExecutablePath))
+        {
+            LoadIcon();
         }
     }
 
