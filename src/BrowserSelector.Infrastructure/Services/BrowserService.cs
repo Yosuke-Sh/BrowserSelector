@@ -243,10 +243,11 @@ public class BrowserService : IBrowserService
             }
 
             // プロパティを更新
-            _logService.LogDebug($"ブラウザプロパティ更新: IconPath={browser.IconPath}, Arguments={browser.Arguments}", nameof(BrowserService));
+            _logService.LogDebug($"ブラウザプロパティ更新: IconPath={browser.IconPath}, IconIndex={browser.IconIndex}, Arguments={browser.Arguments}", nameof(BrowserService));
             existingBrowser.Name = browser.Name;
             existingBrowser.ExecutablePath = browser.ExecutablePath;
             existingBrowser.IconPath = browser.IconPath;
+            existingBrowser.IconIndex = browser.IconIndex;
             existingBrowser.Arguments = browser.Arguments;
             existingBrowser.IsEnabled = browser.IsEnabled;
             existingBrowser.DisplayOrder = browser.DisplayOrder;
@@ -299,10 +300,28 @@ public class BrowserService : IBrowserService
 
             // システム検出ブラウザを追加
             IEnumerable<Browser> registryBrowsers = await _registryService.DetectBrowsersFromRegistryAsync().ConfigureAwait(false);
-            _browsers.AddRange(registryBrowsers);
+            
+            // 保存されたブラウザ設定をシステム検出ブラウザに適用
+            foreach (Browser registryBrowser in registryBrowsers)
+            {
+                Browser? savedBrowser = customBrowsers.FirstOrDefault(b => 
+                    b.ExecutablePath.Equals(registryBrowser.ExecutablePath, StringComparison.OrdinalIgnoreCase));
+                
+                if (savedBrowser != null)
+                {
+                    // 保存された設定を適用
+                    registryBrowser.IconPath = savedBrowser.IconPath;
+                    registryBrowser.IconIndex = savedBrowser.IconIndex;
+                    registryBrowser.Arguments = savedBrowser.Arguments;
+                    registryBrowser.IsEnabled = savedBrowser.IsEnabled;
+                    registryBrowser.DisplayOrder = savedBrowser.DisplayOrder;
+                }
+                
+                _browsers.Add(registryBrowser);
+            }
 
             // カスタムブラウザを追加
-            _browsers.AddRange(customBrowsers);
+            _browsers.AddRange(customBrowsers.Where(b => b.Type == BrowserType.Custom));
 
             _logService.LogDebug($"全ブラウザ取得完了: システム={registryBrowsers.Count()}件, カスタム={customBrowsers.Count}件", nameof(BrowserService));
             return _browsers.OrderBy(b => b.DisplayOrder);
@@ -427,13 +446,14 @@ public class BrowserService : IBrowserService
         {
             _logService.LogDebug($"ブラウザデータ保存開始: {_browsersPath}", nameof(BrowserService));
 
-            // カスタムブラウザのみを保存
-            var customBrowsers = _browsers.Where(b => b.Type == BrowserType.Custom).ToList();
+            // カスタムブラウザとカスタム設定されたシステムブラウザを保存
+            var browsersToSave = _browsers.Where(b => b.Type == BrowserType.Custom || 
+                (!string.IsNullOrEmpty(b.IconPath) && b.IconPath != b.ExecutablePath)).ToList();
 
-            string json = JsonSerializer.Serialize(customBrowsers, GetJsonSerializerOptions());
+            string json = JsonSerializer.Serialize(browsersToSave, GetJsonSerializerOptions());
             await File.WriteAllTextAsync(_browsersPath, json).ConfigureAwait(false);
 
-            _logService.LogDebug($"ブラウザデータ保存完了: {customBrowsers.Count}件", nameof(BrowserService));
+            _logService.LogDebug($"ブラウザデータ保存完了: {browsersToSave.Count}件", nameof(BrowserService));
         }
         catch (Exception ex)
         {

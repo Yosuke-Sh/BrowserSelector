@@ -72,6 +72,9 @@ namespace BrowserSelector.Core.Models
         private string _iconPath = string.Empty;
 
         [ObservableProperty]
+        private int _iconIndex = 0;
+
+        [ObservableProperty]
         private string _arguments = string.Empty;
 
         [ObservableProperty]

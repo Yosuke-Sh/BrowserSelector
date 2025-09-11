@@ -161,8 +161,8 @@ public class BrowserIconDisplay : Control
     /// </summary>
     private void OnBrowserPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        // IconPathまたはExecutablePathが変更された場合はアイコンを再読み込み
-        if (e.PropertyName == nameof(Browser.IconPath) || e.PropertyName == nameof(Browser.ExecutablePath))
+        // IconPath、IconIndex、またはExecutablePathが変更された場合はアイコンを再読み込み
+        if (e.PropertyName == nameof(Browser.IconPath) || e.PropertyName == nameof(Browser.IconIndex) || e.PropertyName == nameof(Browser.ExecutablePath))
         {
             LoadIcon();
         }
@@ -191,7 +191,7 @@ public class BrowserIconDisplay : Control
             // 実行ファイルからアイコンを抽出
             else if (!string.IsNullOrEmpty(Browser.ExecutablePath) && System.IO.File.Exists(Browser.ExecutablePath))
             {
-                ImageSource? iconFromExe = await LoadIconFromExecutableAsync(Browser.ExecutablePath).ConfigureAwait(false);
+                ImageSource? iconFromExe = await LoadIconFromExecutableAsync(Browser.ExecutablePath, Browser.IconIndex).ConfigureAwait(false);
                 IconSource = iconFromExe ?? GetDefaultIcon();
             }
 
@@ -234,37 +234,37 @@ public class BrowserIconDisplay : Control
     /// <summary>
     /// 実行ファイルからアイコンを抽出.
     /// </summary>
-    private async Task<ImageSource?> LoadIconFromExecutableAsync(string executablePath)
+    private async Task<ImageSource?> LoadIconFromExecutableAsync(string executablePath, int iconIndex = 0)
     {
         return await Task.Run(() =>
-                                                                                                {
-                                                                                                    try
-                                                                                                    {
-                                                                                                        // Windows APIを使用してアイコンを抽出
-                                                                                                        System.Drawing.Icon? icon = System.Drawing.Icon.ExtractAssociatedIcon(executablePath);
-                                                                                                        if (icon != null)
-                                                                                                        {
-                                                                                                            using System.IO.MemoryStream stream = new();
-                                                                                                            icon.Save(stream);
-                                                                                                            stream.Position = 0;
+        {
+            try
+            {
+                // Windows APIを使用してアイコンを抽出（iconIndexは現在のAPIでは使用できないため、デフォルトアイコンを取得）
+                System.Drawing.Icon? icon = System.Drawing.Icon.ExtractAssociatedIcon(executablePath);
+                if (icon != null)
+                {
+                    using System.IO.MemoryStream stream = new();
+                    icon.Save(stream);
+                    stream.Position = 0;
 
-                                                                                                            BitmapImage bitmap = new();
-                                                                                                            bitmap.BeginInit();
-                                                                                                            bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                                                                                                            bitmap.StreamSource = stream;
-                                                                                                            bitmap.EndInit();
-                                                                                                            bitmap.Freeze(); // UIスレッドでの使用を可能にする
+                    BitmapImage bitmap = new();
+                    bitmap.BeginInit();
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.StreamSource = stream;
+                    bitmap.EndInit();
+                    bitmap.Freeze(); // UIスレッドでの使用を可能にする
 
-                                                                                                            return bitmap;
-                                                                                                        }
-                                                                                                    }
-                                                                                                    catch
-                                                                                                    {
-                                                                                                        // エラーが発生した場合はデフォルトアイコンを使用
-                                                                                                    }
+                    return bitmap;
+                }
+            }
+            catch
+            {
+                // エラーが発生した場合はデフォルトアイコンを使用
+            }
 
-                                                                                                    return GetDefaultIcon();
-                                                                                                }).ConfigureAwait(false);
+            return GetDefaultIcon();
+        }).ConfigureAwait(false);
     }
 
     /// <summary>

@@ -280,12 +280,16 @@ public partial class MainViewModel : ObservableObject
             IEnumerable<Browser> existingBrowsers = await _browserService.GetAllBrowsersAsync().ConfigureAwait(false);
             if (existingBrowsers.Any())
             {
-                Browsers.Clear();
-                foreach (Browser? browser in existingBrowsers.Where(b => b.IsEnabled))
+                // UIスレッドでコレクションを更新
+                Application.Current?.Dispatcher.Invoke(() =>
                 {
-                    Browsers.Add(browser);
-                }
-                StatusMessage = LocalizedLogHelper.GetString("MainWindow.BrowsersLoaded", Browsers.Count);
+                    Browsers.Clear();
+                    foreach (Browser? browser in existingBrowsers.Where(b => b.IsEnabled))
+                    {
+                        Browsers.Add(browser);
+                    }
+                    StatusMessage = LocalizedLogHelper.GetString("MainWindow.BrowsersLoaded", Browsers.Count);
+                });
                 return;
             }
 
@@ -295,11 +299,15 @@ public partial class MainViewModel : ObservableObject
 
             IEnumerable<Browser> browsers = await _browserService.DetectBrowsersAsync().ConfigureAwait(false);
 
-            Browsers.Clear();
-            foreach (Browser? browser in browsers.Where(b => b.IsEnabled))
+            // UIスレッドでコレクションを更新
+            Application.Current?.Dispatcher.Invoke(() =>
             {
-                Browsers.Add(browser);
-            }
+                Browsers.Clear();
+                foreach (Browser? browser in browsers.Where(b => b.IsEnabled))
+                {
+                    Browsers.Add(browser);
+                }
+            });
 
             // ログ出力
             _logService?.LogDebug($"検出されたブラウザ数: {browsers.Count()}", "MainViewModel");
