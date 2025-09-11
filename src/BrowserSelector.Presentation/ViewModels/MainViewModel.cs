@@ -341,7 +341,8 @@ public partial class MainViewModel : ObservableObject
                 if (appSettings.CloseAfterUrlRuleMatch)
                 {
                     _logService?.LogInformation("ブラウザ起動後のアプリ終了", "MainViewModel");
-                    Application.Current.Shutdown();
+                    // UIスレッドでアプリケーションを終了
+                    Application.Current.Dispatcher.Invoke(() => Application.Current.Shutdown());
                 }
             }
             else
