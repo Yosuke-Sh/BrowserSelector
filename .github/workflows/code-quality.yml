@@ -45,7 +45,8 @@ jobs:
           "tests/BrowserSelector.InfrastructureTests"
         )
         
-        $testResults = @()
+        $successCount = 0
+        $failureCount = 0
         
         foreach ($project in $testProjects) {
           if (Test-Path $project) {
@@ -61,13 +62,22 @@ jobs:
               New-Item -ItemType Directory -Path $projectTestResults -Force | Out-Null
               
               # 各プロジェクトを個別に実行し、結果を収集
-              $result = dotnet test $project --configuration Release --no-build --collect:"XPlat Code Coverage" --logger trx --results-directory $projectTestResults --verbosity normal
-              $testResults += $result
-              Write-Host "Completed tests for $project"
+              $exitCode = 0
+              $output = & dotnet test $project --configuration Release --no-build --collect:"XPlat Code Coverage" --logger trx --results-directory $projectTestResults --verbosity normal 2>&1
+              $exitCode = $LASTEXITCODE
+              
+              if ($exitCode -eq 0) {
+                Write-Host "Completed tests for $project"
+                $successCount++
+              } else {
+                Write-Host "Failed tests for $project (Exit code: $exitCode)"
+                Write-Host "Output: $output"
+                $failureCount++
+              }
             }
             catch {
-              Write-Host "Failed tests for $project: $_"
-              $testResults += "FAILED: $project"
+              Write-Host "Exception in tests for $project: $($_.Exception.Message)"
+              $failureCount++
             }
           } else {
             Write-Host "Skipping $project - project not found"
@@ -76,7 +86,8 @@ jobs:
         
         # テスト結果の要約を表示
         Write-Host "Test execution summary:"
-        $testResults | ForEach-Object { Write-Host $_ }
+        Write-Host "Successful: $successCount"
+        Write-Host "Failed: $failureCount"
         
         # 全テスト結果を統合
         Write-Host "Consolidating test results..."
@@ -87,7 +98,15 @@ jobs:
         New-Item -ItemType Directory -Path $allTestResults -Force | Out-Null
         
         Get-ChildItem "TestResults" -Directory | Where-Object { $_.Name -ne "AllTests" } | ForEach-Object {
-          Copy-Item "$($_.FullName)\*" $allTestResults -Recurse -Force
+          if (Test-Path $_.FullName) {
+            Copy-Item "$($_.FullName)\*" $allTestResults -Recurse -Force -ErrorAction SilentlyContinue
+          }
+        }
+        
+        # 失敗があった場合は終了コード1を返す
+        if ($failureCount -gt 0) {
+          Write-Host "Some tests failed. Exiting with code 1."
+          exit 1
         }
       continue-on-error: false
     
