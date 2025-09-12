@@ -1,6 +1,8 @@
 using BrowserSelector.Infrastructure.Services;
+using BrowserSelector.Infrastructure.Logging;
 using FluentAssertions;
 using System.IO.Compression;
+using Moq;
 
 namespace BrowserSelector.UnitTests;
 
@@ -17,13 +19,8 @@ public class SettingsServiceTests
         _testDirectory = Path.Combine(Path.GetTempPath(), "BrowserSelectorTests", Guid.NewGuid().ToString());
         _ = Directory.CreateDirectory(_testDirectory);
 
-        // テスト用のSettingsServiceを作成（ポータブルモードをシミュレート）
-        string executablePath = Path.Combine(_testDirectory, "BrowserSelector.exe");
-        File.WriteAllText(executablePath, "test");
-        string portableMarkerPath = Path.Combine(_testDirectory, "portable.txt");
-        File.WriteAllText(portableMarkerPath, "portable");
-
-        _settingsService = new SettingsService();
+        // テスト用のSettingsServiceを作成（ログサービスなし）
+        _settingsService = new SettingsService(null);
     }
 
     /// <summary>

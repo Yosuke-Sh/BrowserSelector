@@ -7,7 +7,7 @@
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
     <!-- Appプロジェクト専用のカバレッジ測定 -->
-    <CollectCoverage>true</CollectCoverage>
+    <CollectCoverage>false</CollectCoverage>
     <CoverletOutputFormat>cobertura</CoverletOutputFormat>
     <CoverletOutput>./TestResults/</CoverletOutput>
     <Include>[BrowserSelector.App]*</Include>

@@ -1,6 +1,7 @@
 using BrowserSelector.Core.Models;
 using BrowserSelector.Core.Services;
 using BrowserSelector.Infrastructure.Services;
+using BrowserSelector.Infrastructure.Logging;
 using FluentAssertions;
 using Moq;
 
@@ -10,6 +11,7 @@ public class BrowserServiceTests
 {
     private readonly Mock<IRegistryService> _mockRegistryService;
     private readonly Mock<IUrlService> _mockUrlService;
+    private readonly Mock<ILogService> _mockLogService;
     private readonly BrowserService _browserService;
 
     /// <summary>
@@ -19,7 +21,8 @@ public class BrowserServiceTests
     {
         _mockRegistryService = new Mock<IRegistryService>();
         _mockUrlService = new Mock<IUrlService>();
-        _browserService = new BrowserService(_mockRegistryService.Object, _mockUrlService.Object);
+        _mockLogService = new Mock<ILogService>();
+        _browserService = new BrowserService(_mockRegistryService.Object, _mockUrlService.Object, _mockLogService.Object);
     }
 
     /// <summary>

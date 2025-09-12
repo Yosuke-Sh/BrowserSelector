@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
+    <CollectCoverage>false</CollectCoverage>
     <OutputType>Exe</OutputType>
     <StartupObject>BrowserSelector.PerformanceTests.Program</StartupObject>
     <!-- テストプロジェクトの警告を無効化（テストコードの特性上、多くの警告は対処困難または不要） -->

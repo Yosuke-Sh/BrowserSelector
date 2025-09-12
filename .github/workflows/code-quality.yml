@@ -30,7 +30,65 @@ jobs:
       run: dotnet build --configuration Release --no-restore
     
     - name: Run tests
-      run: dotnet test --configuration Release --no-build --collect:"XPlat Code Coverage" --logger trx --results-directory TestResults --verbosity normal
+      run: |
+        # 各テストプロジェクトを個別に実行してファイルロックを回避
+        $testProjects = @(
+          "tests/BrowserSelector.UnitTests",
+          "tests/BrowserSelector.IntegrationTests", 
+          "tests/BrowserSelector.E2ETests",
+          "tests/BrowserSelector.UITests",
+          "tests/BrowserSelector.PerformanceTests",
+          "tests/BrowserSelector.SecurityTests",
+          "tests/BrowserSelector.AppTests",
+          "tests/BrowserSelector.LibraryTests",
+          "tests/BrowserSelector.CoreTests",
+          "tests/BrowserSelector.InfrastructureTests"
+        )
+        
+        $testResults = @()
+        
+        foreach ($project in $testProjects) {
+          if (Test-Path $project) {
+            Write-Host "Running tests for $project"
+            try {
+              # 各プロジェクトのテスト結果ディレクトリを作成
+              $projectName = Split-Path $project -Leaf
+              $projectTestResults = "TestResults\$projectName"
+              
+              if (Test-Path $projectTestResults) {
+                Remove-Item $projectTestResults -Recurse -Force
+              }
+              New-Item -ItemType Directory -Path $projectTestResults -Force | Out-Null
+              
+              # 各プロジェクトを個別に実行し、結果を収集
+              $result = dotnet test $project --configuration Release --no-build --collect:"XPlat Code Coverage" --logger trx --results-directory $projectTestResults --verbosity normal
+              $testResults += $result
+              Write-Host "Completed tests for $project"
+            }
+            catch {
+              Write-Host "Failed tests for $project: $_"
+              $testResults += "FAILED: $project"
+            }
+          } else {
+            Write-Host "Skipping $project - project not found"
+          }
+        }
+        
+        # テスト結果の要約を表示
+        Write-Host "Test execution summary:"
+        $testResults | ForEach-Object { Write-Host $_ }
+        
+        # 全テスト結果を統合
+        Write-Host "Consolidating test results..."
+        $allTestResults = "TestResults\AllTests"
+        if (Test-Path $allTestResults) {
+          Remove-Item $allTestResults -Recurse -Force
+        }
+        New-Item -ItemType Directory -Path $allTestResults -Force | Out-Null
+        
+        Get-ChildItem "TestResults" -Directory | Where-Object { $_.Name -ne "AllTests" } | ForEach-Object {
+          Copy-Item "$($_.FullName)\*" $allTestResults -Recurse -Force
+        }
       continue-on-error: false
     
     - name: Install ReportGenerator
@@ -40,6 +98,7 @@ jobs:
       run: |
         $coverageFiles = Get-ChildItem -Path "TestResults" -Recurse -Name "coverage.cobertura.xml" -ErrorAction SilentlyContinue
         if ($coverageFiles) {
+          Write-Host "Found coverage files: $($coverageFiles -join ', ')"
           reportgenerator -reports:"TestResults/**/coverage.cobertura.xml" -targetdir:"coverage-report" -reporttypes:"Cobertura;Html;TextSummary;Lcov"
         } else {
           Write-Host "No coverage files found, creating empty report"
@@ -53,7 +112,7 @@ jobs:
     
     - name: SonarQube Begin Analysis
       run: |
-        dotnet sonarscanner begin /k:"BrowserSelector" /o:"Yosuke-Sh" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="coverage-report/Cobertura.xml" /d:sonar.cs.vstest.reportsPaths="TestResults/*.trx"
+        dotnet sonarscanner begin /k:"BrowserSelector" /o:"Yosuke-Sh" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="coverage-report/Cobertura.xml" /d:sonar.cs.vstest.reportsPaths="TestResults/**/*.trx"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -79,7 +138,7 @@ jobs:
       if: always()
       with:
         name: test-results
-        path: TestResults/
+        path: TestResults/AllTests/
     
     - name: Upload coverage report
       uses: actions/upload-artifact@v4

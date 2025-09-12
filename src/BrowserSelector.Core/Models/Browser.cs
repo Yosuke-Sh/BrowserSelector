@@ -129,7 +129,7 @@ namespace BrowserSelector.Core.Models
         {
             return new Browser
             {
-                Id = Id, // 元のIDを保持
+                Id = Guid.NewGuid(), // 新しいIDを生成
                 Name = Name,
                 ExecutablePath = ExecutablePath,
                 IconPath = IconPath,

@@ -56,6 +56,15 @@ public class SettingsViewModelTests
             .Setup(x => x.GetAllRulesAsync())
             .ReturnsAsync([]);
 
+        // カスタム言語サービスのモック設定
+        _ = _mockCustomLanguageService
+            .Setup(x => x.GetAvailableLanguagesAsync())
+            .ReturnsAsync(new List<Core.Models.LanguageInfo>
+            {
+                new Core.Models.LanguageInfo("ja-JP", "日本語"),
+                new Core.Models.LanguageInfo("en-US", "English")
+            });
+
         _mockLogService = new Mock<ILogService>();
 
         _viewModel = new SettingsViewModel(
