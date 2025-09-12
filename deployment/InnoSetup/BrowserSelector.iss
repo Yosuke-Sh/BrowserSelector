@@ -137,11 +137,14 @@ Root: HKCU; Subkey: "Software\Classes\browser\shell\open\command"; ValueType: st
 
 [Code]
 function InitializeSetup(): Boolean;
+var
+  ErrorCode: Integer;
+  DotNetVersion: string;
 begin
   Result := True;
   
   // Check for .NET 8.0 Runtime
-  if not IsDotNetInstalled('Microsoft.NETCore.App', '8.0.0') then
+  if not RegQueryStringValue(HKLM, 'SOFTWARE\Microsoft\NET Framework Setup\NDP\v8.0', 'Version', DotNetVersion) then
   begin
     if MsgBox('BrowserSelector requires .NET 8.0 Runtime to be installed.' + #13#10 + #13#10 +
               'Would you like to download it now?', mbConfirmation, MB_YESNO) = IDYES then
@@ -149,69 +152,6 @@ begin
       ShellExec('open', 'https://dotnet.microsoft.com/download/dotnet/8.0', '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);
     end;
     Result := False;
-  end;
-end;
-
-function IsDotNetInstalled(const FrameworkName, Version: string): Boolean;
-var
-  RegKey: string;
-  VersionKey: string;
-  InstalledVersion: string;
-begin
-  Result := False;
-  RegKey := 'SOFTWARE\Microsoft\NET Framework Setup\NDP\' + FrameworkName;
-  
-  if RegQueryStringValue(HKLM, RegKey, 'Version', InstalledVersion) then
-  begin
-    if CompareVersion(InstalledVersion, Version) >= 0 then
-      Result := True;
-  end;
-  
-  // Also check in WOW6432Node for 32-bit apps on 64-bit systems
-  if not Result then
-  begin
-    RegKey := 'SOFTWARE\WOW6432Node\Microsoft\NET Framework Setup\NDP\' + FrameworkName;
-    if RegQueryStringValue(HKLM, RegKey, 'Version', InstalledVersion) then
-    begin
-      if CompareVersion(InstalledVersion, Version) >= 0 then
-        Result := True;
-    end;
-  end;
-end;
-
-function CompareVersion(Version1, Version2: string): Integer;
-var
-  V1, V2: TStringList;
-  I: Integer;
-  N1, N2: Integer;
-begin
-  Result := 0;
-  V1 := TStringList.Create;
-  V2 := TStringList.Create;
-  try
-    V1.Delimiter := '.';
-    V1.DelimitedText := Version1;
-    V2.Delimiter := '.';
-    V2.DelimitedText := Version2;
-    
-    for I := 0 to Min(V1.Count - 1, V2.Count - 1) do
-    begin
-      N1 := StrToIntDef(V1[I], 0);
-      N2 := StrToIntDef(V2[I], 0);
-      if N1 > N2 then
-      begin
-        Result := 1;
-        Break;
-      end
-      else if N1 < N2 then
-      begin
-        Result := -1;
-        Break;
-      end;
-    end;
-  finally
-    V1.Free;
-    V2.Free;
   end;
 end;
 
