@@ -13,16 +13,14 @@ namespace BrowserSelector.Presentation.Views;
 public partial class BrowserEditDialog : Window
 {
     private readonly bool _isNewBrowser;
-    private readonly bool _isSystemBrowser;
     private readonly ILogService? _logService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BrowserEditDialog"/> class.
     /// </summary>
     /// <param name="browser">browser.</param>
-    /// <param name="isSystemBrowser">isSystemBrowser.</param>
     /// <param name="logService">logService.</param>
-    public BrowserEditDialog(Browser? browser = null, bool isSystemBrowser = false, ILogService? logService = null)
+    public BrowserEditDialog(Browser? browser = null, ILogService? logService = null)
     {
         _logService = logService;
         InitializeComponent();
@@ -31,7 +29,6 @@ public partial class BrowserEditDialog : Window
         {
             // 新規作成
             _isNewBrowser = true;
-            _isSystemBrowser = false;
             Browser = new Browser
             {
                 Id = Guid.NewGuid(),
@@ -48,26 +45,12 @@ public partial class BrowserEditDialog : Window
         {
             // 編集
             _isNewBrowser = false;
-            _isSystemBrowser = isSystemBrowser;
             Browser = browser.Clone(); // 複製して編集
         }
 
         DataContext = Browser;
         Title = _isNewBrowser ? LocalizedLogHelper.GetString("Dialog.BrowserEdit.AddTitle") :
-                (_isSystemBrowser ? LocalizedLogHelper.GetString("Dialog.BrowserEdit.SystemTitle") :
-                 LocalizedLogHelper.GetString("Dialog.BrowserEdit.EditTitle"));
-
-        // システムブラウザの場合は、編集不可能な項目を無効化
-        if (_isSystemBrowser)
-        {
-            // 名前と実行ファイルパスは編集不可
-            NameTextBox.IsEnabled = false;
-            ExecutablePathTextBox.IsEnabled = false;
-            BrowseExecutableButton.IsEnabled = false;
-
-            // 説明を追加
-            SystemBrowserInfoText.Visibility = Visibility.Visible;
-        }
+                LocalizedLogHelper.GetString("Dialog.BrowserEdit.EditTitle");
     }
 
     /// <summary>
@@ -148,6 +131,7 @@ public partial class BrowserEditDialog : Window
         if (dialog.ShowDialog() == true && !string.IsNullOrEmpty(dialog.SelectedIconPath))
         {
             Browser.IconPath = dialog.SelectedIconPath;
+            Browser.IconIndex = dialog.SelectedIconIndex;
             _logService?.LogInformation($"アイコンが選択されました: {dialog.SelectedIconPath}, インデックス: {dialog.SelectedIconIndex}", "BrowserEditDialog");
         }
     }

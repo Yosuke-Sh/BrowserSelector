@@ -74,12 +74,15 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 
                 <!-- 選択されたアイコンのプレビュー -->
                 <Image Grid.Column="0" x:Name="SelectedIconPreview" Width="48" Height="48" 
-                       Stretch="Uniform" Margin="0,0,15,0"/>
+                       Stretch="Uniform" Margin="0,0,15,0"
+                       RenderOptions.BitmapScalingMode="HighQuality"
+                       RenderOptions.EdgeMode="Aliased"
+                       SnapsToDevicePixels="True"
+                       UseLayoutRounding="True"/>
                 
                 <!-- 選択されたアイコンの情報 -->
                 <StackPanel Grid.Column="1" VerticalAlignment="Center">
@@ -87,10 +90,6 @@
                                FontWeight="Bold" Margin="0,0,0,5"/>
                     <TextBlock x:Name="SelectedIconInfo" Text="" FontSize="10" Foreground="Gray"/>
                 </StackPanel>
-                
-                <!-- 選択ボタン -->
-                <Button Grid.Column="2" x:Name="ConfirmButton" Content="{extensions:Localization Dialog.IconSelection.SelectThisIcon}" Padding="10,5" 
-                        Click="ConfirmSelection_Click" IsEnabled="False"/>
             </Grid>
         </GroupBox>
 

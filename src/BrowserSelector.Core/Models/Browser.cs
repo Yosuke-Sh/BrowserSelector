@@ -129,10 +129,11 @@ namespace BrowserSelector.Core.Models
         {
             return new Browser
             {
-                Id = Guid.NewGuid(),
+                Id = Id, // 元のIDを保持
                 Name = Name,
                 ExecutablePath = ExecutablePath,
                 IconPath = IconPath,
+                IconIndex = IconIndex,
                 Arguments = Arguments,
                 IsDefault = false, // 複製時はデフォルトをfalseにする
                 IsEnabled = IsEnabled,

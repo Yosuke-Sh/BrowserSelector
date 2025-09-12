@@ -1,4 +1,5 @@
 using BrowserSelector.Core.Models;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -60,7 +61,7 @@ public class BrowserIconDisplay : Control
     }
 
     /// <summary>
-    /// デストラクタ.
+    /// Finalizes an instance of the <see cref="BrowserIconDisplay"/> class.
     /// </summary>
     ~BrowserIconDisplay()
     {
@@ -128,6 +129,47 @@ public class BrowserIconDisplay : Control
         }
     }
 
+    /// <summary>
+    /// 指定されたインデックスのアイコンを抽出.
+    /// </summary>
+    /// <param name="executablePath">実行ファイルのパス.</param>
+    /// <param name="iconIndex">アイコンのインデックス.</param>
+    /// <returns>抽出されたアイコン.</returns>
+    private static System.Drawing.Icon? ExtractIconByIndex(string executablePath, int iconIndex)
+    {
+        try
+        {
+            System.Diagnostics.Debug.WriteLine($"ExtractIconByIndex開始: {executablePath}, IconIndex: {iconIndex}");
+            // ExtractIconEx APIを使用してアイコンを抽出
+            IntPtr[] largeIcons = new IntPtr[1];
+            IntPtr[] smallIcons = new IntPtr[1];
+
+            int extractedCount = ExtractIconEx(executablePath, iconIndex, largeIcons, smallIcons, 1);
+            System.Diagnostics.Debug.WriteLine($"ExtractIconEx結果: extractedCount={extractedCount}, largeIcons[0]={largeIcons[0]}");
+
+            if (extractedCount > 0 && largeIcons[0] != IntPtr.Zero)
+            {
+                System.Diagnostics.Debug.WriteLine($"アイコン抽出成功: {executablePath}, IconIndex: {iconIndex}");
+                return System.Drawing.Icon.FromHandle(largeIcons[0]);
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine($"アイコン抽出失敗: {executablePath}, IconIndex: {iconIndex}");
+            }
+        }
+        catch (Exception ex)
+        {
+            // エラーが発生した場合はnullを返す
+            System.Diagnostics.Debug.WriteLine($"ExtractIconByIndexエラー: {ex.Message}");
+        }
+
+        return null;
+    }
+
+    // Windows API宣言
+    [System.Runtime.InteropServices.DllImport("shell32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
+    private static extern int ExtractIconEx(string lpszFile, int nIconIndex, IntPtr[] phiconLarge, IntPtr[] phiconSmall, int nIcons);
+
     private static void OnBrowserChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         if (d is BrowserIconDisplay display)
@@ -175,22 +217,48 @@ public class BrowserIconDisplay : Control
     {
         if (Browser == null)
         {
+            System.Diagnostics.Debug.WriteLine("LoadIcon: Browserがnull");
             IconSource = GetDefaultIcon();
             return;
         }
+
+        System.Diagnostics.Debug.WriteLine($"LoadIcon開始: {Browser.Name}, IconPath: {Browser.IconPath}, ExecutablePath: {Browser.ExecutablePath}, IconIndex: {Browser.IconIndex}");
 
         try
         {
             // アイコンファイルから読み込み
             if (!string.IsNullOrEmpty(Browser.IconPath) && System.IO.File.Exists(Browser.IconPath))
             {
-                ImageSource? iconFromFile = LoadIconFromFile(Browser.IconPath);
-                IconSource = iconFromFile ?? GetDefaultIcon();
+                System.Diagnostics.Debug.WriteLine($"アイコンファイルから読み込み: {Browser.IconPath}, IconIndex: {Browser.IconIndex}");
+                // IconIndexが0以外の場合は、指定されたインデックスのアイコンを抽出
+                if (Browser.IconIndex != 0)
+                {
+                    System.Diagnostics.Debug.WriteLine($"IconIndex={Browser.IconIndex}でアイコン抽出を試行");
+                    ImageSource? iconFromIndex = await LoadIconFromExecutableAsync(Browser.IconPath, Browser.IconIndex).ConfigureAwait(false);
+                    if (iconFromIndex != null)
+                    {
+                        IconSource = iconFromIndex;
+                    }
+                    else
+                    {
+                        // IconIndexでの抽出に失敗した場合は、デフォルトのアイコンファイル読み込みを試行
+                        System.Diagnostics.Debug.WriteLine($"IconIndexでの抽出に失敗、デフォルト読み込みを試行");
+                        ImageSource? iconFromFile = LoadIconFromFile(Browser.IconPath);
+                        IconSource = iconFromFile ?? GetDefaultIcon();
+                    }
+                }
+                else
+                {
+                    // IconIndexが0の場合は、通常のアイコンファイル読み込み
+                    ImageSource? iconFromFile = LoadIconFromFile(Browser.IconPath);
+                    IconSource = iconFromFile ?? GetDefaultIcon();
+                }
             }
 
             // 実行ファイルからアイコンを抽出
             else if (!string.IsNullOrEmpty(Browser.ExecutablePath) && System.IO.File.Exists(Browser.ExecutablePath))
             {
+                System.Diagnostics.Debug.WriteLine($"実行ファイルからアイコン抽出: {Browser.ExecutablePath}, IconIndex: {Browser.IconIndex}");
                 ImageSource? iconFromExe = await LoadIconFromExecutableAsync(Browser.ExecutablePath, Browser.IconIndex).ConfigureAwait(false);
                 IconSource = iconFromExe ?? GetDefaultIcon();
             }
@@ -198,6 +266,7 @@ public class BrowserIconDisplay : Control
             // デフォルトアイコンを使用
             else
             {
+                System.Diagnostics.Debug.WriteLine("デフォルトアイコンを使用");
                 IconSource = GetDefaultIcon();
             }
 
@@ -222,7 +291,9 @@ public class BrowserIconDisplay : Control
             bitmap.BeginInit();
             bitmap.CacheOption = BitmapCacheOption.OnLoad;
             bitmap.UriSource = new Uri(filePath);
+            bitmap.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
             bitmap.EndInit();
+            bitmap.Freeze();
             return bitmap;
         }
         catch
@@ -240,31 +311,73 @@ public class BrowserIconDisplay : Control
         {
             try
             {
-                // Windows APIを使用してアイコンを抽出（iconIndexは現在のAPIでは使用できないため、デフォルトアイコンを取得）
-                System.Drawing.Icon? icon = System.Drawing.Icon.ExtractAssociatedIcon(executablePath);
+                // デバッグログ: IconIndexの値を確認
+                System.Diagnostics.Debug.WriteLine($"LoadIconFromExecutableAsync: {executablePath}, IconIndex: {iconIndex}");
+
+                // Windows APIを使用してアイコンを抽出
+                System.Drawing.Icon? icon = null;
+
+                if (iconIndex == 0)
+                {
+                    // デフォルトアイコン（インデックス0）の場合
+                    System.Diagnostics.Debug.WriteLine($"ExtractAssociatedIconを使用: {executablePath}");
+                    icon = System.Drawing.Icon.ExtractAssociatedIcon(executablePath);
+                }
+                else
+                {
+                    // 特定のインデックスのアイコンを取得
+                    System.Diagnostics.Debug.WriteLine($"ExtractIconByIndexを使用: {executablePath}, IconIndex: {iconIndex}");
+                    icon = ExtractIconByIndex(executablePath, iconIndex);
+                    System.Diagnostics.Debug.WriteLine($"ExtractIconByIndex結果: {icon != null}");
+                }
+
                 if (icon != null)
                 {
-                    using System.IO.MemoryStream stream = new();
-                    icon.Save(stream);
-                    stream.Position = 0;
-
-                    BitmapImage bitmap = new();
-                    bitmap.BeginInit();
-                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                    bitmap.StreamSource = stream;
-                    bitmap.EndInit();
-                    bitmap.Freeze(); // UIスレッドでの使用を可能にする
-
-                    return bitmap;
+                    return ConvertIconToHighQualityBitmapImage(icon);
                 }
             }
-            catch
+            catch (Exception)
             {
                 // エラーが発生した場合はデフォルトアイコンを使用
             }
 
             return GetDefaultIcon();
         }).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// アイコンを高品質BitmapImageに変換.
+    /// </summary>
+    /// <param name="icon">変換するアイコン.</param>
+    /// <returns>高品質BitmapImage.</returns>
+    private BitmapImage ConvertIconToHighQualityBitmapImage(System.Drawing.Icon icon)
+    {
+        try
+        {
+            using MemoryStream stream = new();
+            icon.Save(stream);
+            stream.Position = 0;
+
+            BitmapImage bitmap = new();
+            bitmap.BeginInit();
+            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+            bitmap.StreamSource = stream;
+
+            // DPI設定を明示的に指定
+            bitmap.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
+            // 高品質スケーリングを有効化
+            RenderOptions.SetBitmapScalingMode(bitmap, BitmapScalingMode.HighQuality);
+            RenderOptions.SetEdgeMode(bitmap, EdgeMode.Aliased);
+
+            bitmap.EndInit();
+            bitmap.Freeze();
+
+            return bitmap;
+        }
+        catch (Exception)
+        {
+            return null!;
+        }
     }
 
     /// <summary>
@@ -280,7 +393,9 @@ public class BrowserIconDisplay : Control
             bitmap.BeginInit();
             bitmap.CacheOption = BitmapCacheOption.OnLoad;
             bitmap.UriSource = new Uri("pack://application:,,,/BrowserSelector.Presentation;component/Resources/Images/default-browser.png");
+            bitmap.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
             bitmap.EndInit();
+            bitmap.Freeze();
             return bitmap;
         }
         catch

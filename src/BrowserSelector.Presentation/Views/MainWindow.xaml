@@ -67,6 +67,7 @@
                                             <Binding Path="IconPath"/>
                                             <Binding Path="ExecutablePath"/>
                                             <Binding Path="Name"/>
+                                            <Binding Path="IconIndex"/>
                                         </MultiBinding>
                                     </Image.Source>
                                 </Image>

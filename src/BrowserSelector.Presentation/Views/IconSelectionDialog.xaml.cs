@@ -17,6 +17,7 @@ public partial class IconSelectionDialog : Window
 {
     private readonly ILogService? _logService;
     private string? _currentSelectedPath;
+    private int _currentSelectedIconIndex;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="IconSelectionDialog"/> class.
@@ -289,7 +290,7 @@ public partial class IconSelectionDialog : Window
         {
             // リサイズせずに元のアイコンをそのまま使用
             System.Drawing.Size originalSize = icon.Size;
-            _logService?.LogDebug($"アイコン元サイズ: {originalSize.Width}x{originalSize.Height}", "IconSelectionDialog");
+            _logService?.LogTrace($"アイコン元サイズ: {originalSize.Width}x{originalSize.Height}", "IconSelectionDialog");
 
             using MemoryStream stream = new();
             icon.Save(stream);
@@ -299,7 +300,15 @@ public partial class IconSelectionDialog : Window
             bitmap.BeginInit();
             bitmap.CacheOption = BitmapCacheOption.OnLoad;
             bitmap.StreamSource = stream;
-            // リサイズせずに元のサイズでデコード
+            bitmap.DecodePixelWidth = 32; // プレビュー用のサイズを指定
+            bitmap.DecodePixelHeight = 32;
+
+            // DPI設定を明示的に指定
+            bitmap.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
+            // 高品質スケーリングを有効化
+            RenderOptions.SetBitmapScalingMode(bitmap, BitmapScalingMode.HighQuality);
+            RenderOptions.SetEdgeMode(bitmap, EdgeMode.Aliased);
+
             bitmap.EndInit();
             bitmap.Freeze();
 
@@ -341,6 +350,7 @@ public partial class IconSelectionDialog : Window
         {
             // 選択されたアイコンの情報を表示
             _currentSelectedPath = iconInfo.Path;
+            _currentSelectedIconIndex = iconInfo.Index;
             SelectedIconIndex = iconInfo.Index;
             UpdateSelectedIconDisplay(iconInfo);
         }
@@ -351,7 +361,22 @@ public partial class IconSelectionDialog : Window
         try
         {
             // アイコンプレビューを更新
-            SelectedIconPreview.Source = iconInfo.Icon != null ? ConvertIconToBitmapImage(iconInfo.Icon) : null;
+            if (iconInfo.Icon != null)
+            {
+                SelectedIconPreview.Source = ConvertIconToBitmapImage(iconInfo.Icon);
+            }
+            else
+            {
+                // アイコンがnullの場合は、実行ファイルから直接読み込み
+                if (System.IO.File.Exists(iconInfo.Path))
+                {
+                    System.Drawing.Icon? icon = System.Drawing.Icon.ExtractAssociatedIcon(iconInfo.Path);
+                    if (icon != null)
+                    {
+                        SelectedIconPreview.Source = ConvertIconToBitmapImage(icon);
+                    }
+                }
+            }
 
             // パス情報を更新
             SelectedIconPathText.Text = iconInfo.Name;
@@ -359,9 +384,6 @@ public partial class IconSelectionDialog : Window
             // 詳細情報を更新
             FileInfo fileInfo = new(iconInfo.Path);
             SelectedIconInfo.Text = $"パス: {iconInfo.Path}\nインデックス: {iconInfo.Index}\nサイズ: {fileInfo.Length:N0} bytes\n更新日: {fileInfo.LastWriteTime:yyyy/MM/dd}";
-
-            // 確認ボタンを有効化
-            ConfirmButton.IsEnabled = true;
 
             _logService?.LogInformation($"アイコンが選択されました: {iconInfo.Path}, インデックス: {iconInfo.Index}", "IconSelectionDialog");
         }
@@ -396,6 +418,7 @@ public partial class IconSelectionDialog : Window
 
                 UpdateSelectedIconDisplay(iconInfo);
                 _currentSelectedPath = iconPath;
+                _currentSelectedIconIndex = 0; // カスタムアイコンの場合はインデックス0
             }
             else
             {
@@ -410,18 +433,14 @@ public partial class IconSelectionDialog : Window
         return imageExtensions.Any(ext => filePath.EndsWith(ext, StringComparison.OrdinalIgnoreCase));
     }
 
-    private void ConfirmSelection_Click(object sender, RoutedEventArgs e)
+    private void OkButton_Click(object sender, RoutedEventArgs e)
     {
         if (!string.IsNullOrEmpty(_currentSelectedPath))
         {
             SelectedIconPath = _currentSelectedPath;
-            DialogResult = true;
-            Close();
+            // IconIndexも設定（現在選択されているアイコンのインデックス）
+            SelectedIconIndex = _currentSelectedIconIndex;
         }
-    }
-
-    private void OkButton_Click(object sender, RoutedEventArgs e)
-    {
         DialogResult = true;
         Close();
     }

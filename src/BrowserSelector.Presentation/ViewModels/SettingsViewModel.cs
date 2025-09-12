@@ -78,11 +78,7 @@ public class BrowserChangedEventArgs : EventArgs
 /// </summary>
 public partial class SettingsViewModel : ObservableObject
 {
-    /// <summary>
-    /// ブラウザ変更イベント.
-    /// </summary>
-    public event EventHandler<BrowserChangedEventArgs>? BrowserChanged;
-
+    // フィールド（SA1201: イベントより前に配置）
     private readonly ISettingsService _settingsService;
     private readonly IBrowserService _browserService;
     private readonly ILocalizationService _localizationService;
@@ -194,6 +190,11 @@ public partial class SettingsViewModel : ObservableObject
     /// 設定変更通知イベント
     /// </summary>
     public event EventHandler<SettingsChangedEventArgs>? SettingsChanged;
+
+    /// <summary>
+    /// ブラウザ変更イベント.
+    /// </summary>
+    public event EventHandler<BrowserChangedEventArgs>? BrowserChanged;
 
     /// <summary>
     /// Gets the custom language service.
@@ -349,19 +350,23 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
-            AvailableLanguages.Clear();
-
             // カスタム言語サービスから利用可能な言語を取得（ローカライズ不要の表示名）
             IEnumerable<Core.Models.LanguageInfo> availableLanguages = await CustomLanguageService.GetAvailableLanguagesAsync().ConfigureAwait(false);
 
-            foreach (Core.Models.LanguageInfo languageInfo in availableLanguages)
+            // UIスレッドでコレクションを更新
+            Application.Current?.Dispatcher.Invoke(() =>
             {
-                AvailableLanguages.Add(new LanguageInfo(languageInfo.CultureCode, languageInfo.DisplayName));
-            }
+                AvailableLanguages.Clear();
 
-            // 現在の言語を選択
-            SelectedLanguage = AvailableLanguages.FirstOrDefault(l => l.CultureCode == AppSettings.Language)
-                              ?? AvailableLanguages.First();
+                foreach (Core.Models.LanguageInfo languageInfo in availableLanguages)
+                {
+                    AvailableLanguages.Add(new LanguageInfo(languageInfo.CultureCode, languageInfo.DisplayName));
+                }
+
+                // 現在の言語を選択
+                SelectedLanguage = AvailableLanguages.FirstOrDefault(l => l.CultureCode == AppSettings.Language)
+                                  ?? AvailableLanguages.First();
+            });
 
             LogService?.LogDebug($"言語リスト初期化完了: {AvailableLanguages.Count}個の言語", "SettingsViewModel");
         }
@@ -386,11 +391,16 @@ public partial class SettingsViewModel : ObservableObject
         try
         {
             IEnumerable<Browser> browsers = await _browserService.GetAllBrowsersAsync().ConfigureAwait(false);
-            DetectedBrowsers.Clear();
-            foreach (Browser browser in browsers)
+
+            // UIスレッドでコレクションを更新
+            Application.Current?.Dispatcher.Invoke(() =>
             {
-                DetectedBrowsers.Add(browser);
-            }
+                DetectedBrowsers.Clear();
+                foreach (Browser browser in browsers)
+                {
+                    DetectedBrowsers.Add(browser);
+                }
+            });
         }
         catch (Exception)
         {
@@ -405,11 +415,16 @@ public partial class SettingsViewModel : ObservableObject
         try
         {
             IEnumerable<UrlRule> rules = await _urlRuleService.GetAllRulesAsync().ConfigureAwait(false);
-            UrlRules.Clear();
-            foreach (UrlRule rule in rules)
+
+            // UIスレッドでコレクションを更新
+            Application.Current?.Dispatcher.Invoke(() =>
             {
-                UrlRules.Add(rule);
-            }
+                UrlRules.Clear();
+                foreach (UrlRule rule in rules)
+                {
+                    UrlRules.Add(rule);
+                }
+            });
         }
         catch (Exception)
         {
@@ -485,13 +500,17 @@ public partial class SettingsViewModel : ObservableObject
     /// </summary>
     private void InitializeLogLevels()
     {
-        AvailableLogLevels.Clear();
-        AvailableLogLevels.Add(new LogLevelInfo(LogLevel.Trace, LocalizedLogHelper.GetString("LogLevel.Trace")));
-        AvailableLogLevels.Add(new LogLevelInfo(LogLevel.Debug, LocalizedLogHelper.GetString("LogLevel.Debug")));
-        AvailableLogLevels.Add(new LogLevelInfo(LogLevel.Information, LocalizedLogHelper.GetString("LogLevel.Information")));
-        AvailableLogLevels.Add(new LogLevelInfo(LogLevel.Warning, LocalizedLogHelper.GetString("LogLevel.Warning")));
-        AvailableLogLevels.Add(new LogLevelInfo(LogLevel.Error, LocalizedLogHelper.GetString("LogLevel.Error")));
-        AvailableLogLevels.Add(new LogLevelInfo(LogLevel.Critical, LocalizedLogHelper.GetString("LogLevel.Critical")));
+        // UIスレッドでコレクションを更新
+        Application.Current?.Dispatcher.Invoke(() =>
+        {
+            AvailableLogLevels.Clear();
+            AvailableLogLevels.Add(new LogLevelInfo(LogLevel.Trace, LocalizedLogHelper.GetString("LogLevel.Trace")));
+            AvailableLogLevels.Add(new LogLevelInfo(LogLevel.Debug, LocalizedLogHelper.GetString("LogLevel.Debug")));
+            AvailableLogLevels.Add(new LogLevelInfo(LogLevel.Information, LocalizedLogHelper.GetString("LogLevel.Information")));
+            AvailableLogLevels.Add(new LogLevelInfo(LogLevel.Warning, LocalizedLogHelper.GetString("LogLevel.Warning")));
+            AvailableLogLevels.Add(new LogLevelInfo(LogLevel.Error, LocalizedLogHelper.GetString("LogLevel.Error")));
+            AvailableLogLevels.Add(new LogLevelInfo(LogLevel.Critical, LocalizedLogHelper.GetString("LogLevel.Critical")));
+        });
     }
 
     /// <summary>
@@ -697,11 +716,16 @@ public partial class SettingsViewModel : ObservableObject
 
             // 明示的にブラウザ検出を実行
             IEnumerable<Browser> browsers = await _browserService.DetectBrowsersAsync().ConfigureAwait(false);
-            DetectedBrowsers.Clear();
-            foreach (Browser browser in browsers)
+
+            // UIスレッドでコレクションを更新
+            Application.Current?.Dispatcher.Invoke(() =>
             {
-                DetectedBrowsers.Add(browser);
-            }
+                DetectedBrowsers.Clear();
+                foreach (Browser browser in browsers)
+                {
+                    DetectedBrowsers.Add(browser);
+                }
+            });
 
             LogService?.LogInformation($"ブラウザ再検出完了: {browsers.Count()}個のブラウザを検出", "SettingsViewModel");
 
@@ -725,7 +749,7 @@ public partial class SettingsViewModel : ObservableObject
         {
             LogService?.LogInformation("ブラウザ追加開始", "SettingsViewModel");
 
-            Views.BrowserEditDialog dialog = new(null, false, LogService);
+            Views.BrowserEditDialog dialog = new(null, LogService);
             if (dialog.ShowDialog() == true)
             {
                 Browser newBrowser = dialog.Browser;
@@ -1290,54 +1314,7 @@ public partial class SettingsViewModel : ObservableObject
 
             LogService?.LogInformation($"ブラウザ編集開始: {targetBrowser.Name}", "SettingsViewModel");
 
-            // システムで検出されたブラウザは、順序・アイコン・パラメーターのみ編集可能
-            if (targetBrowser.Type != BrowserType.Custom)
-            {
-                // システムブラウザの場合は、編集可能な項目を制限
-                Browser limitedBrowser = new()
-                {
-                    Id = targetBrowser.Id,
-                    Name = targetBrowser.Name,
-                    ExecutablePath = targetBrowser.ExecutablePath,
-                    Type = targetBrowser.Type,
-                    DisplayOrder = targetBrowser.DisplayOrder,
-                    IconPath = targetBrowser.IconPath,
-                    Arguments = targetBrowser.Arguments,
-                    IsEnabled = targetBrowser.IsEnabled,
-                    IsDefault = targetBrowser.IsDefault
-                };
-
-                Views.BrowserEditDialog systemBrowserDialog = new(limitedBrowser, true, LogService); // システムブラウザフラグ
-                if (systemBrowserDialog.ShowDialog() == true)
-                {
-                    Browser updatedBrowser = systemBrowserDialog.Browser;
-
-                    // システムブラウザの場合は、編集可能な項目のみ更新
-                    targetBrowser.DisplayOrder = updatedBrowser.DisplayOrder;
-                    targetBrowser.IconPath = updatedBrowser.IconPath;
-                    targetBrowser.Arguments = updatedBrowser.Arguments;
-                    targetBrowser.IsEnabled = updatedBrowser.IsEnabled;
-
-                    bool result = await _browserService.UpdateBrowserAsync(targetBrowser).ConfigureAwait(false);
-                    if (result)
-                    {
-                        await RefreshBrowsersAsync().ConfigureAwait(false);
-                        LogService?.LogInformation($"システムブラウザ編集完了: {updatedBrowser.Name}", "SettingsViewModel");
-                        _ = MessageBox.Show("ブラウザ設定を更新しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
-
-                        // ブラウザ変更イベントを発生
-                        BrowserChanged?.Invoke(this, new BrowserChangedEventArgs(targetBrowser, "Updated"));
-                    }
-                    else
-                    {
-                        LogService?.LogWarning("システムブラウザ更新失敗", "SettingsViewModel");
-                        _ = MessageBox.Show("ブラウザ設定の更新に失敗しました。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
-                }
-                return;
-            }
-
-            Views.BrowserEditDialog dialog = new(targetBrowser, false, LogService);
+            Views.BrowserEditDialog dialog = new(targetBrowser, LogService);
             if (dialog.ShowDialog() == true)
             {
                 Browser updatedBrowser = dialog.Browser;
@@ -1405,6 +1382,9 @@ public partial class SettingsViewModel : ObservableObject
                     }
                     LogService?.LogInformation($"ブラウザ削除完了: {targetBrowser.Name}", "SettingsViewModel");
                     _ = MessageBox.Show("ブラウザを削除しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                    // ブラウザ変更イベントを発生
+                    BrowserChanged?.Invoke(this, new BrowserChangedEventArgs(targetBrowser, "Removed"));
                 }
                 else
                 {

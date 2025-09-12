@@ -320,8 +320,12 @@ public partial class MainViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            StatusMessage = LocalizedLogHelper.GetString("MainWindow.BrowserLoadError", ex.Message);
             _logService?.LogError($"ブラウザ読み込みエラー: {ex.Message}", "MainViewModel", ex);
+            Application.Current?.Dispatcher.Invoke(() =>
+            {
+                IsLoading = false;
+                StatusMessage = LocalizedLogHelper.GetString("MainWindow.BrowserLoadError", ex.Message);
+            });
         }
         finally
         {

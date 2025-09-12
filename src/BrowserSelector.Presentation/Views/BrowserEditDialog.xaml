@@ -28,13 +28,6 @@
                    FontSize="18" FontWeight="Bold" 
                    Margin="0,0,0,20" HorizontalAlignment="Center"/>
         
-        <!-- システムブラウザ情報 -->
-        <TextBlock x:Name="SystemBrowserInfoText" Grid.Row="0" 
-                   Text="{extensions:Localization Dialog.BrowserEdit.SystemBrowserInfo}" 
-                   FontSize="12" Foreground="Gray" 
-                   Margin="0,25,0,0" HorizontalAlignment="Center" 
-                   TextWrapping="Wrap" Visibility="Collapsed"/>
-
         <!-- メインコンテンツ -->
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
             <StackPanel>
@@ -134,12 +127,17 @@
 
                         <!-- アイコン表示 -->
                         <Image Grid.Column="0" Width="32" Height="32" Margin="0,0,10,0"
-                               Stretch="Uniform">
+                               Stretch="Uniform"
+                               RenderOptions.BitmapScalingMode="HighQuality"
+                               RenderOptions.EdgeMode="Aliased"
+                               SnapsToDevicePixels="True"
+                               UseLayoutRounding="True">
                             <Image.Source>
                                 <MultiBinding Converter="{StaticResource IconPathConverter}">
                                     <Binding Path="IconPath"/>
                                     <Binding Path="ExecutablePath"/>
                                     <Binding Path="Name"/>
+                                    <Binding Path="IconIndex"/>
                                 </MultiBinding>
                             </Image.Source>
                         </Image>

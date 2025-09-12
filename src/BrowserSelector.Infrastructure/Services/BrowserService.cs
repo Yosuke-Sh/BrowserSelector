@@ -14,11 +14,11 @@ namespace BrowserSelector.Infrastructure.Services;
 /// </summary>
 public class BrowserService : IBrowserService
 {
+    // フィールド（SA1201: メソッドより前に配置）
     private readonly IRegistryService _registryService;
     private readonly IUrlService _urlService;
     private readonly ILogService _logService;
     private readonly List<Browser> _browsers = [];
-    private readonly string _settingsDirectory;
     private readonly string _browsersPath;
 
     /// <summary>
@@ -44,17 +44,17 @@ public class BrowserService : IBrowserService
         _logService = logService;
 
         // ユーザーのアプリケーションデータフォルダに設定を保存
-        _settingsDirectory = Path.Combine(
+        string settingsDirectory = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "BrowserSelector");
 
         // 設定ディレクトリが存在しない場合は作成
-        if (!Directory.Exists(_settingsDirectory))
+        if (!Directory.Exists(settingsDirectory))
         {
-            _ = Directory.CreateDirectory(_settingsDirectory);
+            _ = Directory.CreateDirectory(settingsDirectory);
         }
 
-        _browsersPath = Path.Combine(_settingsDirectory, "browsers.json");
+        _browsersPath = Path.Combine(settingsDirectory, "browsers.json");
     }
 
     /// <inheritdoc/>
@@ -64,11 +64,10 @@ public class BrowserService : IBrowserService
         try
         {
             // レジストリからブラウザを検出
-            IEnumerable<Browser> registryBrowsers = await _registryService.DetectBrowsersFromRegistryAsync().ConfigureAwait(false);
-            _browsers.Clear();
+            IEnumerable<Browser> detectedBrowsers = await _registryService.DetectBrowsersFromRegistryAsync().ConfigureAwait(false);
 
-            // 自動検出されたブラウザにアイコンを設定
-            foreach (Browser browser in registryBrowsers)
+            // 検出されたブラウザにアイコンを設定
+            foreach (Browser browser in detectedBrowsers)
             {
                 if (string.IsNullOrEmpty(browser.IconPath) && !string.IsNullOrEmpty(browser.ExecutablePath))
                 {
@@ -76,14 +75,16 @@ public class BrowserService : IBrowserService
                 }
             }
 
-            _browsers.AddRange(registryBrowsers);
+            // 検出結果を設定ファイルに保存
+            List<Browser> browsersList = detectedBrowsers.ToList();
+            string json = JsonSerializer.Serialize(browsersList, GetJsonSerializerOptions());
+            await File.WriteAllTextAsync(_browsersPath, json).ConfigureAwait(false);
 
-            // カスタムブラウザを追加（設定から読み込み）
-            List<Browser> customBrowsers = await LoadCustomBrowsersAsync().ConfigureAwait(false);
-            _browsers.AddRange(customBrowsers);
+            _browsers.Clear();
+            _browsers.AddRange(browsersList);
 
             // Traceレベルで詳細なブラウザ情報を出力
-            string browserDetails = string.Join(", ", _browsers.Select(b => $"{b.Name}({b.Type}, Enabled:{b.IsEnabled})"));
+            string browserDetails = string.Join(", ", _browsers.Select(b => $"{b.Name}(Enabled:{b.IsEnabled})"));
             _logService.LogTrace($"ブラウザ検出処理完了: {_browsers.Count}個のブラウザを検出 - {browserDetails}", "BrowserService");
             return _browsers.OrderBy(b => b.DisplayOrder);
         }
@@ -211,11 +212,10 @@ public class BrowserService : IBrowserService
                 return false;
             }
 
-            browser.Type = BrowserType.Custom;
             browser.DisplayOrder = _browsers.Count + 1;
             _browsers.Add(browser);
 
-            await SaveCustomBrowsersAsync().ConfigureAwait(false);
+            await SaveBrowsersToFileAsync().ConfigureAwait(false);
             return true;
         }
         catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException or JsonException)
@@ -232,13 +232,17 @@ public class BrowserService : IBrowserService
         try
         {
             _logService.LogDebug($"ブラウザ更新開始: ID={browser.Id}, Name={browser.Name}", nameof(BrowserService));
-            _logService.LogDebug($"現在のブラウザ数: {_browsers.Count}", nameof(BrowserService));
 
-            Browser? existingBrowser = _browsers.Find(b => b.Id == browser.Id);
+            // 最新のブラウザリストを取得
+            IEnumerable<Browser> allBrowsers = await GetAllBrowsersAsync().ConfigureAwait(false);
+            List<Browser> currentBrowsers = allBrowsers.ToList();
+            _logService.LogDebug($"現在のブラウザ数: {currentBrowsers.Count}", nameof(BrowserService));
+
+            Browser? existingBrowser = currentBrowsers.Find(b => b.Id == browser.Id);
             if (existingBrowser == null)
             {
                 _logService.LogWarning($"更新対象のブラウザが見つかりません: ID={browser.Id}, Name={browser.Name}", nameof(BrowserService));
-                _logService.LogDebug($"利用可能なブラウザID: {string.Join(", ", _browsers.Select(b => b.Id))}", nameof(BrowserService));
+                _logService.LogDebug($"利用可能なブラウザID: {string.Join(", ", currentBrowsers.Select(b => b.Id))}", nameof(BrowserService));
                 return false;
             }
 
@@ -252,8 +256,21 @@ public class BrowserService : IBrowserService
             existingBrowser.IsEnabled = browser.IsEnabled;
             existingBrowser.DisplayOrder = browser.DisplayOrder;
 
+            // _browsersコレクションも更新
+            Browser? browserInCollection = _browsers.Find(b => b.Id == browser.Id);
+            if (browserInCollection != null)
+            {
+                browserInCollection.Name = browser.Name;
+                browserInCollection.ExecutablePath = browser.ExecutablePath;
+                browserInCollection.IconPath = browser.IconPath;
+                browserInCollection.IconIndex = browser.IconIndex;
+                browserInCollection.Arguments = browser.Arguments;
+                browserInCollection.IsEnabled = browser.IsEnabled;
+                browserInCollection.DisplayOrder = browser.DisplayOrder;
+            }
+
             _logService.LogDebug("カスタムブラウザ保存開始", nameof(BrowserService));
-            await SaveCustomBrowsersAsync().ConfigureAwait(false);
+            await SaveBrowsersToFileAsync().ConfigureAwait(false);
             _logService.LogDebug("ブラウザ更新完了", nameof(BrowserService));
             return true;
         }
@@ -277,7 +294,7 @@ public class BrowserService : IBrowserService
 
             // システム検出ブラウザも削除可能にする
             _ = _browsers.Remove(browser);
-            await SaveCustomBrowsersAsync().ConfigureAwait(false);
+            await SaveBrowsersToFileAsync().ConfigureAwait(false);
             return true;
         }
         catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException or JsonException)
@@ -292,43 +309,32 @@ public class BrowserService : IBrowserService
     {
         try
         {
-            // カスタムブラウザを読み込み
-            List<Browser> customBrowsers = await LoadCustomBrowsersAsync().ConfigureAwait(false);
+            // 設定ファイルからブラウザを読み込み
+            List<Browser> browsers = await LoadBrowsersFromFileAsync().ConfigureAwait(false);
 
-            // システム検出ブラウザとカスタムブラウザをマージ
-            _browsers.Clear();
-
-            // システム検出ブラウザを追加
-            IEnumerable<Browser> registryBrowsers = await _registryService.DetectBrowsersFromRegistryAsync().ConfigureAwait(false);
-            
-            // 保存されたブラウザ設定をシステム検出ブラウザに適用
-            foreach (Browser registryBrowser in registryBrowsers)
+            // 設定ファイルが空の場合のみ、システム検出を実行して保存
+            if (browsers.Count == 0)
             {
-                Browser? savedBrowser = customBrowsers.FirstOrDefault(b => 
-                    b.ExecutablePath.Equals(registryBrowser.ExecutablePath, StringComparison.OrdinalIgnoreCase));
-                
-                if (savedBrowser != null)
+                _logService.LogInformation("設定ファイルが空のため、システムブラウザを検出して保存します", nameof(BrowserService));
+                IEnumerable<Browser> detectedBrowsers = await _registryService.DetectBrowsersFromRegistryAsync().ConfigureAwait(false);
+                if (detectedBrowsers.Any())
                 {
-                    // 保存された設定を適用
-                    registryBrowser.IconPath = savedBrowser.IconPath;
-                    registryBrowser.IconIndex = savedBrowser.IconIndex;
-                    registryBrowser.Arguments = savedBrowser.Arguments;
-                    registryBrowser.IsEnabled = savedBrowser.IsEnabled;
-                    registryBrowser.DisplayOrder = savedBrowser.DisplayOrder;
+                    browsers = detectedBrowsers.ToList();
+                    string json = JsonSerializer.Serialize(browsers, GetJsonSerializerOptions());
+                    await File.WriteAllTextAsync(_browsersPath, json).ConfigureAwait(false);
+                    _logService.LogInformation($"システムブラウザ検出完了: {browsers.Count}件を設定ファイルに保存", nameof(BrowserService));
                 }
-                
-                _browsers.Add(registryBrowser);
             }
 
-            // カスタムブラウザを追加
-            _browsers.AddRange(customBrowsers.Where(b => b.Type == BrowserType.Custom));
+            _browsers.Clear();
+            _browsers.AddRange(browsers);
 
-            _logService.LogDebug($"全ブラウザ取得完了: システム={registryBrowsers.Count()}件, カスタム={customBrowsers.Count}件", nameof(BrowserService));
+            _logService.LogDebug($"ブラウザ読み込み完了: {browsers.Count}件", nameof(BrowserService));
             return _browsers.OrderBy(b => b.DisplayOrder);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException or JsonException)
         {
-            _logService.LogError($"全ブラウザ取得エラー: {ex.Message}", nameof(BrowserService), ex);
+            _logService.LogError($"ブラウザ読み込みエラー: {ex.Message}", nameof(BrowserService), ex);
             return _browsers.OrderBy(b => b.DisplayOrder);
         }
     }
@@ -411,7 +417,43 @@ public class BrowserService : IBrowserService
         }
     }
 
-    private async Task<List<Browser>> LoadCustomBrowsersAsync()
+    /// <summary>
+    /// JSONシリアライザーオプションを取得.
+    /// </summary>
+    private static JsonSerializerOptions GetJsonSerializerOptions()
+    {
+        return new JsonSerializerOptions
+        {
+            WriteIndented = true,
+            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        };
+    }
+
+    private static Task SaveBrowserUsageAsync()
+    {
+        return Task.CompletedTask;
+    }
+
+    private static Task SaveDefaultBrowserAsync()
+    {
+        return Task.CompletedTask;
+    }
+
+    private static Task<Browser?> LoadDefaultBrowserAsync()
+    {
+        return Task.FromResult<Browser?>(null);
+    }
+
+    /// <summary>
+    /// ブラウザタイプに応じた起動引数を取得.
+    /// </summary>
+    private static string GetBrowserArguments(string url)
+    {
+        // すべてのブラウザタイプで同じURLを返す
+        return url;
+    }
+
+    private async Task<List<Browser>> LoadBrowsersFromFileAsync()
     {
         try
         {
@@ -433,68 +475,31 @@ public class BrowserService : IBrowserService
             _logService.LogDebug($"ブラウザデータ読み込み完了: {browsers.Count}件", nameof(BrowserService));
             return browsers;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException or JsonException)
         {
             _logService.LogError($"ブラウザデータ読み込みエラー: {ex.Message}", nameof(BrowserService), ex);
             return new List<Browser>();
         }
     }
 
-    private async Task SaveCustomBrowsersAsync()
+    private async Task SaveBrowsersToFileAsync()
     {
         try
         {
             _logService.LogDebug($"ブラウザデータ保存開始: {_browsersPath}", nameof(BrowserService));
 
-            // カスタムブラウザとカスタム設定されたシステムブラウザを保存
-            var browsersToSave = _browsers.Where(b => b.Type == BrowserType.Custom || 
-                (!string.IsNullOrEmpty(b.IconPath) && b.IconPath != b.ExecutablePath)).ToList();
+            // すべてのブラウザを保存（設定ファイルベースの管理）
+            var browsersToSave = _browsers.ToList();
 
             string json = JsonSerializer.Serialize(browsersToSave, GetJsonSerializerOptions());
             await File.WriteAllTextAsync(_browsersPath, json).ConfigureAwait(false);
 
             _logService.LogDebug($"ブラウザデータ保存完了: {browsersToSave.Count}件", nameof(BrowserService));
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException or JsonException)
         {
             _logService.LogError($"ブラウザデータ保存エラー: {ex.Message}", nameof(BrowserService), ex);
             throw;
         }
-    }
-
-    private static Task SaveBrowserUsageAsync()
-    {
-        return Task.CompletedTask;
-    }
-
-    /// <summary>
-    /// JSONシリアライザーオプションを取得.
-    /// </summary>
-    private static JsonSerializerOptions GetJsonSerializerOptions()
-    {
-        return new JsonSerializerOptions
-        {
-            WriteIndented = true,
-            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-        };
-    }
-
-    private static Task SaveDefaultBrowserAsync()
-    {
-        return Task.CompletedTask;
-    }
-
-    private static Task<Browser?> LoadDefaultBrowserAsync()
-    {
-        return Task.FromResult<Browser?>(null);
-    }
-
-    /// <summary>
-    /// ブラウザタイプに応じた起動引数を取得.
-    /// </summary>
-    private static string GetBrowserArguments(string url)
-    {
-        // すべてのブラウザタイプで同じURLを返す
-        return url;
     }
 }

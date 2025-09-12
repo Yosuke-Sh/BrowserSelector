@@ -2,6 +2,7 @@ using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Data;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace BrowserSelector.Presentation.Converters;
@@ -21,10 +22,14 @@ public class IconPathConverter : IMultiValueConverter
     {
         try
         {
-            // IconPath、ExecutablePath、Nameの順で取得
+            // IconPath、ExecutablePath、Name、IconIndexの順で取得
             string? iconPath = values[0] as string;
             string? executablePath = values[1] as string;
             string? name = values[2] as string;
+            int iconIndex = values.Length > 3 && values[3] is int idx ? idx : 0;
+
+            // デバッグログ追加
+            System.Diagnostics.Debug.WriteLine($"IconPathConverter: {name}, IconPath: {iconPath}, ExecutablePath: {executablePath}, IconIndex: {iconIndex}");
 
             // 1. IconPathが設定されている場合はそれを優先
             if (!string.IsNullOrEmpty(iconPath) && File.Exists(iconPath))
@@ -36,7 +41,7 @@ public class IconPathConverter : IMultiValueConverter
                 {
                     try
                     {
-                        BitmapImage? bitmap = ExtractHighQualityIcon(iconPath, 0); // 最初のアイコンを取得
+                        BitmapImage? bitmap = ExtractHighQualityIcon(iconPath, iconIndex); // 指定されたインデックスのアイコンを取得
                         if (bitmap != null)
                         {
                             return bitmap;
@@ -66,7 +71,7 @@ public class IconPathConverter : IMultiValueConverter
             {
                 try
                 {
-                    BitmapImage? bitmap = ExtractHighQualityIcon(executablePath, 0); // 最初のアイコンを取得
+                    BitmapImage? bitmap = ExtractHighQualityIcon(executablePath, iconIndex); // 指定されたインデックスのアイコンを取得
                     if (bitmap != null)
                     {
                         return bitmap;
@@ -107,14 +112,18 @@ public class IconPathConverter : IMultiValueConverter
     {
         try
         {
+            System.Diagnostics.Debug.WriteLine($"ExtractHighQualityIcon開始: {filePath}, IconIndex: {iconIndex}");
             // まず、利用可能なアイコン数を取得
             int iconCount = ExtractIconEx(filePath, -1, out IntPtr dummy1, out IntPtr dummy2, 0);
+            System.Diagnostics.Debug.WriteLine($"利用可能なアイコン数: {iconCount}");
 
             if (iconCount > 0 && iconIndex < iconCount)
             {
                 // 指定されたインデックスのアイコンを抽出
+                System.Diagnostics.Debug.WriteLine($"IconIndex {iconIndex} でアイコン抽出を試行");
                 if (ExtractIconEx(filePath, iconIndex, out IntPtr largeIcon, out IntPtr smallIcon, 1) > 0 && largeIcon != IntPtr.Zero)
                 {
+                    System.Diagnostics.Debug.WriteLine($"IconIndex {iconIndex} のアイコン抽出成功");
                     using System.Drawing.Icon icon = System.Drawing.Icon.FromHandle(largeIcon);
 
                     // アイコンの元のサイズを取得
@@ -124,23 +133,34 @@ public class IconPathConverter : IMultiValueConverter
                     BitmapImage bitmap = ConvertIconToHighQualityBitmapImage(icon);
                     return bitmap;
                 }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine($"IconIndex {iconIndex} のアイコン抽出失敗");
+                }
             }
             else
             {
+                System.Diagnostics.Debug.WriteLine($"IconIndex {iconIndex} は範囲外、フォールバックを使用");
                 // フォールバック: 標準のExtractAssociatedIconを使用
                 System.Drawing.Icon? icon = System.Drawing.Icon.ExtractAssociatedIcon(filePath);
                 if (icon != null)
                 {
+                    System.Diagnostics.Debug.WriteLine($"ExtractAssociatedIcon成功");
                     // リサイズせずに元のアイコンをそのまま使用
                     System.Drawing.Size originalSize = icon.Size;
                     BitmapImage bitmap = ConvertIconToHighQualityBitmapImage(icon);
                     return bitmap;
                 }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine($"ExtractAssociatedIcon失敗");
+                }
             }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
             // アイコン抽出エラーは無視
+            System.Diagnostics.Debug.WriteLine($"ExtractHighQualityIconエラー: {ex.Message}");
         }
 
         return null;
@@ -163,7 +183,13 @@ public class IconPathConverter : IMultiValueConverter
             bitmap.BeginInit();
             bitmap.CacheOption = BitmapCacheOption.OnLoad;
             bitmap.StreamSource = stream;
-            // リサイズせずに元のサイズでデコード
+
+            // DPI設定を明示的に指定
+            bitmap.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
+            // 高品質スケーリングを有効化
+            RenderOptions.SetBitmapScalingMode(bitmap, BitmapScalingMode.HighQuality);
+            RenderOptions.SetEdgeMode(bitmap, EdgeMode.Aliased);
+
             bitmap.EndInit();
             bitmap.Freeze();
 

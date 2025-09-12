@@ -44,7 +44,7 @@ public partial class App : Application
 
             // ログサービスの取得
             _logService = _host.Services.GetRequiredService<ILogService>();
-            _logService.LogDetailed(LogLevel.Information, "アプリケーション起動開始", "App",
+            _logService?.LogDetailed(LogLevel.Information, "アプリケーション起動開始", "App",
                                   "STARTUP", "Application", "System", "App", "Initialize", "Started");
 
             // ローカライゼーションサービスの設定
@@ -78,12 +78,12 @@ public partial class App : Application
                 if (missingIcons.Length > 0)
                 {
                     int createdCount = iconService.CreateMissingIcons(missingIcons);
-                    _logService.LogInformation($"不足アイコンを {createdCount} 個作成しました: {string.Join(", ", missingIcons)}", "App");
+                    _logService?.LogInformation($"不足アイコンを {createdCount} 個作成しました: {string.Join(", ", missingIcons)}", "App");
                 }
             }
             catch (Exception iconEx)
             {
-                _logService.LogError($"アイコン作成エラー: {iconEx.Message}", "App", iconEx);
+                _logService?.LogError($"アイコン作成エラー: {iconEx.Message}", "App", iconEx);
             }
 
             // 起動引数からURLを取得
@@ -91,7 +91,7 @@ public partial class App : Application
             if (e.Args.Length > 0)
             {
                 initialUrl = e.Args[0];
-                _logService.LogDetailed(LogLevel.Debug, $"起動引数でURLを受信: {initialUrl}", "App",
+                _logService?.LogDetailed(LogLevel.Debug, $"起動引数でURLを受信: {initialUrl}", "App",
                                       "ARGS", initialUrl, "System", "Args", "Parse", "Success");
             }
 
@@ -99,23 +99,23 @@ public partial class App : Application
             MainViewModel mainViewModel;
             try
             {
-                _logService.LogDetailed(LogLevel.Information, "MainViewModel作成開始", "App",
+                _logService?.LogDetailed(LogLevel.Information, "MainViewModel作成開始", "App",
                                       "MVVM_CREATE", "ViewModel", "System", "MainViewModel", "Create", "Started");
 
-                _logService.LogDetailed(LogLevel.Debug, "DIコンテナからMainViewModelを取得開始", "App",
+                _logService?.LogDetailed(LogLevel.Debug, "DIコンテナからMainViewModelを取得開始", "App",
                                       "MVVM_CREATE", "ViewModel", "System", "MainViewModel", "Resolve", "Started");
 
                 mainViewModel = _host.Services.GetRequiredService<MainViewModel>();
 
-                _logService.LogDetailed(LogLevel.Debug, "DIコンテナからMainViewModel取得完了", "App",
+                _logService?.LogDetailed(LogLevel.Debug, "DIコンテナからMainViewModel取得完了", "App",
                                       "MVVM_CREATE", "ViewModel", "System", "MainViewModel", "Resolve", "Success");
 
-                _logService.LogDetailed(LogLevel.Information, "MainViewModel作成完了", "App",
+                _logService?.LogDetailed(LogLevel.Information, "MainViewModel作成完了", "App",
                                       "MVVM_CREATE", "ViewModel", "System", "MainViewModel", "Create", "Success");
             }
             catch (Exception ex)
             {
-                _logService.LogDetailed(LogLevel.Error, $"MainViewModel作成エラー: {ex.Message}", "App",
+                _logService?.LogDetailed(LogLevel.Error, $"MainViewModel作成エラー: {ex.Message}", "App",
                                       "MVVM_CREATE", "ViewModel", "System", "MainViewModel", "Create", "Failed", ex);
                 throw;
             }
@@ -133,19 +133,19 @@ public partial class App : Application
                 }
             }
 
-            _logService.LogInformation("テストモード: MainWindowを作成", "App");
-            Presentation.Views.MainWindow mainWindow = new(mainViewModel, _logService);
-            _logService.LogInformation("MainWindow作成完了", "App");
+            _logService?.LogInformation("テストモード: MainWindowを作成", "App");
+            Presentation.Views.MainWindow mainWindow = new(mainViewModel, _logService!);
+            _logService?.LogInformation("MainWindow作成完了", "App");
 
             // 起動時設定読み込み（適用を実行）
             try
             {
                 ISettingsService settingsSvc = _host.Services.GetRequiredService<ISettingsService>();
                 Core.Models.VisualSettings v = settingsSvc.LoadVisualSettingsAsync().GetAwaiter().GetResult();
-                _logService.LogDebug($"Startup.VisualSettings.Load.Success BackgroundColor={v.BackgroundColor}, UseBackgroundGradient={v.UseBackgroundGradient}, GradientDirection={v.GradientDirection}", "App");
+                _logService?.LogDebug($"Startup.VisualSettings.Load.Success BackgroundColor={v.BackgroundColor}, UseBackgroundGradient={v.UseBackgroundGradient}, GradientDirection={v.GradientDirection}", "App");
 
                 // 起動時即座に背景色設定を実行
-                _logService.LogDebug("Startup.VisualSettings.Apply.Start Target=MainWindow (Immediate)", "App");
+                _logService?.LogDebug("Startup.VisualSettings.Apply.Start Target=MainWindow (Immediate)", "App");
                 try
                 {
 
@@ -181,30 +181,30 @@ public partial class App : Application
                                 new System.Windows.Media.GradientStop(v.GradientEndColor, 1)
                             ]
                         };
-                        _logService.LogDebug($"起動時背景グラデーション設定完了: 方向={v.GradientDirection}, 開始色={v.GradientStartColor}, 終了色={v.GradientEndColor}", "App");
+                        _logService?.LogDebug($"起動時背景グラデーション設定完了: 方向={v.GradientDirection}, 開始色={v.GradientStartColor}, 終了色={v.GradientEndColor}", "App");
                     }
                     else
                     {
                         System.Windows.Media.SolidColorBrush brush = new(v.BackgroundColor);
                         mainWindow.Background = brush;
-                        _logService.LogDebug($"起動時背景色設定完了: 設定値={v.BackgroundColor}, 適用後={mainWindow.Background}", "App");
+                        _logService?.LogDebug($"起動時背景色設定完了: 設定値={v.BackgroundColor}, 適用後={mainWindow.Background}", "App");
                     }
 
                     // VisualSettingsを設定
                     mainViewModel.VisualSettings = v;
-                    _logService.LogDebug("起動時VisualSettings設定完了", "App");
+                    _logService?.LogDebug("起動時VisualSettings設定完了", "App");
 
-                    _logService.LogDebug("Startup.VisualSettings.Apply.Success Target=MainWindow (Immediate)", "App");
+                    _logService?.LogDebug("Startup.VisualSettings.Apply.Success Target=MainWindow (Immediate)", "App");
                 }
                 catch (Exception aex)
                 {
-                    _logService.LogDebug($"Startup.VisualSettings.Apply.Error {aex.Message}", "App", aex);
+                    _logService?.LogDebug($"Startup.VisualSettings.Apply.Error {aex.Message}", "App", aex);
                 }
 
                 // 追加でLoadedイベントでも設定を適用（二重適用防止のため条件付き）
                 mainWindow.Loaded += (_, __) =>
                 {
-                    _logService.LogDebug("Startup.VisualSettings.Apply.Start Target=MainWindow (Loaded Event)", "App");
+                    _logService?.LogDebug("Startup.VisualSettings.Apply.Start Target=MainWindow (Loaded Event)", "App");
                     try
                     {
                         // 既に設定済みの場合はスキップ
@@ -213,7 +213,7 @@ public partial class App : Application
                             System.Windows.Media.Color currentColor = currentBrush.Color;
                             if (currentColor == v.BackgroundColor)
                             {
-                                _logService.LogDebug("起動時背景色設定は既に適用済みです", "App");
+                                _logService?.LogDebug("起動時背景色設定は既に適用済みです", "App");
                                 return;
                             }
                         }
@@ -223,30 +223,30 @@ public partial class App : Application
                         {
                             System.Windows.Media.SolidColorBrush brush = new(v.BackgroundColor);
                             mainWindow.Background = brush;
-                            _logService.LogDebug($"Loadedイベントで背景色再適用完了: {v.BackgroundColor}", "App");
+                            _logService?.LogDebug($"Loadedイベントで背景色再適用完了: {v.BackgroundColor}", "App");
                         }
 
-                        _logService.LogDebug("Startup.VisualSettings.Apply.Success Target=MainWindow (Loaded Event)", "App");
+                        _logService?.LogDebug("Startup.VisualSettings.Apply.Success Target=MainWindow (Loaded Event)", "App");
                     }
                     catch (Exception aex)
                     {
-                        _logService.LogDebug($"Startup.VisualSettings.Apply.Error (Loaded Event) {aex.Message}", "App", aex);
+                        _logService?.LogDebug($"Startup.VisualSettings.Apply.Error (Loaded Event) {aex.Message}", "App", aex);
                     }
                 };
             }
             catch (Exception vex)
             {
-                _logService.LogDebug($"Startup.VisualSettings.Load.Error {vex.Message}", "App", vex);
+                _logService?.LogDebug($"Startup.VisualSettings.Load.Error {vex.Message}", "App", vex);
             }
 
             MainWindow = mainWindow;
-            _logService.LogInformation("MainWindow表示開始", "App");
+            _logService?.LogInformation("MainWindow表示開始", "App");
             mainWindow.Show(); // 起動時の背景色設定のため必要
-            _logService.LogInformation("MainWindow表示完了", "App");
+            _logService?.LogInformation("MainWindow表示完了", "App");
 
             base.OnStartup(e);
-            _logService.LogTrace($"アプリケーション起動処理完了: MainWindow表示済み, 初期URL={initialUrl ?? "なし"}", "App");
-            _logService.LogInformation("OnStartup完了", "App");
+            _logService?.LogTrace($"アプリケーション起動処理完了: MainWindow表示済み, 初期URL={initialUrl ?? "なし"}", "App");
+            _logService?.LogInformation("OnStartup完了", "App");
         }
         catch (Exception ex)
         {
@@ -256,14 +256,16 @@ public partial class App : Application
 
             if (_logService != null)
             {
-                _logService.LogCritical($"アプリケーション起動で致命的エラーが発生: {ex.Message}", "App", ex);
+                _logService?.LogCritical($"アプリケーション起動で致命的エラーが発生: {ex.Message}", "App", ex);
             }
             else
             {
-                // ログサービスが利用できない場合はファイルに出力
-                string logPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "BrowserSelector_Startup.log");
-                File.AppendAllText(logPath, $"起動エラー: {ex}\n");
-                File.AppendAllText(logPath, $"スタックトレース: {ex.StackTrace}\n");
+                // ログサービスが利用できない場合はログフォルダに出力
+                string logFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "BrowserSelector", "Logs");
+                Directory.CreateDirectory(logFolder);
+                string logPath = Path.Combine(logFolder, $"BrowserSelector_Startup_{DateTime.Now:yyyyMMdd_HHmmss}.log");
+                File.AppendAllText(logPath, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] [FATAL] [STARTUP_ERROR] [App] 起動エラー: {ex}\n");
+                File.AppendAllText(logPath, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] [FATAL] [STARTUP_ERROR] [App] スタックトレース: {ex.StackTrace}\n");
             }
 
             // テストモードの場合は例外を再スロー（メッセージボックスを表示しない）
@@ -296,14 +298,7 @@ public partial class App : Application
         }
         catch (Exception ex)
         {
-            if (_logService != null)
-            {
-                _logService.LogError($"アプリケーション終了エラー: {ex.Message}", "App", ex);
-            }
-            else
-            {
-                // アプリケーション終了エラーは無視
-            }
+            _logService?.LogError($"アプリケーション終了エラー: {ex.Message}", "App", ex);
         }
 
         base.OnExit(e);
