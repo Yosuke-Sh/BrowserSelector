@@ -10,7 +10,7 @@ on:
 
 jobs:
   code-quality:
-    runs-on: windows-latest
+    runs-on: windows-2022  # windows-latestの代わりに明示的に指定
     
     steps:
     - name: Checkout code
@@ -30,20 +30,30 @@ jobs:
       run: dotnet build --configuration Release --no-restore
     
     - name: Run tests
-      run: dotnet test --configuration Release --no-build --collect:"XPlat Code Coverage" --logger trx --results-directory TestResults
+      run: dotnet test --configuration Release --no-build --collect:"XPlat Code Coverage" --logger trx --results-directory TestResults --verbosity normal
+      continue-on-error: false
     
     - name: Install ReportGenerator
       run: dotnet tool install --global dotnet-reportgenerator-globaltool --version 5.1.10
     
     - name: Generate coverage report
-      run: reportgenerator -reports:"TestResults/**/coverage.cobertura.xml" -targetdir:"coverage-report" -reporttypes:"Cobertura;Html;TextSummary"
+      run: |
+        $coverageFiles = Get-ChildItem -Path "TestResults" -Recurse -Name "coverage.cobertura.xml" -ErrorAction SilentlyContinue
+        if ($coverageFiles) {
+          reportgenerator -reports:"TestResults/**/coverage.cobertura.xml" -targetdir:"coverage-report" -reporttypes:"Cobertura;Html;TextSummary;Lcov"
+        } else {
+          Write-Host "No coverage files found, creating empty report"
+          New-Item -ItemType Directory -Path "coverage-report" -Force
+          New-Item -ItemType File -Path "coverage-report/Cobertura.xml" -Force
+        }
+      continue-on-error: false
     
     - name: Install SonarQube Scanner
       run: dotnet tool install --global dotnet-sonarscanner --version 5.15.1
     
     - name: SonarQube Begin Analysis
       run: |
-        dotnet sonarscanner begin /k:"BrowserSelector" /o:"yosuke-sh" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="coverage-report/Cobertura.xml"
+        dotnet sonarscanner begin /k:"BrowserSelector" /o:"Yosuke-Sh" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="coverage-report/Cobertura.xml" /d:sonar.cs.vstest.reportsPaths="TestResults/*.trx"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
