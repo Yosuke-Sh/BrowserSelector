@@ -1,0 +1,186 @@
+// <copyright file="UrlRule.cs" company="BrowserSelector">
+// Copyright (c) 2024 BrowserSelector. All rights reserved.
+// </copyright>
+
+using System.ComponentModel.DataAnnotations;
+
+namespace BrowserSelector.Core.Models
+{
+    /// <summary>
+    /// URLパターンに基づくブラウザ振り分けルール.
+    /// </summary>
+    public class UrlRule
+    {
+        /// <summary>
+        /// Gets or sets ルールの一意識別子.
+        /// </summary>
+        public Guid Id { get; set; } = Guid.NewGuid();
+
+        /// <summary>
+        /// Gets or sets uRLパターン（例: "*.google.com", "http*", "*.github.com/*"）.
+        /// </summary>
+        [Required]
+        [StringLength(500)]
+        public string Pattern { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets 対象ブラウザの名前.
+        /// </summary>
+        [Required]
+        [StringLength(100)]
+        public string BrowserName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets ルールの優先度（数値が大きいほど優先）.
+        /// </summary>
+        [Range(1, 100)]
+        public int Priority { get; set; } = 50;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether ルールが有効かどうか.
+        /// </summary>
+        public bool IsEnabled { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets ルールの説明.
+        /// </summary>
+        [StringLength(200)]
+        public string Description { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets 作成日時.
+        /// </summary>
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        /// <summary>
+        /// Gets or sets 更新日時.
+        /// </summary>
+        public DateTime UpdatedAt { get; set; } = DateTime.Now;
+
+        /// <summary>
+        /// Gets ルールの表示名を取得.
+        /// </summary>
+        public string DisplayName => $"{Pattern} → {BrowserName} (優先度: {Priority})";
+
+        /// <summary>
+        /// ルールが指定されたURLにマッチするかを判定.
+        /// </summary>
+        /// <param name="url">判定対象のURL.</param>
+        /// <returns>マッチする場合true.</returns>
+        public bool IsMatch(string url)
+        {
+            if (string.IsNullOrWhiteSpace(url) || string.IsNullOrWhiteSpace(Pattern))
+            {
+                return false;
+            }
+
+            // パターンを大文字に変換
+            string pattern = Pattern.ToUpperInvariant();
+            string targetUrl = url.ToUpperInvariant();
+
+            // ワイルドカードパターンの処理
+            if (pattern.Contains('*', StringComparison.Ordinal))
+            {
+                return IsWildcardMatch(pattern, targetUrl);
+            }
+
+            // 完全一致
+            return targetUrl == pattern;
+        }
+
+        /// <summary>
+        /// URLがパターンにマッチするかどうかを判定（Uri版）.
+        /// </summary>
+        /// <param name="url">判定対象のURL.</param>
+        /// <returns>マッチする場合true.</returns>
+        public bool IsMatch(Uri url)
+        {
+            if (url == null)
+            {
+                return false;
+            }
+
+            // フルURLでマッチングを試行
+            string fullUrl = url.ToString().TrimEnd('/');
+            if (IsMatch(fullUrl))
+            {
+                return true;
+            }
+
+            // ドメイン名のみでマッチングを試行
+            string hostOnly = url.Host;
+            if (IsMatch(hostOnly))
+            {
+                return true;
+            }
+
+            // ドメイン名 + パスでマッチングを試行（プロトコル除く）
+            string hostAndPath = url.Host + url.PathAndQuery.TrimEnd('/');
+            return IsMatch(hostAndPath);
+        }
+
+        /// <summary>
+        /// ルールの詳細情報を取得.
+        /// </summary>
+        /// <returns></returns>
+        public string GetDetails()
+        {
+            string status = IsEnabled ? "有効" : "無効";
+            string desc = string.IsNullOrWhiteSpace(Description) ? "説明なし" : Description;
+            return $"パターン: {Pattern}\nブラウザ: {BrowserName}\n優先度: {Priority}\n状態: {status}\n説明: {desc}";
+        }
+
+        /// <summary>
+        /// ワイルドカードパターンのマッチング.
+        /// </summary>
+        /// <param name="pattern">ワイルドカードを含むパターン.</param>
+        /// <param name="url">判定対象のURL.</param>
+        /// <returns>マッチする場合true.</returns>
+        private static bool IsWildcardMatch(string pattern, string url)
+        {
+            // パターンをワイルドカードで分割
+            string[] parts = pattern.Split('*', StringSplitOptions.RemoveEmptyEntries);
+
+            if (parts.Length == 0)
+            {
+                return true; // パターンが "*" のみの場合
+            }
+
+            if (parts.Length == 1)
+            {
+                // パターンが "*text" または "text*" の場合
+                if (pattern.StartsWith('*'))
+                {
+                    return url.EndsWith(parts[0], StringComparison.Ordinal);
+                }
+
+                if (pattern.EndsWith('*'))
+                {
+                    return url.StartsWith(parts[0], StringComparison.Ordinal);
+                }
+            }
+
+            // パターンが "text*" で終わる場合の特別処理
+            if (pattern.EndsWith('*'))
+            {
+                string prefix = pattern[..^1];
+                return url.StartsWith(prefix, StringComparison.Ordinal);
+            }
+
+            // 複数のワイルドカードがある場合
+            int currentIndex = 0;
+            foreach (string part in parts)
+            {
+                int foundIndex = url.IndexOf(part, currentIndex, StringComparison.Ordinal);
+                if (foundIndex == -1)
+                {
+                    return false;
+                }
+
+                currentIndex = foundIndex + part.Length;
+            }
+
+            return true;
+        }
+    }
+}

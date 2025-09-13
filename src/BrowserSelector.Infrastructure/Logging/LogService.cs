@@ -1,0 +1,555 @@
+using BrowserSelector.Core.Enums;
+using BrowserSelector.Core.Models;
+using BrowserSelector.Core.Services;
+using System.Globalization;
+using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
+
+namespace BrowserSelector.Infrastructure.Logging;
+
+/// <summary>
+/// ログサービスの実装.
+/// </summary>
+public class LogService : ILogService
+{
+    private readonly object _lockObject = new();
+    private readonly string _defaultLogFolder;
+    private LogSettings _settings;
+    private int _eventCounter;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LogService"/> class.
+    /// </summary>
+    public LogService()
+    {
+        _settings = new LogSettings();
+        _defaultLogFolder = LogSettings.GetDefaultLogFolder();
+        _settings.LogOutputFolder = _defaultLogFolder;
+
+        // コンソールの文字エンコーディングをUTF-8に設定（文字化け対策）
+        // WPFアプリケーションではコンソールハンドルが無効なため、IOExceptionが発生する可能性がある
+        try
+        {
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+        }
+        catch (Exception ex) when (ex is ArgumentException or IOException or InvalidOperationException or System.Security.SecurityException)
+        {
+            // コンソールエンコーディング設定に失敗しても続行（WPFアプリではコンソールハンドルが無効）
+            System.Diagnostics.Debug.WriteLine($"Console encoding setup failed ({ex.GetType().Name}): {ex.Message}");
+        }
+
+        // 設定ファイルからログ設定を読み込み
+        LoadSettingsFromFile();
+
+        // ログフォルダが存在しない場合は作成
+        EnsureLogDirectoryExists();
+
+        // 起動時のログ（INFO） - テスト環境では出力しない
+        if (!IsTestEnvironment())
+        {
+            LogInformation("LogService初期化完了", "LogService");
+        }
+    }
+
+    /// <summary>
+    /// トレースレベルのログを出力.
+    /// </summary>
+    /// <param name="message">ログメッセージ.</param>
+    /// <param name="category">ログカテゴリ.</param>
+    /// <param name="exception">例外.</param>
+    public void LogTrace(string message, string? category = null, Exception? exception = null)
+    {
+        Log(LogLevel.Trace, message, category, exception);
+    }
+
+    /// <summary>
+    /// デバッグレベルのログを出力.
+    /// </summary>
+    /// <param name="message">ログメッセージ.</param>
+    /// <param name="category">ログカテゴリ.</param>
+    /// <param name="exception">例外.</param>
+    public void LogDebug(string message, string? category = null, Exception? exception = null)
+    {
+        Log(LogLevel.Debug, message, category, exception);
+    }
+
+    /// <summary>
+    /// 情報レベルのログを出力.
+    /// </summary>
+    /// <param name="message">ログメッセージ.</param>
+    /// <param name="category">ログカテゴリ.</param>
+    /// <param name="exception">例外.</param>
+    public void LogInformation(string message, string? category = null, Exception? exception = null)
+    {
+        Log(LogLevel.Information, message, category, exception);
+    }
+
+    /// <summary>
+    /// 警告レベルのログを出力.
+    /// </summary>
+    /// <param name="message">ログメッセージ.</param>
+    /// <param name="category">ログカテゴリ.</param>
+    /// <param name="exception">例外.</param>
+    public void LogWarning(string message, string? category = null, Exception? exception = null)
+    {
+        Log(LogLevel.Warning, message, category, exception);
+    }
+
+    /// <summary>
+    /// エラーレベルのログを出力.
+    /// </summary>
+    /// <param name="message">ログメッセージ.</param>
+    /// <param name="category">ログカテゴリ.</param>
+    /// <param name="exception">例外.</param>
+    public void LogError(string message, string? category = null, Exception? exception = null)
+    {
+        Log(LogLevel.Error, message, category, exception);
+    }
+
+    /// <summary>
+    /// 致命的エラーレベルのログを出力.
+    /// </summary>
+    /// <param name="message">ログメッセージ.</param>
+    /// <param name="category">ログカテゴリ.</param>
+    /// <param name="exception">例外.</param>
+    public void LogCritical(string message, string? category = null, Exception? exception = null)
+    {
+        Log(LogLevel.Critical, message, category, exception);
+    }
+
+    /// <summary>
+    /// 指定されたレベルのログを出力.
+    /// </summary>
+    /// <param name="level">ログレベル.</param>
+    /// <param name="message">ログメッセージ.</param>
+    /// <param name="category">ログカテゴリ.</param>
+    /// <param name="exception">例外.</param>
+    public void Log(LogLevel level, string message, string? category = null, Exception? exception = null)
+    {
+        LogDetailed(level, message, category, null, null, null, null, null, null, exception);
+    }
+
+    /// <summary>
+    /// 詳細情報付きのログを出力.
+    /// </summary>
+    /// <param name="level">ログレベル.</param>
+    /// <param name="message">ログメッセージ.</param>
+    /// <param name="category">ログカテゴリ.</param>
+    /// <param name="eventId">イベントID.</param>
+    /// <param name="requestTarget">リクエスト.</param>
+    /// <param name="userInfo">ユーザー情報.</param>
+    /// <param name="processTarget">ターゲット.</param>
+    /// <param name="processAction">アクション.</param>
+    /// <param name="processResult">結果.</param>
+    /// <param name="exception">例外.</param>
+    public void LogDetailed(
+        LogLevel level,
+        string message,
+        string? category = null,
+        string? eventId = null,
+        string? requestTarget = null,
+        string? userInfo = null,
+        string? processTarget = null,
+        string? processAction = null,
+        string? processResult = null,
+        Exception? exception = null)
+    {
+        if (!_settings.EnableLogging || level < _settings.LogLevel)
+        {
+            return;
+        }
+
+        try
+        {
+            string logMessage = FormatDetailedLogMessage(level, message, category, eventId, requestTarget, userInfo, processTarget, processAction, processResult, exception);
+
+            // コンソール出力（テスト環境では無効化）
+            if (_settings.EnableConsoleLogging && !IsTestEnvironment())
+            {
+                WriteToConsole(level, logMessage);
+            }
+
+            // ファイル出力
+            if (_settings.EnableFileLogging)
+            {
+                WriteToFile(logMessage);
+            }
+        }
+        catch (ArgumentException)
+        {
+            // ログ出力中のエラーは無視
+        }
+        catch (InvalidOperationException)
+        {
+            // ログ出力中のエラーは無視
+        }
+        catch (IOException)
+        {
+            // ログ出力中のエラーは無視
+        }
+    }
+
+    /// <summary>
+    /// ログ設定を更新.
+    /// </summary>
+    /// <param name="settings">設定.</param>
+    public void UpdateSettings(LogSettings settings)
+    {
+        lock (_lockObject)
+        {
+            _settings = settings;
+
+            // ログフォルダが存在しない場合は作成
+            EnsureLogDirectoryExists();
+
+            LogInformation("ログ設定を更新しました", "LogService");
+        }
+    }
+
+    /// <summary>
+    /// ログファイルをクリア.
+    /// </summary>
+    public void ClearLogs()
+    {
+        try
+        {
+            string logFilePath = _settings.GetLogFilePath();
+            if (File.Exists(logFilePath))
+            {
+                File.Delete(logFilePath);
+                LogInformation("ログファイルをクリアしました", "LogService");
+            }
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            LogError($"ログファイルのクリアに失敗しました（アクセス権限なし）: {ex.Message}", "LogService", ex);
+        }
+        catch (System.Security.SecurityException ex)
+        {
+            LogError($"ログファイルのクリアに失敗しました（セキュリティ例外）: {ex.Message}", "LogService", ex);
+        }
+        catch (ArgumentException ex)
+        {
+            LogError($"ログファイルのクリアに失敗しました（引数例外）: {ex.Message}", "LogService", ex);
+        }
+        catch (IOException ex)
+        {
+            LogError($"ログファイルのクリアに失敗しました（I/O例外）: {ex.Message}", "LogService", ex);
+        }
+    }
+
+    /// <summary>
+    /// 古いログファイルを削除.
+    /// </summary>
+    public void CleanupOldLogs()
+    {
+        try
+        {
+            if (!Directory.Exists(_settings.LogOutputFolder))
+            {
+                return;
+            }
+
+            DateTime cutoffDate = DateTime.Now.AddDays(-_settings.LogRetentionDays);
+            string[] logFiles = Directory.GetFiles(_settings.LogOutputFolder, $"{_settings.LogFilePrefix}_*.{_settings.LogFileSuffix}");
+
+            foreach (string logFile in logFiles)
+            {
+                FileInfo fileInfo = new(logFile);
+                if (fileInfo.CreationTime < cutoffDate)
+                {
+                    File.Delete(logFile);
+                    LogInformation($"古いログファイルを削除しました: {fileInfo.Name}", "LogService");
+                }
+            }
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            LogError($"古いログファイルの削除に失敗しました（アクセス権限なし）: {ex.Message}", "LogService", ex);
+        }
+        catch (System.Security.SecurityException ex)
+        {
+            LogError($"古いログファイルの削除に失敗しました（セキュリティ例外）: {ex.Message}", "LogService", ex);
+        }
+        catch (ArgumentException ex)
+        {
+            LogError($"古いログファイルの削除に失敗しました（引数例外）: {ex.Message}", "LogService", ex);
+        }
+        catch (IOException ex)
+        {
+            LogError($"古いログファイルの削除に失敗しました（I/O例外）: {ex.Message}", "LogService", ex);
+        }
+    }
+
+    /// <summary>
+    /// ログファイルの内容を取得.
+    /// </summary>
+    /// <param name="maxLines">最大長.</param>
+    /// <returns> ログファイルの内容.</returns>
+    public string GetLogContent(int maxLines = 1000)
+    {
+        try
+        {
+            string logFilePath = _settings.GetLogFilePath();
+            if (!File.Exists(logFilePath))
+            {
+                return "ログファイルが存在しません。";
+            }
+
+            string[] lines = File.ReadAllLines(logFilePath);
+            string[] recentLines = lines.TakeLast(maxLines).ToArray();
+
+            return string.Join(Environment.NewLine, recentLines);
+        }
+        catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException or UnauthorizedAccessException or IOException)
+        {
+            return $"ログファイルの読み込みに失敗しました: {ex.Message}";
+        }
+    }
+
+    /// <summary>
+    /// ログファイルのパスを取得.
+    /// </summary>
+    /// <returns>ログファイルパス.</returns>
+    public string GetLogFilePath()
+    {
+        return _settings.GetLogFilePath();
+    }
+
+    /// <summary>
+    /// テスト環境かどうかを判定.
+    /// </summary>
+    /// <returns>テスト環境の場合はtrue.</returns>
+    private static bool IsTestEnvironment()
+    {
+        // テストアセンブリかどうかを判定
+        var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+        return Array.Exists(assemblies, assembly =>
+            assembly.GetName().Name?.Contains("Test", StringComparison.OrdinalIgnoreCase) == true ||
+            assembly.GetName().Name?.Contains("xunit", StringComparison.OrdinalIgnoreCase) == true ||
+            assembly.GetName().Name?.Contains("NUnit", StringComparison.OrdinalIgnoreCase) == true ||
+            assembly.GetName().Name?.Contains("MSTest", StringComparison.OrdinalIgnoreCase) == true);
+    }
+
+    /// <summary>
+    /// ログレベルの短縮形を取得.
+    /// </summary>
+    private static string GetLogLevelShortName(LogLevel level)
+    {
+        return level switch
+        {
+            LogLevel.Trace => "TRACE",
+            LogLevel.Debug => "DEBUG",
+            LogLevel.Information => "INFO",
+            LogLevel.Warning => "WARN",
+            LogLevel.Error => "ERROR",
+            LogLevel.Critical => "FATAL",
+            _ => level.ToString().ToUpperInvariant()
+        };
+    }
+
+    /// <summary>
+    /// コンソールにログを出力.
+    /// </summary>
+    private static void WriteToConsole(LogLevel level, string message)
+    {
+        ConsoleColor originalColor = Console.ForegroundColor;
+
+        try
+        {
+            Console.ForegroundColor = level switch
+            {
+                LogLevel.Trace => ConsoleColor.Gray,
+                LogLevel.Debug => ConsoleColor.DarkGray,
+                LogLevel.Information => ConsoleColor.White,
+                LogLevel.Warning => ConsoleColor.Yellow,
+                LogLevel.Error => ConsoleColor.Red,
+                LogLevel.Critical => ConsoleColor.DarkRed,
+                _ => ConsoleColor.White
+            };
+
+            Console.WriteLine(message);
+        }
+        finally
+        {
+            Console.ForegroundColor = originalColor;
+        }
+    }
+
+    /// <summary>
+    /// 設定ファイルからログ設定を読み込み.
+    /// </summary>
+    private void LoadSettingsFromFile()
+    {
+        try
+        {
+            string settingsDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BrowserSelector");
+            string logSettingsPath = Path.Combine(settingsDirectory, "logsettings.json");
+
+            if (File.Exists(logSettingsPath))
+            {
+                string json = File.ReadAllText(logSettingsPath);
+                LogSettings? loadedSettings = System.Text.Json.JsonSerializer.Deserialize<LogSettings>(json);
+                if (loadedSettings != null)
+                {
+                    _settings = loadedSettings;
+                    _settings.LogOutputFolder = _defaultLogFolder; // パスは常にデフォルトを使用
+                }
+            }
+        }
+        catch (UnauthorizedAccessException)
+        {
+            // 設定ファイル読み込みエラーは無視（デフォルト値を使用）
+        }
+        catch (System.Security.SecurityException)
+        {
+            // 設定ファイル読み込みエラーは無視（デフォルト値を使用）
+        }
+        catch (ArgumentException)
+        {
+            // 設定ファイル読み込みエラーは無視（デフォルト値を使用）
+        }
+        catch (IOException)
+        {
+            // 設定ファイル読み込みエラーは無視（デフォルト値を使用）
+        }
+        catch (System.Text.Json.JsonException)
+        {
+            // 設定ファイル読み込みエラーは無視（デフォルト値を使用）
+        }
+    }
+
+    /// <summary>
+    /// 詳細ログメッセージをフォーマット.
+    /// </summary>
+    private string FormatDetailedLogMessage(
+        LogLevel level,
+        string message,
+        string? category,
+        string? eventId,
+        string? requestTarget,
+        string? userInfo,
+        string? processTarget,
+        string? processAction,
+        string? processResult,
+        Exception? exception)
+    {
+        string timestamp = DateTime.Now.ToString(_settings.TimestampFormat, CultureInfo.InvariantCulture);
+        string levelText = GetLogLevelShortName(level);
+        string categoryText = string.IsNullOrEmpty(category) ? "General" : category;
+        string eventIdText = string.IsNullOrEmpty(eventId) ? GetNextEventId() : eventId;
+
+        // 空値は出力しない（N/Aは使わない）
+        string requestTargetText = string.IsNullOrWhiteSpace(requestTarget) ? string.Empty : requestTarget;
+        string userInfoText = string.IsNullOrWhiteSpace(userInfo) ? string.Empty : userInfo;
+        string processTargetText = string.IsNullOrWhiteSpace(processTarget) ? string.Empty : processTarget;
+        string processActionText = string.IsNullOrWhiteSpace(processAction) ? string.Empty : processAction;
+        string processResultText = string.IsNullOrWhiteSpace(processResult) ? string.Empty : processResult;
+
+        string logMessage = _settings.LogMessageTemplate
+            .Replace("{Timestamp}", timestamp, StringComparison.Ordinal)
+            .Replace("{Level}", levelText, StringComparison.Ordinal)
+            .Replace("{EventId}", eventIdText, StringComparison.Ordinal)
+            .Replace("{Category}", categoryText, StringComparison.Ordinal)
+            .Replace("{RequestTarget}", requestTargetText, StringComparison.Ordinal)
+            .Replace("{UserInfo}", userInfoText, StringComparison.Ordinal)
+            .Replace("{ProcessTarget}", processTargetText, StringComparison.Ordinal)
+            .Replace("{ProcessAction}", processActionText, StringComparison.Ordinal)
+            .Replace("{ProcessResult}", processResultText, StringComparison.Ordinal)
+            .Replace("{Message}", message, StringComparison.Ordinal);
+
+        if (exception != null)
+        {
+            logMessage += $"{Environment.NewLine}例外: {exception.Message}";
+            if (!string.IsNullOrEmpty(exception.StackTrace))
+            {
+                logMessage += $"{Environment.NewLine}スタックトレース: {exception.StackTrace}";
+            }
+        }
+
+        // 余分な空白を正規化（連続スペースを1つに）
+        logMessage = Regex.Replace(logMessage, @"\s{2,}", " ").Trim();
+        return logMessage;
+    }
+
+    /// <summary>
+    /// 次のイベントIDを取得.
+    /// </summary>
+    private string GetNextEventId()
+    {
+        return $"EVT{Interlocked.Increment(ref _eventCounter):D6}";
+    }
+
+    /// <summary>
+    /// ファイルにログを出力.
+    /// </summary>
+    private void WriteToFile(string message)
+    {
+        try
+        {
+            string logFilePath = _settings.GetLogFilePath();
+            string logMessage = message + Environment.NewLine;
+
+            // ファイルサイズチェック
+            CheckAndRotateLogFile(logFilePath);
+
+            // ログファイルに追記
+            File.AppendAllText(logFilePath, logMessage, Encoding.UTF8);
+        }
+        catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException)
+        {
+            // ログファイル出力エラーは無視
+        }
+    }
+
+    /// <summary>
+    /// ログファイルのサイズチェックとローテーション.
+    /// </summary>
+    private void CheckAndRotateLogFile(string logFilePath)
+    {
+        try
+        {
+            if (!File.Exists(logFilePath))
+            {
+                return;
+            }
+
+            FileInfo fileInfo = new(logFilePath);
+            int maxSizeBytes = _settings.MaxLogFileSize * 1024 * 1024; // MB to bytes
+
+            if (fileInfo.Length > maxSizeBytes)
+            {
+                string backupPath = logFilePath.Replace(
+                    $".{_settings.LogFileSuffix}",
+                    $"_{DateTime.Now:yyyyMMdd_HHmmss}.{_settings.LogFileSuffix}",
+                    StringComparison.Ordinal);
+
+                File.Move(logFilePath, backupPath);
+                LogInformation($"ログファイルをローテーションしました: {backupPath}", "LogService");
+            }
+        }
+        catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException)
+        {
+            // ログファイルローテーションエラーは無視
+        }
+    }
+
+    /// <summary>
+    /// ログディレクトリの存在確認と作成.
+    /// </summary>
+    private void EnsureLogDirectoryExists()
+    {
+        try
+        {
+            if (!Directory.Exists(_settings.LogOutputFolder))
+            {
+                _ = Directory.CreateDirectory(_settings.LogOutputFolder);
+            }
+        }
+        catch (Exception ex) when (ex is UnauthorizedAccessException or IOException or PathTooLongException)
+        {
+            // ログディレクトリ作成エラーは無視
+        }
+    }
+}

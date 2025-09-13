@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "altcover.global": {
+      "version": "9.0.1",
+      "commands": [
+        "altcover"
+      ],
+      "rollForward": false
+    }
+  }
+}

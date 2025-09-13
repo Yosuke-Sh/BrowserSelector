@@ -1,0 +1,805 @@
+---
+alwaysApply: true
+---
+# BrowserSelector WPF + MVVM プロジェクトルール
+
+## プロジェクト概要
+BrowserSelectorは、Windows環境で複数のブラウザから選択してURLを開くためのアプリケーションです。現在のWindows Formsアプリケーションを、0ベースでWPF + MVVMアーキテクチャにて作成し、現代的な開発手法を全面採用します。
+
+## 🎯 要求機能一覧
+
+### 🌐 コア機能
+1. **ブラウザ選択機能**
+   - 複数ブラウザの一覧表示とグリッドレイアウト
+   - ブラウザクリックでURL起動
+   - 自動ブラウザ検出（レジストリ/ファイルシステム）
+   - カスタムブラウザの追加・編集・削除
+   - ブラウザごとのカスタムアイコン設定（.exe、.ico、画像ファイル対応）
+   - アイコンスケール調整機能
+   - デフォルトブラウザ設定
+
+### 🎨 UI/UX機能
+2. **透明化・視覚効果**
+   - ウィンドウ透明化（透明度0.01-1.0）
+   - カスタム透明化色設定
+   - 角の丸み設定（半径0-50）
+   - タイトルバー表示/非表示
+   - カスタム背景色
+   - 縦方向背景グラデーション
+
+3. **アクセシビリティ**
+   - フォーカス表示機能
+   - 視覚的フォーカス表示
+   - カスタムフォーカスボックス（色・線幅・幅）
+   - キーボードナビゲーション
+   - アクセシブルレンダリング対応
+   - スクリーンリーダー対応
+
+### ⚙️ システム機能
+4. **起動・システム統合**
+   - 最小化起動オプション
+   - システムトレイ起動オプション
+   - システムトレイ常駐機能
+   - 起動遅延設定
+   - 起動メッセージ設定
+   - ポータブルモード（インストールパス自動判定）
+
+5. **プロトコル・URL処理**
+   - カスタムプロトコル登録
+   - URL正規化機能
+   - 短縮URL展開
+   - ユーザーエージェント設定
+   - コマンドライン引数処理
+
+6. **設定・管理**
+   - 設定のXMLファイル保存・読み込み
+   - カウントダウンタイマー
+   - ログ機能
+   - 設定画面のタブ構成
+
+### 🌍 多言語対応
+7. **国際化機能**
+   - 日本語・英語の完全対応
+   - 動的言語切り替え
+   - 右から左（RTL）言語の準備
+   - カルチャー固有のフォーマット
+   - 地域固有の設定
+
+### 🔄 自動アップデート
+8. **アップデート機能**
+   - バックグラウンドでの更新チェック
+   - 段階的ロールアウト対応
+   - 差分アップデート
+   - ロールバック機能
+   - アップデート通知
+
+## 🏗️ アーキテクチャ設計
+
+### プロジェクト構成
+```
+BrowserSelector.WPF/
+├── src/
+│   ├── BrowserSelector.Core/           # ドメイン層
+│   │   ├── Models/
+│   │   │   ├── Browser.cs
+│   │   │   ├── BrowserSettings.cs
+│   │   │   ├── AppSettings.cs
+│   │   │   ├── VisualSettings.cs
+│   │   │   └── AccessibilitySettings.cs
+│   │   ├── Services/
+│   │   │   ├── IBrowserService.cs
+│   │   │   ├── ISettingsService.cs
+│   │   │   ├── IProtocolService.cs
+│   │   │   └── IUpdateService.cs
+│   │   ├── ValueObjects/
+│   │   ├── Enums/
+│   │   └── Extensions/
+│   │
+│   ├── BrowserSelector.Infrastructure/ # インフラ層
+│   │   ├── Data/
+│   │   │   ├── SettingsRepository.cs
+│   │   │   ├── BrowserRepository.cs
+│   │   │   └── ConfigurationManager.cs
+│   │   ├── SystemIntegration/
+│   │   │   ├── WindowsRegistryService.cs
+│   │   │   ├── SystemTrayService.cs
+│   │   │   ├── ProtocolHandler.cs
+│   │   │   └── WindowsApiHelper.cs
+│   │   ├── Logging/
+│   │   │   └── FileLogger.cs
+│   │   ├── Updates/
+│   │   │   ├── UpdateChecker.cs
+│   │   │   ├── UpdateDownloader.cs
+│   │   │   └── UpdateInstaller.cs
+│   │   └── Localization/
+│   │       ├── LocalizationService.cs
+│   │       └── ResourceProvider.cs
+│   │
+│   ├── BrowserSelector.Presentation/   # プレゼンテーション層
+│   │   ├── ViewModels/
+│   │   │   ├── MainViewModel.cs
+│   │   │   ├── SettingsViewModel.cs
+│   │   │   ├── BrowserListViewModel.cs
+│   │   │   ├── DisplaySettingsViewModel.cs
+│   │   │   ├── FocusSettingsViewModel.cs
+│   │   │   ├── BrowserSettingsViewModel.cs
+│   │   │   ├── ProtocolSettingsViewModel.cs
+│   │   │   ├── StartupSettingsViewModel.cs
+│   │   │   └── UpdateViewModel.cs
+│   │   ├── Views/
+│   │   │   ├── MainWindow.xaml
+│   │   │   ├── SettingsWindow.xaml
+│   │   │   ├── UserControls/
+│   │   │   │   ├── BrowserGrid.xaml
+│   │   │   │   ├── SettingsTabs/
+│   │   │   │   └── UpdateDialog.xaml
+│   │   │   └── Dialogs/
+│   │   ├── Controls/
+│   │   │   ├── TransparentWindow.cs
+│   │   │   ├── AccessibleButton.cs
+│   │   │   ├── BrowserIconDisplay.cs
+│   │   │   └── GradientBackground.cs
+│   │   ├── Converters/
+│   │   │   ├── OpacityConverter.cs
+│   │   │   ├── BoolToVisibilityConverter.cs
+│   │   │   ├── ColorToBrushConverter.cs
+│   │   │   └── LocalizedStringConverter.cs
+│   │   ├── Behaviors/
+│   │   │   ├── WindowTransparencyBehavior.cs
+│   │   │   ├── FocusManagementBehavior.cs
+│   │   │   └── KeyboardNavigationBehavior.cs
+│   │   ├── Resources/
+│   │   │   ├── Styles/
+│   │   │   ├── Templates/
+│   │   │   └── Localization/
+│   │   │       ├── Resources.ja-JP.resx
+│   │   │       ├── Resources.en-US.resx
+│   │   │       └── Resources.resx
+│   │   └── Services/
+│   │       └── NavigationService.cs
+│   │
+│   └── BrowserSelector.App/           # アプリケーション層
+│       ├── App.xaml
+│       ├── App.xaml.cs
+│       ├── AssemblyInfo.cs
+│       ├── DependencyInjection/
+│       │   └── ServiceCollectionExtensions.cs
+│       ├── Configuration/
+│       │   ├── AppConfig.cs
+│       │   └── LoggingConfig.cs
+│       └── Program.cs
+│
+├── tests/
+│   ├── BrowserSelector.UnitTests/      # 単体テスト
+│   ├── BrowserSelector.IntegrationTests/ # 統合テスト
+│   ├── BrowserSelector.UITests/        # UIテスト
+│   └── BrowserSelector.E2ETests/       # E2Eテスト
+│
+├── tools/
+│   ├── UpdatePackager/                 # アップデートパッケージ作成
+│   ├── LocalizationTools/              # 翻訳ツール
+│   └── TestDataGenerators/             # テストデータ生成
+│
+└── deployment/
+    ├── InnoSetup/                      # インストーラー
+    ├── MSI/                           # Windows Installer
+    └── Portable/                       # ポータブル版
+```
+
+## 🧪 テスト戦略
+
+### 単体テスト（Unit Tests）
+**フレームワーク**: xUnit + Moq + FluentAssertions
+
+```csharp
+// テスト対象例
+[Fact]
+public async Task BrowserService_DetectBrowsers_ShouldReturnValidBrowsers()
+{
+    // Arrange
+    var mockRegistry = new Mock<IRegistryService>();
+    var service = new BrowserService(mockRegistry.Object);
+    
+    // Act
+    var browsers = await service.DetectBrowsersAsync();
+    
+    // Assert
+    browsers.Should().NotBeEmpty();
+    browsers.Should().AllSatisfy(b => b.IsValid.Should().BeTrue());
+}
+```
+
+**テスト対象:**
+- ビジネスロジック（BrowserService, SettingsService等）
+- ViewModels（プロパティ変更、コマンド実行）
+- ユーティリティクラス
+- 変換ロジック（Converters）
+
+### 統合テスト（Integration Tests）
+**フレームワーク**: xUnit + Microsoft.Extensions.Testing
+
+```csharp
+[Fact]
+public async Task SettingsService_SaveAndLoad_ShouldPersistCorrectly()
+{
+    // 設定の保存・読み込みの統合テスト
+    // ファイルI/O、XMLシリアライゼーションの確認
+}
+```
+
+**テスト対象:**
+- 設定ファイルの保存・読み込み
+- レジストリアクセス
+- システム統合機能
+- サービス間の連携
+
+### UIテスト（UI Tests）
+**フレームワーク**: Microsoft.VisualStudio.TestTools.UnitTesting + FlaUI
+
+```csharp
+[TestMethod]
+public void MainWindow_ClickBrowser_ShouldLaunchCorrectBrowser()
+{
+    // UI操作の自動テスト
+    using var app = Application.Launch("BrowserSelector.exe");
+    var window = app.GetMainWindow();
+    
+    var browserButton = window.FindFirstDescendant(cf => cf.ByName("Chrome"));
+    browserButton.Click();
+    
+    // ブラウザ起動の確認
+}
+```
+
+**テスト対象:**
+- ウィンドウ操作（透明化、リサイズ等）
+- ブラウザボタンのクリック動作
+- 設定画面の操作
+- アクセシビリティ機能
+- キーボードナビゲーション
+
+### E2Eテスト（End-to-End Tests）
+**フレームワーク**: Playwright for .NET
+
+```csharp
+[Test]
+public async Task CompleteWorkflow_OpenURL_ShouldWorkEndToEnd()
+{
+    // コマンドライン起動からブラウザ起動まで
+    // 実際のユーザーシナリオの自動テスト
+}
+```
+
+**テスト対象:**
+- コマンドライン引数処理
+- URL処理フロー全体
+- 設定変更の反映
+- アップデート機能
+- システムトレイ機能
+
+### パフォーマンステスト
+**フレームワーク**: BenchmarkDotNet
+
+```csharp
+[Benchmark]
+public async Task BrowserDetection_Performance()
+{
+    await browserService.DetectBrowsersAsync();
+}
+```
+
+**テスト対象:**
+- 起動時間
+- ブラウザ検出速度
+- メモリ使用量
+- UI応答性
+
+## 🌍 多言語対応（国際化）
+
+### 実装アーキテクチャ
+```csharp
+// 多言語対応サービス
+public interface ILocalizationService
+{
+    string GetString(string key);
+    string GetString(string key, params object[] args);
+    void SetLanguage(CultureInfo culture);
+    event EventHandler<LanguageChangedEventArgs> LanguageChanged;
+    IEnumerable<CultureInfo> SupportedLanguages { get; }
+}
+```
+
+### リソース管理
+```xml
+<!-- Resources.ja-JP.resx -->
+<data name="BrowserChooser.Title" xml:space="preserve">
+    <value>ブラウザを選択してください</value>
+</data>
+<data name="Settings.Display.Transparency" xml:space="preserve">
+    <value>透明度</value>
+</data>
+```
+
+### XAML実装
+```xml
+<!-- 動的言語切り替え対応 -->
+<TextBlock Text="{Binding Source={x:Static loc:Resources.BrowserChooser_Title}}" 
+           x:Name="TitleText"/>
+
+<!-- MultiBinding使用例 -->
+<TextBlock>
+    <TextBlock.Text>
+        <MultiBinding Converter="{StaticResource LocalizedStringConverter}">
+            <Binding Source="Settings.Transparency.Value" />
+            <Binding Path="TransparencyValue" />
+        </MultiBinding>
+    </TextBlock.Text>
+</TextBlock>
+```
+
+### サポート言語
+- **日本語（ja-JP）**: プライマリ言語
+- **英語（en-US）**: セカンダリ言語
+- **将来対応**: 中国語（zh-CN）、韓国語（ko-KR）
+
+### 実装要件
+- 実行時言語切り替え
+- 文字列外部化（ハードコード文字列禁止）
+- 数値・日付・時刻のローカライゼーション
+- RTL言語への対応準備
+- フォントファミリーの言語別対応
+
+## 🔄 自動アップデート機能
+
+### アーキテクチャ
+```csharp
+public interface IUpdateService
+{
+    Task<UpdateInfo> CheckForUpdatesAsync();
+    Task<bool> DownloadUpdateAsync(UpdateInfo updateInfo, IProgress<int> progress);
+    Task<bool> InstallUpdateAsync(string packagePath);
+    Task<bool> RollbackUpdateAsync();
+    event EventHandler<UpdateAvailableEventArgs> UpdateAvailable;
+}
+```
+
+### 更新フロー
+1. **バックグラウンドチェック**
+   - 起動時・定期実行での更新確認
+   - GitHub Releases API またはカスタムエンドポイント
+   - バージョン比較ロジック
+
+2. **差分アップデート**
+   - バイナリ差分パッチの適用
+   - 設定ファイルのマイグレーション
+   - 依存関係の更新
+
+3. **段階的ロールアウト**
+   - アルファ・ベータ・安定版チャンネル
+   - カナリアリリース対応
+   - ロールバック機能
+
+### セキュリティ
+- デジタル署名検証
+- HTTPS通信の強制
+- ハッシュ値検証
+- サンドボックス内での更新処理
+
+### UI実装
+```xml
+<!-- アップデート通知 -->
+<Border x:Name="UpdateNotification" 
+        Background="#E3F2FD" 
+        Visibility="{Binding HasUpdate, Converter={StaticResource BoolToVisibilityConverter}}">
+    <StackPanel Orientation="Horizontal" Margin="10">
+        <TextBlock Text="{loc:Localize UpdateAvailable}" 
+                   VerticalAlignment="Center"/>
+        <Button Content="{loc:Localize InstallUpdate}" 
+                Command="{Binding InstallUpdateCommand}"
+                Margin="10,0,0,0"/>
+    </StackPanel>
+</Border>
+```
+
+## 🛠️ 技術スタック
+
+### コア技術
+- **フレームワーク**: WPF (.NET 8.0)
+- **MVVMライブラリ**: CommunityToolkit.Mvvm
+- **DI Container**: Microsoft.Extensions.DependencyInjection
+- **設定管理**: Microsoft.Extensions.Configuration
+- **ログ**: Microsoft.Extensions.Logging + Serilog
+- **多言語**: Microsoft.Extensions.Localization
+
+### テスト技術
+- **単体テスト**: xUnit + Moq + FluentAssertions
+- **UIテスト**: FlaUI + Appium.WebDriver
+- **E2Eテスト**: Playwright for .NET
+- **パフォーマンス**: BenchmarkDotNet
+- **カバレッジ**: Coverlet + ReportGenerator
+
+### 品質保証
+- **静的解析**: SonarQube Community
+- **コード解析**: Microsoft.CodeAnalysis.Analyzers
+- **セキュリティ**: Microsoft.CodeAnalysis.BannedApiAnalyzers
+
+### ビルド・デプロイ
+- **CI/CD**: GitHub Actions
+- **パッケージング**: Inno Setup + Advanced Installer
+- **アップデート**: Squirrel.Windows または自作システム
+
+## 🧪 包括的テスト設計
+
+### テスト自動化パイプライン
+```yaml
+# GitHub Actions設定例
+name: Comprehensive Tests
+on: [push, pull_request]
+
+jobs:
+  unit-tests:
+    steps:
+      - name: Run Unit Tests
+        run: dotnet test --collect:"XPlat Code Coverage"
+      - name: Generate Coverage Report
+        run: reportgenerator
+
+  integration-tests:
+    steps:
+      - name: Setup Test Environment
+      - name: Run Integration Tests
+      - name: Cleanup Test Data
+
+  ui-tests:
+    runs-on: windows-latest
+    steps:
+      - name: Start Application
+      - name: Run FlaUI Tests
+      - name: Capture Screenshots
+
+  e2e-tests:
+    steps:
+      - name: Install Browsers
+      - name: Run E2E Scenarios
+      - name: Performance Monitoring
+
+  accessibility-tests:
+    steps:
+      - name: Axe Accessibility Tests
+      - name: Screen Reader Simulation
+      - name: High Contrast Testing
+```
+
+### テストカバレッジ要件
+- **コードカバレッジ**: 最低85%
+- **分岐カバレッジ**: 最低80%
+- **UI要素カバレッジ**: 100%
+- **アクセシビリティ**: WCAG 2.1 AA準拠
+
+### テストケース分類
+
+#### 🔧 機能テスト
+1. **ブラウザ管理**
+   - ブラウザ検出・追加・編集・削除
+   - アイコン読み込み・表示
+   - デフォルトブラウザ設定
+
+2. **URL処理**
+   - URL正規化・短縮URL展開
+   - プロトコルハンドリング
+   - コマンドライン引数処理
+
+3. **UI機能**
+   - 透明化・視覚効果
+   - グリッドレイアウト
+   - 設定画面操作
+
+#### ♿ アクセシビリティテスト
+1. **キーボード操作**
+   - Tab順序の確認
+   - ショートカットキー動作
+   - Enter/Spaceキー対応
+
+2. **フォーカス管理**
+   - フォーカス表示の確認
+   - フォーカストラップ
+   - 初期フォーカス設定
+
+3. **スクリーンリーダー**
+   - AutomationProperties設定
+   - 音声読み上げ対応
+   - ラベル・説明の適切性
+
+#### 🌍 多言語テスト
+1. **言語切り替え**
+   - 実行時言語変更
+   - UI要素の完全翻訳
+   - レイアウト調整
+
+2. **地域設定**
+   - 日付・時刻フォーマット
+   - 数値フォーマット
+   - 通貨表示
+
+#### 🔄 アップデートテスト
+1. **更新チェック**
+   - バックグラウンド確認
+   - ネットワーク接続エラー処理
+   - バージョン比較ロジック
+
+2. **更新プロセス**
+   - ダウンロード進捗表示
+   - インストール成功・失敗
+   - ロールバック機能
+
+#### ⚡ パフォーマンステスト
+1. **起動時間**
+   - コールドスタート時間
+   - ウォームスタート時間
+   - ブラウザ検出時間
+
+2. **メモリ使用量**
+   - 初期メモリ使用量
+   - 長時間動作時のメモリリーク
+   - ガベージコレクション効率
+
+3. **UI応答性**
+   - ボタンクリック応答時間
+   - 設定変更反映時間
+   - 透明化処理のパフォーマンス
+
+## 🏃‍♂️ 開発フェーズ
+
+### Phase 1: 基盤構築（2-3週間）
+**実装内容:**
+- プロジェクト構成とDI設定
+- 基本的なMVVMアーキテクチャ
+- 単体テストフレームワーク設定
+- 多言語対応基盤（日英対応）
+- CI/CDパイプライン構築
+
+**成果物:**
+- プロジェクトテンプレート
+- 基本的なViewModel/View
+- テスト自動化環境
+- 多言語リソースファイル
+
+### Phase 2: コア機能（3-4週間）
+**実装内容:**
+- ブラウザ検出・管理機能
+- 基本的なUI（ブラウザ選択画面）
+- 設定管理システム
+- URL処理ロジック
+- 統合テスト実装
+
+**成果物:**
+- 動作するブラウザ選択機能
+- 設定保存・読み込み
+- コア機能の包括的テスト
+
+### Phase 3: 高度なUI機能（3-4週間）
+**実装内容:**
+- 透明化・視覚効果
+- アクセシビリティ機能
+- カスタマイズ可能な設定画面
+- UIテスト実装（FlaUI）
+- アクセシビリティテスト
+
+**成果物:**
+- 完全な透明化機能
+- アクセシブルなUI
+- 包括的なUIテスト
+
+### Phase 4: システム統合（2-3週間）
+**実装内容:**
+- システムトレイ機能
+- プロトコルハンドラー
+- 起動オプション
+- 自動アップデート機能
+- E2Eテスト実装
+
+**成果物:**
+- システム統合機能
+- 自動アップデート機能
+- 完全なE2Eテスト
+
+### Phase 5: 最適化・テスト（2-3週間）
+**実装内容:**
+- パフォーマンス最適化
+- エラーハンドリング強化
+- 多言語対応の完成
+- セキュリティ監査
+- リリース準備
+
+**成果物:**
+- 本番レディなアプリケーション
+- 完全なドキュメント
+- インストーラー・配布パッケージ
+
+## 🏆 品質基準
+
+### コード品質
+- **コードカバレッジ**: 85%以上
+- **サイクロマティック複雑度**: 10以下
+- **コード重複**: 5%以下
+- **技術的負債比率**: 5%以下
+
+### ユーザー体験
+- **起動時間**: 3秒以内
+- **UI応答時間**: 100ms以内
+- **メモリ使用量**: 100MB以下
+- **アクセシビリティ**: WCAG 2.1 AA準拠
+
+### セキュリティ
+- **静的解析**: SonarQube品質ゲートパス
+- **脆弱性スキャン**: 重大な脆弱性なし
+- **署名検証**: コード署名必須
+- **権限最小化**: 必要最小限の権限
+
+## 📈 継続的改善
+
+### 監視・メトリクス
+- アプリケーション使用統計
+- エラー報告・分析
+- パフォーマンス監視
+- ユーザーフィードバック収集
+
+### 品質保証プロセス
+- 自動テスト必須（CI/CD）
+- コードレビュー必須
+- セキュリティレビュー
+- アクセシビリティ監査
+
+### リリース管理
+- セマンティックバージョニング
+- チェンジログ管理
+- 段階的ロールアウト
+- ホットフィックス対応
+
+## 🎯 成果物
+
+### 1. 完全なWPFアプリケーション
+- すべての機能を含む実行可能なアプリケーション
+- 適切なアーキテクチャとコード品質
+- 包括的なテストスイート
+
+### 2. テスト自動化システム
+- 単体・統合・UI・E2Eテストの完全な自動化
+- パフォーマンス・アクセシビリティテスト
+- CI/CDパイプライン
+
+### 3. 多言語対応
+- 日英完全対応
+- 動的言語切り替え機能
+- 翻訳管理ツール
+
+### 4. 自動アップデート
+- セキュアな自動更新機能
+- 段階的ロールアウト対応
+- ロールバック機能
+
+### 5. ドキュメント
+- アーキテクチャ設計書
+- API仕様書
+- テスト仕様書
+- ユーザーマニュアル（多言語）
+- 開発者ガイド
+
+### 6. 配布パッケージ
+- インストーラー（Inno Setup/Advanced Installer）
+- ポータブル版ZIP
+- MSIパッケージ
+- 自動アップデート配信システム
+
+## 🚀 開発原則
+
+このガイドラインに従い、確実で質の高い実装を行います。指示された範囲内でのみ処理を行い、不要な追加実装は行いません。不明点や重要な判断が必要な場合は、必ず確認を取ります。
+
+**詳細な開発計画は以下のファイルを参照してください：**
+- [開発計画書](./DEVELOPMENT_PLAN.md)
+
+### 1. 指示の分析と計画
+<タスク分析>
+- 主要なタスクを簡潔に要約してください
+- 技術スタックの制約内での実装方法を検討してください
+- 重要な要件と制約を特定してください
+- 潜在的な課題をリストアップしてください
+- タスク実行のための具体的なステップを詳細に列挙してください
+- それらのステップの最適な実行順序を決定してください
+
+#### 重複実装の防止
+実装前に以下の確認を行ってください：
+- 既存の類似機能の有無
+- 同名または類似名の関数やコンポーネント
+- 重複するAPIエンドポイント
+- 共通化可能な処理の特定
+
+### 2. タスクの実行
+- 特定したステップを一つずつ実行してください
+- 各ステップの完了後、簡潔に進捗を報告してください
+- 実装時は以下の点に注意してください：
+  - 適切なディレクトリ構造の遵守
+  - 命名規則の一貫性維持
+  - 共通処理の適切な配置
+  - Loggerクラスを使用したログ出力
+  - 対応するテストの作成
+
+### 3. 品質管理と問題対応
+- **ビルド・テスト**: ビルド時に発生したエラー、警告はすべて対処する。
+- **警告**: 安易な回避策ではなく根本対応を行う。
+- **警告対応**: 警告には常に対処する。警告を無視せず、適切な修正を行う。
+- 各タスクの実行結果を迅速に検証してください
+- エラーや不整合が発生した場合は、以下のプロセスで対応してください：
+  a. 問題の切り分けと原因特定（ログ分析、デバッグ情報の確認）
+  b. 対策案の作成と実施
+  c. 修正後の動作検証
+  d. デバッグログの確認と分析
+
+- 検証結果は以下の形式で記録してください：
+  a. 検証項目と期待される結果
+  b. 実際の結果と差異
+  c. 必要な対応策（該当する場合）
+
+### 4. Git Commit
+- **コミットタイミング**: ビルド、テストがすべて終わってから実施する
+- **コミットメッセージ**: 日本語で詳細な説明を記載する
+- **コミット内容**: 関連する変更を論理的にグループ化する
+- **コミット前確認**: 
+  a. ビルドエラーがないことを確認
+  b. テストが正常に実行されることを確認
+  c. 警告が解消されていることを確認（警告は常に対処する）
+  d. コードレビューを実施（該当する場合）
+
+- **コミットメッセージの形式**:
+```
+機能名: 変更内容の要約
+
+- 詳細な変更内容1
+- 詳細な変更内容2
+- 修正対象ファイル:
+  - ファイル名1
+  - ファイル名2
+
+関連する課題や注意点があれば記載
+```
+
+### 5. 最終確認
+- すべてのタスクが完了したら、成果物全体を評価してください
+- 当初の指示内容との整合性を確認し、必要に応じて調整を行ってください
+- 実装した機能に重複がないことを最終確認してください
+- テストカバレッジの確認と不足テストの特定をしてください
+
+### 6. 結果報告
+以下のフォーマットで最終的な結果を報告してください：
+```markdown
+# 実行結果報告
+
+## 概要
+[全体の要約を簡潔に記述]
+
+## 実行ステップ
+1. [ステップ1の説明と結果]
+2. [ステップ2の説明と結果]
+
+
+## 🔧 開発環境・ツール設定
+
+### ターミナルコマンド実行時の注意事項
+- **問題**: ターミナルコマンド実行時に終了検知できない問題が発生することがある
+- **対処法**: コマンド実行後に改行を入力して、コマンドの完了を確実に検知する
+- **推奨**: 長時間実行されるコマンドの場合は、`is_background: true` を使用する
+
+### ブランチ戦略
+- **main**: 本番リリース用ブランチ（保護）
+- **developer**: 開発統合用ブランチ
+- **feature/***: 機能開発用ブランチ
+- **hotfix/***: 緊急修正用ブランチ
+- **release/***: リリース準備用ブランチ
+
+### 開発フロー
+1. **feature/*** ブランチで機能開発
+2. **developer** ブランチにマージして統合テスト
+3. **release/*** ブランチでリリース準備
+4. **main** ブランチにマージしてリリース
+
+...

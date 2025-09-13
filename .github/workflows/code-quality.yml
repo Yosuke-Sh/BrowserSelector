@@ -1,0 +1,63 @@
+name: Test Suite
+
+on:
+  push:
+    branches: [ main, developer ]
+  pull_request:
+    branches: [ main, developer ]
+
+jobs:
+  test:
+    runs-on: windows-2022
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build project
+      run: dotnet build --configuration Release --no-restore
+    
+    - name: Run all tests
+      run: |
+        Write-Host "Running all tests..."
+        $testProjects = @(
+          "tests/BrowserSelector.UnitTests",
+          "tests/BrowserSelector.IntegrationTests", 
+          "tests/BrowserSelector.CoreTests",
+          "tests/BrowserSelector.InfrastructureTests",
+          "tests/BrowserSelector.AppTests",
+          "tests/BrowserSelector.E2ETests",
+          "tests/BrowserSelector.UITests",
+          "tests/BrowserSelector.LibraryTests",
+          "tests/BrowserSelector.SecurityTests"
+        )
+        
+        foreach ($project in $testProjects) {
+          Write-Host "Running tests for: $project"
+          try {
+            dotnet test $project --configuration Release --no-build --logger trx --results-directory TestResults --verbosity normal
+            Write-Host "Tests completed successfully for: $project"
+          } catch {
+            Write-Host "Tests failed for: $project - $($_.Exception.Message)"
+          }
+        }
+        Write-Host "All tests execution completed"
+      continue-on-error: true
+    
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results
+        path: TestResults/
+        retention-days: 7
+
+

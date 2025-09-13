@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+     xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
+  <Product Id="*" 
+           Name="BrowserSelector" 
+           Language="1033" 
+           Version="0.1.0" 
+           Manufacturer="Yosuke-Sh" 
+           UpgradeCode="PUT-GUID-HERE">
+    
+    <Package InstallerVersion="200" 
+             Compressed="yes" 
+             InstallScope="perMachine"
+             Description="BrowserSelector - A modern WPF application for selecting and opening URLs with multiple browsers"
+             Comments="BrowserSelector v0.1.0"
+             Manufacturer="Yosuke-Sh" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <Feature Id="ProductFeature" Title="BrowserSelector" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+      <ComponentRef Id="ApplicationShortcut" />
+      <ComponentRef Id="DesktopShortcut" />
+    </Feature>
+
+    <!-- .NET 8.0 Runtime requirement -->
+    <PropertyRef Id="WIX_IS_NETFRAMEWORK_80_OR_LATER_INSTALLED" />
+    <Condition Message="This application requires .NET 8.0 Runtime. Please install it and run this installer again.">
+      <![CDATA[Installed OR WIX_IS_NETFRAMEWORK_80_OR_LATER_INSTALLED]]>
+    </Condition>
+
+    <!-- UI Configuration -->
+    <UIRef Id="WixUI_Minimal" />
+    <WixVariable Id="WixUILicenseRtf" Value="..\..\docs\LICENSE" />
+    <WixVariable Id="WixUIBannerBmp" Value="banner.bmp" />
+    <WixVariable Id="WixUIDialogBmp" Value="dialog.bmp" />
+
+    <!-- Registry entries for protocol association -->
+    <Component Id="ProtocolAssociation" Guid="*" Directory="TARGETDIR">
+      <RegistryKey Root="HKCU" Key="Software\Classes\browser">
+        <RegistryValue Name="" Value="URL:BrowserSelector Protocol" Type="string" />
+        <RegistryValue Name="URL Protocol" Value="" Type="string" />
+        <RegistryKey Key="DefaultIcon">
+          <RegistryValue Name="" Value="[#BrowserSelector.exe],1" Type="string" />
+        </RegistryKey>
+        <RegistryKey Key="shell\open\command">
+          <RegistryValue Name="" Value="&quot;[#BrowserSelector.exe]&quot; &quot;%1&quot;" Type="string" />
+        </RegistryKey>
+      </RegistryKey>
+    </Component>
+
+    <!-- Application shortcut -->
+    <Component Id="ApplicationShortcut" Guid="*" Directory="TARGETDIR">
+      <Shortcut Id="ApplicationStartMenuShortcut"
+                Directory="ProgramMenuFolder"
+                Name="BrowserSelector"
+                WorkingDirectory="INSTALLFOLDER"
+                Icon="BrowserSelector.exe"
+                IconIndex="0"
+                Advertise="yes" />
+      <RemoveFolder Id="ProgramMenuFolder" On="uninstall" />
+      <RegistryValue Root="HKCU" Key="Software\Yosuke-Sh\BrowserSelector" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+    </Component>
+
+    <!-- Desktop shortcut -->
+    <Component Id="DesktopShortcut" Guid="*" Directory="TARGETDIR">
+      <Shortcut Id="ApplicationDesktopShortcut"
+                Directory="DesktopFolder"
+                Name="BrowserSelector"
+                WorkingDirectory="INSTALLFOLDER"
+                Icon="BrowserSelector.exe"
+                IconIndex="0"
+                Advertise="yes" />
+      <RemoveFolder Id="DesktopFolder" On="uninstall" />
+      <RegistryValue Root="HKCU" Key="Software\Yosuke-Sh\BrowserSelector" Name="desktop" Type="integer" Value="1" KeyPath="yes" />
+    </Component>
+
+  </Product>
+
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLFOLDER" Name="BrowserSelector">
+          <Directory Id="docs" Name="docs" />
+          <Directory Id="logs" Name="logs" />
+        </Directory>
+      </Directory>
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ProgramMenuDir" Name="BrowserSelector" />
+      </Directory>
+      <Directory Id="DesktopFolder" Name="Desktop" />
+    </Directory>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+      <!-- Main application files -->
+      <Component Id="BrowserSelector.exe" Guid="*">
+        <File Id="BrowserSelector.exe" Source="..\..\src\BrowserSelector.App\bin\Release\net8.0-windows\BrowserSelector.exe" KeyPath="yes" />
+      </Component>
+      
+      <!-- Application dependencies -->
+      <Component Id="BrowserSelector.Core.dll" Guid="*">
+        <File Id="BrowserSelector.Core.dll" Source="..\..\src\BrowserSelector.Core\bin\Release\net8.0-windows\BrowserSelector.Core.dll" />
+      </Component>
+      
+      <Component Id="BrowserSelector.Infrastructure.dll" Guid="*">
+        <File Id="BrowserSelector.Infrastructure.dll" Source="..\..\src\BrowserSelector.Infrastructure\bin\Release\net8.0-windows\BrowserSelector.Infrastructure.dll" />
+      </Component>
+      
+      <Component Id="BrowserSelector.Presentation.dll" Guid="*">
+        <File Id="BrowserSelector.Presentation.dll" Source="..\..\src\BrowserSelector.Presentation\bin\Release\net8.0-windows\BrowserSelector.Presentation.dll" />
+      </Component>
+
+      <!-- Documentation -->
+      <Component Id="README.md" Guid="*" Directory="INSTALLFOLDER">
+        <File Id="README.md" Source="..\..\README.md" />
+      </Component>
+      
+      <Component Id="CHANGELOG.md" Guid="*" Directory="INSTALLFOLDER">
+        <File Id="CHANGELOG.md" Source="..\..\CHANGELOG.md" />
+      </Component>
+      
+      <Component Id="USER_MANUAL.md" Guid="*" Directory="docs">
+        <File Id="USER_MANUAL.md" Source="..\..\docs\USER_MANUAL.md" />
+      </Component>
+      
+      <Component Id="API.md" Guid="*" Directory="docs">
+        <File Id="API.md" Source="..\..\docs\API.md" />
+      </Component>
+      
+      <Component Id="CONTRIBUTING.md" Guid="*" Directory="docs">
+        <File Id="CONTRIBUTING.md" Source="..\..\docs\CONTRIBUTING.md" />
+      </Component>
+      
+      <Component Id="LICENSE" Guid="*" Directory="docs">
+        <File Id="LICENSE" Source="..\..\docs\LICENSE" />
+      </Component>
+
+      <!-- Icon -->
+      <Component Id="BrowserSelector_Icon_256.ico" Guid="*">
+        <File Id="BrowserSelector_Icon_256.ico" Source="..\..\src\BrowserSelector.App\BrowserSelector_Icon_256.ico" />
+      </Component>
+
+      <!-- Configuration files -->
+      <Component Id="appsettings.json" Guid="*">
+        <File Id="appsettings.json" Source="..\..\src\BrowserSelector.App\bin\Release\net8.0-windows\appsettings.json" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+
+  <Fragment>
+    <!-- Custom actions for post-install setup -->
+    <CustomAction Id="CreateAppDataDirectories" 
+                  Directory="TARGETDIR" 
+                  ExeCommand="cmd.exe /c mkdir &quot;%APPDATA%\BrowserSelector&quot; &amp; mkdir &quot;%APPDATA%\BrowserSelector\logs&quot; &amp; mkdir &quot;%APPDATA%\BrowserSelector\backup&quot;" 
+                  Return="check" />
+    
+    <InstallExecuteSequence>
+      <Custom Action="CreateAppDataDirectories" After="InstallFiles">NOT Installed</Custom>
+    </InstallExecuteSequence>
+  </Fragment>
+
+</Wix>

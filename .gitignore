@@ -1,0 +1,10 @@
+bin
+obj
+.vs
+coverage
+TestResults
+coverage-integrated
+coverage-results
+BenchmarkDotNet.Artifacts
+/tmp
+publish

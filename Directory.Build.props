@@ -1,0 +1,60 @@
+<Project>
+  <!-- コード品質と静的解析の設定 -->
+  
+  <!-- コード分析の有効化 -->
+  <PropertyGroup>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+    <WarningsNotAsErrors />
+    <!-- 重要なコード品質警告のみを対象とし、スタイル警告は除外 -->
+    <NoWarn>$(NoWarn);CS1591;SA1101;SA1000;SA1413;SA1208;SA1633;SA1200</NoWarn>
+  </PropertyGroup>
+
+  <!-- コード品質パッケージ -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="9.0.0" PrivateAssets="all" />
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="9.25.0.90414" PrivateAssets="all" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="all" />
+  </ItemGroup>
+
+  <!-- コード品質ルール -->
+  <PropertyGroup>
+    <!-- セキュリティルール -->
+    <SonarQubeExclude>**/bin/**,**/obj/**,**/TestResults/**,**/coverage/**</SonarQubeExclude>
+    
+    <!-- コード重複検出 -->
+    <SonarQubeCpdMinimumTokens>100</SonarQubeCpdMinimumTokens>
+    
+    <!-- 複雑度制限 -->
+    <SonarQubeComplexityMax>10</SonarQubeComplexityMax>
+    
+    <!-- コメント密度 -->
+    <SonarQubeCommentDensityMinimum>20</SonarQubeCommentDensityMinimum>
+  </PropertyGroup>
+
+  <!-- 共通の除外ファイル -->
+  <ItemGroup>
+    <Compile Remove="**/bin/**" />
+    <Compile Remove="**/obj/**" />
+    <Compile Remove="**/TestResults/**" />
+    <Compile Remove="**/coverage/**" />
+  </ItemGroup>
+
+  <!-- コード品質のための追加設定 -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <DebugType>pdbonly</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <Optimize>true</Optimize>
+    <DefineConstants>$(DefineConstants);TRACE</DefineConstants>
+  </PropertyGroup>
+
+  <!-- テストプロジェクト用の設定 -->
+  <PropertyGroup Condition="$(MSBuildProjectName.Contains('Test'))">
+    <IsTestProject>true</IsTestProject>
+    <EnableDefaultCompileItems>true</EnableDefaultCompileItems>
+  </PropertyGroup>
+
+</Project>
