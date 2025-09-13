@@ -117,13 +117,14 @@ public partial class MainViewModel : ObservableObject
             try
             {
                 VisualSettings = _settingsService.LoadVisualSettingsAsync().GetAwaiter().GetResult();
-                _logService?.LogDebug($"VisualSettings読み込み完了: Width={VisualSettings.InitialWindowWidth}, Height={VisualSettings.InitialWindowHeight}, UseGradient={VisualSettings.UseBackgroundGradient}", "MainViewModel");
+                _logService?.LogDebug($"VisualSettings読み込み完了: Width={VisualSettings.InitialWindowWidth}, Height={VisualSettings.InitialWindowHeight}, UseGradient={VisualSettings.UseBackgroundGradient}, BackgroundColor={VisualSettings.BackgroundColor}, GradientStartColor={VisualSettings.GradientStartColor}, GradientEndColor={VisualSettings.GradientEndColor}", "MainViewModel");
             }
             catch (Exception ex)
             {
                 _logService?.LogError($"VisualSettings読み込みエラー: {ex.Message}", "MainViewModel", ex);
                 // デフォルト設定を使用
                 VisualSettings = new VisualSettings();
+                _logService?.LogDebug($"デフォルトVisualSettings使用: UseGradient={VisualSettings.UseBackgroundGradient}, BackgroundColor={VisualSettings.BackgroundColor}", "MainViewModel");
             }
             _logService?.LogDetailed(LogLevel.Debug, "VisualSettings読み込み完了", "MainViewModel",
                                     "MVVM_INIT", "ViewModel", "System", "MainViewModel", "Initialize", "LoadVisualSettings_Success");

@@ -21,8 +21,11 @@ public class BackgroundBrushConverter : IValueConverter
     {
         if (value is not VisualSettings visualSettings)
         {
+            System.Diagnostics.Debug.WriteLine($"BackgroundBrushConverter: VisualSettingsがnullまたは無効です。デフォルトの白いブラシを返します。");
             return new SolidColorBrush(Colors.White);
         }
+
+        System.Diagnostics.Debug.WriteLine($"BackgroundBrushConverter: UseGradient={visualSettings.UseBackgroundGradient}, BackgroundColor={visualSettings.BackgroundColor}, GradientStartColor={visualSettings.GradientStartColor}, GradientEndColor={visualSettings.GradientEndColor}");
 
         if (visualSettings.UseBackgroundGradient)
         {
@@ -44,7 +47,7 @@ public class BackgroundBrushConverter : IValueConverter
                     break;
             }
 
-            return new LinearGradientBrush
+            var gradientBrush = new LinearGradientBrush
             {
                 StartPoint = startPoint,
                 EndPoint = endPoint,
@@ -54,10 +57,15 @@ public class BackgroundBrushConverter : IValueConverter
                     new GradientStop(visualSettings.GradientEndColor, 1)
                 ]
             };
+
+            System.Diagnostics.Debug.WriteLine($"BackgroundBrushConverter: LinearGradientBrushを作成しました。StartPoint={startPoint}, EndPoint={endPoint}");
+            return gradientBrush;
         }
         else
         {
-            return new SolidColorBrush(visualSettings.BackgroundColor);
+            var solidBrush = new SolidColorBrush(visualSettings.BackgroundColor);
+            System.Diagnostics.Debug.WriteLine($"BackgroundBrushConverter: SolidColorBrushを作成しました。Color={visualSettings.BackgroundColor}");
+            return solidBrush;
         }
     }
 
