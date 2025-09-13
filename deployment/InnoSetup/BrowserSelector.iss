@@ -140,16 +140,47 @@ function InitializeSetup(): Boolean;
 var
   ErrorCode: Integer;
   DotNetVersion: string;
+  DotNet8Installed: Boolean;
 begin
   Result := True;
+  DotNet8Installed := False;
   
-  // Check for .NET 8.0 Runtime
-  if not RegQueryStringValue(HKLM, 'SOFTWARE\Microsoft\NET Framework Setup\NDP\v8.0', 'Version', DotNetVersion) then
+  // Check for .NET 8.0 Runtime - try multiple registry locations
+  // Method 1: Check shared frameworks
+  if RegQueryStringValue(HKLM, 'SOFTWARE\dotnet\Setup\InstalledVersions\x64\Microsoft.NETCore.App', '8.0', DotNetVersion) then
+    DotNet8Installed := True
+  else if RegQueryStringValue(HKLM, 'SOFTWARE\dotnet\Setup\InstalledVersions\x64\Microsoft.WindowsDesktop.App', '8.0', DotNetVersion) then
+    DotNet8Installed := True
+  else if RegQueryStringValue(HKLM, 'SOFTWARE\dotnet\Setup\InstalledVersions\x64\Microsoft.AspNetCore.App', '8.0', DotNetVersion) then
+    DotNet8Installed := True;
+    
+  // Method 2: Check if dotnet command is available and has .NET 8.0
+  if not DotNet8Installed then
   begin
-    if MsgBox('BrowserSelector requires .NET 8.0 Runtime to be installed.' + #13#10 + #13#10 +
-              'Would you like to download it now?', mbConfirmation, MB_YESNO) = IDYES then
+    if Exec('cmd.exe', '/c dotnet --list-runtimes | findstr "Microsoft.WindowsDesktop.App 8.0"', '', SW_HIDE, ewWaitUntilTerminated, ErrorCode) then
     begin
-      ShellExec('open', 'https://dotnet.microsoft.com/download/dotnet/8.0', '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);
+      if ErrorCode = 0 then
+        DotNet8Installed := True;
+    end;
+  end;
+  
+  if not DotNet8Installed then
+  begin
+    if ActiveLanguage = 'japanese' then
+    begin
+      if MsgBox('BrowserSelectorには.NET 8.0 Runtimeが必要です。' + #13#10 + #13#10 +
+                '今すぐダウンロードしますか？', mbConfirmation, MB_YESNO) = IDYES then
+      begin
+        ShellExec('open', 'https://dotnet.microsoft.com/download/dotnet/8.0', '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);
+      end;
+    end
+    else
+    begin
+      if MsgBox('BrowserSelector requires .NET 8.0 Runtime to be installed.' + #13#10 + #13#10 +
+                'Would you like to download it now?', mbConfirmation, MB_YESNO) = IDYES then
+      begin
+        ShellExec('open', 'https://dotnet.microsoft.com/download/dotnet/8.0', '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);
+      end;
     end;
     Result := False;
   end;
