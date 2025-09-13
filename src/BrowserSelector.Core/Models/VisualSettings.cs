@@ -79,4 +79,7 @@ public partial class VisualSettings : ObservableObject
 
     [ObservableProperty]
     private double _browserIconSize = 32.0;
+
+    [ObservableProperty]
+    private Color _messageTextColor = Colors.Black;
 }

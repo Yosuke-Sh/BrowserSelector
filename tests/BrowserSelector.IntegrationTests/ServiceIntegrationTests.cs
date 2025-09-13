@@ -20,10 +20,11 @@ public class ServiceIntegrationTests : IDisposable
     public ServiceIntegrationTests()
     {
         // テスト用の一時ディレクトリを作成
-        _tempDirectory = Path.Combine(Path.GetTempPath(), "BrowserSelectorTest", Guid.NewGuid().ToString());
+        _tempDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Temp", "BrowserSelectorTest", Guid.NewGuid().ToString());
         
         try
         {
+            // Directory.CreateDirectoryは親ディレクトリも自動的に作成するため、直接作成
             _ = Directory.CreateDirectory(_tempDirectory);
             
             // ディレクトリ作成の確認

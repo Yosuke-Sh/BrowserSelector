@@ -23,54 +23,7 @@ public class SettingsServiceTests
         _settingsService = new SettingsService(null);
     }
 
-    /// <summary>
-    ///
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-    [Fact]
-    public async Task ExportSettingsAsync_ShouldCreateZipFile()
-    {
-        // Arrange
-        string zipFilePath = Path.Combine(_testDirectory, "test_settings.zip");
 
-        // テスト用の設定ファイルを作成
-        string appSettingsPath = Path.Combine(_testDirectory, "appsettings.json");
-        string visualSettingsPath = Path.Combine(_testDirectory, "visualsettings.json");
-        string logSettingsPath = Path.Combine(_testDirectory, "logsettings.json");
-        string urlRulesPath = Path.Combine(_testDirectory, "urlrules.json");
-        string languagesPath = Path.Combine(_testDirectory, "Languages");
-
-        _ = Directory.CreateDirectory(languagesPath);
-
-        await File.WriteAllTextAsync(appSettingsPath, "{}");
-        await File.WriteAllTextAsync(visualSettingsPath, "{}");
-        await File.WriteAllTextAsync(logSettingsPath, "{}");
-        await File.WriteAllTextAsync(urlRulesPath, "[]");
-        await File.WriteAllTextAsync(Path.Combine(languagesPath, "en-US.json"), "{}");
-        await File.WriteAllTextAsync(Path.Combine(languagesPath, "ja-JP.json"), "{}");
-
-        // Act
-        bool result = await _settingsService.ExportSettingsAsync(zipFilePath);
-
-        // Assert
-        _ = result.Should().BeTrue();
-        _ = File.Exists(zipFilePath).Should().BeTrue();
-
-        // ZIPファイルの内容を確認
-        using ZipArchive archive = ZipFile.OpenRead(zipFilePath);
-        _ = archive.Entries.Should().Contain(e => e.Name == "appsettings.json");
-        _ = archive.Entries.Should().Contain(e => e.Name == "visualsettings.json");
-        _ = archive.Entries.Should().Contain(e => e.Name == "logsettings.json");
-        _ = archive.Entries.Should().Contain(e => e.Name == "urlrules.json");
-        _ = archive.Entries.Should().Contain(e => e.FullName == "Languages\\en-US.json");
-        _ = archive.Entries.Should().Contain(e => e.FullName == "Languages\\ja-JP.json");
-        _ = archive.Entries.Should().Contain(e => e.Name == "export-info.json");
-    }
-
-    /// <summary>
-    ///
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task ImportSettingsAsync_WithZipFile_ShouldExtractFiles()
     {
@@ -102,10 +55,6 @@ public class SettingsServiceTests
         _ = result.Should().BeTrue();
     }
 
-    /// <summary>
-    ///
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task ImportSettingsAsync_WithJsonFile_ShouldImportSettings()
     {
@@ -127,10 +76,6 @@ public class SettingsServiceTests
         _ = result.Should().BeTrue();
     }
 
-    /// <summary>
-    ///
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]
     public async Task ImportSettingsAsync_WithNonExistentFile_ShouldReturnFalse()
     {

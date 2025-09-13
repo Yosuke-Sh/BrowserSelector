@@ -124,7 +124,7 @@ namespace BrowserSelector.Core.Models
         /// <summary>
         /// ブラウザの複製を作成.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Clone.</returns>
         public Browser Clone()
         {
             return new Browser

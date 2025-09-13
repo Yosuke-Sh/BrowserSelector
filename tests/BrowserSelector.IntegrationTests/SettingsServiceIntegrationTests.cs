@@ -18,7 +18,7 @@ public class SettingsServiceIntegrationTests : IDisposable
     public SettingsServiceIntegrationTests()
     {
         // テスト用の一時ディレクトリを作成
-        _tempDirectory = Path.Combine(Path.GetTempPath(), "BrowserSelectorTest", Guid.NewGuid().ToString());
+        _tempDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Temp", "BrowserSelectorTest", Guid.NewGuid().ToString());
         _ = Directory.CreateDirectory(_tempDirectory);
 
         _host = Host.CreateDefaultBuilder()
