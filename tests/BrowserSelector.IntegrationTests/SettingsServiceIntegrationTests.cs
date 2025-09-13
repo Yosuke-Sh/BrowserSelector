@@ -2,6 +2,7 @@ using BrowserSelector.Core.Services;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace BrowserSelector.IntegrationTests;
@@ -24,6 +25,15 @@ public class SettingsServiceIntegrationTests : IDisposable
         _host = Host.CreateDefaultBuilder()
             .ConfigureServices(services =>
             {
+                // ログ出力を抑制
+                _ = services.AddLogging(builder =>
+                {
+                    _ = builder.SetMinimumLevel(LogLevel.Critical);
+                    _ = builder.ClearProviders();
+                    _ = builder.AddFilter("", LogLevel.Critical);
+                    _ = builder.AddFilter("BrowserSelector", LogLevel.Critical);
+                });
+                
                 _ = services.AddScoped<ISettingsService>(provider =>
                 {
                     ILogService? logService = provider.GetService<ILogService>();

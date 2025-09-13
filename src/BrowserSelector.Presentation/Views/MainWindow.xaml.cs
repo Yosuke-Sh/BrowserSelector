@@ -23,11 +23,14 @@ public partial class MainWindow : Window
         _logService = logService;
         InitializeComponent();
 
-        // DataContextの設定を遅延させる
-        Dispatcher.BeginInvoke(new Action(() => DataContext = viewModel));
+        // DataContextの設定を即座に実行
+        DataContext = viewModel;
 
         // 初期サイズ設定を適用（InitializeComponentの後）
         ApplyInitialSizeSettings(viewModel);
+
+        // 初期背景設定を適用
+        ApplyInitialBackgroundSettings(viewModel);
 
         // ウィンドウをアクティブにする
         _ = Activate();
@@ -54,6 +57,69 @@ public partial class MainWindow : Window
         {
             notifyPropertyChanged.PropertyChanged += OnDataContextPropertyChanged;
             _logService?.LogDebug("MainWindow: DataContext変更監視を開始しました", "MainWindow");
+        }
+    }
+
+    /// <summary>
+    /// 初期背景設定を適用.
+    /// </summary>
+    private void ApplyInitialBackgroundSettings(MainViewModel viewModel)
+    {
+        try
+        {
+            Core.Models.VisualSettings visualSettings = viewModel.VisualSettings;
+            if (visualSettings != null)
+            {
+                _logService?.LogDebug($"初期背景設定適用開始: UseGradient={visualSettings.UseBackgroundGradient}", "MainWindow");
+
+                if (visualSettings.UseBackgroundGradient)
+                {
+                    // グラデーション方向に応じてStartPointとEndPointを設定
+                    System.Windows.Point startPoint, endPoint;
+                    switch (visualSettings.GradientDirection)
+                    {
+                        case BrowserSelector.Core.Enums.GradientDirection.Horizontal:
+                            startPoint = new System.Windows.Point(0, 0);
+                            endPoint = new System.Windows.Point(1, 0);
+                            break;
+                        case BrowserSelector.Core.Enums.GradientDirection.Diagonal:
+                            startPoint = new System.Windows.Point(0, 0);
+                            endPoint = new System.Windows.Point(1, 1);
+                            break;
+                        default: // Vertical
+                            startPoint = new System.Windows.Point(0, 0);
+                            endPoint = new System.Windows.Point(0, 1);
+                            break;
+                    }
+
+                    Background = new System.Windows.Media.LinearGradientBrush
+                    {
+                        StartPoint = startPoint,
+                        EndPoint = endPoint,
+                        GradientStops =
+                        [
+                            new System.Windows.Media.GradientStop(visualSettings.GradientStartColor, 0),
+                            new System.Windows.Media.GradientStop(visualSettings.GradientEndColor, 1)
+                        ]
+                    };
+                    _logService?.LogDebug($"初期背景グラデーション設定完了: 方向={visualSettings.GradientDirection}", "MainWindow");
+                }
+                else
+                {
+                    Background = new System.Windows.Media.SolidColorBrush(visualSettings.BackgroundColor);
+                    _logService?.LogDebug($"初期背景色設定完了: {visualSettings.BackgroundColor}", "MainWindow");
+                }
+            }
+            else
+            {
+                _logService?.LogWarning("VisualSettingsがnullのため、デフォルト背景を使用", "MainWindow");
+                Background = System.Windows.SystemColors.WindowBrush;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logService?.LogError($"初期背景設定適用エラー: {ex.Message}", "MainWindow", ex);
+            Background = System.Windows.SystemColors.WindowBrush;
         }
     }
 

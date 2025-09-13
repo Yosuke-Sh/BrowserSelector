@@ -1,3 +1,4 @@
+using BrowserSelector.Core.Converters;
 using BrowserSelector.Core.Models;
 using BrowserSelector.Core.Services;
 using System.IO;
@@ -72,37 +73,62 @@ public class SettingsService : ISettingsService
     /// <inheritdoc/>
     public async Task<bool> SaveAppSettingsAsync(AppSettings settings)
     {
-        try
+        const int maxRetries = 3;
+        const int retryDelayMs = 100;
+
+        for (int attempt = 1; attempt <= maxRetries; attempt++)
         {
-            string json = JsonSerializer.Serialize(settings, GetJsonSerializerOptions());
-            await File.WriteAllTextAsync(_appSettingsPath, json).ConfigureAwait(false);
-            return true;
+            try
+            {
+                string json = JsonSerializer.Serialize(settings, GetJsonSerializerOptions());
+
+                // 一時ファイルを使用してアトミックな書き込みを実現
+                string tempPath = _appSettingsPath + ".tmp";
+
+                await File.WriteAllTextAsync(tempPath, json).ConfigureAwait(false);
+
+                // アトミックな移動でファイルロックを回避
+                if (File.Exists(_appSettingsPath))
+                {
+                    File.Replace(tempPath, _appSettingsPath, null);
+                }
+                else
+                {
+                    File.Move(tempPath, _appSettingsPath);
+                }
+
+                _logService?.LogDebug($"アプリケーション設定保存成功 (試行 {attempt})", "SettingsService");
+                return true;
+            }
+            catch (IOException ex) when (attempt < maxRetries)
+            {
+                _logService?.LogWarning($"アプリケーション設定保存リトライ {attempt}/{maxRetries}: {ex.Message}", "SettingsService");
+                await Task.Delay(retryDelayMs * attempt).ConfigureAwait(false);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                _logService?.LogError($"アプリケーション設定の保存エラー（アクセス権限なし）: {ex.Message}", "SettingsService", ex);
+                return false;
+            }
+            catch (System.Security.SecurityException ex)
+            {
+                _logService?.LogError($"アプリケーション設定の保存エラー（セキュリティ例外）: {ex.Message}", "SettingsService", ex);
+                return false;
+            }
+            catch (ArgumentException ex)
+            {
+                _logService?.LogError($"アプリケーション設定の保存エラー（引数例外）: {ex.Message}", "SettingsService", ex);
+                return false;
+            }
+            catch (System.Text.Json.JsonException ex)
+            {
+                _logService?.LogError($"アプリケーション設定の保存エラー（JSON例外）: {ex.Message}", "SettingsService", ex);
+                return false;
+            }
         }
-        catch (UnauthorizedAccessException ex)
-        {
-            _logService?.LogError($"アプリケーション設定の保存エラー（アクセス権限なし）: {ex.Message}", "SettingsService", ex);
-            return false;
-        }
-        catch (System.Security.SecurityException ex)
-        {
-            _logService?.LogError($"アプリケーション設定の保存エラー（セキュリティ例外）: {ex.Message}", "SettingsService", ex);
-            return false;
-        }
-        catch (ArgumentException ex)
-        {
-            _logService?.LogError($"アプリケーション設定の保存エラー（引数例外）: {ex.Message}", "SettingsService", ex);
-            return false;
-        }
-        catch (IOException ex)
-        {
-            _logService?.LogError($"アプリケーション設定の保存エラー（I/O例外）: {ex.Message}", "SettingsService", ex);
-            return false;
-        }
-        catch (System.Text.Json.JsonException ex)
-        {
-            _logService?.LogError($"アプリケーション設定の保存エラー（JSON例外）: {ex.Message}", "SettingsService", ex);
-            return false;
-        }
+
+        _logService?.LogError($"アプリケーション設定の保存に失敗 (最大試行回数に達しました)", "SettingsService");
+        return false;
     }
 
     /// <inheritdoc/>
@@ -136,19 +162,48 @@ public class SettingsService : ISettingsService
     /// <inheritdoc/>
     public async Task<bool> SaveVisualSettingsAsync(VisualSettings settings)
     {
-        try
-        {
-            JsonSerializerOptions options = GetJsonSerializerOptions();
+        const int maxRetries = 3;
+        const int retryDelayMs = 100;
 
-            string json = JsonSerializer.Serialize(settings, options);
-            await File.WriteAllTextAsync(_visualSettingsPath, json).ConfigureAwait(false);
-            return true;
-        }
-        catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException or JsonException)
+        for (int attempt = 1; attempt <= maxRetries; attempt++)
         {
-            _logService?.LogError($"視覚設定の保存エラー: {ex.Message}", "SettingsService", ex);
-            return false;
+            try
+            {
+                JsonSerializerOptions options = GetJsonSerializerOptions();
+                string json = JsonSerializer.Serialize(settings, options);
+
+                // 一時ファイルを使用してアトミックな書き込みを実現
+                string tempPath = _visualSettingsPath + ".tmp";
+
+                await File.WriteAllTextAsync(tempPath, json).ConfigureAwait(false);
+
+                // アトミックな移動でファイルロックを回避
+                if (File.Exists(_visualSettingsPath))
+                {
+                    File.Replace(tempPath, _visualSettingsPath, null);
+                }
+                else
+                {
+                    File.Move(tempPath, _visualSettingsPath);
+                }
+
+                _logService?.LogDebug($"視覚設定保存成功 (試行 {attempt})", "SettingsService");
+                return true;
+            }
+            catch (IOException ex) when (attempt < maxRetries)
+            {
+                _logService?.LogWarning($"視覚設定保存リトライ {attempt}/{maxRetries}: {ex.Message}", "SettingsService");
+                await Task.Delay(retryDelayMs * attempt).ConfigureAwait(false);
+            }
+            catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException or JsonException)
+            {
+                _logService?.LogError($"視覚設定の保存エラー (試行 {attempt}): {ex.Message}", "SettingsService", ex);
+                return false;
+            }
         }
+
+        _logService?.LogError($"視覚設定の保存に失敗 (最大試行回数に達しました)", "SettingsService");
+        return false;
     }
 
     /// <inheritdoc/>
@@ -290,7 +345,8 @@ public class SettingsService : ISettingsService
         return new JsonSerializerOptions
         {
             WriteIndented = true,
-            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            Converters = { new ColorJsonConverter() }
         };
     }
 

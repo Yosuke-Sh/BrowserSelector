@@ -48,7 +48,16 @@ public class ServiceIntegrationTests : IDisposable
         }
 
         ServiceCollection services = new();
-        _ = services.AddLogging(builder => builder.AddConsole());
+        
+        // ログ出力を抑制
+        _ = services.AddLogging(builder =>
+        {
+            _ = builder.SetMinimumLevel(LogLevel.Critical);
+            _ = builder.ClearProviders();
+            _ = builder.AddFilter("", LogLevel.Critical);
+            _ = builder.AddFilter("BrowserSelector", LogLevel.Critical);
+        });
+        
         _ = services.AddSingleton<IRegistryService, WindowsRegistryService>();
         _ = services.AddSingleton<IBrowserService, BrowserService>();
         _ = services.AddSingleton<ISettingsService>(provider =>

@@ -45,8 +45,11 @@ public class LogService : ILogService
         // ログフォルダが存在しない場合は作成
         EnsureLogDirectoryExists();
 
-        // 起動時のログ（INFO）
-        LogInformation("LogService初期化完了", "LogService");
+        // 起動時のログ（INFO） - テスト環境では出力しない
+        if (!IsTestEnvironment())
+        {
+            LogInformation("LogService初期化完了", "LogService");
+        }
     }
 
     /// <summary>
@@ -161,8 +164,8 @@ public class LogService : ILogService
         {
             string logMessage = FormatDetailedLogMessage(level, message, category, eventId, requestTarget, userInfo, processTarget, processAction, processResult, exception);
 
-            // コンソール出力
-            if (_settings.EnableConsoleLogging)
+            // コンソール出力（テスト環境では無効化）
+            if (_settings.EnableConsoleLogging && !IsTestEnvironment())
             {
                 WriteToConsole(level, logMessage);
             }
@@ -312,6 +315,21 @@ public class LogService : ILogService
     public string GetLogFilePath()
     {
         return _settings.GetLogFilePath();
+    }
+
+    /// <summary>
+    /// テスト環境かどうかを判定.
+    /// </summary>
+    /// <returns>テスト環境の場合はtrue.</returns>
+    private static bool IsTestEnvironment()
+    {
+        // テストアセンブリかどうかを判定
+        var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+        return Array.Exists(assemblies, assembly =>
+            assembly.GetName().Name?.Contains("Test", StringComparison.OrdinalIgnoreCase) == true ||
+            assembly.GetName().Name?.Contains("xunit", StringComparison.OrdinalIgnoreCase) == true ||
+            assembly.GetName().Name?.Contains("NUnit", StringComparison.OrdinalIgnoreCase) == true ||
+            assembly.GetName().Name?.Contains("MSTest", StringComparison.OrdinalIgnoreCase) == true);
     }
 
     /// <summary>

@@ -1140,6 +1140,26 @@ public partial class SettingsViewModel : ObservableObject
         try
         {
             LogService?.LogDebug("SaveSettings開始", "SettingsViewModel");
+
+            // null参照チェック
+            if (AppSettings == null)
+            {
+                LogService?.LogError("AppSettingsがnullです", "SettingsViewModel");
+                return;
+            }
+
+            if (VisualSettings == null)
+            {
+                LogService?.LogError("VisualSettingsがnullです", "SettingsViewModel");
+                return;
+            }
+
+            if (LogSettings == null)
+            {
+                LogService?.LogError("LogSettingsがnullです", "SettingsViewModel");
+                return;
+            }
+
             LogService?.LogDebug($"保存対象VisualSettings: BackgroundColor={VisualSettings.BackgroundColor}", "SettingsViewModel");
 
             // アプリケーション設定を保存
@@ -1159,28 +1179,40 @@ public partial class SettingsViewModel : ObservableObject
                 LogService?.LogDebug("設定保存成功、メイン画面への反映開始", "SettingsViewModel");
 
                 // UIスレッドで設定変更通知とウィンドウ操作を実行
-                Application.Current.Dispatcher.Invoke(() =>
+                Application.Current?.Dispatcher.Invoke(() =>
                 {
-                    // 設定変更通知を送信
-                    SettingsChanged?.Invoke(this, new SettingsChangedEventArgs("VisualSettings", null, VisualSettings));
-
-                    // メイン画面へ反映
-                    ApplyVisualToActiveWindow(VisualSettings);
-
-                    LogService?.LogDebug("メイン画面への反映完了", "SettingsViewModel");
-
-                    // 成功時はウィンドウを閉じる
-                    if (Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.DataContext == this) is Window window)
+                    try
                     {
-                        LogService?.LogDebug($"設定ウィンドウを閉じる: {window.GetType().Name}", "SettingsViewModel");
-                        window.DialogResult = true;
-                        window.Close();
+                        // 設定変更通知を送信
+                        SettingsChanged?.Invoke(this, new SettingsChangedEventArgs("VisualSettings", null, VisualSettings));
+
+                        // メイン画面へ反映
+                        ApplyVisualToActiveWindow(VisualSettings);
+
+                        LogService?.LogDebug("メイン画面への反映完了", "SettingsViewModel");
+
+                        // 成功時はウィンドウを閉じる
+                        Window? window = Application.Current?.Windows.OfType<Window>().FirstOrDefault(w => w.DataContext == this);
+                        if (window != null)
+                        {
+                            LogService?.LogDebug($"設定ウィンドウを閉じる: {window.GetType().Name}", "SettingsViewModel");
+                            window.DialogResult = true;
+                            window.Close();
+                        }
+                        else
+                        {
+                            LogService?.LogWarning("設定ウィンドウが見つかりません", "SettingsViewModel");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogService?.LogError($"UIスレッドでの処理エラー: {ex.Message}", "SettingsViewModel", ex);
                     }
                 });
             }
             else
             {
-                LogService?.LogWarning($"設定保存に失敗: AppSettings={appSettingsResult}, VisualSettings={visualSettingsResult}", "SettingsViewModel");
+                LogService?.LogWarning($"設定保存に失敗: AppSettings={appSettingsResult}, VisualSettings={visualSettingsResult}, LogSettings={logSettingsResult}", "SettingsViewModel");
             }
 
             LogService?.LogDebug("SaveSettings完了", "SettingsViewModel");

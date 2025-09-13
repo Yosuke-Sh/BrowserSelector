@@ -29,9 +29,15 @@ public class BrowserSelectorE2ETests
         _ = services.AddLogging(builder =>
         {
             // テスト実行時のログ出力を完全に無効化
-            _ = builder.SetMinimumLevel(LogLevel.None);
+            _ = builder.SetMinimumLevel(LogLevel.Critical);
             _ = builder.ClearProviders();
-            _ = builder.AddFilter("", LogLevel.None);
+            _ = builder.AddFilter("", LogLevel.Critical);
+            _ = builder.AddFilter("BrowserSelector", LogLevel.Critical);
+            _ = builder.AddFilter("Microsoft", LogLevel.Critical);
+            _ = builder.AddFilter("System", LogLevel.Critical);
+            _ = builder.AddFilter("EVT000001", LogLevel.Critical); // 特定のログイベントを抑制
+            _ = builder.AddFilter("EVT000002", LogLevel.Critical);
+            _ = builder.AddFilter("MVVM_INIT", LogLevel.Critical);
         });
         _ = services.AddSingleton<IRegistryService, WindowsRegistryService>();
         _ = services.AddSingleton<IBrowserService, BrowserService>();

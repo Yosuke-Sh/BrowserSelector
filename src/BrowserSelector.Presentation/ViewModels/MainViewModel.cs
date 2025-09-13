@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using System.Windows;
+using System.Windows.Media;
 
 namespace BrowserSelector.Presentation.ViewModels;
 
@@ -110,6 +111,23 @@ public partial class MainViewModel : ObservableObject
             _logService?.LogDetailed(LogLevel.Information, "コマンド初期化完了", "MainViewModel",
                                     "MVVM_INIT", "ViewModel", "System", "MainViewModel", "Initialize", "Commands");
 
+            // 初期化時にVisualSettingsを読み込み
+            _logService?.LogDetailed(LogLevel.Debug, "VisualSettings読み込み開始", "MainViewModel",
+                                    "MVVM_INIT", "ViewModel", "System", "MainViewModel", "Initialize", "LoadVisualSettings_Start");
+            try
+            {
+                VisualSettings = _settingsService.LoadVisualSettingsAsync().GetAwaiter().GetResult();
+                _logService?.LogDebug($"VisualSettings読み込み完了: Width={VisualSettings.InitialWindowWidth}, Height={VisualSettings.InitialWindowHeight}, UseGradient={VisualSettings.UseBackgroundGradient}", "MainViewModel");
+            }
+            catch (Exception ex)
+            {
+                _logService?.LogError($"VisualSettings読み込みエラー: {ex.Message}", "MainViewModel", ex);
+                // デフォルト設定を使用
+                VisualSettings = new VisualSettings();
+            }
+            _logService?.LogDetailed(LogLevel.Debug, "VisualSettings読み込み完了", "MainViewModel",
+                                    "MVVM_INIT", "ViewModel", "System", "MainViewModel", "Initialize", "LoadVisualSettings_Success");
+
             // 初期化時にブラウザ一覧を読み込み（データが存在しない場合のみ検出）
             _logService?.LogDetailed(LogLevel.Debug, "ブラウザ一覧読み込み開始", "MainViewModel",
                                     "MVVM_INIT", "ViewModel", "System", "MainViewModel", "Initialize", "LoadBrowsers_Start");
@@ -175,6 +193,9 @@ public partial class MainViewModel : ObservableObject
             if (Application.Current.MainWindow is Views.MainWindow mainWindow)
             {
                 ApplyWindowSizeChanges(mainWindow, newVisualSettings);
+
+                // 背景色・グラデーションの即座変更
+                ApplyBackgroundChanges(newVisualSettings);
             }
         }
     }
@@ -266,6 +287,32 @@ public partial class MainViewModel : ObservableObject
         catch (Exception ex)
         {
             _logService?.LogError($"ウィンドウサイズ変更エラー: {ex.Message}", "MainViewModel", ex);
+        }
+    }
+
+    /// <summary>
+    /// 背景色・グラデーションの即座変更を適用.
+    /// </summary>
+    /// <param name="visualSettings">視覚設定.</param>
+    private void ApplyBackgroundChanges(VisualSettings visualSettings)
+    {
+        try
+        {
+            _logService?.LogDebug("ApplyBackgroundChanges開始", "MainViewModel");
+            _logService?.LogDebug($"設定値: UseBackgroundGradient={visualSettings.UseBackgroundGradient}, BackgroundColor={visualSettings.BackgroundColor}", "MainViewModel");
+
+            // XAMLでBackgroundBrushConverterを使用して背景を管理するため、
+            // ここではVisualSettingsの変更を通知するのみ
+            _logService?.LogDebug("VisualSettingsの変更を通知してXAMLで背景を更新", "MainViewModel");
+
+            // VisualSettingsプロパティの変更を通知（XAMLのバインディングが更新される）
+            OnPropertyChanged(nameof(VisualSettings));
+
+            _logService?.LogDebug("ApplyBackgroundChanges完了", "MainViewModel");
+        }
+        catch (Exception ex)
+        {
+            _logService?.LogError($"背景設定適用エラー: {ex.Message}", "MainViewModel", ex);
         }
     }
 
@@ -458,42 +505,9 @@ public partial class MainViewModel : ObservableObject
                 {
                     _logService?.LogDebug("メイン画面に視覚設定を適用開始", "MainViewModel");
 
-                    // 背景色またはグラデーションを適用
-                    if (visualSettings.UseBackgroundGradient)
-                {
-                    // グラデーション方向に応じてStartPointとEndPointを設定
-                    System.Windows.Point startPoint, endPoint;
-                    switch (visualSettings.GradientDirection)
-                    {
-                        case BrowserSelector.Core.Enums.GradientDirection.Horizontal:
-                            startPoint = new System.Windows.Point(0, 0);
-                            endPoint = new System.Windows.Point(1, 0);
-                            break;
-                        case BrowserSelector.Core.Enums.GradientDirection.Diagonal:
-                            startPoint = new System.Windows.Point(0, 0);
-                            endPoint = new System.Windows.Point(1, 1);
-                            break;
-                        default: // Vertical
-                            startPoint = new System.Windows.Point(0, 0);
-                            endPoint = new System.Windows.Point(0, 1);
-                            break;
-                    }
-
-                    mainWindow.Background = new System.Windows.Media.LinearGradientBrush
-                    {
-                        StartPoint = startPoint,
-                        EndPoint = endPoint,
-                        GradientStops =
-                        [
-                            new System.Windows.Media.GradientStop(visualSettings.GradientStartColor, 0),
-                            new System.Windows.Media.GradientStop(visualSettings.GradientEndColor, 1)
-                        ]
-                    };
-                }
-                else
-                {
-                    mainWindow.Background = new System.Windows.Media.SolidColorBrush(visualSettings.BackgroundColor);
-                }
+                    // XAMLでBackgroundBrushConverterを使用して背景を管理するため、
+                    // ここではVisualSettingsの変更を通知するのみ
+                    _logService?.LogDebug("VisualSettingsの変更を通知してXAMLで背景を更新", "MainViewModel");
 
                     // VisualSettingsを反映
                     VisualSettings = visualSettings;
