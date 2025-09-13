@@ -176,7 +176,7 @@ public class UpdateService : IUpdateService
             string backupPath = GetBackupPath();
             if (File.Exists(backupPath))
             {
-                string currentExePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+                string currentExePath = System.AppContext.BaseDirectory;
                 string tempPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
                 // 現在のファイルをバックアップ
@@ -219,7 +219,7 @@ public class UpdateService : IUpdateService
     {
         try
         {
-            string currentExePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            string currentExePath = System.AppContext.BaseDirectory;
             string backupPath = GetBackupPath();
 
             if (File.Exists(currentExePath))

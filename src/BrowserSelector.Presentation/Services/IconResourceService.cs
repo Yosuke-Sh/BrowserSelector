@@ -16,8 +16,7 @@ public class IconResourceService
     /// </summary>
     public IconResourceService()
     {
-        Assembly assembly = Assembly.GetExecutingAssembly();
-        string resourcePath = Path.GetDirectoryName(assembly.Location) ?? string.Empty;
+        string resourcePath = System.AppContext.BaseDirectory;
         _imagesPath = Path.Combine(resourcePath, "Resources", "Images");
     }
 

@@ -26,13 +26,13 @@ DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 OutputDir=..\..\release-artifacts
 OutputBaseFilename=BrowserSelector-Setup-v{#MyAppVersion}
-SetupIconFile=..\..\src\BrowserSelector.App\BrowserSelector_Icon_256.ico
+; SetupIconFile=..\..\src\BrowserSelector.App\BrowserSelector_Icon_256.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
 PrivilegesRequired=admin
-ArchitecturesAllowed=x64
-ArchitecturesInstallIn64BitMode=x64
+ArchitecturesAllowed=x64compatible
+ArchitecturesInstallIn64BitMode=x64compatible
 MinVersion=10.0.17763
 DisableProgramGroupPage=yes
 DisableReadyPage=no
@@ -50,7 +50,7 @@ Name: "japanese"; MessagesFile: "compiler:Languages\Japanese.isl"; LicenseFile: 
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
-Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 6.1; Check: not IsAdminInstallMode
+Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; Check: not IsAdminInstallMode
 Name: "set_default_browser"; Description: "BrowserSelectorを既定のブラウザとして設定する"; GroupDescription: "Default Browser Settings"; Flags: checkedonce
 Name: "open_default_apps"; Description: "インストール後に既定のアプリ設定を開く"; GroupDescription: "Default Browser Settings"; Flags: unchecked
 
@@ -127,10 +127,10 @@ Root: HKLM; Subkey: "SOFTWARE\Classes\BrowserSelector.html"; ValueType: string; 
 Root: HKLM; Subkey: "SOFTWARE\Classes\BrowserSelector.html\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""; Flags: uninsdeletekey; Tasks: set_default_browser
 
 ; カスタムプロトコル（browser://）
-Root: HKCU; Subkey: "Software\Classes\browser"; ValueType: string; ValueName: ""; ValueData: "URL:BrowserSelector Protocol"; Flags: uninsdeletevalue
-Root: HKCU; Subkey: "Software\Classes\browser"; ValueType: string; ValueName: "URL Protocol"; ValueData: ""; Flags: uninsdeletevalue
-Root: HKCU; Subkey: "Software\Classes\browser\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\{#MyAppExeName},1"; Flags: uninsdeletevalue
-Root: HKCU; Subkey: "Software\Classes\browser\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""; Flags: uninsdeletevalue
+Root: HKLM; Subkey: "SOFTWARE\Classes\browser"; ValueType: string; ValueName: ""; ValueData: "URL:BrowserSelector Protocol"; Flags: uninsdeletekey; Tasks: set_default_browser
+Root: HKLM; Subkey: "SOFTWARE\Classes\browser"; ValueType: string; ValueName: "URL Protocol"; ValueData: ""; Flags: uninsdeletekey; Tasks: set_default_browser
+Root: HKLM; Subkey: "SOFTWARE\Classes\browser\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\{#MyAppExeName},1"; Flags: uninsdeletekey; Tasks: set_default_browser
+Root: HKLM; Subkey: "SOFTWARE\Classes\browser\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""; Flags: uninsdeletekey; Tasks: set_default_browser
 
 
 [Code]
