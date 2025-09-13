@@ -102,7 +102,7 @@ public class AppClassTests
 
         // Assert
         assembly.Should().NotBeNull();
-        assemblyName.Name.Should().Be("BrowserSelector.App");
+        assemblyName.Name.Should().Be("BrowserSelector");
         assemblyName.Version.Should().NotBeNull();
     }
 

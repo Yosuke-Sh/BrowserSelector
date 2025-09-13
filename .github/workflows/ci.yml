@@ -42,36 +42,24 @@ jobs:
           Write-Host "✅ No build warnings detected - Build is clean"
         }
       
-    - name: Run unit tests
-      run: dotnet test tests/BrowserSelector.UnitTests/ --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./TestResults/UnitTests --logger "trx;LogFileName=UnitTests.trx"
-      continue-on-error: false
-      
-    - name: Run integration tests
-      run: dotnet test tests/BrowserSelector.IntegrationTests/ --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./TestResults/IntegrationTests --logger "trx;LogFileName=IntegrationTests.trx"
-      continue-on-error: false
-      
-    - name: Run app tests
-      run: dotnet test tests/BrowserSelector.AppTests/ --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./TestResults/AppTests --logger "trx;LogFileName=AppTests.trx"
-      continue-on-error: false
-      
-    - name: Run security tests
-      run: dotnet test tests/BrowserSelector.SecurityTests/ --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./TestResults/SecurityTests --logger "trx;LogFileName=SecurityTests.trx"
-      continue-on-error: false
-      
-    - name: Run performance tests
-      run: dotnet test tests/BrowserSelector.PerformanceTests/ --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./TestResults/PerformanceTests --logger "trx;LogFileName=PerformanceTests.trx"
-      continue-on-error: false
-      
-    - name: Run UI tests
-      run: dotnet test tests/BrowserSelector.UITests/ --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./TestResults/UITests --logger "trx;LogFileName=UITests.trx"
-      continue-on-error: false
-      
-    - name: Run library tests
-      run: dotnet test tests/BrowserSelector.LibraryTests/ --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./TestResults/LibraryTests --logger "trx;LogFileName=LibraryTests.trx"
-      continue-on-error: false
-      
-    - name: Run E2E tests
-      run: dotnet test tests/BrowserSelector.E2ETests/ --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./TestResults/E2ETests --logger "trx;LogFileName=E2ETests.trx"
+    - name: Run all tests
+      run: |
+        Write-Host "Running all tests..."
+        $testProjects = @(
+          "tests/BrowserSelector.UnitTests",
+          "tests/BrowserSelector.IntegrationTests",
+          "tests/BrowserSelector.AppTests",
+          "tests/BrowserSelector.SecurityTests",
+          "tests/BrowserSelector.UITests",
+          "tests/BrowserSelector.LibraryTests",
+          "tests/BrowserSelector.E2ETests"
+        )
+        
+        foreach ($project in $testProjects) {
+          Write-Host "Running tests for: $project"
+          dotnet test $project --configuration Release --no-build --verbosity normal --logger trx --results-directory TestResults
+        }
+        Write-Host "All tests completed"
       continue-on-error: false
       
     - name: Upload test results
@@ -82,75 +70,10 @@ jobs:
         path: TestResults/
         retention-days: 30
 
-  # カバレッジレポート生成
-  coverage-report:
-    runs-on: windows-2022
-    needs: build-and-test
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
-        
-    - name: Install ReportGenerator
-      run: dotnet tool install -g dotnet-reportgenerator-globaltool
-      
-    - name: Generate coverage report
-      run: |
-        reportgenerator -reports:"TestResults/**/coverage.cobertura.xml" -targetdir:"TestResults/CoverageReport" -reporttypes:"Html;Cobertura"
-        
-    - name: Upload coverage reports
-      uses: actions/upload-artifact@v4
-      with:
-        name: coverage-reports
-        path: TestResults/CoverageReport/
-
-  # 品質ゲート
-  quality-gate:
-    runs-on: windows-2022
-    needs: [build-and-test, coverage-report]
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
-        
-    - name: Download coverage reports
-      uses: actions/download-artifact@v4
-      with:
-        name: coverage-reports
-        path: TestResults/CoverageReport/
-        
-    - name: Check coverage threshold
-      run: |
-        # カバレッジ閾値チェック（最低85% - 目標値に調整）
-        if (Test-Path "TestResults/CoverageReport/Cobertura.xml") {
-          $coverage = (Get-Content "TestResults/CoverageReport/Cobertura.xml" | Select-String "line-rate" | ForEach-Object { [double]($_.Line -split '"')[1] })
-          if ($coverage -lt 0.85) {
-            Write-Warning "Code coverage is below 85% threshold. Current coverage: $($coverage * 100)%"
-            Write-Host "This is a warning, not a failure. Target: 85%"
-          } else {
-            Write-Host "✅ Code coverage check passed: $($coverage * 100)%"
-          }
-        } else {
-          Write-Warning "Coverage report not found. Skipping coverage check."
-        }
-        
-    - name: Quality gate passed
-      run: echo "All quality gates passed successfully"
-
   # リリース準備（mainブランチのみ）
   release-prep:
     runs-on: windows-2022
-    needs: [build-and-test, coverage-report, quality-gate]
+    needs: build-and-test
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     
     steps:

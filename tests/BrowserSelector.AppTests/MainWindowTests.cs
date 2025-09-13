@@ -345,7 +345,7 @@ public class MainWindowTests
 
         // Assert
         assembly.Should().NotBeNull();
-        assembly.GetName().Name.Should().Be("BrowserSelector.App");
+        assembly.GetName().Name.Should().Be("BrowserSelector");
     }
 
     /// <summary>

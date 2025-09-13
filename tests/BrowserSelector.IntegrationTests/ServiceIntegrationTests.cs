@@ -19,13 +19,22 @@ public class ServiceIntegrationTests : IDisposable
     /// </summary>
     public ServiceIntegrationTests()
     {
-        // テスト用の一時ディレクトリを作成
-        _tempDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Temp", "BrowserSelectorTest", Guid.NewGuid().ToString());
+        // テスト用の一時ディレクトリを作成（より安全な方法）
+        var baseTempPath = Path.GetTempPath();
+        var testDirName = $"BrowserSelectorTest_{Guid.NewGuid():N}";
+        _tempDirectory = Path.Combine(baseTempPath, testDirName);
         
         try
         {
-            // Directory.CreateDirectoryは親ディレクトリも自動的に作成するため、直接作成
-            _ = Directory.CreateDirectory(_tempDirectory);
+            // 親ディレクトリが存在することを確認してから作成
+            var parentDir = Path.GetDirectoryName(_tempDirectory);
+            if (!string.IsNullOrEmpty(parentDir) && !Directory.Exists(parentDir))
+            {
+                Directory.CreateDirectory(parentDir);
+            }
+            
+            // テストディレクトリを作成
+            Directory.CreateDirectory(_tempDirectory);
             
             // ディレクトリ作成の確認
             if (!Directory.Exists(_tempDirectory))

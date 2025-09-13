@@ -115,7 +115,7 @@ public class ProgramTests
 
         // Assert
         assembly.Should().NotBeNull();
-        assemblyName.Name.Should().Be("BrowserSelector.App");
+        assemblyName.Name.Should().Be("BrowserSelector");
     }
 
     /// <summary>
@@ -395,7 +395,7 @@ public class ProgramTests
 
         // Assert
         assembly.Should().NotBeNull();
-        assemblyName.Name.Should().Be("BrowserSelector.App");
+        assemblyName.Name.Should().Be("BrowserSelector");
         assemblyName.Version.Should().NotBeNull();
         assemblyName.CultureInfo.Should().NotBeNull();
     }
@@ -529,7 +529,7 @@ public class ProgramTests
 
         // Assert
         location.Should().NotBeNullOrEmpty();
-        location.Should().Contain("BrowserSelector.App.dll");
+        location.Should().Contain("BrowserSelector.dll");
     }
 
     /// <summary>
@@ -545,7 +545,7 @@ public class ProgramTests
 
         // Assert
         manifestModule.Should().NotBeNull();
-        manifestModule.Name.Should().Contain("BrowserSelector.App.dll");
+        manifestModule.Name.Should().Contain("BrowserSelector.dll");
     }
 
     /// <summary>

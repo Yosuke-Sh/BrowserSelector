@@ -28,8 +28,10 @@ public class BrowserSelectorE2ETests
         ServiceCollection services = new();
         _ = services.AddLogging(builder =>
         {
-            // テスト実行時のログ出力を最小限に抑制
-            _ = builder.SetMinimumLevel(LogLevel.Error); // エラーレベルのみ出力
+            // テスト実行時のログ出力を完全に無効化
+            _ = builder.SetMinimumLevel(LogLevel.None);
+            _ = builder.ClearProviders();
+            _ = builder.AddFilter("", LogLevel.None);
         });
         _ = services.AddSingleton<IRegistryService, WindowsRegistryService>();
         _ = services.AddSingleton<IBrowserService, BrowserService>();

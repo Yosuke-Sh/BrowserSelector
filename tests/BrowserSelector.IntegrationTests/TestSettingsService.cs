@@ -30,8 +30,15 @@ public class TestSettingsService : ISettingsService
         {
             try
             {
-                // Directory.CreateDirectoryは親ディレクトリも自動的に作成するため、直接作成
-                _ = Directory.CreateDirectory(_settingsDirectory);
+                // 親ディレクトリが存在することを確認してから作成
+                var parentDir = Path.GetDirectoryName(_settingsDirectory);
+                if (!string.IsNullOrEmpty(parentDir) && !Directory.Exists(parentDir))
+                {
+                    Directory.CreateDirectory(parentDir);
+                }
+                
+                // 設定ディレクトリを作成
+                Directory.CreateDirectory(_settingsDirectory);
                 
                 // ディレクトリ作成の確認
                 if (!Directory.Exists(_settingsDirectory))

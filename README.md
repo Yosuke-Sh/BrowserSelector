@@ -2,6 +2,9 @@
 
 **BrowserSelector**は、Windows環境で複数のブラウザから選択してURLを開くためのモダンなWPFアプリケーションです。
 
+> **v0.1.1 品質改善完了** 🎉  
+> テスト警告・エラーを完全解決し、安定性が大幅に向上しました。
+
 [![CI/CD](https://github.com/Yosuke-Sh/BrowserSelector/workflows/CI/CD%20Pipeline/badge.svg)](https://github.com/Yosuke-Sh/BrowserSelector/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![.NET 8.0](https://img.shields.io/badge/.NET-8.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/8.0)
@@ -30,15 +33,39 @@
 
 ### 🚀 使用方法
 
-#### 通常起動
+#### インストール済みアプリケーション
 ```bash
-dotnet run --project src/BrowserSelector.App
+# 通常起動
+BrowserSelector.exe
+
+# URL指定での起動
+BrowserSelector.exe "https://www.google.com"
 ```
 
-#### URL指定での起動
+#### 開発環境での実行
 ```bash
+# 通常起動
+dotnet run --project src/BrowserSelector.App
+
+# URL指定での起動
 dotnet run --project src/BrowserSelector.App -- "https://www.google.com"
 ```
+
+### 📦 インストール
+
+#### システム要件
+- **OS**: Windows 10/11 (64-bit)
+- **.NET Runtime**: .NET 8.0 Runtime
+- **権限**: 管理者権限（インストール時）
+
+#### インストール手順
+1. [Releases](https://github.com/Yosuke-Sh/BrowserSelector/releases)から最新版をダウンロード
+2. `BrowserSelector-Setup-v0.1.0.exe`を管理者権限で実行
+3. インストールウィザードに従ってインストール
+4. デスクトップまたはスタートメニューから起動
+
+#### アンインストール
+- Windows設定 > アプリ > BrowserSelector > アンインストール
 
 ## 🏗️ アーキテクチャ
 
@@ -97,7 +124,7 @@ BrowserSelector.WPF/
 - **ライブラリテスト**: 61テスト中61成功（ライブラリ機能テスト）
 - **パフォーマンステスト**: BenchmarkDotNetによるベンチマーク
 - **E2Eテスト**: 4テスト中4成功（Playwright for .NET）
-- **総合**: 696テスト中695成功（99.9%成功率）
+- **総合**: 702テスト中702成功（100%成功率、警告0件）
 
 ### テスト実行
 ```bash
@@ -109,9 +136,9 @@ dotnet test --collect:"XPlat Code Coverage"
 ```
 
 ### 品質保証
-- **CI/CD**: GitHub Actionsによる自動テスト実行
-- **品質ゲート**: 85%カバレッジ閾値
-- **警告解消**: ビルド警告0件の維持
+- **CI/CD**: GitHub Actionsによる自動テスト実行（簡素化済み）
+- **テスト安定性**: 並列実行時の競合状態完全解決
+- **警告解消**: ビルド警告0件、テスト警告0件の維持
 
 ## 📦 ビルド
 

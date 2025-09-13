@@ -264,7 +264,7 @@ public class AppComponentTests
 
         // Assert
         assembly.Should().NotBeNull("Appクラスのアセンブリがnullでないこと");
-        assemblyName.Name.Should().Be("BrowserSelector.App", "Appクラスのアセンブリ名が正しいこと");
+        assemblyName.Name.Should().Be("BrowserSelector", "Appクラスのアセンブリ名が正しいこと");
         assemblyName.Version!.Should().NotBeNull("Appクラスのアセンブリバージョンがnullでないこと");
     }
 
