@@ -18,7 +18,7 @@ public class AppClassTests
 
         // Assert
         appType.Should().NotBeNull();
-        appType.BaseType.Should().Be(typeof(Application));
+        appType.BaseType.Should().Be<Application>();
     }
 
     [Fact]
@@ -66,7 +66,7 @@ public class AppClassTests
 
         // Assert
         mainWindowProperty.Should().NotBeNull();
-        mainWindowProperty.PropertyType.Should().Be(typeof(Window));
+        mainWindowProperty.PropertyType.Should().Be<Window>();
     }
 
     [Fact]
@@ -78,7 +78,7 @@ public class AppClassTests
 
         // Assert
         startupUriProperty.Should().NotBeNull();
-        startupUriProperty.PropertyType.Should().Be(typeof(Uri));
+        startupUriProperty.PropertyType.Should().Be<Uri>();
     }
 
     [Fact]
@@ -90,7 +90,7 @@ public class AppClassTests
 
         // Assert
         shutdownModeProperty.Should().NotBeNull();
-        shutdownModeProperty.PropertyType.Should().Be(typeof(ShutdownMode));
+        shutdownModeProperty.PropertyType.Should().Be<ShutdownMode>();
     }
 
     [Fact]
