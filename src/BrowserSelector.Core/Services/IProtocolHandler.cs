@@ -6,60 +6,60 @@ using BrowserSelector.Core.Models;
 namespace BrowserSelector.Core.Services;
 
 /// <summary>
-/// 繝励Ο繝医さ繝ｫ繝上Φ繝峨Λ繝ｼ繧堤ｮ｡逅・☆繧九し繝ｼ繝薙せ縺ｮ繧､繝ｳ繧ｿ繝ｼ繝輔ぉ繝ｼ繧ｹ.
+/// プロトコルハンドラーを管理するサービスのインターフェース.
 /// </summary>
 public interface IProtocolHandler
 {
     /// <summary>
-    /// 繝励Ο繝医さ繝ｫ繧堤匳骭ｲ.
+    /// プロトコルを登録.
     /// </summary>
-    /// <param name="applicationPath">繧｢繝励Μ繧ｱ繝ｼ繧ｷ繝ｧ繝ｳ縺ｮ繝代せ.</param>
-    /// <returns>逋ｻ骭ｲ縺梧・蜉溘＠縺溘°縺ｩ縺・°.</returns>
+    /// <param name="applicationPath">アプリケーションのパス.</param>
+    /// <returns>登録が成功したかどうか.</returns>
     bool RegisterProtocol(string applicationPath);
 
     /// <summary>
-    /// 繝励Ο繝医さ繝ｫ繧堤匳骭ｲ隗｣髯､.
+    /// プロトコルを登録解除.
     /// </summary>
-    /// <returns>逋ｻ骭ｲ隗｣髯､縺梧・蜉溘＠縺溘°縺ｩ縺・°.</returns>
+    /// <returns>登録解除が成功したかどうか.</returns>
     bool UnregisterProtocol();
 
     /// <summary>
-    /// 繝励Ο繝医さ繝ｫ縺檎匳骭ｲ縺輔ｌ縺ｦ縺・ｋ縺九メ繧ｧ繝・け.
+    /// プロトコルが登録されているかチェック.
     /// </summary>
-    /// <returns>逋ｻ骭ｲ縺輔ｌ縺ｦ縺・ｋ縺九←縺・°.</returns>
+    /// <returns>登録されているかどうか.</returns>
     bool IsProtocolRegistered();
 
     /// <summary>
-    /// 繝励Ο繝医さ繝ｫURL縺九ｉ繝代Λ繝｡繝ｼ繧ｿ繧呈歓蜃ｺ.
+    /// プロトコルURLからパラメータを抽出.
     /// </summary>
-    /// <param name="protocolUrl">繝励Ο繝医さ繝ｫURL.</param>
-    /// <returns>謚ｽ蜃ｺ縺輔ｌ縺欟RL.</returns>
+    /// <param name="protocolUrl">プロトコルURL.</param>
+    /// <returns>抽出されたURL.</returns>
     string? ExtractUrlFromProtocol(string protocolUrl);
 
     /// <summary>
-    /// 繝励Ο繝医さ繝ｫURL縺九ｉ繝代Λ繝｡繝ｼ繧ｿ繧呈歓蜃ｺ（Uri版）.
+    /// プロトコルURLからパラメータを抽出（Uri版）.
     /// </summary>
-    /// <param name="protocolUrl">繝励Ο繝医さ繝ｫURL.</param>
-    /// <returns>謚ｽ蜃ｺ縺輔ｌ縺欟RL.</returns>
+    /// <param name="protocolUrl">プロトコルURL.</param>
+    /// <returns>抽出されたURL.</returns>
     Uri? ExtractUrlFromProtocol(Uri protocolUrl);
 
     /// <summary>
-    /// 繝励Ο繝医さ繝ｫURL繧堤函謌・.
+    /// プロトコルURLを生成.
     /// </summary>
-    /// <param name="url">蜈・・URL.</param>
-    /// <returns>繝励Ο繝医さ繝ｫURL.</returns>
+    /// <param name="url">元のURL.</param>
+    /// <returns>プロトコルURL.</returns>
     string CreateProtocolUrl(string url);
 
     /// <summary>
-    /// 繝励Ο繝医さ繝ｫURL繧堤函謌・（Uri版）.
+    /// プロトコルURLを生成（Uri版）.
     /// </summary>
-    /// <param name="url">蜈・・URL.</param>
-    /// <returns>繝励Ο繝医さ繝ｫURL.</returns>
+    /// <param name="url">元のURL.</param>
+    /// <returns>プロトコルURL.</returns>
     Uri CreateProtocolUrl(Uri url);
 
     /// <summary>
-    /// 繝励Ο繝医さ繝ｫ逋ｻ骭ｲ諠・ｱ繧貞叙蠕・.
+    /// プロトコル登録情報を取得.
     /// </summary>
-    /// <returns>逋ｻ骭ｲ諠・ｱ.</returns>
+    /// <returns>登録情報.</returns>
     ProtocolRegistrationInfo? GetProtocolRegistrationInfo();
 }
