@@ -940,7 +940,7 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private void SelectBackgroundColor()
     {
-        System.Windows.Forms.ColorDialog colorDialog = new();
+        using System.Windows.Forms.ColorDialog colorDialog = new();
         if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
         {
             Color color = Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
@@ -954,7 +954,7 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private void SelectGradientStartColor()
     {
-        System.Windows.Forms.ColorDialog colorDialog = new();
+        using System.Windows.Forms.ColorDialog colorDialog = new();
         if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
         {
             Color color = Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
@@ -968,7 +968,7 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private void SelectGradientEndColor()
     {
-        System.Windows.Forms.ColorDialog colorDialog = new();
+        using System.Windows.Forms.ColorDialog colorDialog = new();
         if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
         {
             Color color = Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
@@ -984,7 +984,7 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private void SelectFocusColor()
     {
-        System.Windows.Forms.ColorDialog colorDialog = new();
+        using System.Windows.Forms.ColorDialog colorDialog = new();
         if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
         {
             Color color = Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
@@ -998,7 +998,7 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private void SelectBrowserButtonBackgroundColor()
     {
-        System.Windows.Forms.ColorDialog colorDialog = new();
+        using System.Windows.Forms.ColorDialog colorDialog = new();
         if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
         {
             Color color = Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
@@ -1012,7 +1012,7 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private void SelectBrowserButtonForegroundColor()
     {
-        System.Windows.Forms.ColorDialog colorDialog = new();
+        using System.Windows.Forms.ColorDialog colorDialog = new();
         if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
         {
             Color color = Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
@@ -1247,7 +1247,7 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
-            System.Windows.Forms.FolderBrowserDialog folderDialog = new()
+            using System.Windows.Forms.FolderBrowserDialog folderDialog = new()
             {
                 Description = "ログ出力フォルダを選択してください",
                 SelectedPath = LogSettings.LogOutputFolder
