@@ -1,6 +1,7 @@
 using BrowserSelector.App.DependencyInjection;
 using BrowserSelector.Core.Enums;
 using BrowserSelector.Core.Services;
+using BrowserSelector.Presentation.Converters;
 using BrowserSelector.Presentation.Extensions;
 using BrowserSelector.Presentation.Helpers;
 using BrowserSelector.Presentation.Services;
@@ -58,6 +59,9 @@ public partial class App : Application
             LocalizedMessageBox.SetLocalizationService(localizationService);
             LocalizedLogHelper.SetLocalizationService(localizationService);
             LocalizedFormatHelper.SetLocalizationService(localizationService);
+
+            // アイコンキャッシュサービスの設定
+            IconPathConverter.SetIconCacheService(_host.Services.GetRequiredService<IIconCacheService>());
 
             // 設定された言語を適用
             try

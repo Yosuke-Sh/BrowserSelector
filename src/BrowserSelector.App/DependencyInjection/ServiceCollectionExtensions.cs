@@ -35,6 +35,8 @@ internal static class ServiceCollectionExtensions
 
         // Infrastructure Services
         _ = services.AddSingleton<ILogService, BrowserSelector.Infrastructure.Logging.LogService>();
+        _ = services.AddSingleton<IIconCacheService>(provider =>
+            new IconCacheService(provider.GetRequiredService<ILogService>()));
         _ = services.AddScoped<IRegistryService>(provider =>
             new WindowsRegistryService(provider.GetRequiredService<ILogService>()));
         _ = services.AddScoped<IProtocolHandler, ProtocolHandler>();
