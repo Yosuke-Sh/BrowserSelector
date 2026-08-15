@@ -4,7 +4,6 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BrowserSelector.Presentation.Views"
-        xmlns:controls="clr-namespace:BrowserSelector.Presentation.Controls"
         xmlns:enums="clr-namespace:BrowserSelector.Core.Enums"
         xmlns:converters="clr-namespace:BrowserSelector.Presentation.Converters"
         xmlns:extensions="clr-namespace:BrowserSelector.Presentation.Extensions"

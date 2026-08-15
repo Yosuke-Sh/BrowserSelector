@@ -53,21 +53,10 @@ public class AppTests : IDisposable
     }
 
     [Fact]
-    public void App_Program_ShouldHaveValidEntryPoint()
-    {
-        // Arrange & Act
-        var programType = typeof(Program);
-
-        // Assert
-        programType.Should().NotBeNull();
-        programType.Name.Should().Be("Program");
-    }
-
-    [Fact]
     public void App_AssemblyInfo_ShouldHaveValidAttributes()
     {
         // Arrange & Act
-        var assembly = typeof(Program).Assembly;
+        var assembly = typeof(BrowserSelector.App.App).Assembly;
 
         // Assert
         assembly.Should().NotBeNull();

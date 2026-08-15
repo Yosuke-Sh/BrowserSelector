@@ -38,9 +38,4 @@
     <DefineConstants>$(DefineConstants);TEST_MODE</DefineConstants>
   </PropertyGroup>
 
-  <!-- テストモード用の設定 -->
-  <PropertyGroup Condition="'$(TestMode)' == 'true'">
-    <StartupObject>BrowserSelector.App.TestProgram</StartupObject>
-  </PropertyGroup>
-
 </Project>

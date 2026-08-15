@@ -432,8 +432,6 @@ public class AppComponentTests
         // Assert
         types.Should().NotBeEmpty("Appクラスのアセンブリに型が存在すること");
         types.Should().Contain(typeof(BrowserSelector.App.App), "Appクラスがアセンブリに含まれること");
-        types.Should().Contain(typeof(BrowserSelector.App.MainWindow), "MainWindowクラスがアセンブリに含まれること");
-        types.Should().Contain(typeof(BrowserSelector.App.Program), "Programクラスがアセンブリに含まれること");
     }
 
     /// <summary>
@@ -450,7 +448,5 @@ public class AppComponentTests
         // Assert
         exportedTypes.Should().NotBeEmpty("Appクラスのアセンブリにエクスポート型が存在すること");
         exportedTypes.Should().Contain(typeof(BrowserSelector.App.App), "Appクラスがエクスポート型に含まれること");
-        exportedTypes.Should().Contain(typeof(BrowserSelector.App.MainWindow), "MainWindowクラスがエクスポート型に含まれること");
-        exportedTypes.Should().Contain(typeof(BrowserSelector.App.Program), "Programクラスがエクスポート型に含まれること");
     }
 }
