@@ -67,6 +67,8 @@ public partial class App : Application
                 System.Globalization.CultureInfo culture = new(appSettings.Language);
                 localizationService.SetLanguage(culture).GetAwaiter().GetResult();
             }
+            // CA1031: アプリ起動/終了時の最上位フォールバック処理。DIコンテナ初期化やホスト起動、UI適用など例外種別が広範なため、アプリのクラッシュを防ぐ意図的な汎用catch。
+            #pragma warning disable CA1031
             catch (Exception ex)
             {
                 // 設定読み込みに失敗した場合はデフォルト言語（日本語）を使用
@@ -74,6 +76,7 @@ public partial class App : Application
                 System.Globalization.CultureInfo defaultCulture = new("ja-JP");
                 localizationService.SetLanguage(defaultCulture).GetAwaiter().GetResult();
             }
+            #pragma warning restore CA1031
 
             // 不足アイコンの作成
             try
@@ -86,10 +89,13 @@ public partial class App : Application
                     _logService?.LogInformation($"不足アイコンを {createdCount} 個作成しました: {string.Join(", ", missingIcons)}", "App");
                 }
             }
+            // CA1031: アプリ起動/終了時の最上位フォールバック処理。DIコンテナ初期化やホスト起動、UI適用など例外種別が広範なため、アプリのクラッシュを防ぐ意図的な汎用catch。
+            #pragma warning disable CA1031
             catch (Exception iconEx)
             {
                 _logService?.LogError($"アイコン作成エラー: {iconEx.Message}", "App", iconEx);
             }
+            #pragma warning restore CA1031
 
             // 起動引数からURLを取得
             string? initialUrl = null;
@@ -192,10 +198,13 @@ public partial class App : Application
 
                 _logService?.LogDebug("Startup.VisualSettings.Apply.Success Target=MainWindow (Immediate)", "App");
             }
+            // CA1031: アプリ起動/終了時の最上位フォールバック処理。DIコンテナ初期化やホスト起動、UI適用など例外種別が広範なため、アプリのクラッシュを防ぐ意図的な汎用catch。
+            #pragma warning disable CA1031
             catch (Exception aex)
             {
                 _logService?.LogDebug($"Startup.VisualSettings.Apply.Error {aex.Message}", "App", aex);
             }
+            #pragma warning restore CA1031
 
             // 追加でLoadedイベントでも設定を適用（二重適用防止のため条件付き）
             mainWindow.Loaded += (_, __) =>
@@ -224,10 +233,13 @@ public partial class App : Application
 
                     _logService?.LogDebug("Startup.VisualSettings.Apply.Success Target=MainWindow (Loaded Event)", "App");
                 }
+                // CA1031: アプリ起動/終了時の最上位フォールバック処理。DIコンテナ初期化やホスト起動、UI適用など例外種別が広範なため、アプリのクラッシュを防ぐ意図的な汎用catch。
+                #pragma warning disable CA1031
                 catch (Exception aex)
                 {
                     _logService?.LogDebug($"Startup.VisualSettings.Apply.Error (Loaded Event) {aex.Message}", "App", aex);
                 }
+                #pragma warning restore CA1031
             };
 
             MainWindow = mainWindow;
@@ -287,10 +299,13 @@ public partial class App : Application
 
             _logService?.LogInformation("アプリケーション終了完了", "App");
         }
+        // CA1031: アプリ起動/終了時の最上位フォールバック処理。DIコンテナ初期化やホスト起動、UI適用など例外種別が広範なため、アプリのクラッシュを防ぐ意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             _logService?.LogError($"アプリケーション終了エラー: {ex.Message}", "App", ex);
         }
+        #pragma warning restore CA1031
 
         base.OnExit(e);
     }

@@ -48,10 +48,13 @@ public class IconPathConverter : IMultiValueConverter
                             return bitmap;
                         }
                     }
+                    // CA1031: アイコン抽出処理はWin32 API/System.Drawing/ファイルIO由来の多様な例外を返しうるベストエフォート処理。失敗時はデフォルトアイコンにフォールバックするための意図的な汎用catch。
+                    #pragma warning disable CA1031
                     catch (Exception)
                     {
                         // アイコン抽出エラーは無視
                     }
+                    #pragma warning restore CA1031
                 }
                 else
                 {
@@ -60,10 +63,13 @@ public class IconPathConverter : IMultiValueConverter
                     {
                         return new BitmapImage(new Uri(iconPath));
                     }
+                    // CA1031: アイコン抽出処理はWin32 API/System.Drawing/ファイルIO由来の多様な例外を返しうるベストエフォート処理。失敗時はデフォルトアイコンにフォールバックするための意図的な汎用catch。
+                    #pragma warning disable CA1031
                     catch (Exception)
                     {
                         // 画像ファイル読み込みエラーは無視
                     }
+                    #pragma warning restore CA1031
                 }
             }
 
@@ -78,20 +84,26 @@ public class IconPathConverter : IMultiValueConverter
                         return bitmap;
                     }
                 }
+                // CA1031: アイコン抽出処理はWin32 API/System.Drawing/ファイルIO由来の多様な例外を返しうるベストエフォート処理。失敗時はデフォルトアイコンにフォールバックするための意図的な汎用catch。
+                #pragma warning disable CA1031
                 catch (Exception)
                 {
                     // アイコン抽出エラーは無視
                 }
+                #pragma warning restore CA1031
             }
 
             // 3. デフォルトアイコンを返す
             return DefaultIconPath;
         }
+        // CA1031: アイコン抽出処理はWin32 API/System.Drawing/ファイルIO由来の多様な例外を返しうるベストエフォート処理。失敗時はデフォルトアイコンにフォールバックするための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception)
         {
             // エラーが発生した場合はデフォルトアイコンを返す
             return DefaultIconPath;
         }
+        #pragma warning restore CA1031
     }
 
     /// <inheritdoc/>
@@ -158,11 +170,14 @@ public class IconPathConverter : IMultiValueConverter
                 }
             }
         }
+        // CA1031: アイコン抽出処理はWin32 API/System.Drawing/ファイルIO由来の多様な例外を返しうるベストエフォート処理。失敗時はデフォルトアイコンにフォールバックするための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             // アイコン抽出エラーは無視
             System.Diagnostics.Debug.WriteLine($"ExtractHighQualityIconエラー: {ex.Message}");
         }
+        #pragma warning restore CA1031
 
         return null;
     }
@@ -196,10 +211,13 @@ public class IconPathConverter : IMultiValueConverter
 
             return bitmap;
         }
+        // CA1031: アイコン抽出処理はWin32 API/System.Drawing/ファイルIO由来の多様な例外を返しうるベストエフォート処理。失敗時はデフォルトアイコンにフォールバックするための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception)
         {
             return null!;
         }
+        #pragma warning restore CA1031
     }
 
 }

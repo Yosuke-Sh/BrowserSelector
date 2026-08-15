@@ -119,6 +119,8 @@ public partial class MainViewModel : ObservableObject
                 VisualSettings = _settingsService.LoadVisualSettingsAsync().GetAwaiter().GetResult();
                 _logService?.LogDebug($"VisualSettings読み込み完了: Width={VisualSettings.InitialWindowWidth}, Height={VisualSettings.InitialWindowHeight}, UseGradient={VisualSettings.UseBackgroundGradient}, BackgroundColor={VisualSettings.BackgroundColor}, GradientStartColor={VisualSettings.GradientStartColor}, GradientEndColor={VisualSettings.GradientEndColor}", "MainViewModel");
             }
+            // CA1031: RelayCommand/イベントハンドラーの最上位try-catch。サービス呼び出しやUI操作など例外種別が多岐にわたり、UIスレッドをクラッシュさせないための意図的な汎用catch。
+            #pragma warning disable CA1031
             catch (Exception ex)
             {
                 _logService?.LogError($"VisualSettings読み込みエラー: {ex.Message}", "MainViewModel", ex);
@@ -126,6 +128,7 @@ public partial class MainViewModel : ObservableObject
                 VisualSettings = new VisualSettings();
                 _logService?.LogDebug($"デフォルトVisualSettings使用: UseGradient={VisualSettings.UseBackgroundGradient}, BackgroundColor={VisualSettings.BackgroundColor}", "MainViewModel");
             }
+            #pragma warning restore CA1031
             _logService?.LogDetailed(LogLevel.Debug, "VisualSettings読み込み完了", "MainViewModel",
                                     "MVVM_INIT", "ViewModel", "System", "MainViewModel", "Initialize", "LoadVisualSettings_Success");
 
@@ -287,10 +290,13 @@ public partial class MainViewModel : ObservableObject
 
             _logService?.LogInformation($"ウィンドウサイズを即座に変更: {width}x{height}", "MainViewModel");
         }
+        // CA1031: RelayCommand/イベントハンドラーの最上位try-catch。サービス呼び出しやUI操作など例外種別が多岐にわたり、UIスレッドをクラッシュさせないための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             _logService?.LogError($"ウィンドウサイズ変更エラー: {ex.Message}", "MainViewModel", ex);
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>
@@ -313,10 +319,13 @@ public partial class MainViewModel : ObservableObject
 
             _logService?.LogDebug("ApplyBackgroundChanges完了", "MainViewModel");
         }
+        // CA1031: RelayCommand/イベントハンドラーの最上位try-catch。サービス呼び出しやUI操作など例外種別が多岐にわたり、UIスレッドをクラッシュさせないための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             _logService?.LogError($"背景設定適用エラー: {ex.Message}", "MainViewModel", ex);
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>
@@ -368,6 +377,8 @@ public partial class MainViewModel : ObservableObject
 
             StatusMessage = LocalizedLogHelper.GetString("MainWindow.BrowsersDetected", Browsers.Count);
         }
+        // CA1031: RelayCommand/イベントハンドラーの最上位try-catch。サービス呼び出しやUI操作など例外種別が多岐にわたり、UIスレッドをクラッシュさせないための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             _logService?.LogError($"ブラウザ読み込みエラー: {ex.Message}", "MainViewModel", ex);
@@ -377,6 +388,7 @@ public partial class MainViewModel : ObservableObject
                 StatusMessage = LocalizedLogHelper.GetString("MainWindow.BrowserLoadError", ex.Message);
             });
         }
+        #pragma warning restore CA1031
         finally
         {
             IsLoading = false;
@@ -427,11 +439,14 @@ public partial class MainViewModel : ObservableObject
                 _logService?.LogWarning($"ブラウザ起動失敗: {browser.Name}", "MainViewModel");
             }
         }
+        // CA1031: RelayCommand/イベントハンドラーの最上位try-catch。サービス呼び出しやUI操作など例外種別が多岐にわたり、UIスレッドをクラッシュさせないための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             StatusMessage = $"ブラウザ起動エラー: {ex.Message}";
             _logService?.LogError($"ブラウザ起動例外: {browser?.Name}, エラー: {ex.Message}", "MainViewModel", ex);
         }
+        #pragma warning restore CA1031
         finally
         {
             IsLoading = false;
@@ -481,12 +496,15 @@ public partial class MainViewModel : ObservableObject
                 _logService?.LogDebug("設定画面がキャンセルされました。", "MainViewModel");
             }
         }
+        // CA1031: RelayCommand/イベントハンドラーの最上位try-catch。サービス呼び出しやUI操作など例外種別が多岐にわたり、UIスレッドをクラッシュさせないための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             _logService?.LogError($"設定画面を開くエラー: {ex.Message}", "MainViewModel", ex);
             _ = MessageBox.Show($"設定画面を開けませんでした: {ex.Message}", "エラー",
                           MessageBoxButton.OK, MessageBoxImage.Error);
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>
@@ -522,10 +540,13 @@ public partial class MainViewModel : ObservableObject
                 }
             });
         }
+        // CA1031: RelayCommand/イベントハンドラーの最上位try-catch。サービス呼び出しやUI操作など例外種別が多岐にわたり、UIスレッドをクラッシュさせないための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             _logService?.LogError($"視覚設定の再読み込みエラー: {ex.Message}", "MainViewModel", ex);
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>
@@ -571,11 +592,14 @@ public partial class MainViewModel : ObservableObject
                 StatusMessage = "URLルールにマッチするブラウザがありません";
             }
         }
+        // CA1031: RelayCommand/イベントハンドラーの最上位try-catch。サービス呼び出しやUI操作など例外種別が多岐にわたり、UIスレッドをクラッシュさせないための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             _logService?.LogError($"URLルール適用エラー: {ex.Message}", "MainViewModel", ex);
             StatusMessage = "URLルールの適用中にエラーが発生しました";
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>

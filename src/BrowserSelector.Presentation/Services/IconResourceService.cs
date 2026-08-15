@@ -55,10 +55,13 @@ public class IconResourceService
 
             return filePath;
         }
+        // CA1031: アイコンファイル作成はファイルIO/画像エンコード由来の例外が発生しうるベストエフォート処理。失敗時は空文字を返し呼び出し元に委ねるための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception)
         {
             return string.Empty;
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>

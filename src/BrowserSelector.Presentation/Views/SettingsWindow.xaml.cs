@@ -70,10 +70,13 @@ public partial class SettingsWindow : Window
                 settingsViewModel.RefreshLanguages();
             }
         }
+        // CA1031: ダイアログ表示イベントハンドラーの最上位try-catch。子ViewModel/ダイアログ生成由来の例外種別が多岐にわたり、UIスレッドをクラッシュさせないための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             _ = MessageBox.Show($"言語管理ダイアログの表示に失敗しました: {ex.Message}", "エラー",
                 MessageBoxButton.OK, MessageBoxImage.Error);
         }
+        #pragma warning restore CA1031
     }
 }

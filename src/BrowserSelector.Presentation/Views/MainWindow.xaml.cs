@@ -117,11 +117,14 @@ public partial class MainWindow : Window
                 Background = System.Windows.SystemColors.WindowBrush;
             }
         }
+        // CA1031: ウィンドウ初期化/イベントハンドラーの最上位try-catch。UI操作由来の例外種別が多岐にわたり、フォールバック値を設定してUIスレッドを継続させるための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             _logService?.LogError($"初期背景設定適用エラー: {ex.Message}", "MainWindow", ex);
             Background = System.Windows.SystemColors.WindowBrush;
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>
@@ -167,6 +170,8 @@ public partial class MainWindow : Window
                 Height = 600;
             }
         }
+        // CA1031: ウィンドウ初期化/イベントハンドラーの最上位try-catch。UI操作由来の例外種別が多岐にわたり、フォールバック値を設定してUIスレッドを継続させるための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             // エラー時はデフォルトサイズを使用
@@ -177,6 +182,7 @@ public partial class MainWindow : Window
             Width = 800;
             Height = 600;
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>
@@ -193,10 +199,13 @@ public partial class MainWindow : Window
                 ApplyInitialSizeSettings(viewModel);
             }
         }
+        // CA1031: ウィンドウ初期化/イベントハンドラーの最上位try-catch。UI操作由来の例外種別が多岐にわたり、フォールバック値を設定してUIスレッドを継続させるための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             _logService?.LogError($"MainWindow_Loaded エラー: {ex.Message}", "MainWindow", ex);
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>
