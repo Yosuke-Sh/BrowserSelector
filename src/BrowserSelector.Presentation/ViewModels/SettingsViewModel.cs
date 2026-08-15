@@ -83,6 +83,7 @@ public partial class SettingsViewModel : ObservableObject
     private readonly IBrowserService _browserService;
     private readonly ILocalizationService _localizationService;
     private readonly IUrlRuleService _urlRuleService;
+    private readonly IExternalLinkService? _externalLinkService;
 
     [ObservableProperty]
     private bool _showFocusIndicator = true;
@@ -167,13 +168,18 @@ public partial class SettingsViewModel : ObservableObject
     /// <param name="customLanguageService">カスタム言語サービス.</param>
     /// <param name="urlRuleService">URLルールサービス.</param>
     /// <param name="logService">ログサービス.</param>
+    /// <param name="externalLinkService">
+    /// 外部リンク（GitHubリポジトリ・Issues・リリース一覧、Phase E-2）を開くためのサービス。省略可（テスト互換のため）.
+    /// 未指定の場合、Aboutセクションのリンクボタンは動作しない.
+    /// </param>
     public SettingsViewModel(
         ISettingsService settingsService,
         IBrowserService browserService,
         ILocalizationService localizationService,
         ICustomLanguageService customLanguageService,
         IUrlRuleService urlRuleService,
-        ILogService logService)
+        ILogService logService,
+        IExternalLinkService? externalLinkService = null)
     {
         _settingsService = settingsService;
         _browserService = browserService;
@@ -181,6 +187,7 @@ public partial class SettingsViewModel : ObservableObject
         CustomLanguageService = customLanguageService;
         _urlRuleService = urlRuleService;
         LogService = logService;
+        _externalLinkService = externalLinkService;
 
         // 初期化処理
         _ = Task.Run(InitializeInternal);

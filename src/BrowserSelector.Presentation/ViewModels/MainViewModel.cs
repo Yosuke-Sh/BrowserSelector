@@ -23,6 +23,7 @@ public partial class MainViewModel : ObservableObject
     private readonly ICustomLanguageService _customLanguageService;
     private readonly IUrlRuleService _urlRuleService;
     private readonly ILogService? _logService;
+    private readonly IExternalLinkService? _externalLinkService;
 
     [ObservableProperty]
     private ObservableCollection<Browser> _browsers = [];
@@ -81,13 +82,17 @@ public partial class MainViewModel : ObservableObject
     /// <param name="customLanguageService">customLanguageService.</param>
     /// <param name="urlRuleService">urlRuleService.</param>
     /// <param name="logService">logService.</param>
+    /// <param name="externalLinkService">
+    /// 設定画面のAboutセクション（Phase E-2）へ引き継ぐための外部リンクサービス。省略可（テスト互換のため）.
+    /// </param>
     public MainViewModel(
         IBrowserService browserService,
         ISettingsService settingsService,
         ILocalizationService localizationService,
         ICustomLanguageService customLanguageService,
         IUrlRuleService urlRuleService,
-        ILogService logService)
+        ILogService logService,
+        IExternalLinkService? externalLinkService = null)
     {
         // まずログサービスを設定
         _logService = logService;
@@ -114,6 +119,8 @@ public partial class MainViewModel : ObservableObject
         _urlRuleService = urlRuleService;
         _logService?.LogDetailed(LogLevel.Debug, "IUrlRuleService設定完了", "MainViewModel",
                                 "MVVM_INIT", "ViewModel", "System", "MainViewModel", "Constructor", "Service_UrlRule");
+
+        _externalLinkService = externalLinkService;
 
         // 起動ログ
         try
@@ -569,7 +576,7 @@ public partial class MainViewModel : ObservableObject
         try
         {
             // 設定画面を開く
-            SettingsViewModel settingsViewModel = new(_settingsService, _browserService, _localizationService, _customLanguageService, _urlRuleService, _logService ?? throw new InvalidOperationException("LogService is not available"));
+            SettingsViewModel settingsViewModel = new(_settingsService, _browserService, _localizationService, _customLanguageService, _urlRuleService, _logService ?? throw new InvalidOperationException("LogService is not available"), _externalLinkService);
             Views.SettingsWindow settingsWindow = new(settingsViewModel);
 
             // 設定変更通知のイベントハンドラーを登録

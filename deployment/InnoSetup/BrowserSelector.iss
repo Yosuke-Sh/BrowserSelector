@@ -1,10 +1,15 @@
 ; BrowserSelector Inno Setup Script
-; Version: 0.1.0
+; Version: 0.2.0
 ; Author: Yosuke-Sh
 ; Description: BrowserSelector WPF Application Installer
 
 #define MyAppName "BrowserSelector"
-#define MyAppVersion "0.1.0"
+; MyAppVersion（Phase E-2b）: Directory.Build.props の <Version> が単一の情報源。
+; ビルド時は `ISCC /DMyAppVersion=0.2.0 BrowserSelector.iss` のように /D で上書きして注入する
+; （release.yml からの自動注入はPhase G-4で実装。ここでの既定値はDirectory.Build.propsと手動で同期させておく）。
+#ifndef MyAppVersion
+  #define MyAppVersion "0.2.0"
+#endif
 #define MyAppPublisher "Yosuke-Sh"
 #define MyAppURL "https://github.com/Yosuke-Sh/BrowserSelector"
 #define MyAppExeName "BrowserSelector.exe"
