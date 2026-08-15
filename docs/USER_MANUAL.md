@@ -6,7 +6,10 @@
 - [概要](#概要)
 - [インストール](#インストール)
 - [基本的な使用方法](#基本的な使用方法)
+- [キーボードショートカット](#-キーボードショートカット--keyboard-shortcuts)
 - [設定](#設定)
+- [外観設定](#-外観設定--appearance-settings)
+- [起動制御（トレイ常駐・自動起動・CLIオプション）](#-起動制御トレイ常駐自動起動cliオプション--startup-control-tray-residency-auto-launch-cli-options)
 - [機能詳細](#機能詳細)
 - [トラブルシューティング](#トラブルシューティング)
 - [FAQ](#faq)
@@ -15,7 +18,10 @@
 - [Overview](#overview)
 - [Installation](#installation)
 - [Basic Usage](#basic-usage)
+- [Keyboard Shortcuts](#-キーボードショートカット--keyboard-shortcuts)
 - [Configuration](#configuration)
+- [Appearance Settings](#-外観設定--appearance-settings)
+- [Startup Control (Tray, Auto-launch, CLI Options)](#-起動制御トレイ常駐自動起動cliオプション--startup-control-tray-residency-auto-launch-cli-options)
 - [Feature Details](#feature-details)
 - [Troubleshooting](#troubleshooting)
 - [FAQ](#faq)
@@ -50,13 +56,13 @@ BrowserSelector is an application for selecting and opening URLs with multiple b
 
 #### 日本語
 - **OS**: Windows 10/11
-- **.NET Runtime**: .NET 8.0 Runtime
+- **.NET Runtime**: .NET 10.0 Runtime
 - **メモリ**: 100MB以下
 - **ディスク**: 50MB以上の空き容量
 
 #### English
 - **OS**: Windows 10/11
-- **.NET Runtime**: .NET 8.0 Runtime
+- **.NET Runtime**: .NET 10.0 Runtime
 - **Memory**: 100MB or less
 - **Disk**: 50MB or more free space
 
@@ -74,16 +80,16 @@ BrowserSelector is an application for selecting and opening URLs with multiple b
 3. Run setup.exe to install
 4. Set as default browser if needed
 
-### .NET 8.0 Runtimeのインストール / .NET 8.0 Runtime Installation
+### .NET 10.0 Runtimeのインストール / .NET 10.0 Runtime Installation
 
 #### 日本語
-.NET 8.0 Runtimeがインストールされていない場合：
-1. [Microsoft .NET 8.0 Runtime](https://dotnet.microsoft.com/download/dotnet/8.0)からダウンロード
+.NET 10.0 Runtimeがインストールされていない場合：
+1. [Microsoft .NET 10.0 Runtime](https://dotnet.microsoft.com/download/dotnet/10.0)からダウンロード
 2. インストーラーを実行してインストール
 
 #### English
-If .NET 8.0 Runtime is not installed:
-1. Download from [Microsoft .NET 8.0 Runtime](https://dotnet.microsoft.com/download/dotnet/8.0)
+If .NET 10.0 Runtime is not installed:
+1. Download from [Microsoft .NET 10.0 Runtime](https://dotnet.microsoft.com/download/dotnet/10.0)
 2. Run the installer to install
 
 ## 🚀 基本的な使用方法 / Basic Usage
@@ -142,6 +148,36 @@ BrowserSelector.exe "https://www.google.com"
    - Click the "Settings" button at the bottom
    - Various settings can be changed
 
+## ⌨️ キーボードショートカット / Keyboard Shortcuts
+
+### 日本語
+
+BrowserSelectorはマウス操作なしでも完結できるよう、キーボード操作に対応しています。
+
+| キー | 動作 |
+|---|---|
+| `Esc` | ウィンドウを閉じる |
+| `Enter` / `Space` | フォーカス中のブラウザを起動 |
+| 矢印キー | グリッド内のブラウザタイル間を移動 |
+| `Tab` | 次の操作可能な要素へフォーカス移動 |
+| `1`〜`9`、`A`〜`Z` | 対応するホットキーが割り当てられたブラウザを直接起動 |
+| `Ctrl` + `,` | 設定画面を開く |
+| `Ctrl` + クリック / `Ctrl` + `Enter` | ブラウザを起動してもアプリケーションを閉じない |
+
+### English
+
+BrowserSelector supports full keyboard operation so the app can be used without a mouse.
+
+| Key | Action |
+|---|---|
+| `Esc` | Close the window |
+| `Enter` / `Space` | Launch the focused browser |
+| Arrow keys | Move focus between browser tiles in the grid |
+| `Tab` | Move focus to the next operable element |
+| `1`-`9`, `A`-`Z` | Directly launch the browser assigned to that hotkey |
+| `Ctrl` + `,` | Open the settings screen |
+| `Ctrl` + Click / `Ctrl` + `Enter` | Launch the browser without closing the application |
+
 ## ⚙️ 設定 / Configuration
 
 ### 設定画面の開き方 / Opening Settings Screen
@@ -161,14 +197,12 @@ BrowserSelector.exe "https://www.google.com"
 ##### 日本語
 - **URLルールマッチ後に閉じる**: URLルールにマッチしたブラウザを起動後にアプリケーションを閉じる
 - **言語設定**: アプリケーションの表示言語を選択（日本語・英語対応）
-- **自動更新チェック**: 自動的にアップデートをチェックするかどうか
-- **更新チェック間隔**: アップデートチェックの間隔を設定（時間単位）
+- **自動更新チェック / 更新チェック間隔**: 設定項目自体は存在するが、更新チェック機能自体が未実装（v0.3.0予定）のため現時点では効果を持たない
 
 ##### English
 - **Close After URL Rule Match**: Close application after launching browser that matches URL rule
 - **Language Settings**: Select application display language (Japanese/English support)
-- **Automatic Update Check**: Whether to automatically check for updates
-- **Update Check Interval**: Set update check interval (in hours)
+- **Automatic Update Check / Update Check Interval**: These settings exist in the configuration model, but have no effect yet since the update-check feature itself is not implemented (planned for v0.3.0)
 
 #### 表示設定 / Display Settings
 
@@ -237,6 +271,76 @@ To reset settings to default values:
 1. Click the "Reset" button
 2. Select "Yes" in the confirmation dialog
 3. Settings are reset to default values
+
+## 🎨 外観設定 / Appearance Settings
+
+### 日本語
+
+v0.2.0で設定画面に「外観」タブが新設され、ガラスUIに関する各種設定をまとめて調整できるようになりました。
+
+- **バックドロップ方式**: ウィンドウ背景の描画方式を選択
+  - `Mica`: 既定の不透明多層ブラー
+  - `Acrylic`: 半透明・強めのブラー
+  - `MicaAlt`: タブ付きウィンドウ向けの濃いMica
+  - 半透明単色: DWM非対応環境向けのフォールバック
+  - 不透明: ハイコントラスト・低スペック環境向けの完全不透明表示
+- **不透明度**: バックドロップの不透明度を調整
+- **角丸半径**: ウィンドウ・タイルの角の丸みを調整（実際のDWM描画に反映）
+- **タイトルバー表示切替**: タイトルバーの表示/非表示
+- **常に最前面**: ウィンドウを常に最前面に表示するかどうか
+- **テーマ**: ライト/ダーク/システム追従（OSのテーマ設定に自動追従）から選択
+
+### English
+
+v0.2.0 introduces a new "Appearance" tab in the settings screen, consolidating all glass-UI-related options in one place.
+
+- **Backdrop Mode**: Choose how the window background is rendered
+  - `Mica`: The default opaque multi-layer blur
+  - `Acrylic`: Semi-transparent, stronger blur
+  - `MicaAlt`: A denser Mica variant for tabbed windows
+  - Solid Translucent: Fallback for environments without DWM support
+  - Opaque: Fully opaque rendering for high-contrast or low-spec environments
+- **Opacity**: Adjust the backdrop's opacity
+- **Corner Radius**: Adjust the roundness of window/tile corners (reflected in actual DWM rendering)
+- **Title Bar Toggle**: Show/hide the title bar
+- **Always on Top**: Whether the window always stays on top of other windows
+- **Theme**: Choose Light, Dark, or System (automatically follows the OS theme setting)
+
+## 🚀 起動制御（トレイ常駐・自動起動・CLIオプション） / Startup Control (Tray Residency, Auto-launch, CLI Options)
+
+### 日本語
+
+v0.2.0で起動制御系の機能が追加されました。
+
+- **トレイ常駐**: アプリケーションをシステムトレイに常駐させ、バックグラウンドで待機できます
+- **カウントダウン自動起動**: 起動後、指定した秒数が経過すると自動的に選択中（またはデフォルト）のブラウザを起動します
+- **CLIオプション**: コマンドラインから起動時の挙動を制御できます
+
+| オプション | 説明 |
+|---|---|
+| `-d`, `--delay <秒>` | カウントダウン自動起動までの秒数を指定 |
+| `-b`, `--browser <名前>` | 起動時に選択状態にする（または自動起動する）ブラウザを指定 |
+| `--silent` | ブラウザ選択画面のUIを表示せず、既定ブラウザへ直接遷移 |
+| `--auto-launch` | 起動後、カウントダウンを経て自動的にブラウザを起動 |
+| `-h`, `--help` | ヘルプを表示 |
+| `-v`, `--version` | バージョン情報を表示 |
+
+### English
+
+v0.2.0 adds startup-control features.
+
+- **Tray Residency**: Keep the application resident in the system tray, running in the background
+- **Countdown Auto-launch**: After a configured delay, automatically launches the selected (or default) browser
+- **CLI Options**: Control startup behavior from the command line
+
+| Option | Description |
+|---|---|
+| `-d`, `--delay <seconds>` | Sets the countdown delay before auto-launch |
+| `-b`, `--browser <name>` | Specifies which browser to pre-select (or auto-launch) at startup |
+| `--silent` | Skips the browser selection UI and goes directly to the default browser |
+| `--auto-launch` | Automatically launches the browser after the countdown |
+| `-h`, `--help` | Shows help text |
+| `-v`, `--version` | Shows version information |
 
 ## 🔧 機能詳細 / Feature Details
 
@@ -330,85 +434,23 @@ Check application operation status through logs:
 
 ## 🔄 自動アップデート / Auto-update
 
-### アップデートの確認 / Update Check
+### 日本語
 
-#### 日本語
-設定画面から最新バージョンへの更新が可能です：
+**自動アップデート機能は現時点では未実装です。** `IUpdateService`のインターフェース定義とサービスの骨格のみが実装されており、GitHub Releases連携・ダウンロード・インストール・ロールバックといった実際の更新処理は動作しません。この機能は**v0.3.0で実装予定**です。
 
-1. 設定画面を開く
-2. 「一般設定」タブを選択
-3. 「自動更新チェック」を有効にする
-4. 更新チェック間隔を設定（デフォルト：24時間）
-5. 新しいバージョンが利用可能な場合、通知が表示されます
+現在、最新バージョンを入手するには以下の手動手順を使用してください：
+1. [GitHub Releases](https://github.com/Yosuke-Sh/BrowserSelector/releases)にアクセス
+2. 最新のインストーラーをダウンロード
+3. インストーラーを管理者権限で実行し、上書きインストール
 
-#### English
-Updates to the latest version are available from the settings screen:
+### English
 
-1. Open settings screen
-2. Select "General Settings" tab
-3. Enable "Automatic Update Check"
-4. Set update check interval (default: 24 hours)
-5. Notification appears when new version is available
+**Automatic update functionality is not yet implemented.** Only the `IUpdateService` interface definition and a minimal service skeleton exist; GitHub Releases integration, downloading, installation, and rollback do not actually function yet. This feature is **planned for v0.3.0**.
 
-### 手動アップデート / Manual Update
-
-#### 日本語
-1. 設定画面の「一般設定」タブで「更新をチェック」ボタンをクリック
-2. 新しいバージョンが利用可能な場合、更新ダイアログが表示されます
-3. 「更新」ボタンをクリックして最新バージョンに更新
-4. アプリケーションが自動的に再起動されます
-
-#### English
-1. Click "Check for Updates" button in "General Settings" tab of settings screen
-2. Update dialog appears when new version is available
-3. Click "Update" button to update to latest version
-4. Application automatically restarts
-
-### 更新の仕組み / Update Mechanism
-
-#### 日本語
-- **設定ファイルのみ差分更新**: アプリケーションの設定ファイルのみを更新
-- **GitHub Releases連携**: GitHub Releasesから最新バージョンを取得
-- **セキュアな更新**: デジタル署名による更新ファイルの検証
-- **自動再起動**: 更新完了後にアプリケーションを自動再起動
-
-#### English
-- **Differential Update of Settings Files Only**: Only update application settings files
-- **GitHub Releases Integration**: Get latest version from GitHub Releases
-- **Secure Updates**: Verify update files with digital signatures
-- **Automatic Restart**: Automatically restart application after update completion
-
-### アップデートのインストール / Update Installation
-
-#### 日本語
-アップデートが利用可能な場合：
-1. 通知が表示されます
-2. 「インストール」ボタンをクリック
-3. アップデートがダウンロード・インストールされます
-4. アプリケーションが再起動されます
-
-#### English
-When updates are available:
-1. Notification appears
-2. Click "Install" button
-3. Update is downloaded and installed
-4. Application restarts
-
-### ロールバック / Rollback
-
-#### 日本語
-アップデート後に問題が発生した場合：
-1. 設定画面を開く
-2. 「アップデート」タブを選択
-3. 「ロールバック」ボタンをクリック
-4. 前のバージョンに戻ります
-
-#### English
-When problems occur after update:
-1. Open settings screen
-2. Select "Update" tab
-3. Click "Rollback" button
-4. Return to previous version
+For now, obtain the latest version manually:
+1. Visit [GitHub Releases](https://github.com/Yosuke-Sh/BrowserSelector/releases)
+2. Download the latest installer
+3. Run the installer with administrator privileges to overwrite-install
 
 ## 🛠️ トラブルシューティング / Troubleshooting
 
@@ -418,8 +460,8 @@ When problems occur after update:
 
 ##### 日本語
 **原因と対処法：**
-- .NET 8.0 Runtimeがインストールされていない
-  → [.NET 8.0 Runtime](https://dotnet.microsoft.com/download/dotnet/8.0)をインストール
+- .NET 10.0 Runtimeがインストールされていない
+  → [.NET 10.0 Runtime](https://dotnet.microsoft.com/download/dotnet/10.0)をインストール
 - ウイルス対策ソフトがブロックしている
   → ウイルス対策ソフトの除外設定に追加
 - 管理者権限が必要
@@ -427,8 +469,8 @@ When problems occur after update:
 
 ##### English
 **Causes and Solutions:**
-- .NET 8.0 Runtime is not installed
-  → Install [.NET 8.0 Runtime](https://dotnet.microsoft.com/download/dotnet/8.0)
+- .NET 10.0 Runtime is not installed
+  → Install [.NET 10.0 Runtime](https://dotnet.microsoft.com/download/dotnet/10.0)
 - Antivirus software is blocking
   → Add to antivirus software exclusion settings
 - Administrator privileges required
@@ -562,13 +604,13 @@ A: コントロールパネルの「プログラムの追加と削除」から�
 #### English
 A: Can be uninstalled from Control Panel "Add or Remove Programs".
 
-### Q: 自動アップデートを無効にできますか？ / Q: Can automatic updates be disabled?
+### Q: 自動アップデート機能はありますか？ / Q: Is there an automatic update feature?
 
 #### 日本語
-A: 設定画面の「アップデート」タブで自動チェックを無効にできます。
+A: 現時点では未実装です（v0.3.0で実装予定）。最新版はGitHub Releasesから手動でダウンロードしてください。
 
 #### English
-A: Automatic checking can be disabled in the "Update" tab of the settings screen.
+A: Not yet implemented (planned for v0.3.0). Please download the latest version manually from GitHub Releases for now.
 
 ## 📞 サポート / Support
 

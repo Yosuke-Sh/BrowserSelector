@@ -2,7 +2,7 @@
 
 ## 📋 Overview
 
-This document describes the public APIs and interfaces provided by BrowserSelector.
+This document describes the public APIs and interfaces provided by BrowserSelector. Target framework: `net10.0-windows` (all projects, as of v0.2.0).
 
 ## 🏗️ Architecture
 
@@ -33,67 +33,68 @@ BrowserSelector.WPF/
 
 ## 🔧 Core Services
 
+All interfaces live under `src/BrowserSelector.Core/Services/`. XML documentation comments on these interfaces (previously corrupted/garbled) were repaired in Phase B-4c.
+
 ### IBrowserService
 
-Manages browser detection and operations.
+Manages browser detection, CRUD, and launch operations.
 
 ```csharp
 public interface IBrowserService
 {
     Task<IEnumerable<Browser>> DetectBrowsersAsync();
-    Task<Browser?> GetDefaultBrowserAsync();
-    Task<bool> SetDefaultBrowserAsync(Browser browser);
     Task<bool> LaunchBrowserAsync(Browser browser, string url);
+    Task<bool> LaunchBrowserAsync(Browser browser, Uri url);
+    Task<bool> AddBrowserAsync(Browser browser);
+    Task<bool> UpdateBrowserAsync(Browser browser);
+    Task<bool> RemoveBrowserAsync(Guid browserId);
+    Task<IEnumerable<Browser>> GetAllBrowsersAsync();
+    Task<bool> SetDefaultBrowserAsync(Guid browserId);
+    Task<Browser?> GetDefaultBrowserAsync();
+    Task UpdateBrowserUsageAsync(Guid browserId);
+    Task UpdateUsageAsync(Browser browser);
 }
 ```
 
 **Methods:**
-- `DetectBrowsersAsync()`: Detects installed browsers from registry
-- `GetDefaultBrowserAsync()`: Gets the current default browser
-- `SetDefaultBrowserAsync(Browser)`: Sets a browser as default
-- `LaunchBrowserAsync(Browser, string)`: Launches a browser with URL
+- `DetectBrowsersAsync()`: Detects installed browsers from the registry
+- `LaunchBrowserAsync(Browser, string|Uri)`: Launches a browser with a URL (string or `Uri` overload)
+- `AddBrowserAsync(Browser)` / `UpdateBrowserAsync(Browser)` / `RemoveBrowserAsync(Guid)`: Custom browser CRUD
+- `GetAllBrowsersAsync()`: Gets all registered browsers
+- `SetDefaultBrowserAsync(Guid)` / `GetDefaultBrowserAsync()`: Default browser management
+- `UpdateBrowserUsageAsync(Guid)` / `UpdateUsageAsync(Browser)`: Updates browser usage statistics
 
 ### ISettingsService
 
-Manages application settings.
+Manages application settings persistence.
 
 ```csharp
 public interface ISettingsService
 {
-    AppSettings AppSettings { get; }
-    VisualSettings VisualSettings { get; }
-    LogSettings LogSettings { get; }
-    Task SaveAppSettingsAsync(AppSettings settings);
     Task<AppSettings> LoadAppSettingsAsync();
-    Task SaveVisualSettingsAsync(VisualSettings settings);
+    Task<bool> SaveAppSettingsAsync(AppSettings settings);
     Task<VisualSettings> LoadVisualSettingsAsync();
-    Task SaveLogSettingsAsync(LogSettings settings);
+    Task<bool> SaveVisualSettingsAsync(VisualSettings settings);
     Task<LogSettings> LoadLogSettingsAsync();
+    Task<bool> SaveLogSettingsAsync(LogSettings settings);
+    string GetSettingsFilePath();
     Task<bool> ResetSettingsAsync();
-    Task<bool> ExportSettingsAsync(string filePath);
     Task<bool> ImportSettingsAsync(string filePath);
+    Task<bool> ExportSettingsAsync(string filePath);
 }
 ```
 
-**Properties:**
-- `AppSettings`: Application configuration (language, update settings, etc.)
-- `VisualSettings`: UI appearance settings (background, buttons, window size, etc.)
-- `LogSettings`: Logging configuration (log level, file settings, etc.)
-
 **Methods:**
-- `SaveAppSettingsAsync(AppSettings)`: Persists application settings to file
-- `LoadAppSettingsAsync()`: Loads application settings from file
-- `SaveVisualSettingsAsync(VisualSettings)`: Persists visual settings to file
-- `LoadVisualSettingsAsync()`: Loads visual settings from file
-- `SaveLogSettingsAsync(LogSettings)`: Persists log settings to file
-- `LoadLogSettingsAsync()`: Loads log settings from file
+- `LoadAppSettingsAsync()` / `SaveAppSettingsAsync(AppSettings)`: Application settings (language, protocol, update check interval, etc.)
+- `LoadVisualSettingsAsync()` / `SaveVisualSettingsAsync(VisualSettings)`: UI appearance settings
+- `LoadLogSettingsAsync()` / `SaveLogSettingsAsync(LogSettings)`: Logging configuration
+- `GetSettingsFilePath()`: Returns the settings file location
 - `ResetSettingsAsync()`: Resets all settings to defaults
-- `ExportSettingsAsync(string)`: Exports settings to file
-- `ImportSettingsAsync(string)`: Imports settings from file
+- `ImportSettingsAsync(string)` / `ExportSettingsAsync(string)`: Settings file import/export
 
 ### IUpdateService
 
-Handles automatic updates with GitHub Releases integration.
+Skeleton interface for automatic updates. **Not yet implemented — planned for v0.3.0.** Only the interface and a minimal `UpdateService` shell exist today; none of the methods below perform real GitHub Releases integration yet.
 
 ```csharp
 public interface IUpdateService : IDisposable
@@ -107,16 +108,6 @@ public interface IUpdateService : IDisposable
 }
 ```
 
-**Events:**
-- `UpdateAvailable`: Fired when an update is available
-
-**Methods:**
-- `CheckForUpdatesAsync()`: Checks GitHub Releases for new versions
-- `DownloadUpdateAsync(UpdateInfo, IProgress<int>)`: Downloads update files
-- `InstallUpdateAsync(UpdateInfo)`: Installs the update (settings files only)
-- `RollbackUpdateAsync()`: Rolls back to previous version
-- `CreateBackup()`: Creates backup of current settings
-
 ### ILocalizationService
 
 Manages multi-language support.
@@ -124,21 +115,156 @@ Manages multi-language support.
 ```csharp
 public interface ILocalizationService
 {
+    event EventHandler<LanguageChangedEventArgs>? LanguageChanged;
+    CultureInfo CurrentCulture { get; }
+    IEnumerable<CultureInfo> SupportedLanguages { get; }
     string GetString(string key);
     string GetString(string key, params object[] args);
-    void SetLanguage(CultureInfo culture);
-    event EventHandler<LanguageChangedEventArgs>? LanguageChanged;
-    IEnumerable<CultureInfo> SupportedLanguages { get; }
+    Task SetLanguage(CultureInfo culture);
+    Task<IEnumerable<CultureInfo>> GetSupportedLanguagesAsync();
 }
 ```
 
 **Methods:**
-- `GetString(string)`: Gets localized string
-- `GetString(string, object[])`: Gets localized string with formatting
-- `SetLanguage(CultureInfo)`: Changes application language
+- `GetString(string)` / `GetString(string, object[])`: Gets a localized string (with optional formatting)
+- `SetLanguage(CultureInfo)`: Changes the application language asynchronously
+- `GetSupportedLanguagesAsync()`: Gets supported cultures asynchronously
 
 **Properties:**
+- `CurrentCulture`: Currently active culture
 - `SupportedLanguages`: List of supported cultures
+
+### ICustomLanguageService
+
+Manages user-supplied custom language files, in addition to the built-in Japanese/English resources.
+
+```csharp
+public interface ICustomLanguageService
+{
+    Task<IEnumerable<LanguageInfo>> GetAvailableLanguagesAsync();
+    Task<bool> AddCustomLanguageAsync(string languageFilePath);
+    Task<bool> RemoveCustomLanguageAsync(string cultureCode);
+    Task<bool> ValidateLanguageFileAsync(string languageFilePath);
+    string GetCustomLanguageFolder();
+    Task<Dictionary<string, string>?> LoadCustomLanguageAsync(string cultureCode);
+    Task<bool> SaveCustomLanguageAsync(string cultureCode, string displayName, Dictionary<string, string> resources);
+    Task<bool> GenerateLanguageTemplateAsync(string cultureCode, string displayName);
+    Task<IEnumerable<string>> GetAvailableResourceKeysAsync();
+}
+```
+
+### IUrlRuleService
+
+Manages URL-pattern-based automatic browser selection rules.
+
+```csharp
+public interface IUrlRuleService
+{
+    Task<IEnumerable<UrlRule>> GetAllRulesAsync();
+    Task<IEnumerable<UrlRule>> GetEnabledRulesAsync();
+    Task<bool> AddRuleAsync(UrlRule rule);
+    Task<bool> UpdateRuleAsync(UrlRule rule);
+    Task<bool> DeleteRuleAsync(Guid ruleId);
+    Task<bool> ToggleRuleAsync(Guid ruleId, bool isEnabled);
+    Task<Browser?> FindMatchingBrowserAsync(string url, IEnumerable<Browser> browsers);
+    Task<Browser?> FindMatchingBrowserAsync(Uri url, IEnumerable<Browser> browsers);
+    Task<bool> ChangePriorityAsync(Guid ruleId, int newPriority);
+    Task<bool> ReorderRulesAsync(IEnumerable<Guid> ruleIds);
+}
+```
+
+### IProtocolHandler
+
+Registers and resolves the `browser://` custom protocol.
+
+```csharp
+public interface IProtocolHandler
+{
+    bool RegisterProtocol(string applicationPath);
+    bool UnregisterProtocol();
+    bool IsProtocolRegistered();
+    string? ExtractUrlFromProtocol(string protocolUrl);
+    Uri? ExtractUrlFromProtocol(Uri protocolUrl);
+    string CreateProtocolUrl(string url);
+    Uri CreateProtocolUrl(Uri url);
+    ProtocolRegistrationInfo? GetProtocolRegistrationInfo();
+}
+```
+
+### IRegistryService
+
+Detects installed browsers from the Windows registry.
+
+```csharp
+public interface IRegistryService
+{
+    Task<IEnumerable<Browser>> DetectBrowsersFromRegistryAsync();
+}
+```
+
+### ILogService
+
+Structured logging facade used throughout the application (all log calls should go through this service, per project convention).
+
+```csharp
+public interface ILogService
+{
+    void LogTrace(string message, string? category = null, Exception? exception = null);
+    void LogDebug(string message, string? category = null, Exception? exception = null);
+    void LogInformation(string message, string? category = null, Exception? exception = null);
+    void LogWarning(string message, string? category = null, Exception? exception = null);
+    void LogError(string message, string? category = null, Exception? exception = null);
+    void LogCritical(string message, string? category = null, Exception? exception = null);
+    void Log(LogLevel level, string message, string? category = null, Exception? exception = null);
+    void LogDetailed(LogLevel level, string message, string? category = null, string? eventId = null,
+        string? requestTarget = null, string? userInfo = null, string? processTarget = null,
+        string? processAction = null, string? processResult = null, Exception? exception = null);
+    void UpdateSettings(LogSettings settings);
+    void ClearLogs();
+    void CleanupOldLogs();
+    string GetLogContent(int maxLines = 1000);
+    string GetLogFilePath();
+}
+```
+
+### IIconCacheService
+
+New in v0.2.0 (Phase C/D startup performance work). Extracts and caches executable/image icons for faster startup and reduced repeated icon extraction cost.
+
+```csharp
+public interface IIconCacheService
+{
+    BitmapSource? GetIcon(string filePath, int iconIndex, int size);
+    void ClearMemoryCache();
+}
+```
+
+### IThemeService
+
+New in v0.2.0 (Phase E-1 appearance tab). Applies and tracks the app's Light/Dark/System theme.
+
+```csharp
+public interface IThemeService
+{
+    event EventHandler? ActiveThemeChanged;
+    ThemeMode CurrentMode { get; }
+    bool IsDarkThemeActive { get; }
+    void ApplyTheme(ThemeMode mode);
+}
+```
+
+`ThemeMode` is `Light | Dark | System`. `BackdropMode` (also new in v0.2.0, used by `VisualSettings`) is `Mica | Acrylic | MicaAlt | SolidTranslucent | Opaque`.
+
+### IExternalLinkService
+
+New in v0.2.0 (Phase E-2, About section). Opens external URLs (GitHub repo, Issues, license) safely — deliberately avoids `Process.Start(url, UseShellExecute = true)` because BrowserSelector may itself be registered as the default browser / `browser://` handler, which would cause recursive self-launch. Falls back to an explicit detected browser instead.
+
+```csharp
+public interface IExternalLinkService
+{
+    Task<bool> OpenAsync(string url);
+}
+```
 
 ## 📊 Models
 
@@ -186,20 +312,44 @@ public class AppSettings
 
 ### VisualSettings
 
-UI appearance settings.
+UI appearance settings (`ObservableObject`, CommunityToolkit.Mvvm-generated properties). Note: window backdrop mode/opacity/corner radius/always-on-top and theme are configured via `BackdropMode`, `ThemeMode`, and related appearance-tab settings introduced in Phase E-1/E-2, not shown in this simplified excerpt — see `src/BrowserSelector.Core/Models/VisualSettings.cs` and `AppSettings.cs` for the authoritative list.
 
 ```csharp
-public class VisualSettings
+public partial class VisualSettings : ObservableObject
 {
-    public double WindowOpacity { get; set; }
-    public string BackgroundColor { get; set; }
-    public bool EnableGradient { get; set; }
-    public string GradientColor { get; set; }
-    public double CornerRadius { get; set; }
-    public bool ShowTitleBar { get; set; }
-    public int BrowserButtonWidth { get; set; }
-    public int BrowserButtonHeight { get; set; }
+    [ObservableProperty] private Color _backgroundColor;
+    [ObservableProperty] private bool _useBackgroundGradient;
+    [ObservableProperty] private Color _gradientStartColor;
+    [ObservableProperty] private Color _gradientEndColor;
+    [ObservableProperty] private GradientDirection _gradientDirection;
+    [ObservableProperty] private double _iconScale;
+    [ObservableProperty] private bool _showFocusIndicator;
+    [ObservableProperty] private Color _focusColor;
+    [ObservableProperty] private double _focusThickness;
+    [ObservableProperty] private double _focusWidth;
+    [ObservableProperty] private double _initialWindowWidth;
+    [ObservableProperty] private double _initialWindowHeight;
+    [ObservableProperty] private bool _showLogo;
+    [ObservableProperty] private bool _showUrlInput;
+    [ObservableProperty] private double _browserButtonWidth;
+    [ObservableProperty] private double _browserButtonHeight;
+    [ObservableProperty] private Color _browserButtonBackgroundColor;
+    [ObservableProperty] private Color _browserButtonForegroundColor;
+    [ObservableProperty] private double _browserButtonOpacity;
+    [ObservableProperty] private double _browserButtonCornerRadius;
+    [ObservableProperty] private bool _showBrowserName;
+    [ObservableProperty] private double _browserIconSize;
+    [ObservableProperty] private Color _messageTextColor;
 }
+```
+
+### BackdropMode / ThemeMode (Enums)
+
+New in v0.2.0 (Phase E-1). Control window backdrop rendering and app theme.
+
+```csharp
+public enum BackdropMode { Mica, Acrylic, MicaAlt, SolidTranslucent, Opaque }
+public enum ThemeMode { Light, Dark, System }
 ```
 
 
@@ -268,24 +418,31 @@ public partial class SettingsViewModel : ObservableObject
 
 ### Service Registration
 
+All application services are registered as singletons (`AddSingleton`); ViewModels are transient. See `src/BrowserSelector.App/DependencyInjection/` for the authoritative registration code.
+
 ```csharp
 public static IServiceCollection AddBrowserSelectorServices(this IServiceCollection services)
 {
-    // Core Services
-    services.AddScoped<IBrowserService, BrowserService>();
-    services.AddScoped<ISettingsService, SettingsService>();
-    services.AddScoped<ILocalizationService, LocalizationService>();
-    services.AddScoped<IUpdateService, UpdateService>();
-    
-    // Infrastructure Services
-    services.AddSingleton<ILogService, LogService>();
-    services.AddScoped<IRegistryService, WindowsRegistryService>();
-    services.AddScoped<ISystemTrayService, SystemTrayService>();
-    
-    // Presentation Services
+    // Core / Infrastructure Services (all singleton)
+    services.AddSingleton<IBrowserService, BrowserService>();
+    services.AddSingleton<ISettingsService>(provider => /* ... */);
+    services.AddSingleton<ICustomLanguageService>(provider => /* ... */);
+    services.AddSingleton<ILocalizationService>(provider => /* ... */);
+    services.AddSingleton<IUrlService>(provider => /* ... */);
+    services.AddSingleton<IUrlRuleService>(provider => /* ... */);
+    services.AddSingleton<ILogService, BrowserSelector.Infrastructure.Logging.LogService>();
+    services.AddSingleton<IIconCacheService>(provider => /* ... */);
+    services.AddSingleton<IRegistryService>(provider => /* ... */);
+    services.AddSingleton<IProtocolHandler, ProtocolHandler>();
+    services.AddSingleton<IUpdateService>(provider => /* ... */); // skeleton only, not functional yet
+    services.AddSingleton<IExternalLinkService>(provider => /* ... */);
+    services.AddSingleton<IThemeService>(provider => /* ... */);
+
+    // Presentation Services (transient)
     services.AddTransient<MainViewModel>();
     services.AddTransient<SettingsViewModel>();
-    
+    services.AddTransient<LanguageManagementViewModel>();
+
     return services;
 }
 ```
@@ -336,17 +493,19 @@ foreach (var browser in browsers)
 
 ```csharp
 var settingsService = serviceProvider.GetRequiredService<ISettingsService>();
-await settingsService.LoadSettingsAsync();
+var visualSettings = await settingsService.LoadVisualSettingsAsync();
 
 // Modify settings
-settingsService.VisualSettings.WindowOpacity = 0.8;
-settingsService.VisualSettings.BackgroundColor = "#FF0000";
+visualSettings.BackgroundColor = Colors.Red;
+visualSettings.BrowserButtonCornerRadius = 12.0;
 
 // Save changes
-await settingsService.SaveSettingsAsync();
+await settingsService.SaveVisualSettingsAsync(visualSettings);
 ```
 
-### Update Check
+### Update Check (not yet functional — v0.3.0)
+
+`IUpdateService` currently only exposes the skeleton shown below; `CheckForUpdatesAsync()` and friends do not perform real GitHub Releases integration yet. The example illustrates the intended future usage once v0.3.0 lands.
 
 ```csharp
 var updateService = serviceProvider.GetRequiredService<IUpdateService>();
@@ -368,8 +527,9 @@ if (updateInfo != null)
 - All file operations are validated for path traversal
 - Registry access is restricted to safe keys
 - Process execution is validated and sanitized
-- Update downloads are verified with checksums
 - User input is sanitized to prevent injection attacks
+- Executable/installer are **not code-signed** at this time
+- Update download verification (checksums) is planned for v0.3.0 alongside the real `IUpdateService` implementation — not yet in place
 
 ## 📚 Additional Resources
 

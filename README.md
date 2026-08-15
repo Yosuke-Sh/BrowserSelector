@@ -2,23 +2,22 @@
 
 **BrowserSelector**は、Windows環境で複数のブラウザから選択してURLを開くためのモダンなWPFアプリケーションです。
 
-> **v0.1.1 品質改善完了** 🎉  
-> テスト警告・エラーを完全解決し、安定性が大幅に向上しました。
+> **v0.2.0 .NET 10移行・ガラスUI刷新** 🎉  
+> .NET 10へ移行し、Mica/Acrylicバックドロップによるガラスライクな外観、タイル刷新、キーボード操作、起動高速化を実装しました。
 
 [![CI/CD](https://github.com/Yosuke-Sh/BrowserSelector/workflows/CI/CD%20Pipeline/badge.svg)](https://github.com/Yosuke-Sh/BrowserSelector/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![.NET 8.0](https://img.shields.io/badge/.NET-8.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/8.0)
+[![.NET 10.0](https://img.shields.io/badge/.NET-10.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/10.0)
 [![Windows](https://img.shields.io/badge/Platform-Windows-blue.svg)](https://www.microsoft.com/windows)
 
 ## ✨ 特徴
 
 ### 🎨 視覚的に優れたデザイン
-- **モダンなUI**: Material Designにインスパイアされた洗練されたデザイン
-- **高品質アイコン**: Win32 API ExtractIconExによる高解像度アイコン抽出
-- **SVGアイコン**: 高解像度でスケーラブルなベクターアイコン
+- **ガラスUI**: Mica / Acrylic / MicaAlt のDWMバックドロップに対応した奥行きのあるデザイン（非対応環境向けの半透明単色・完全不透明モードも選択可能）
+- **高品質アイコン**: Win32 API ExtractIconExによる高解像度アイコン抽出（PNGベースのリソースアイコンを使用）
 - **カスタムロゴ**: ブラウザ選択の概念を表現する専用ロゴ
-- **アニメーション効果**: ホバー時のドロップシャドウとトランジション
-- **レスポンシブレイアウト**: 様々な画面サイズに対応
+- **アニメーション効果**: ブラウザタイルのホバーアニメーション、フォーカスリング、奥行き表現
+- **レスポンシブレイアウト**: ウィンドウリサイズに追従するグリッドレイアウト
 
 ### 🔧 コア機能
 - **自動ブラウザ検出**: Windowsレジストリからインストール済みブラウザを自動検出
@@ -29,7 +28,9 @@
 - **多言語対応**: 日本語・英語の完全対応
 - **視覚効果**: カスタム背景色、グラデーション、ブラウザボタンカスタマイズ
 - **URLルール管理**: 特定のURLパターンに対して自動的にブラウザを選択
-- **自動アップデート**: GitHub Releases連携による設定ファイル差分更新
+- **キーボード操作**: Esc/Enter/Space/矢印キー/Tab/ホットキーによる操作、Ctrl+,での設定画面呼び出し
+- **起動制御**: カウントダウン自動起動、トレイ常駐、CLIオプション（-d/-b/--silent/--auto-launch等）
+- **自動アップデート**: v0.3.0で実装予定（現状は`UpdateService`の骨格のみ実装済み）
 
 ### 🚀 使用方法
 
@@ -55,12 +56,12 @@ dotnet run --project src/BrowserSelector.App -- "https://www.google.com"
 
 #### システム要件
 - **OS**: Windows 10/11 (64-bit)
-- **.NET Runtime**: .NET 8.0 Runtime
+- **.NET Runtime**: .NET 10.0 Runtime
 - **権限**: 管理者権限（インストール時）
 
 #### インストール手順
 1. [Releases](https://github.com/Yosuke-Sh/BrowserSelector/releases)から最新版をダウンロード
-2. `BrowserSelector-Setup-v0.1.0.exe`を管理者権限で実行
+2. `BrowserSelector-Setup-v0.2.0.exe`を管理者権限で実行
 3. インストールウィザードに従ってインストール
 4. デスクトップまたはスタートメニューから起動
 
@@ -82,7 +83,7 @@ BrowserSelector.WPF/
 ```
 
 ### 技術スタック
-- **フレームワーク**: WPF (.NET 8.0)
+- **フレームワーク**: WPF (.NET 10.0)
 - **MVVMライブラリ**: CommunityToolkit.Mvvm
 - **DI Container**: Microsoft.Extensions.DependencyInjection
 - **設定管理**: Microsoft.Extensions.Configuration
@@ -91,40 +92,40 @@ BrowserSelector.WPF/
 ## 🎨 視覚的改善
 
 ### 新機能
-1. **SVGアイコンシステム**
-   - 高解像度でスケーラブル
-   - ブラウザ選択の概念を表現
-   - モダンなグラデーション効果
+1. **ガラスUI（Mica/Acrylicバックドロップ）**
+   - DWMバックドロップによる奥行きのある表現
+   - 非対応環境向けの半透明単色・完全不透明フォールバック
 
 2. **改善されたUI**
    - グローブアイコン付きURL入力フィールド
    - 設定アイコン付きボタン
-   - ホバー効果とドロップシャドウ
-   - 角丸デザイン
+   - タイルのホバーアニメーション・フォーカスリング
+   - 角丸デザイン（外観タブで半径調整可能）
 
 3. **ブランドアイデンティティ**
-   - 専用ロゴデザイン
+   - 専用ロゴデザイン（Phase C刷新版）
    - 一貫したカラーパレット
    - プロフェッショナルな外観
 
 ### デザイン要素
 - **カラーパレット**: Material Design Blue (#2196F3, #1976D2)
 - **タイポグラフィ**: Segoe UI
-- **アイコン**: カスタムSVGアイコン
+- **アイコン**: PNGベースのカスタムアイコン
 - **レイアウト**: グリッドベースのレスポンシブデザイン
 
 ## 🧪 テスト
 
 ### テストカバレッジ
-- **単体テスト**: 190テスト中189成功（xUnit + Moq + FluentAssertions）
+- **単体テスト（UnitTests）**: 241テスト中240成功（既知のフレーキーテスト1件を除き成功、xUnit + Moq + FluentAssertions）
+- **単体テスト（CoreTests）**: 31テスト中31成功
+- **単体テスト（InfrastructureTests）**: 28テスト中28成功
 - **統合テスト**: 23テスト中23成功（設定ファイル保存・読み込み、レジストリアクセス）
 - **UIテスト**: 5テスト中5成功（MSTest + FlaUI）
 - **セキュリティテスト**: 238テスト中238成功（入力値検証、ファイルパス、レジストリアクセス）
-- **Appテスト**: 154テスト中154成功（WPFアプリケーションリフレクションテスト）
-- **ライブラリテスト**: 61テスト中61成功（ライブラリ機能テスト）
-- **パフォーマンステスト**: BenchmarkDotNetによるベンチマーク
+- **Appテスト**: 88テスト中88成功（WPFアプリケーションリフレクションテスト）
+- **パフォーマンステスト**: BenchmarkDotNetによるベンチマーク（xUnitランナーからは除外）
 - **E2Eテスト**: 4テスト中4成功（Playwright for .NET）
-- **総合**: 702テスト中702成功（100%成功率、警告0件）
+- **総合**: 658テスト中657成功（既知のフレーキーテスト1件を除き100%成功、警告0件）
 
 ### テスト実行
 ```bash
@@ -155,7 +156,7 @@ dotnet build --configuration Release
 ## 🚀 開発
 
 ### 前提条件
-- .NET 8.0 SDK
+- .NET 10.0 SDK
 - Visual Studio 2022 または VS Code
 - Windows 10/11
 
@@ -172,13 +173,13 @@ dotnet build --configuration Release
 
 ### システム要件
 - **OS**: Windows 10/11
-- **.NET Runtime**: .NET 8.0 Runtime
+- **.NET Runtime**: .NET 10.0 Runtime
 - **メモリ**: 100MB以下
 - **ディスク**: 50MB以上の空き容量
 
 ## 🔄 自動アップデート
 
-BrowserSelectorは自動更新機能を搭載しています：
+自動アップデート機能は**v0.3.0で実装予定**です。現状は`IUpdateService`/`UpdateService`の骨格（インターフェース定義）のみが実装されており、以下の機能は未実装です：
 - 起動時の自動更新チェック
 - GitHub Releases API連携
 - セキュアな更新プロセス
@@ -223,18 +224,17 @@ BrowserSelectorは自動更新機能を搭載しています：
 
 [![CI/CD](https://github.com/Yosuke-Sh/BrowserSelector/workflows/CI/CD%20Pipeline/badge.svg)](https://github.com/Yosuke-Sh/BrowserSelector/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![.NET 8.0](https://img.shields.io/badge/.NET-8.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/8.0)
+[![.NET 10.0](https://img.shields.io/badge/.NET-10.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/10.0)
 [![Windows](https://img.shields.io/badge/Platform-Windows-blue.svg)](https://www.microsoft.com/windows)
 
 ### ✨ Features
 
 #### 🎨 Visually Superior Design
-- **Modern UI**: Refined design inspired by Material Design
-- **High-Quality Icons**: High-resolution icon extraction using Win32 API ExtractIconEx
-- **SVG Icons**: High-resolution and scalable vector icons
+- **Glass UI**: Mica / Acrylic / MicaAlt DWM backdrops for a layered, translucent look (with solid-color and fully opaque fallbacks for non-DWM environments)
+- **High-Quality Icons**: High-resolution icon extraction using Win32 API ExtractIconEx (PNG-based resource icons)
 - **Custom Logo**: Dedicated logo expressing the concept of browser selection
-- **Animation Effects**: Drop shadows and transitions on hover
-- **Responsive Layout**: Adapts to various screen sizes
+- **Animation Effects**: Hover animations and focus rings on browser tiles
+- **Responsive Layout**: Grid layout that adapts as the window is resized
 
 #### 🔧 Core Features
 - **Automatic Browser Detection**: Automatically detects installed browsers from Windows Registry
@@ -245,7 +245,9 @@ BrowserSelectorは自動更新機能を搭載しています：
 - **Multi-language Support**: Full support for Japanese and English
 - **Visual Effects**: Custom background colors, gradients, browser button customization
 - **URL Rule Management**: Automatically select browsers for specific URL patterns
-- **Automatic Updates**: GitHub Releases integration with settings file differential updates
+- **Keyboard Operation**: Esc/Enter/Space/arrow keys/Tab/hotkeys, Ctrl+, to open settings
+- **Startup Control**: Countdown auto-launch, tray residency, CLI options (-d/-b/--silent/--auto-launch, etc.)
+- **Automatic Updates**: Planned for v0.3.0 (only the `UpdateService` skeleton exists today)
 
 ### 🚀 Usage
 
@@ -274,7 +276,7 @@ BrowserSelector.WPF/
 ```
 
 #### Technology Stack
-- **Framework**: WPF (.NET 8.0)
+- **Framework**: WPF (.NET 10.0)
 - **MVVM Library**: CommunityToolkit.Mvvm
 - **DI Container**: Microsoft.Extensions.DependencyInjection
 - **Configuration**: Microsoft.Extensions.Configuration
@@ -283,15 +285,16 @@ BrowserSelector.WPF/
 ### 🧪 Testing
 
 #### Test Coverage
-- **Unit Tests**: 189/190 tests passing (xUnit + Moq + FluentAssertions)
+- **Unit Tests (UnitTests)**: 240/241 tests passing (one known flaky test excluded, xUnit + Moq + FluentAssertions)
+- **Unit Tests (CoreTests)**: 31/31 tests passing
+- **Unit Tests (InfrastructureTests)**: 28/28 tests passing
 - **Integration Tests**: 23/23 tests passing (Settings file save/load, registry access)
 - **UI Tests**: 5/5 tests passing (MSTest + FlaUI)
 - **Security Tests**: 238/238 tests passing (Input validation, file paths, registry access)
-- **App Tests**: 154/154 tests passing (WPF application reflection tests)
-- **Library Tests**: 61/61 tests passing (Library functionality tests)
-- **Performance Tests**: Benchmarks with BenchmarkDotNet
+- **App Tests**: 88/88 tests passing (WPF application reflection tests)
+- **Performance Tests**: Benchmarks with BenchmarkDotNet (excluded from the xUnit test runner)
 - **E2E Tests**: 4/4 tests passing (Playwright for .NET)
-- **Overall**: 702/702 tests passing (100% success rate, zero warnings)
+- **Overall**: 657/658 tests passing (100% excluding one known flaky test, zero warnings)
 
 #### Test Execution
 ```bash
@@ -315,13 +318,13 @@ dotnet test --collect:"XPlat Code Coverage"
 
 #### System Requirements
 - **OS**: Windows 10/11
-- **.NET Runtime**: .NET 8.0 Runtime
+- **.NET Runtime**: .NET 10.0 Runtime
 - **Memory**: Less than 100MB
 - **Disk**: 50MB+ free space
 
 ### 🔄 Automatic Updates
 
-BrowserSelector features automatic update functionality:
+Automatic update functionality is **planned for v0.3.0**. Only the `IUpdateService`/`UpdateService` skeleton (interface definitions) exists today; the following are not yet implemented:
 - Automatic update check on startup
 - GitHub Releases API integration
 - Secure update process
