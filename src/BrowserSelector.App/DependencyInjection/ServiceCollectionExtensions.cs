@@ -11,7 +11,7 @@ namespace BrowserSelector.App.DependencyInjection;
 /// <summary>
 /// 依存性注入のためのサービスコレクション拡張メソッドを提供します.
 /// </summary>
-public static class ServiceCollectionExtensions
+internal static class ServiceCollectionExtensions
 {
     /// <summary>
     /// BrowserSelectorアプリケーションに必要なすべてのサービスをサービスコレクションに追加します.

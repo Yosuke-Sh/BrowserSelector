@@ -15,7 +15,11 @@ namespace BrowserSelector.App;
 /// <summary>
 /// Interaction logic for App.xaml.
 /// </summary>
+// CA1515: WPFのXAMLコンパイラが生成する部分クラス(App.g.cs)は常にpublicのため、
+// アクセシビリティを一致させる必要があり internal 化できない（正当な設計上の制約）。
+#pragma warning disable CA1515
 public partial class App : Application
+#pragma warning restore CA1515
 {
     private IHost? _host;
     private ILogService? _logService;

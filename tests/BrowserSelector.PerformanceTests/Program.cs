@@ -9,7 +9,7 @@ namespace BrowserSelector.PerformanceTests;
 /// <summary>
 /// パフォーマンステスト実行プログラム.
 /// </summary>
-public static class Program
+internal static class Program
 {
     /// <summary>
     /// メインエントリーポイント.
