@@ -1,6 +1,7 @@
 using BrowserSelector.App.DependencyInjection;
 using BrowserSelector.Core.Enums;
 using BrowserSelector.Core.Services;
+using BrowserSelector.Infrastructure.SystemIntegration;
 using BrowserSelector.Presentation.Converters;
 using BrowserSelector.Presentation.Extensions;
 using BrowserSelector.Presentation.Helpers;
@@ -18,12 +19,16 @@ namespace BrowserSelector.App;
 /// </summary>
 // CA1515: WPFのXAMLコンパイラが生成する部分クラス(App.g.cs)は常にpublicのため、
 // アクセシビリティを一致させる必要があり internal 化できない（正当な設計上の制約）。
-#pragma warning disable CA1515
+// CA1001: IDisposableフィールド(_singleInstanceManager/_host)はOnExit()で確実にDisposeしている。
+// Applicationは基底側の設計上IDisposableを実装しないため、型自体をIDisposable化はしない。
+#pragma warning disable CA1515, CA1001
 public partial class App : Application
-#pragma warning restore CA1515
+#pragma warning restore CA1515, CA1001
 {
     private IHost? _host;
     private ILogService? _logService;
+    private SingleInstanceManager? _singleInstanceManager;
+    private MainViewModel? _mainViewModel;
 
     /// <inheritdoc/>
     protected override void OnStartup(StartupEventArgs e)
@@ -34,6 +39,22 @@ public partial class App : Application
             // テストモードの確認
             bool isTestMode = e.Args.Contains("--test-mode") ||
                              Environment.GetEnvironmentVariable("BROWSERSELECTOR_TEST_MODE") == "true";
+
+            // 単一インスタンス判定: 先行インスタンスが存在する場合はURLを転送して即終了
+            _singleInstanceManager = new SingleInstanceManager();
+            if (!_singleInstanceManager.TryAcquire())
+            {
+                Uri? forwardedUrl = e.Args.Length > 0 && Uri.TryCreate(e.Args[0], UriKind.Absolute, out Uri? parsedUri)
+                    ? parsedUri
+                    : null;
+                _ = SingleInstanceManager.TrySendToExistingInstanceAsync(forwardedUrl).GetAwaiter().GetResult();
+                _singleInstanceManager.Dispose();
+                _singleInstanceManager = null;
+                Shutdown();
+                return;
+            }
+
+            _singleInstanceManager.UrlReceived += OnUrlReceivedFromNewInstance;
 
             _logService?.LogTrace($"アプリケーション起動処理開始: コマンドライン引数={string.Join(" ", e.Args)}, テストモード={isTestMode}", "App");
             // ホストの構築
@@ -121,6 +142,7 @@ public partial class App : Application
                                       "MVVM_CREATE", "ViewModel", "System", "MainViewModel", "Resolve", "Started");
 
                 mainViewModel = _host.Services.GetRequiredService<MainViewModel>();
+                _mainViewModel = mainViewModel;
 
                 _logService?.LogDetailed(LogLevel.Debug, "DIコンテナからMainViewModel取得完了", "App",
                                       "MVVM_CREATE", "ViewModel", "System", "MainViewModel", "Resolve", "Success");
@@ -295,6 +317,13 @@ public partial class App : Application
         {
             _logService?.LogInformation("アプリケーション終了開始", "App");
 
+            if (_singleInstanceManager != null)
+            {
+                _singleInstanceManager.UrlReceived -= OnUrlReceivedFromNewInstance;
+                _singleInstanceManager.Dispose();
+                _singleInstanceManager = null;
+            }
+
             if (_host != null)
             {
                 _host.StopAsync().GetAwaiter().GetResult();
@@ -312,6 +341,34 @@ public partial class App : Application
         #pragma warning restore CA1031
 
         base.OnExit(e);
+    }
+
+    /// <summary>
+    /// 後続インスタンスから転送されたURLを受信した際の処理.
+    /// パイプ受信スレッド上で発火するためUIスレッドへディスパッチする.
+    /// </summary>
+    private void OnUrlReceivedFromNewInstance(object? sender, UrlReceivedEventArgs e)
+    {
+        Dispatcher.Invoke(() =>
+        {
+            _logService?.LogInformation($"後続インスタンスからURLを受信: {e.Url}", "App");
+
+            if (MainWindow != null)
+            {
+                if (MainWindow.WindowState == WindowState.Minimized)
+                {
+                    MainWindow.WindowState = WindowState.Normal;
+                }
+
+                MainWindow.Show();
+                _ = MainWindow.Activate();
+            }
+
+            if (!string.IsNullOrWhiteSpace(e.Url) && Uri.TryCreate(e.Url, UriKind.Absolute, out Uri? uri))
+            {
+                _mainViewModel?.SetInitialUrl(uri);
+            }
+        });
     }
 }
 
