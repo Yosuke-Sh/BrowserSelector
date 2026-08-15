@@ -163,7 +163,10 @@ public partial class App : Application
             _logService?.LogInformation("テストモード: MainWindowを作成", "App");
             // 背景・サイズの初期設定はMainWindowのコンストラクタ（ApplyInitialBackgroundSettings/ApplyInitialSizeSettings）に一本化。
             // 従来ここでApp.xaml.cs側でも背景色を直接適用していたため、初期化経路が重複していた。
-            Presentation.Views.MainWindow mainWindow = new(mainViewModel, _logService!);
+            // IThemeService/ISettingsServiceはPhase C-1のDWMバックドロップ適用（ダーク/ライト判定・ガラス効果設定）に使用。
+            IThemeService themeServiceForWindow = _host.Services.GetRequiredService<IThemeService>();
+            ISettingsService settingsServiceForWindow = _host.Services.GetRequiredService<ISettingsService>();
+            Presentation.Views.MainWindow mainWindow = new(mainViewModel, _logService!, themeServiceForWindow, settingsServiceForWindow);
             _logService?.LogInformation("MainWindow作成完了", "App");
 
             MainWindow = mainWindow;

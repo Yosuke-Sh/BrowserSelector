@@ -17,6 +17,12 @@
     <Color x:Key="Color.FocusRing">#4DA3FF</Color>
     <Color x:Key="Color.Scrim">#A0000000</Color>
 
+    <!-- エレベーション（奥行き表現）用トークン。Phase C-7。ダークでは半透明の明色カード+濃い影で階層を表す。 -->
+    <Color x:Key="Color.ElevationCard">#332F2F38</Color>
+    <Color x:Key="Color.ElevationCardHover">#4D3A3A45</Color>
+    <Color x:Key="Color.ElevationShadow">#66000000</Color>
+    <Color x:Key="Color.ElevationShadowHover">#80000000</Color>
+
     <SolidColorBrush x:Key="Brush.Surface" Color="{StaticResource Color.Surface}"/>
     <SolidColorBrush x:Key="Brush.SurfaceAlt" Color="{StaticResource Color.SurfaceAlt}"/>
     <SolidColorBrush x:Key="Brush.SurfaceHover" Color="{StaticResource Color.SurfaceHover}"/>
@@ -30,5 +36,9 @@
     <SolidColorBrush x:Key="Brush.BorderStrong" Color="{StaticResource Color.BorderStrong}"/>
     <SolidColorBrush x:Key="Brush.FocusRing" Color="{StaticResource Color.FocusRing}"/>
     <SolidColorBrush x:Key="Brush.Scrim" Color="{StaticResource Color.Scrim}"/>
+    <SolidColorBrush x:Key="Brush.ElevationCard" Color="{StaticResource Color.ElevationCard}"/>
+    <SolidColorBrush x:Key="Brush.ElevationCardHover" Color="{StaticResource Color.ElevationCardHover}"/>
+    <SolidColorBrush x:Key="Brush.ElevationShadow" Color="{StaticResource Color.ElevationShadow}"/>
+    <SolidColorBrush x:Key="Brush.ElevationShadowHover" Color="{StaticResource Color.ElevationShadowHover}"/>
 
 </ResourceDictionary>

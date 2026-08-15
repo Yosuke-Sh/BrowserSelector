@@ -38,5 +38,19 @@ namespace BrowserSelector.Core.Models
 
         [ObservableProperty]
         private bool _closeAfterUrlRuleMatch = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether DWMによるガラス効果（Mica/Acrylic）を有効にするか.
+        /// falseの場合、<see cref="Helpers.WindowBackdropHelper"/> は半透明単色ブラシへフォールバックする.
+        /// </summary>
+        [ObservableProperty]
+        private bool _enableGlassEffect = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether ホバー・フォーカス等のUIアニメーション（拡大・影の遷移）を有効にするか.
+        /// Windowsの「アニメーションを表示する」設定と併用し、falseの場合は影・スケール変化を全て無効化する.
+        /// </summary>
+        [ObservableProperty]
+        private bool _enableAnimations = true;
     }
 }

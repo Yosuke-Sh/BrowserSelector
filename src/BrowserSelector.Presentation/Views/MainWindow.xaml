@@ -3,19 +3,39 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
         xmlns:viewmodels="clr-namespace:BrowserSelector.Presentation.ViewModels"
 
         xmlns:converters="clr-namespace:BrowserSelector.Presentation.Converters"
         xmlns:extensions="clr-namespace:BrowserSelector.Presentation.Extensions"
         mc:Ignorable="d"
-        Title="{extensions:Localization MainWindow.Title}" 
+        Title="{extensions:Localization MainWindow.Title}"
         WindowStartupLocation="CenterScreen"
         WindowState="Normal"
+        WindowStyle="None"
+        AllowsTransparency="False"
+        Background="Transparent"
+        ResizeMode="CanResizeWithGrip"
+        SizeToContent="WidthAndHeight"
         ShowInTaskbar="True"
         Icon="/BrowserSelector.Presentation;component/Resources/Images/BrowserSelector_Icon_32.png"
         d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         AutomationProperties.Name="MainWindow">
+
+    <!--
+        透明化方式（決定事項・Phase C-1/C-2）: AllowsTransparencyは使わず、
+        WindowStyle=None + WindowChrome(GlassFrameThickness=-1) + DwmSetWindowAttribute(SYSTEMBACKDROP_TYPE)
+        の組み合わせでガラス化する。これによりウィンドウ全体のソフトウェアレンダリング化を避け、
+        ブラウザアイコンを不透明・GPUレンダリングのまま鮮明に保つ。
+    -->
+    <shell:WindowChrome.WindowChrome>
+        <shell:WindowChrome GlassFrameThickness="-1"
+                             CaptionHeight="36"
+                             ResizeBorderThickness="6"
+                             CornerRadius="0"
+                             UseAeroCaptionButtons="False"/>
+    </shell:WindowChrome.WindowChrome>
 
     <Window.Resources>
         <!-- コンバーター -->
@@ -26,70 +46,176 @@
         <converters:IconSizeConverter x:Key="IconSizeConverter"/>
         <converters:IconMarginConverter x:Key="IconMarginConverter"/>
         <converters:BackgroundBrushConverter x:Key="BackgroundBrushConverter"/>
+        <converters:IndexToHotkeyBadgeConverter x:Key="IndexToHotkeyBadgeConverter"/>
+        <converters:BrowserTooltipConverter x:Key="BrowserTooltipConverter"/>
 
-        <!-- スタイル定義 -->
+        <!-- タイトルバーボタン共通スタイル（最小化・設定）。閉じるボタンのみ別スタイルで赤系ホバーにする -->
+        <Style x:Key="TitleBarButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="44"/>
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="shell:WindowChrome.IsHitTestVisibleInChrome" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Root" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Root" Property="Background" Value="{DynamicResource Brush.SurfaceHover}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="CloseButtonStyle" TargetType="Button" BasedOn="{StaticResource TitleBarButtonStyle}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Root" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Root" Property="Background" Value="#E81123"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ブラウザタイル（Phase C-3: ホバー・フォーカス・スケールアニメーション対応、Phase C-7: エレベーション表現） -->
         <Style x:Key="BrowserButtonStyle" TargetType="Button">
             <Setter Property="Margin" Value="8"/>
             <Setter Property="Padding" Value="10"/>
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="FontWeight" Value="Medium"/>
             <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Focusable" Value="True"/>
+            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{Binding DataContext.VisualSettings.BrowserButtonBackgroundColor, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource ColorToBrushConverter}}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="{Binding DataContext.VisualSettings.BrowserButtonCornerRadius, RelativeSource={RelativeSource AncestorType=Window}}"
-                                Opacity="{Binding DataContext.VisualSettings.BrowserButtonOpacity, RelativeSource={RelativeSource AncestorType=Window}}"
-                                Width="{Binding DataContext.VisualSettings.BrowserButtonWidth, RelativeSource={RelativeSource AncestorType=Window}}"
-                                Height="{Binding DataContext.VisualSettings.BrowserButtonHeight, RelativeSource={RelativeSource AncestorType=Window}}">
-                            <StackPanel Orientation="Vertical" 
-                                        HorizontalAlignment="Center" 
-                                        VerticalAlignment="Center">
-                                <Image RenderOptions.BitmapScalingMode="HighQuality">
-                                    <Image.Width>
-                                        <MultiBinding Converter="{StaticResource IconSizeConverter}">
-                                            <Binding Path="DataContext.VisualSettings.BrowserIconSize" RelativeSource="{RelativeSource AncestorType=Window}"/>
-                                            <Binding Path="DataContext.VisualSettings.ShowBrowserName" RelativeSource="{RelativeSource AncestorType=Window}"/>
-                                        </MultiBinding>
-                                    </Image.Width>
-                                    <Image.Height>
-                                        <MultiBinding Converter="{StaticResource IconSizeConverter}">
-                                            <Binding Path="DataContext.VisualSettings.BrowserIconSize" RelativeSource="{RelativeSource AncestorType=Window}"/>
-                                            <Binding Path="DataContext.VisualSettings.ShowBrowserName" RelativeSource="{RelativeSource AncestorType=Window}"/>
-                                        </MultiBinding>
-                                    </Image.Height>
-                                    <Image.Margin>
-                                        <Binding Path="DataContext.VisualSettings.ShowBrowserName" RelativeSource="{RelativeSource AncestorType=Window}" Converter="{StaticResource IconMarginConverter}"/>
-                                    </Image.Margin>
-                                    <Image.Source>
-                                        <MultiBinding Converter="{StaticResource IconPathConverter}">
-                                            <Binding Path="IconPath"/>
-                                            <Binding Path="ExecutablePath"/>
-                                            <Binding Path="Name"/>
-                                            <Binding Path="IconIndex"/>
-                                        </MultiBinding>
-                                    </Image.Source>
-                                </Image>
-                                <TextBlock Text="{TemplateBinding Content}" 
-                                           HorizontalAlignment="Center"
-                                           TextWrapping="Wrap"
-                                           MaxWidth="100"
-                                           Foreground="{Binding DataContext.VisualSettings.BrowserButtonForegroundColor, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource ColorToBrushConverter}}"
-                                           Visibility="{Binding DataContext.VisualSettings.ShowBrowserName, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                            </StackPanel>
-                        </Border>
+                        <Grid>
+                            <!-- エレベーション: 半透明の重ねたBorderで影を疑似表現（DropShadowEffectはWPFで重いため不採用、CacheModeも併用） -->
+                            <Border x:Name="Shadow"
+                                    Background="{DynamicResource Brush.ElevationShadow}"
+                                    CornerRadius="{Binding DataContext.VisualSettings.BrowserButtonCornerRadius, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    Margin="2,3,-2,-3"
+                                    CacheMode="BitmapCache"/>
+
+                            <Border x:Name="Root"
+                                    Background="{Binding DataContext.VisualSettings.BrowserButtonBackgroundColor, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource ColorToBrushConverter}}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="{Binding DataContext.VisualSettings.BrowserButtonCornerRadius, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    Opacity="{Binding DataContext.VisualSettings.BrowserButtonOpacity, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    Width="{Binding DataContext.VisualSettings.BrowserButtonWidth, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    Height="{Binding DataContext.VisualSettings.BrowserButtonHeight, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    RenderTransformOrigin="0.5,0.5"
+                                    CacheMode="BitmapCache">
+                                <Border.RenderTransform>
+                                    <ScaleTransform x:Name="RootScale" ScaleX="1.0" ScaleY="1.0"/>
+                                </Border.RenderTransform>
+                                <StackPanel Orientation="Vertical"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center">
+                                    <Image RenderOptions.BitmapScalingMode="HighQuality">
+                                        <Image.Width>
+                                            <MultiBinding Converter="{StaticResource IconSizeConverter}">
+                                                <Binding Path="DataContext.VisualSettings.BrowserIconSize" RelativeSource="{RelativeSource AncestorType=Window}"/>
+                                                <Binding Path="DataContext.VisualSettings.ShowBrowserName" RelativeSource="{RelativeSource AncestorType=Window}"/>
+                                            </MultiBinding>
+                                        </Image.Width>
+                                        <Image.Height>
+                                            <MultiBinding Converter="{StaticResource IconSizeConverter}">
+                                                <Binding Path="DataContext.VisualSettings.BrowserIconSize" RelativeSource="{RelativeSource AncestorType=Window}"/>
+                                                <Binding Path="DataContext.VisualSettings.ShowBrowserName" RelativeSource="{RelativeSource AncestorType=Window}"/>
+                                            </MultiBinding>
+                                        </Image.Height>
+                                        <Image.Margin>
+                                            <Binding Path="DataContext.VisualSettings.ShowBrowserName" RelativeSource="{RelativeSource AncestorType=Window}" Converter="{StaticResource IconMarginConverter}"/>
+                                        </Image.Margin>
+                                        <Image.Source>
+                                            <MultiBinding Converter="{StaticResource IconPathConverter}">
+                                                <Binding Path="IconPath"/>
+                                                <Binding Path="ExecutablePath"/>
+                                                <Binding Path="Name"/>
+                                                <Binding Path="IconIndex"/>
+                                            </MultiBinding>
+                                        </Image.Source>
+                                    </Image>
+                                    <TextBlock Text="{TemplateBinding Content}"
+                                               HorizontalAlignment="Center"
+                                               TextWrapping="Wrap"
+                                               MaxWidth="100"
+                                               Foreground="{Binding DataContext.VisualSettings.BrowserButtonForegroundColor, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource ColorToBrushConverter}}"
+                                               Visibility="{Binding DataContext.VisualSettings.ShowBrowserName, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- ホットキー／既定ブラウザバッジ（左上） -->
+                            <Border HorizontalAlignment="Left" VerticalAlignment="Top"
+                                    Margin="4"
+                                    Background="{DynamicResource Brush.Accent}"
+                                    CornerRadius="8"
+                                    Padding="5,1"
+                                    Visibility="{Binding IsDefault, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <TextBlock Text="{extensions:Localization MainWindow.DefaultBrowserBadge}"
+                                           FontSize="9"
+                                           FontWeight="Bold"
+                                           Foreground="{DynamicResource Brush.TextOnAccent}"/>
+                            </Border>
+
+                            <!-- フォーカスリング（VisualSettings.FocusColor/FocusThicknessを流用） -->
+                            <Border x:Name="FocusRing"
+                                    BorderBrush="{Binding DataContext.VisualSettings.FocusColor, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource ColorToBrushConverter}}"
+                                    BorderThickness="{Binding DataContext.VisualSettings.FocusThickness, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    CornerRadius="{Binding DataContext.VisualSettings.BrowserButtonCornerRadius, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    Margin="-2"
+                                    Visibility="Collapsed"
+                                    IsHitTestVisible="False"/>
+                        </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Opacity" Value="0.5"/>
-                                <Setter Property="Background" Value="{DynamicResource Brush.SurfaceDisabled}"/>
-                                <Setter Property="BorderBrush" Value="{DynamicResource Brush.BorderStrong}"/>
+                                <Setter TargetName="Root" Property="Opacity" Value="0.5"/>
+                                <Setter TargetName="Root" Property="Background" Value="{DynamicResource Brush.SurfaceDisabled}"/>
+                                <Setter TargetName="Root" Property="BorderBrush" Value="{DynamicResource Brush.BorderStrong}"/>
+                                <Setter TargetName="Shadow" Property="Visibility" Value="Collapsed"/>
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="{DynamicResource Brush.SurfaceHover}"/>
-                                <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}"/>
+                                <Setter TargetName="Root" Property="BorderBrush" Value="{DynamicResource Brush.Accent}"/>
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleX" To="1.06" Duration="0:0:0.12"/>
+                                            <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleY" To="1.06" Duration="0:0:0.12"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.12"/>
+                                            <DoubleAnimation Storyboard.TargetName="RootScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.12"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
                             </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="FocusRing" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                            <DataTrigger Binding="{Binding DataContext.VisualSettings.ShowFocusIndicator, RelativeSource={RelativeSource AncestorType=Window}}" Value="False">
+                                <Setter TargetName="FocusRing" Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
@@ -104,20 +230,68 @@
         </Style>
     </Window.Resources>
 
-    <Grid AutomationProperties.Name="MainContentGrid">
+    <Window.InputBindings>
+        <!-- Phase C-4: キーボード操作。Esc/Enter/Space/矢印キー/ホットキーはPreviewKeyDownで処理（列数計算等の共有ロジックが必要なため） -->
+        <KeyBinding Modifiers="Ctrl" Key="OemComma" Command="{Binding OpenSettingsCommand}"/>
+    </Window.InputBindings>
+
+    <Grid AutomationProperties.Name="MainContentGrid" PreviewKeyDown="OnPreviewKeyDown">
         <Grid.RowDefinitions>
+            <RowDefinition Height="36"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        
-        <!-- 背景 -->
-        <Border Grid.RowSpan="4" 
+
+        <!-- 背景（ガラス効果無効時のフォールバック。有効時はWindow.Background=Transparentのまま） -->
+        <Border Grid.RowSpan="5"
                 Background="{Binding VisualSettings, Converter={StaticResource BackgroundBrushConverter}}"/>
 
-        <!-- ヘッダー -->
-        <Grid Grid.Row="0" Margin="20,20,20,15"
+        <!-- カスタムタイトルバー（Phase C-2） -->
+        <Grid Grid.Row="0" AutomationProperties.Name="CustomTitleBar">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0"
+                       Text="{Binding TitleMessage}"
+                       FontSize="12"
+                       Margin="12,0,0,0"
+                       VerticalAlignment="Center"
+                       Foreground="{DynamicResource Brush.TextSecondary}"
+                       TextTrimming="CharacterEllipsis"/>
+
+            <Button Grid.Column="1"
+                    Style="{StaticResource TitleBarButtonStyle}"
+                    Command="{Binding OpenSettingsCommand}"
+                    ToolTip="{extensions:Localization MainWindow.SettingsButton.Tooltip}"
+                    AutomationProperties.Name="SettingsButton">
+                <TextBlock Text="&#xE713;" FontFamily="Segoe MDL2 Assets" FontSize="14"/>
+            </Button>
+
+            <Button Grid.Column="2"
+                    Style="{StaticResource TitleBarButtonStyle}"
+                    Click="MinimizeButton_Click"
+                    ToolTip="{extensions:Localization MainWindow.MinimizeButton.Tooltip}"
+                    AutomationProperties.Name="MinimizeButton">
+                <TextBlock Text="&#xE921;" FontFamily="Segoe MDL2 Assets" FontSize="10"/>
+            </Button>
+
+            <Button Grid.Column="3"
+                    Style="{StaticResource CloseButtonStyle}"
+                    Click="CloseButton_Click"
+                    ToolTip="{extensions:Localization MainWindow.CloseButton.Tooltip}"
+                    AutomationProperties.Name="CloseButton">
+                <TextBlock Text="&#xE8BB;" FontFamily="Segoe MDL2 Assets" FontSize="10"/>
+            </Button>
+        </Grid>
+
+        <!-- ヘッダー（ロゴ + タイトル。Phase C-0b/C-6で再構成: 新ロゴSMALL（比率6.15）を左、タイトルを右） -->
+        <Grid Grid.Row="1" Margin="20,16,20,10"
               Visibility="{Binding VisualSettings.ShowLogo, Converter={StaticResource BoolToVisibilityConverter}}"
               AutomationProperties.Name="HeaderGrid">
             <Grid.ColumnDefinitions>
@@ -125,22 +299,23 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- ロゴ（左上） -->
+            <!-- ロゴ（左、比率6.15の横長バナー。Stretch=UniformでHeightのみ指定し歪みを防止） -->
             <Image Grid.Column="0"
-                   Source="/BrowserSelector.Presentation;component/Resources/Images/BrowserSelector_Logo_240.png"
+                   Source="/BrowserSelector.Presentation;component/Resources/Images/BrowserSelector_Logo2_SMALL.png"
                    Stretch="Uniform"
-                   Height="79"
+                   Height="52"
+                   MaxWidth="360"
                    HorizontalAlignment="Left"
-                   VerticalAlignment="Top"
+                   VerticalAlignment="Center"
                    RenderOptions.BitmapScalingMode="HighQuality"
                    AutomationProperties.Name="LogoImage"/>
 
-            <!-- タイトルテキスト（右側、可変幅） -->
+            <!-- タイトルテキスト（右側、可変幅・狭幅時は省略） -->
             <TextBlock Grid.Column="1"
                        Text="{Binding TitleMessage}"
-                       FontSize="20"
+                       FontSize="16"
                        Foreground="{DynamicResource Brush.TextPrimary}"
-                       HorizontalAlignment="Center"
+                       HorizontalAlignment="Right"
                        VerticalAlignment="Center"
                        TextTrimming="CharacterEllipsis"
                        Margin="10,0,0,0"
@@ -148,17 +323,18 @@
         </Grid>
 
         <!-- URLが指定されている場合の表示 -->
-        <TextBlock Grid.Row="0"
+        <TextBlock Grid.Row="1"
                    Text="{Binding Url, StringFormat='URL: {0}'}"
                    FontSize="14"
                    HorizontalAlignment="Center"
-                   Margin="20,70,20,0"
+                   VerticalAlignment="Bottom"
+                   Margin="20,0,20,0"
                    Foreground="{DynamicResource Brush.TextSecondary}"
                    Visibility="{Binding Url, Converter={StaticResource BoolToVisibilityConverter}}"
                    AutomationProperties.Name="UrlDisplayTextBlock"/>
 
-        <!-- URL入力 -->
-        <Grid Grid.Row="1" Margin="20,10"
+        <!-- URL入力（Phase C-7: エレベーション レベル1 - 背景よりわずかに沈む表現） -->
+        <Grid Grid.Row="2" Margin="20,10"
               Visibility="{Binding VisualSettings.ShowUrlInput, Converter={StaticResource BoolToVisibilityConverter}}"
               AutomationProperties.Name="UrlInputGrid">
             <Grid.ColumnDefinitions>
@@ -222,82 +398,107 @@
 
         </Grid>
 
-        <!-- ブラウザ一覧 -->
-        <Grid Grid.Row="2" Margin="20,10">
+        <!-- ブラウザ一覧（Phase C-3: UniformGrid + 計算列数） -->
+        <Grid Grid.Row="3" Margin="20,10">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            
-            <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" AutomationProperties.Name="BrowserButtonsScrollViewer">
-                <ItemsControl ItemsSource="{Binding Browsers}"
+
+            <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" AutomationProperties.Name="BrowserButtonsScrollViewer"
+                          SizeChanged="BrowserButtonsScrollViewer_SizeChanged">
+                <ItemsControl x:Name="BrowserItemsControl"
+                              ItemsSource="{Binding Browsers}"
+                              AlternationCount="35"
                               AutomationProperties.Name="BrowserButtonsContainer">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <WrapPanel/>
+                            <!-- Columnsは列数計算の唯一の計算元（TileLayoutHelper.CalculateColumns）から
+                                 コードビハインドで設定する。矢印キー移動（C-4）と表示上の列数を一致させるため。 -->
+                            <UniformGrid Rows="0"/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemContainerStyle>
+                        <Style TargetType="ContentPresenter">
+                            <Setter Property="Tag" Value="{Binding RelativeSource={RelativeSource Self}, Path=(ItemsControl.AlternationIndex)}"/>
+                        </Style>
+                    </ItemsControl.ItemContainerStyle>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Button Style="{StaticResource BrowserButtonStyle}"
-                                    Command="{Binding DataContext.LaunchBrowserCommand, 
-                                              RelativeSource={RelativeSource AncestorType=Window}}"
-                                    CommandParameter="{Binding}"
-                                    Content="{Binding DisplayName}"
-                                    Click="BrowserButton_Click"
-                                    IsEnabled="{Binding DataContext.Url, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource StringToBoolConverter}}"
-                                    AutomationProperties.Name="{Binding DisplayName, StringFormat={}{0}BrowserButton}"/>
+                            <Grid>
+                                <Button Style="{StaticResource BrowserButtonStyle}"
+                                        Command="{Binding DataContext.LaunchBrowserCommand,
+                                                  RelativeSource={RelativeSource AncestorType=Window}}"
+                                        CommandParameter="{Binding}"
+                                        Content="{Binding DisplayName}"
+                                        PreviewMouseLeftButtonDown="BrowserButton_PreviewMouseLeftButtonDown"
+                                        IsEnabled="{Binding DataContext.Url, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource StringToBoolConverter}}"
+                                        AutomationProperties.Name="{Binding DisplayName, StringFormat={}{0}BrowserButton}">
+                                    <Button.ToolTip>
+                                        <ToolTip>
+                                            <TextBlock>
+                                                <TextBlock.Text>
+                                                    <MultiBinding Converter="{StaticResource BrowserTooltipConverter}">
+                                                        <Binding Path="Name"/>
+                                                        <Binding Path="ExecutablePath"/>
+                                                        <Binding Path="Arguments"/>
+                                                    </MultiBinding>
+                                                </TextBlock.Text>
+                                            </TextBlock>
+                                        </ToolTip>
+                                    </Button.ToolTip>
+                                </Button>
+
+                                <!-- ホットキーバッジ（左上、既定バッジと重ならないよう右寄せ） -->
+                                <Border HorizontalAlignment="Right" VerticalAlignment="Top"
+                                        Margin="4"
+                                        Background="{DynamicResource Brush.SurfaceAlt}"
+                                        BorderBrush="{DynamicResource Brush.Border}"
+                                        BorderThickness="1"
+                                        CornerRadius="8"
+                                        Padding="5,1"
+                                        IsHitTestVisible="False"
+                                        Visibility="{Binding Path=Tag, RelativeSource={RelativeSource AncestorType=ContentPresenter}, Converter={StaticResource IndexToHotkeyBadgeConverter}, ConverterParameter=Visibility}">
+                                    <TextBlock FontSize="9" FontWeight="Bold" Foreground="{DynamicResource Brush.TextSecondary}"
+                                               Text="{Binding Path=Tag, RelativeSource={RelativeSource AncestorType=ContentPresenter}, Converter={StaticResource IndexToHotkeyBadgeConverter}}"/>
+                                </Border>
+                            </Grid>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </ScrollViewer>
 
-            <!-- 設定ボタン -->
-            <Button Grid.Row="1"
-                     Command="{Binding OpenSettingsCommand}"
-                     Padding="15,8"
-                     Margin="0,10,0,0"
-                     HorizontalAlignment="Center"
-                     Background="{DynamicResource Brush.SurfaceAlt}"
-                     Foreground="{DynamicResource Brush.TextPrimary}"
-                     BorderBrush="{DynamicResource Brush.Border}"
-                     BorderThickness="1"
-                     Cursor="Hand"
-                     AutomationProperties.Name="SettingsButton">
-                <StackPanel Orientation="Horizontal">
-                    <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Settings_Gray.png"
-                            Width="16" Height="16" 
-                            Margin="0,0,8,0"/>
-                    <TextBlock Text="{extensions:Localization MainWindow.Settings}" 
-                                FontSize="14" 
-                                FontWeight="Medium"
-                                VerticalAlignment="Center"/>
-                </StackPanel>
-            </Button>
+            <!-- 「起動後に閉じる」チェックボックス（Phase C-5） -->
+            <CheckBox Grid.Row="1"
+                      Content="{extensions:Localization MainWindow.CloseAfterLaunch}"
+                      IsChecked="{Binding CloseAfterLaunch}"
+                      HorizontalAlignment="Center"
+                      Margin="0,6,0,0"
+                      AutomationProperties.Name="CloseAfterLaunchCheckBox"/>
 
             <!-- テスト用の固定コンテンツ -->
-            <StackPanel HorizontalAlignment="Center" 
+            <StackPanel HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         Visibility="{Binding Browsers.Count, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Invert}">
-                <TextBlock Text="{extensions:Localization MainWindow.DetectingBrowsers}" 
-                           FontSize="18" 
+                <TextBlock Text="{extensions:Localization MainWindow.DetectingBrowsers}"
+                           FontSize="18"
                            HorizontalAlignment="Center"
                            Margin="0,0,0,20"
                            Foreground="{Binding VisualSettings.MessageTextColor}"/>
-                <TextBlock Text="{extensions:Localization MainWindow.DetectingBrowsersDescription}" 
-                           FontSize="14" 
+                <TextBlock Text="{extensions:Localization MainWindow.DetectingBrowsersDescription}"
+                           FontSize="14"
                            HorizontalAlignment="Center"
                            Foreground="{Binding VisualSettings.MessageTextColor}"/>
             </StackPanel>
         </Grid>
 
         <!-- ステータス -->
-        <TextBlock Grid.Row="3" 
+        <TextBlock Grid.Row="4"
                    Text="{Binding StatusMessage}"
                    Style="{StaticResource StatusTextStyle}"/>
 
         <!-- ローディング表示 -->
-        <Grid Grid.Row="2"
+        <Grid Grid.Row="3"
               Background="{DynamicResource Brush.Scrim}"
               Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}"
               Panel.ZIndex="1000">

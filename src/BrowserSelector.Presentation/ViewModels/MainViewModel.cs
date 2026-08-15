@@ -15,6 +15,8 @@ namespace BrowserSelector.Presentation.ViewModels;
 /// </summary>
 public partial class MainViewModel : ObservableObject
 {
+    private const int CloseAfterLaunchSaveDebounceMs = 800;
+
     private readonly IBrowserService _browserService;
     private readonly ISettingsService _settingsService;
     private readonly ILocalizationService _localizationService;
@@ -45,6 +47,17 @@ public partial class MainViewModel : ObservableObject
 
     [ObservableProperty]
     private VisualSettings _visualSettings = new();
+
+    [ObservableProperty]
+    private bool _closeAfterLaunch;
+
+    /// <summary>
+    /// Ctrl+クリックによる「その起動に限り自動クローズを抑制」フラグ（Phase C-4）.
+    /// <see cref="LaunchBrowserCommand"/> 実行前に <see cref="MainWindow"/> 側で一時的に立てる.
+    /// </summary>
+    private bool _suppressAutoCloseOnce;
+
+    private System.Threading.Timer? _closeAfterLaunchSaveTimer;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MainViewModel"/> class.
@@ -131,6 +144,20 @@ public partial class MainViewModel : ObservableObject
             #pragma warning restore CA1031
             _logService?.LogDetailed(LogLevel.Debug, "VisualSettings読み込み完了", "MainViewModel",
                                     "MVVM_INIT", "ViewModel", "System", "MainViewModel", "Initialize", "LoadVisualSettings_Success");
+
+            // 初期化時に「起動後に閉じる」設定を読み込み（Phase C-5）
+            try
+            {
+                AppSettings initialAppSettings = _settingsService.LoadAppSettingsAsync().GetAwaiter().GetResult();
+                _closeAfterLaunch = initialAppSettings.CloseAfterUrlRuleMatch;
+            }
+            // CA1031: RelayCommand/イベントハンドラーの最上位try-catch。サービス呼び出しやUI操作など例外種別が多岐にわたり、UIスレッドをクラッシュさせないための意図的な汎用catch。
+            #pragma warning disable CA1031
+            catch (Exception ex)
+            {
+                _logService?.LogError($"AppSettings読み込みエラー（CloseAfterLaunch既定値を使用）: {ex.Message}", "MainViewModel", ex);
+            }
+            #pragma warning restore CA1031
 
             // 初期化時にブラウザ一覧を読み込み（データが存在しない場合のみ検出）
             _logService?.LogDetailed(LogLevel.Debug, "ブラウザ一覧読み込み開始", "MainViewModel",
@@ -245,6 +272,46 @@ public partial class MainViewModel : ObservableObject
             // URLルールに基づいてブラウザを自動選択
             await ApplyUrlRulesAsync(url).ConfigureAwait(false);
         }
+    }
+
+    /// <summary>
+    /// 次回1回のブラウザ起動に限り、「起動後に閉じる」設定を無視してアプリを終了しないようにする（Ctrl+クリック、Phase C-4）.
+    /// </summary>
+    public void SuppressAutoCloseOnce()
+    {
+        _suppressAutoCloseOnce = true;
+    }
+
+    /// <summary>
+    /// 「起動後に閉じる」設定変更時、800msデバウンスしてAppSettingsへ保存する（Phase C-5）.
+    /// </summary>
+    partial void OnCloseAfterLaunchChanged(bool value)
+    {
+        _closeAfterLaunchSaveTimer?.Dispose();
+        _closeAfterLaunchSaveTimer = new System.Threading.Timer(
+            _ => SaveCloseAfterLaunchSetting(value),
+            null,
+            CloseAfterLaunchSaveDebounceMs,
+            System.Threading.Timeout.Infinite);
+    }
+
+    private void SaveCloseAfterLaunchSetting(bool value)
+    {
+        try
+        {
+            AppSettings appSettings = _settingsService.LoadAppSettingsAsync().GetAwaiter().GetResult();
+            appSettings.CloseAfterUrlRuleMatch = value;
+            _ = _settingsService.SaveAppSettingsAsync(appSettings).GetAwaiter().GetResult();
+            _logService?.LogDebug($"CloseAfterLaunch設定を保存しました: {value}", "MainViewModel");
+        }
+        // CA1031: デバウンスタイマーのコールバック（バックグラウンドスレッド）。UIスレッド外で例外が伝播すると
+        // プロセス終了につながるため、保存失敗をログに残しつつ握り潰す意図的な汎用catch。
+        #pragma warning disable CA1031
+        catch (Exception ex)
+        {
+            _logService?.LogError($"CloseAfterLaunch設定の保存エラー: {ex.Message}", "MainViewModel", ex);
+        }
+        #pragma warning restore CA1031
     }
 
     partial void OnVisualSettingsChanged(VisualSettings value)
@@ -424,9 +491,10 @@ public partial class MainViewModel : ObservableObject
                 StatusMessage = $"ブラウザ {browser.Name} を起動しました";
                 _logService?.LogInformation($"ブラウザ起動成功: {browser.Name}", "MainViewModel");
 
-                // ブラウザ起動後のアプリ終了設定が有効な場合
-                AppSettings appSettings = await _settingsService.LoadAppSettingsAsync().ConfigureAwait(false);
-                if (appSettings.CloseAfterUrlRuleMatch)
+                // ブラウザ起動後のアプリ終了設定が有効な場合（Ctrl+クリックによる今回限りの抑制を優先、Phase C-4/C-5）
+                bool suppressThisTime = _suppressAutoCloseOnce;
+                _suppressAutoCloseOnce = false;
+                if (CloseAfterLaunch && !suppressThisTime)
                 {
                     _logService?.LogInformation("ブラウザ起動後のアプリ終了", "MainViewModel");
                     // UIスレッドでアプリケーションを終了
