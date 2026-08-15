@@ -66,5 +66,35 @@ namespace BrowserSelector.Core.Models
         /// </summary>
         [ObservableProperty]
         private bool _alwaysResidentInTray;
+
+        /// <summary>
+        /// Gets or sets ウィンドウ背景の描画方式（Phase E-1: 外観タブ）.
+        /// </summary>
+        [ObservableProperty]
+        private BackdropMode _backdropMode = BackdropMode.Mica;
+
+        /// <summary>
+        /// Gets or sets ウィンドウ全体の不透明度（Phase E-1）。0.3〜1.0の範囲.
+        /// </summary>
+        [ObservableProperty]
+        private double _windowOpacity = 1.0;
+
+        /// <summary>
+        /// Gets or sets ウィンドウの角丸半径（Phase E-1、DWM側の丸め対応環境で有効）.
+        /// </summary>
+        [ObservableProperty]
+        private double _windowCornerRadius = 8.0;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether カスタムタイトルバーを表示するか（Phase E-1）.
+        /// </summary>
+        [ObservableProperty]
+        private bool _showTitleBar = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether ウィンドウを常に最前面に表示するか（Phase E-1）.
+        /// </summary>
+        [ObservableProperty]
+        private bool _alwaysOnTop = true;
     }
 }

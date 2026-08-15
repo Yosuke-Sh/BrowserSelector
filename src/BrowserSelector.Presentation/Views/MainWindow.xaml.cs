@@ -1,3 +1,4 @@
+using BrowserSelector.Core.Enums;
 using BrowserSelector.Core.Models;
 using BrowserSelector.Core.Services;
 using BrowserSelector.Presentation.Helpers;
@@ -134,14 +135,33 @@ public partial class MainWindow : Window
         {
             bool isDarkMode = _themeService?.IsDarkThemeActive ?? false;
             bool glassEffectEnabled = true;
+            BackdropMode backdropMode = BackdropMode.Mica;
             if (_settingsService != null)
             {
                 AppSettings appSettings = _settingsService.LoadAppSettingsAsync().GetAwaiter().GetResult();
                 glassEffectEnabled = appSettings.EnableGlassEffect;
+                backdropMode = appSettings.BackdropMode;
+
+                // Phase E-1: 外観タブの設定を反映（不透明度・常に最前面・タイトルバー表示切替）
+                Opacity = Math.Clamp(appSettings.WindowOpacity, 0.3, 1.0);
+                Topmost = appSettings.AlwaysOnTop;
+                if (FindName("CustomTitleBarRow") is RowDefinition titleBarRow)
+                {
+                    titleBarRow.Height = appSettings.ShowTitleBar ? new GridLength(36) : new GridLength(0);
+                }
             }
 
-            bool applied = WindowBackdropHelper.Apply(this, WindowBackdropHelper.BackdropKind.Mica, isDarkMode, glassEffectEnabled);
-            _logService?.LogDebug($"DWMバックドロップ適用: Applied={applied}, IsDarkMode={isDarkMode}, GlassEffectEnabled={glassEffectEnabled}", "MainWindow");
+            // 半透明単色/不透明はDWMバックドロップを使わずフォールバック描画に直接倒す
+            bool glassRequested = glassEffectEnabled && backdropMode != BackdropMode.SolidTranslucent && backdropMode != BackdropMode.Opaque;
+            WindowBackdropHelper.BackdropKind kind = backdropMode switch
+            {
+                BackdropMode.Acrylic => WindowBackdropHelper.BackdropKind.Acrylic,
+                BackdropMode.MicaAlt => WindowBackdropHelper.BackdropKind.MicaAlt,
+                _ => WindowBackdropHelper.BackdropKind.Mica,
+            };
+
+            bool applied = WindowBackdropHelper.Apply(this, kind, isDarkMode, glassRequested);
+            _logService?.LogDebug($"DWMバックドロップ適用: Applied={applied}, IsDarkMode={isDarkMode}, GlassEffectEnabled={glassEffectEnabled}, BackdropMode={backdropMode}", "MainWindow");
         }
         // CA1031: ウィンドウ初期化の最上位try-catch。DWM呼び出し・設定読み込みなど例外種別が多岐にわたり、
         // 失敗してもウィンドウ表示自体は継続させるための意図的な汎用catch。

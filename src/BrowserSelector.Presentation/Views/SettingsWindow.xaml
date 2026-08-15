@@ -15,22 +15,41 @@
         AutomationProperties.Name="SettingsWindow">
 
     <Window.Resources>
-        <Style x:Key="TabItemStyle" TargetType="TabItem">
+        <!--
+            Phase E-0: TabItem/GroupBoxはResources/Themes/Controls.xaml（Phase C-0のデザイントークン基盤）の
+            既定スタイル（トークンDynamicResource参照）をそのまま使う。ここではレイアウト値（Padding等）のみ上書きする。
+        -->
+        <Style x:Key="TabItemStyle" TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
             <Setter Property="Padding" Value="15,10"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="FontWeight" Value="Medium"/>
         </Style>
-        
-        <Style x:Key="GroupBoxStyle" TargetType="GroupBox">
-            <Setter Property="Margin" Value="0,10,0,0"/>
-            <Setter Property="Padding" Value="10"/>
+
+        <Style x:Key="GroupBoxStyle" TargetType="GroupBox" BasedOn="{StaticResource {x:Type GroupBox}}">
+            <Setter Property="Padding" Value="0"/>
+        </Style>
+
+        <!--
+            設定行の共通レイアウト（Phase E-0）: ラベルとコントロールを同一行にまとめ、
+            チェックボックスがラベルから遠い右端に孤立して見える問題を是正する。
+            行間にVerticalAlignment.Centerを揃え、視覚的な対応関係を明確にする。
+        -->
+        <Style x:Key="SettingRowStyle" TargetType="Grid">
+            <Setter Property="Margin" Value="0,0,0,10"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <!--
+            主ボタン（OK）スタイル（Phase E-0）: アクセントカラーで塗り、他のボタンと視覚的な主従を明確にする。
+            破壊的な操作（リセット）は逆に色を付けず、ボタン列の左端へ離して配置することで誤操作を防ぐ。
+        -->
+        <Style x:Key="PrimaryButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Background" Value="{DynamicResource Brush.Accent}"/>
+            <Setter Property="Foreground" Value="{DynamicResource Brush.TextOnAccent}"/>
+            <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
         </Style>
-        
-        <Style x:Key="SettingRowStyle" TargetType="Grid">
-            <Setter Property="Margin" Value="0,5,0,5"/>
-        </Style>
-        
+
         <!-- コンバーター -->
         <converters:ColorToBrushConverter x:Key="ColorToBrushConverter"/>
         <converters:GradientDirectionToIndexConverter x:Key="GradientDirectionToIndexConverter"/>
@@ -50,10 +69,11 @@
             <TabItem Style="{StaticResource TabItemStyle}"
                      AutomationProperties.Name="GeneralTab">
                 <TabItem.Header>
+                    <!-- Phase E-0: 旧Icon_General.pngはスマホ型のアイコンで内容と無関係だったため、
+                         意味の一致するSegoe MDL2の歯車グリフに差し替え -->
                     <StackPanel Orientation="Horizontal">
-                        <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_General.png" 
-                               Width="18" Height="18" 
-                               Margin="0,0,8,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="&#xE713;" FontFamily="Segoe MDL2 Assets" FontSize="15"
+                                   Margin="0,0,8,0" VerticalAlignment="Center"/>
                         <TextBlock Text="{extensions:Localization SettingsWindow.General}" VerticalAlignment="Center"/>
                     </StackPanel>
                 </TabItem.Header>
@@ -63,14 +83,38 @@
                         <!-- アプリケーション設定 -->
                         <GroupBox Header="{extensions:Localization Settings.App.ApplicationSettings}" Style="{StaticResource GroupBoxStyle}">
                             <StackPanel>
-                                
+
                                 <Grid Style="{StaticResource SettingRowStyle}">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{extensions:Localization Settings.App.CloseAfterLaunch}" VerticalAlignment="Center"/>
-                                    <CheckBox Grid.Column="1" IsChecked="{Binding AppSettings.CloseAfterUrlRuleMatch}"/>
+                                    <TextBlock Grid.Column="0" Text="{extensions:Localization Settings.App.CloseAfterLaunch}" VerticalAlignment="Center"/>
+                                    <CheckBox Grid.Column="1" IsChecked="{Binding AppSettings.CloseAfterUrlRuleMatch}" HorizontalAlignment="Left" Margin="8,5,5,5"/>
+                                </Grid>
+
+                                <!-- カウントダウン自動起動秒数（Phase E-1） -->
+                                <Grid Style="{StaticResource SettingRowStyle}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="100"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{extensions:Localization Settings.App.CountdownDelaySeconds}" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Column="1" Text="{Binding AppSettings.DefaultDelay}"
+                                             Margin="8,5,5,5" HorizontalAlignment="Left"
+                                             ToolTip="{extensions:Localization Settings.App.CountdownDelaySecondsTooltip}"
+                                             AutomationProperties.Name="CountdownDelayTextBox"/>
+                                </Grid>
+
+                                <!-- トレイ常駐（Phase E-1） -->
+                                <Grid Style="{StaticResource SettingRowStyle}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{extensions:Localization Settings.App.AlwaysResidentInTray}" VerticalAlignment="Center"/>
+                                    <CheckBox Grid.Column="1" IsChecked="{Binding AppSettings.AlwaysResidentInTray}" HorizontalAlignment="Left" Margin="8,5,5,5"
+                                              AutomationProperties.Name="AlwaysResidentInTrayCheckBox"/>
                                 </Grid>
                             </StackPanel>
                         </GroupBox>
@@ -109,11 +153,11 @@
                             <StackPanel>
                                 <Grid Style="{StaticResource SettingRowStyle}">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{extensions:Localization Settings.App.AutoUpdateCheck}" VerticalAlignment="Center"/>
-                                    <CheckBox Grid.Column="1" IsChecked="{Binding AppSettings.CheckForUpdates}"/>
+                                    <TextBlock Grid.Column="0" Text="{extensions:Localization Settings.App.AutoUpdateCheck}" VerticalAlignment="Center"/>
+                                    <CheckBox Grid.Column="1" IsChecked="{Binding AppSettings.CheckForUpdates}" HorizontalAlignment="Left" Margin="8,5,5,5"/>
                                 </Grid>
                                 
                                 <Grid Style="{StaticResource SettingRowStyle}">
@@ -167,11 +211,11 @@
                                 <!-- 背景グラデーション -->
                                 <Grid Style="{StaticResource SettingRowStyle}">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{extensions:Localization Settings.Display.BackgroundGradient}" VerticalAlignment="Center"/>
-                                    <CheckBox Grid.Column="1" IsChecked="{Binding VisualSettings.UseBackgroundGradient}"/>
+                                    <TextBlock Grid.Column="0" Text="{extensions:Localization Settings.Display.BackgroundGradient}" VerticalAlignment="Center"/>
+                                    <CheckBox Grid.Column="1" IsChecked="{Binding VisualSettings.UseBackgroundGradient}" HorizontalAlignment="Left" Margin="8,5,5,5"/>
                                 </Grid>
 
                                 <!-- グラデーション開始色 -->
@@ -251,21 +295,21 @@
                                 <!-- ロゴ表示 -->
                                 <Grid Style="{StaticResource SettingRowStyle}">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{extensions:Localization Settings.Display.ShowLogo}" VerticalAlignment="Center"/>
-                                    <CheckBox Grid.Column="1" IsChecked="{Binding VisualSettings.ShowLogo}"/>
+                                    <TextBlock Grid.Column="0" Text="{extensions:Localization Settings.Display.ShowLogo}" VerticalAlignment="Center"/>
+                                    <CheckBox Grid.Column="1" IsChecked="{Binding VisualSettings.ShowLogo}" HorizontalAlignment="Left" Margin="8,5,5,5"/>
                                 </Grid>
                                 
                                 <!-- URL入力表示 -->
                                 <Grid Style="{StaticResource SettingRowStyle}">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{extensions:Localization Settings.Display.ShowUrlInput}" VerticalAlignment="Center"/>
-                                    <CheckBox Grid.Column="1" IsChecked="{Binding VisualSettings.ShowUrlInput}"/>
+                                    <TextBlock Grid.Column="0" Text="{extensions:Localization Settings.Display.ShowUrlInput}" VerticalAlignment="Center"/>
+                                    <CheckBox Grid.Column="1" IsChecked="{Binding VisualSettings.ShowUrlInput}" HorizontalAlignment="Left" Margin="8,5,5,5"/>
                                 </Grid>
                                 
                             </StackPanel>
@@ -356,11 +400,11 @@
                                 <!-- ブラウザ名表示 -->
                                 <Grid Style="{StaticResource SettingRowStyle}">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{extensions:Localization Settings.Display.ShowBrowserName}" VerticalAlignment="Center"/>
-                                    <CheckBox Grid.Column="1" IsChecked="{Binding VisualSettings.ShowBrowserName}"/>
+                                    <TextBlock Grid.Column="0" Text="{extensions:Localization Settings.Display.ShowBrowserName}" VerticalAlignment="Center"/>
+                                    <CheckBox Grid.Column="1" IsChecked="{Binding VisualSettings.ShowBrowserName}" HorizontalAlignment="Left" Margin="8,5,5,5"/>
                                 </Grid>
 
                                 <!-- アイコンサイズ -->
@@ -384,6 +428,131 @@
                 </ScrollViewer>
             </TabItem>
 
+            <!-- 外観タブ（Phase E-1: バックドロップ方式・不透明度・角丸・タイトルバー・常に最前面・テーマ） -->
+            <TabItem Style="{StaticResource TabItemStyle}"
+                     AutomationProperties.Name="AppearanceTab">
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE790;" FontFamily="Segoe MDL2 Assets" FontSize="15"
+                                   Margin="0,0,8,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="{extensions:Localization SettingsWindow.Appearance}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </TabItem.Header>
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="10">
+
+                        <!-- ガラス効果・バックドロップ -->
+                        <GroupBox Header="{extensions:Localization Settings.Appearance.GlassSettings}" Style="{StaticResource GroupBoxStyle}">
+                            <StackPanel>
+                                <Grid Style="{StaticResource SettingRowStyle}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{extensions:Localization Settings.Appearance.EnableGlassEffect}" VerticalAlignment="Center"/>
+                                    <CheckBox Grid.Column="1" IsChecked="{Binding AppSettings.EnableGlassEffect}" HorizontalAlignment="Left" Margin="8,5,5,5"
+                                              AutomationProperties.Name="EnableGlassEffectCheckBox"/>
+                                </Grid>
+
+                                <Grid Style="{StaticResource SettingRowStyle}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="180"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{extensions:Localization Settings.Appearance.BackdropMode}" VerticalAlignment="Center"/>
+                                    <ComboBox Grid.Column="1" Margin="8,5,5,5"
+                                              ItemsSource="{Binding AvailableBackdropModes}"
+                                              SelectedItem="{Binding AppSettings.BackdropMode}"
+                                              AutomationProperties.Name="BackdropModeComboBox"/>
+                                </Grid>
+
+                                <Grid Style="{StaticResource SettingRowStyle}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="40"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{extensions:Localization Settings.Appearance.WindowOpacity}" VerticalAlignment="Center"/>
+                                    <Slider Grid.Column="1" Minimum="0.3" Maximum="1.0"
+                                            Value="{Binding AppSettings.WindowOpacity}"
+                                            VerticalAlignment="Center" Margin="0,0,5,0"
+                                            AutomationProperties.Name="WindowOpacitySlider"/>
+                                    <TextBlock Grid.Column="2" Text="{Binding AppSettings.WindowOpacity, StringFormat={}{0:P0}}"
+                                               VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </Grid>
+
+                                <Grid Style="{StaticResource SettingRowStyle}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="40"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{extensions:Localization Settings.Appearance.WindowCornerRadius}" VerticalAlignment="Center"/>
+                                    <Slider Grid.Column="1" Minimum="0" Maximum="20"
+                                            Value="{Binding AppSettings.WindowCornerRadius}"
+                                            VerticalAlignment="Center" Margin="0,0,5,0"
+                                            AutomationProperties.Name="WindowCornerRadiusSlider"/>
+                                    <TextBlock Grid.Column="2" Text="{Binding AppSettings.WindowCornerRadius, StringFormat={}{0:F0}px}"
+                                               VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </Grid>
+
+                                <Grid Style="{StaticResource SettingRowStyle}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{extensions:Localization Settings.Appearance.EnableAnimations}" VerticalAlignment="Center"/>
+                                    <CheckBox Grid.Column="1" IsChecked="{Binding AppSettings.EnableAnimations}" HorizontalAlignment="Left" Margin="8,5,5,5"
+                                              AutomationProperties.Name="EnableAnimationsCheckBox"/>
+                                </Grid>
+                            </StackPanel>
+                        </GroupBox>
+
+                        <!-- ウィンドウ -->
+                        <GroupBox Header="{extensions:Localization Settings.Appearance.WindowSettings}" Style="{StaticResource GroupBoxStyle}">
+                            <StackPanel>
+                                <Grid Style="{StaticResource SettingRowStyle}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{extensions:Localization Settings.Appearance.ShowTitleBar}" VerticalAlignment="Center"/>
+                                    <CheckBox Grid.Column="1" IsChecked="{Binding AppSettings.ShowTitleBar}" HorizontalAlignment="Left" Margin="8,5,5,5"
+                                              AutomationProperties.Name="ShowTitleBarCheckBox"/>
+                                </Grid>
+
+                                <Grid Style="{StaticResource SettingRowStyle}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{extensions:Localization Settings.Appearance.AlwaysOnTop}" VerticalAlignment="Center"/>
+                                    <CheckBox Grid.Column="1" IsChecked="{Binding AppSettings.AlwaysOnTop}" HorizontalAlignment="Left" Margin="8,5,5,5"
+                                              AutomationProperties.Name="AlwaysOnTopCheckBox"/>
+                                </Grid>
+                            </StackPanel>
+                        </GroupBox>
+
+                        <!-- テーマ -->
+                        <GroupBox Header="{extensions:Localization Settings.Appearance.ThemeSettings}" Style="{StaticResource GroupBoxStyle}">
+                            <StackPanel>
+                                <Grid Style="{StaticResource SettingRowStyle}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="180"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{extensions:Localization Settings.Appearance.Theme}" VerticalAlignment="Center"/>
+                                    <ComboBox Grid.Column="1" Margin="8,5,5,5"
+                                              ItemsSource="{Binding AvailableThemeModes}"
+                                              SelectedItem="{Binding AppSettings.ThemeMode}"
+                                              AutomationProperties.Name="ThemeModeComboBox"/>
+                                </Grid>
+                            </StackPanel>
+                        </GroupBox>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
             <!-- ブラウザ設定タブ -->
             <TabItem Style="{StaticResource TabItemStyle}"
                      AutomationProperties.Name="BrowserTab">
@@ -395,13 +564,25 @@
                         <TextBlock Text="{extensions:Localization SettingsWindow.Browser}" VerticalAlignment="Center"/>
                     </StackPanel>
                 </TabItem.Header>
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <StackPanel Margin="10">
-                        <!-- ブラウザ管理 -->
-                        <GroupBox Header="{extensions:Localization Settings.Browser.BrowserManagement}" Style="{StaticResource GroupBoxStyle}" Height="400">
-                            <StackPanel>
-                                <TextBlock Text="{extensions:Localization Settings.Browser.DetectedBrowsers}" FontWeight="SemiBold" Margin="0,0,0,10"/>
-                                <ListBox Height="250" ItemsSource="{Binding DetectedBrowsers}">
+                <!--
+                    Phase E-0: 旧実装はScrollViewer+StackPanelでGroupBox/ListBoxに固定Height（400/250）を指定しており、
+                    ウィンドウを縦に広げてもブラウザ一覧の表示領域が伸びなかった。
+                    Gridの*行でGroupBoxが残り空間いっぱいに広がるようにし、内部もStackPanelではなくGrid（*行）で
+                    ListBox自身がスクロールする構成に変更した。
+                -->
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <GroupBox Header="{extensions:Localization Settings.Browser.BrowserManagement}" Style="{StaticResource GroupBoxStyle}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Text="{extensions:Localization Settings.Browser.DetectedBrowsers}" FontWeight="SemiBold" Margin="0,0,0,10"/>
+                            <ListBox Grid.Row="1" ItemsSource="{Binding DetectedBrowsers}">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
                                             <Grid>
@@ -446,34 +627,33 @@
                                             </Grid>
                                         </DataTemplate>
                                     </ListBox.ItemTemplate>
-                                </ListBox>
-                                
-                                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                    <Button Command="{Binding RefreshBrowsersCommand}" 
-                                            Margin="0,0,10,0" Padding="10,5"
-                                            AutomationProperties.Name="RefreshBrowsersButton">
-                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                            <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Refresh.png" 
-                                                   Width="18" Height="18" 
-                                                   Margin="8,0,8,0" VerticalAlignment="Center"/>
-                                            <TextBlock Text="{extensions:Localization Settings.Browser.RedetectBrowsers}" VerticalAlignment="Center"/>
-                                        </StackPanel>
-                                    </Button>
-                                    <Button Command="{Binding AddBrowserCommand}" 
-                                            Margin="0,0,10,0" Padding="10,5"
-                                            AutomationProperties.Name="AddBrowserButton">
-                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                            <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Add.png" 
-                                                   Width="18" Height="19" 
-                                                   Margin="8,0,8,0" VerticalAlignment="Center"/>
-                                            <TextBlock Text="{extensions:Localization Common.Add}" VerticalAlignment="Center"/>
-                                        </StackPanel>
-                                    </Button>
-                                </StackPanel>
+                            </ListBox>
+
+                            <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,10,0,0">
+                                <Button Command="{Binding RefreshBrowsersCommand}"
+                                        Margin="0,0,10,0" Padding="10,5"
+                                        AutomationProperties.Name="RefreshBrowsersButton">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Refresh.png"
+                                               Width="18" Height="18"
+                                               Margin="8,0,8,0" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{extensions:Localization Settings.Browser.RedetectBrowsers}" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                                <Button Command="{Binding AddBrowserCommand}"
+                                        Margin="0,0,10,0" Padding="10,5"
+                                        AutomationProperties.Name="AddBrowserButton">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Add.png"
+                                               Width="18" Height="19"
+                                               Margin="8,0,8,0" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{extensions:Localization Common.Add}" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
                             </StackPanel>
-                        </GroupBox>
-                    </StackPanel>
-                </ScrollViewer>
+                        </Grid>
+                    </GroupBox>
+                </Grid>
             </TabItem>
 
             <!-- URLルール設定タブ -->
@@ -591,12 +771,13 @@
                 </ScrollViewer>
             </TabItem>
 
-            <!-- アクセシビリティ設定タブ（当面非表示） -->
-            <TabItem Style="{StaticResource TabItemStyle}" Visibility="Collapsed">
+            <!-- アクセシビリティ設定タブ（Phase E-1で復活。バインド先の設定は既に存在し永続化もされている） -->
+            <TabItem Style="{StaticResource TabItemStyle}"
+                     AutomationProperties.Name="AccessibilityTab">
                 <TabItem.Header>
                     <StackPanel Orientation="Horizontal">
-                        <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Accessibility.png" 
-                               Width="18" Height="18" 
+                        <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Accessibility.png"
+                               Width="18" Height="18"
                                Margin="0,0,8,0" VerticalAlignment="Center"/>
                         <TextBlock Text="{extensions:Localization Settings.Accessibility.Title}" VerticalAlignment="Center"/>
                     </StackPanel>
@@ -609,11 +790,11 @@
                             <StackPanel>
                                 <Grid Style="{StaticResource SettingRowStyle}">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{extensions:Localization Settings.Accessibility.EnableFocusIndicator}" VerticalAlignment="Center"/>
-                                    <CheckBox Grid.Column="1" IsChecked="{Binding ShowFocusIndicator}"/>
+                                    <TextBlock Grid.Column="0" Text="{extensions:Localization Settings.Accessibility.EnableFocusIndicator}" VerticalAlignment="Center"/>
+                                    <CheckBox Grid.Column="1" IsChecked="{Binding ShowFocusIndicator}" HorizontalAlignment="Left" Margin="8,5,5,5"/>
                                 </Grid>
                                 
                                 <Grid Style="{StaticResource SettingRowStyle}">
@@ -635,20 +816,20 @@
                             <StackPanel>
                                 <Grid Style="{StaticResource SettingRowStyle}">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{extensions:Localization Settings.Accessibility.EnableKeyboardNavigation}" VerticalAlignment="Center"/>
-                                    <CheckBox Grid.Column="1" IsChecked="{Binding EnableKeyboardNavigation}"/>
+                                    <TextBlock Grid.Column="0" Text="{extensions:Localization Settings.Accessibility.EnableKeyboardNavigation}" VerticalAlignment="Center"/>
+                                    <CheckBox Grid.Column="1" IsChecked="{Binding EnableKeyboardNavigation}" HorizontalAlignment="Left" Margin="8,5,5,5"/>
                                 </Grid>
                                 
                                 <Grid Style="{StaticResource SettingRowStyle}">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{extensions:Localization Settings.Accessibility.EnableShortcuts}" VerticalAlignment="Center"/>
-                                    <CheckBox Grid.Column="1" IsChecked="{Binding EnableShortcuts}"/>
+                                    <TextBlock Grid.Column="0" Text="{extensions:Localization Settings.Accessibility.EnableShortcuts}" VerticalAlignment="Center"/>
+                                    <CheckBox Grid.Column="1" IsChecked="{Binding EnableShortcuts}" HorizontalAlignment="Left" Margin="8,5,5,5"/>
                                 </Grid>
                             </StackPanel>
                         </GroupBox>
@@ -658,20 +839,20 @@
                             <StackPanel>
                                 <Grid Style="{StaticResource SettingRowStyle}">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{extensions:Localization Settings.Accessibility.EnableScreenReaderSupport}" VerticalAlignment="Center"/>
-                                    <CheckBox Grid.Column="1" IsChecked="{Binding EnableScreenReaderSupport}"/>
+                                    <TextBlock Grid.Column="0" Text="{extensions:Localization Settings.Accessibility.EnableScreenReaderSupport}" VerticalAlignment="Center"/>
+                                    <CheckBox Grid.Column="1" IsChecked="{Binding EnableScreenReaderSupport}" HorizontalAlignment="Left" Margin="8,5,5,5"/>
                                 </Grid>
                                 
                                 <Grid Style="{StaticResource SettingRowStyle}">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{extensions:Localization Settings.Accessibility.ProvideDetailedDescriptions}" VerticalAlignment="Center"/>
-                                    <CheckBox Grid.Column="1" IsChecked="{Binding ProvideDetailedDescriptions}"/>
+                                    <TextBlock Grid.Column="0" Text="{extensions:Localization Settings.Accessibility.ProvideDetailedDescriptions}" VerticalAlignment="Center"/>
+                                    <CheckBox Grid.Column="1" IsChecked="{Binding ProvideDetailedDescriptions}" HorizontalAlignment="Left" Margin="8,5,5,5"/>
                                 </Grid>
                             </StackPanel>
                         </GroupBox>
@@ -683,10 +864,11 @@
             <TabItem Style="{StaticResource TabItemStyle}"
                      AutomationProperties.Name="LogTab">
                 <TabItem.Header>
+                    <!-- Phase E-0: 旧Icon_Log.pngは△（警告記号）で内容と無関係だったため、
+                         意味の一致するSegoe MDL2の文書グリフに差し替え -->
                     <StackPanel Orientation="Horizontal">
-                        <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Log.png" 
-                               Width="18" Height="18" 
-                               Margin="0,0,8,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="&#xE9F9;" FontFamily="Segoe MDL2 Assets" FontSize="15"
+                                   Margin="0,0,8,0" VerticalAlignment="Center"/>
                         <TextBlock Text="{extensions:Localization Settings.Logging.Title}" VerticalAlignment="Center"/>
                     </StackPanel>
                 </TabItem.Header>
@@ -698,11 +880,11 @@
                             <StackPanel>
                                 <Grid Style="{StaticResource SettingRowStyle}">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{extensions:Localization Settings.Logging.EnableLogging}" VerticalAlignment="Center"/>
-                                    <CheckBox Grid.Column="1" IsChecked="{Binding LogSettings.EnableLogging}"/>
+                                    <TextBlock Grid.Column="0" Text="{extensions:Localization Settings.Logging.EnableLogging}" VerticalAlignment="Center"/>
+                                    <CheckBox Grid.Column="1" IsChecked="{Binding LogSettings.EnableLogging}" HorizontalAlignment="Left" Margin="8,5,5,5"/>
                                 </Grid>
                                 
                                 <Grid Style="{StaticResource SettingRowStyle}">
@@ -719,20 +901,20 @@
                                 
                                 <Grid Style="{StaticResource SettingRowStyle}">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{extensions:Localization Settings.Logging.EnableConsoleLogging}" VerticalAlignment="Center"/>
-                                    <CheckBox Grid.Column="1" IsChecked="{Binding LogSettings.EnableConsoleLogging}"/>
+                                    <TextBlock Grid.Column="0" Text="{extensions:Localization Settings.Logging.EnableConsoleLogging}" VerticalAlignment="Center"/>
+                                    <CheckBox Grid.Column="1" IsChecked="{Binding LogSettings.EnableConsoleLogging}" HorizontalAlignment="Left" Margin="8,5,5,5"/>
                                 </Grid>
                                 
                                 <Grid Style="{StaticResource SettingRowStyle}">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{extensions:Localization Settings.Logging.EnableFileLogging}" VerticalAlignment="Center"/>
-                                    <CheckBox Grid.Column="1" IsChecked="{Binding LogSettings.EnableFileLogging}"/>
+                                    <TextBlock Grid.Column="0" Text="{extensions:Localization Settings.Logging.EnableFileLogging}" VerticalAlignment="Center"/>
+                                    <CheckBox Grid.Column="1" IsChecked="{Binding LogSettings.EnableFileLogging}" HorizontalAlignment="Left" Margin="8,5,5,5"/>
                                 </Grid>
                             </StackPanel>
                         </GroupBox>
@@ -828,58 +1010,73 @@
             </TabItem>
         </TabControl>
 
-        <!-- ボタンエリア -->
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
-            <Button Command="{Binding ResetSettingsCommand}" 
-                    Margin="0,0,10,0" Padding="15,8"
+        <!--
+            ボタンエリア（Phase E-0）: 破壊的な「リセット」は左端へ分離して誤操作を防ぎ、
+            主ボタンの「OK」はアクセントカラーで塗って主従を明確にする。
+            インポート/エクスポートはOK/キャンセルと同じ右側グループだが副次操作として通常スタイルのまま。
+        -->
+        <Grid Grid.Row="1" Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0"
+                    Command="{Binding ResetSettingsCommand}"
+                    Padding="15,8"
                     AutomationProperties.Name="ResetSettingsButton">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Reset.png" 
-                           Width="18" Height="18" 
+                    <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Reset.png"
+                           Width="18" Height="18"
                            Margin="8,0,8,0" VerticalAlignment="Center"/>
                     <TextBlock Text="{extensions:Localization Common.Reset}" VerticalAlignment="Center"/>
                 </StackPanel>
             </Button>
-            <Button Command="{Binding ImportSettingsCommand}" 
-                    Margin="0,0,10,0" Padding="15,8"
-                    AutomationProperties.Name="ImportSettingsButton">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Import.png" 
-                           Width="18" Height="18" 
-                           Margin="8,0,8,0" VerticalAlignment="Center"/>
-                    <TextBlock Text="{extensions:Localization Common.Import}" VerticalAlignment="Center"/>
-                </StackPanel>
-            </Button>
-            <Button Command="{Binding ExportSettingsCommand}" 
-                    Margin="0,0,10,0" Padding="15,8"
-                    AutomationProperties.Name="ExportSettingsButton">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Export.png" 
-                           Width="18" Height="18" 
-                           Margin="8,0,8,0" VerticalAlignment="Center"/>
-                    <TextBlock Text="{extensions:Localization Common.Export}" VerticalAlignment="Center"/>
-                </StackPanel>
-            </Button>
-            <Button Command="{Binding SaveSettingsCommand}" 
-                    IsDefault="True" Padding="15,8" Margin="0,0,10,0"
-                    AutomationProperties.Name="SaveSettingsButton">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Check.png" 
-                           Width="18" Height="18" 
-                           Margin="8,0,8,0" VerticalAlignment="Center"/>
-                    <TextBlock Text="{extensions:Localization Common.OK}" VerticalAlignment="Center"/>
-                </StackPanel>
-            </Button>
-            <Button Command="{Binding CancelCommand}" 
-                    IsCancel="True" Padding="15,8"
-                    AutomationProperties.Name="CancelSettingsButton">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Close.png" 
-                           Width="18" Height="18" 
-                           Margin="8,0,8,0" VerticalAlignment="Center"/>
-                    <TextBlock Text="{extensions:Localization Common.Cancel}" VerticalAlignment="Center"/>
-                </StackPanel>
-            </Button>
-        </StackPanel>
+
+            <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Command="{Binding ImportSettingsCommand}"
+                        Margin="0,0,10,0" Padding="15,8"
+                        AutomationProperties.Name="ImportSettingsButton">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Import.png"
+                               Width="18" Height="18"
+                               Margin="8,0,8,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="{extensions:Localization Common.Import}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding ExportSettingsCommand}"
+                        Margin="0,0,10,0" Padding="15,8"
+                        AutomationProperties.Name="ExportSettingsButton">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Export.png"
+                               Width="18" Height="18"
+                               Margin="8,0,8,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="{extensions:Localization Common.Export}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding SaveSettingsCommand}"
+                        Style="{StaticResource PrimaryButtonStyle}"
+                        IsDefault="True" Padding="15,8" Margin="0,0,10,0"
+                        AutomationProperties.Name="SaveSettingsButton">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Check.png"
+                               Width="18" Height="18"
+                               Margin="8,0,8,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="{extensions:Localization Common.OK}" VerticalAlignment="Center" Foreground="{DynamicResource Brush.TextOnAccent}"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding CancelCommand}"
+                        IsCancel="True" Padding="15,8"
+                        AutomationProperties.Name="CancelSettingsButton">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Close.png"
+                               Width="18" Height="18"
+                               Margin="8,0,8,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="{extensions:Localization Common.Cancel}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Window>

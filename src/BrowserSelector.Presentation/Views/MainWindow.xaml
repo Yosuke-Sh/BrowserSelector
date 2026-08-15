@@ -237,7 +237,7 @@
 
     <Grid AutomationProperties.Name="MainContentGrid" PreviewKeyDown="OnPreviewKeyDown" PreviewMouseMove="MainWindow_PreviewMouseMove">
         <Grid.RowDefinitions>
-            <RowDefinition Height="36"/>
+            <RowDefinition x:Name="CustomTitleBarRow" Height="36"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>

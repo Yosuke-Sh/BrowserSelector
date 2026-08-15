@@ -82,9 +82,31 @@
         </Style.Triggers>
     </Style>
 
+    <!--
+        GroupBox（Phase E-0）: 既定テンプレートの「彫り込み罫線」（Win95/7世代の見た目）を廃し、
+        セクション見出し（太字ラベル）+ 下側の細い区切り線 + 余白による現代的なフォーム構成に置き換える。
+        Header は太字テキストとして上部に表示し、コンテンツ全体を囲う枠線は描画しない。
+    -->
     <Style TargetType="GroupBox">
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}"/>
+        <Setter Property="Margin" Value="0,18,0,0"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="GroupBox">
+                    <StackPanel>
+                        <TextBlock Text="{TemplateBinding Header}"
+                                   FontSize="13"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource Brush.TextPrimary}"
+                                   Margin="0,0,0,8"/>
+                        <Border BorderBrush="{DynamicResource Brush.Border}"
+                                BorderThickness="0,0,0,1"
+                                Margin="0,0,0,10"/>
+                        <ContentPresenter Margin="{TemplateBinding Padding}"/>
+                    </StackPanel>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
 </ResourceDictionary>
