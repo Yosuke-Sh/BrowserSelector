@@ -384,7 +384,7 @@ public class SettingsService : ISettingsService
                 }
 
                 // ファイルを展開
-                using Stream entryStream = entry.Open();
+                using Stream entryStream = await entry.OpenAsync().ConfigureAwait(false);
                 using FileStream targetStream = new(targetPath, FileMode.Create, FileAccess.Write);
                 await entryStream.CopyToAsync(targetStream).ConfigureAwait(false);
 
@@ -497,7 +497,7 @@ public class SettingsService : ISettingsService
 
         string exportInfoJson = JsonSerializer.Serialize(exportInfo, GetJsonSerializerOptions());
         ZipArchiveEntry exportInfoEntry = archive.CreateEntry("export-info.json");
-        using Stream exportInfoStream = exportInfoEntry.Open();
+        using Stream exportInfoStream = await exportInfoEntry.OpenAsync().ConfigureAwait(false);
         using StreamWriter exportInfoWriter = new(exportInfoStream);
         await exportInfoWriter.WriteAsync(exportInfoJson).ConfigureAwait(false);
     }
@@ -510,7 +510,7 @@ public class SettingsService : ISettingsService
         if (File.Exists(filePath))
         {
             ZipArchiveEntry entry = archive.CreateEntry(entryName);
-            using Stream entryStream = entry.Open();
+            using Stream entryStream = await entry.OpenAsync().ConfigureAwait(false);
             using FileStream fileStream = new(filePath, FileMode.Open, FileAccess.Read);
             await fileStream.CopyToAsync(entryStream).ConfigureAwait(false);
             _logService?.LogDebug($"ZIPに追加: {entryName}", "SettingsService");

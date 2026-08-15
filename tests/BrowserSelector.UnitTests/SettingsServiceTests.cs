@@ -33,16 +33,16 @@ public class SettingsServiceTests
         _ = Directory.CreateDirectory(targetDirectory);
 
         // テスト用のZIPファイルを作成
-        using (ZipArchive archive = ZipFile.Open(zipFilePath, ZipArchiveMode.Create))
+        using (ZipArchive archive = await ZipFile.OpenAsync(zipFilePath, ZipArchiveMode.Create))
         {
             ZipArchiveEntry appSettingsEntry = archive.CreateEntry("appsettings.json");
-            using (StreamWriter writer = new(appSettingsEntry.Open()))
+            using (StreamWriter writer = new(await appSettingsEntry.OpenAsync()))
             {
                 await writer.WriteAsync("{\"Language\":\"ja-JP\"}");
             }
 
             ZipArchiveEntry visualSettingsEntry = archive.CreateEntry("visualsettings.json");
-            using (StreamWriter writer = new(visualSettingsEntry.Open()))
+            using (StreamWriter writer = new(await visualSettingsEntry.OpenAsync()))
             {
                 await writer.WriteAsync("{\"BackgroundColor\":\"#FF0000\"}");
             }
