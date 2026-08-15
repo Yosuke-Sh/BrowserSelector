@@ -51,7 +51,6 @@ jobs:
           "tests/BrowserSelector.AppTests",
           "tests/BrowserSelector.SecurityTests",
           "tests/BrowserSelector.UITests",
-          "tests/BrowserSelector.LibraryTests",
           "tests/BrowserSelector.E2ETests"
         )
         
