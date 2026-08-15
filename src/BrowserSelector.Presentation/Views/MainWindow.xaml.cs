@@ -136,11 +136,13 @@ public partial class MainWindow : Window
             bool isDarkMode = _themeService?.IsDarkThemeActive ?? false;
             bool glassEffectEnabled = true;
             BackdropMode backdropMode = BackdropMode.Mica;
+            double cornerRadiusPreference = 1;
             if (_settingsService != null)
             {
                 AppSettings appSettings = _settingsService.LoadAppSettingsAsync().GetAwaiter().GetResult();
                 glassEffectEnabled = appSettings.EnableGlassEffect;
                 backdropMode = appSettings.BackdropMode;
+                cornerRadiusPreference = appSettings.WindowCornerRadius;
 
                 // Phase E-1: 外観タブの設定を反映（不透明度・常に最前面・タイトルバー表示切替）
                 Opacity = Math.Clamp(appSettings.WindowOpacity, 0.3, 1.0);
@@ -160,7 +162,7 @@ public partial class MainWindow : Window
                 _ => WindowBackdropHelper.BackdropKind.Mica,
             };
 
-            bool applied = WindowBackdropHelper.Apply(this, kind, isDarkMode, glassRequested);
+            bool applied = WindowBackdropHelper.Apply(this, kind, isDarkMode, glassRequested, cornerRadiusPreference);
             _logService?.LogDebug($"DWMバックドロップ適用: Applied={applied}, IsDarkMode={isDarkMode}, GlassEffectEnabled={glassEffectEnabled}, BackdropMode={backdropMode}", "MainWindow");
         }
         // CA1031: ウィンドウ初期化の最上位try-catch。DWM呼び出し・設定読み込みなど例外種別が多岐にわたり、
