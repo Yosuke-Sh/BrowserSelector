@@ -20,6 +20,7 @@ public class IconPathConverter : IMultiValueConverter
     /// <inheritdoc/>
     public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
     {
+        ArgumentNullException.ThrowIfNull(values);
         try
         {
             // IconPath、ExecutablePath、Name、IconIndexの順で取得

@@ -27,6 +27,7 @@ public partial class App : Application
     /// <inheritdoc/>
     protected override void OnStartup(StartupEventArgs e)
     {
+        ArgumentNullException.ThrowIfNull(e);
         try
         {
             // テストモードの確認

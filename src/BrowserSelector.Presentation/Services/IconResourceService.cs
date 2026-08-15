@@ -80,6 +80,7 @@ public class IconResourceService
     /// <returns>作成されたファイル数の配列.</returns>
     public int CreateMissingIcons(string[] iconNames)
     {
+        ArgumentNullException.ThrowIfNull(iconNames);
         int createdCount = 0;
 
         foreach (string iconName in iconNames)

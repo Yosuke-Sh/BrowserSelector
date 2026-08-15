@@ -20,6 +20,7 @@ public partial class MainWindow : Window
     /// <param name="logService">logService.</param>
     public MainWindow(MainViewModel viewModel, ILogService logService)
     {
+        ArgumentNullException.ThrowIfNull(viewModel);
         _logService = logService;
         InitializeComponent();
 

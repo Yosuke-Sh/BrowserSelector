@@ -185,6 +185,7 @@ public partial class MainViewModel : ObservableObject
     /// <param name="e">e.</param>
     public void OnSettingsChanged(object? sender, SettingsChangedEventArgs e)
     {
+        ArgumentNullException.ThrowIfNull(e);
         if (e.SettingType == "VisualSettings" && e.NewValue is VisualSettings newVisualSettings)
         {
             // VisualSettingsを更新
@@ -208,6 +209,7 @@ public partial class MainViewModel : ObservableObject
     /// <param name="e">e.</param>
     public void OnBrowserChanged(object? sender, BrowserChangedEventArgs e)
     {
+        ArgumentNullException.ThrowIfNull(e);
         _logService?.LogDebug($"ブラウザ変更通知を受信: {e.Browser.Name}, 変更タイプ: {e.ChangeType}", "MainViewModel");
 
         // ブラウザ一覧を再読み込み
