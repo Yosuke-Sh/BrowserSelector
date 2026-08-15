@@ -21,26 +21,28 @@ internal static class ServiceCollectionExtensions
     public static IServiceCollection AddBrowserSelectorServices(this IServiceCollection services)
     {
         // Core Services
-        _ = services.AddScoped<IBrowserService, BrowserService>();
-        _ = services.AddScoped<ISettingsService>(provider =>
+        // WPFはルートのDIプロバイダから解決するため、Scopedは実質Singletonと同じ生存期間になり誤解を招く。
+        // アプリ生存期間で共有する意図を明確にするためSingletonとして登録する。
+        _ = services.AddSingleton<IBrowserService, BrowserService>();
+        _ = services.AddSingleton<ISettingsService>(provider =>
             new SettingsService(provider.GetRequiredService<ILogService>()));
-        _ = services.AddScoped<ICustomLanguageService>(provider =>
+        _ = services.AddSingleton<ICustomLanguageService>(provider =>
             new CustomLanguageService(provider.GetRequiredService<ILogService>()));
-        _ = services.AddScoped<ILocalizationService>(provider =>
+        _ = services.AddSingleton<ILocalizationService>(provider =>
             new LocalizationService(provider.GetRequiredService<ICustomLanguageService>(), provider.GetRequiredService<ILogService>()));
-        _ = services.AddScoped<IUrlService>(provider =>
+        _ = services.AddSingleton<IUrlService>(provider =>
             new UrlService(provider.GetRequiredService<ISettingsService>(), provider.GetRequiredService<ILogService>()));
-        _ = services.AddScoped<IUrlRuleService>(provider =>
+        _ = services.AddSingleton<IUrlRuleService>(provider =>
             new UrlRuleService(provider.GetRequiredService<ILogService>()));
 
         // Infrastructure Services
         _ = services.AddSingleton<ILogService, BrowserSelector.Infrastructure.Logging.LogService>();
         _ = services.AddSingleton<IIconCacheService>(provider =>
             new IconCacheService(provider.GetRequiredService<ILogService>()));
-        _ = services.AddScoped<IRegistryService>(provider =>
+        _ = services.AddSingleton<IRegistryService>(provider =>
             new WindowsRegistryService(provider.GetRequiredService<ILogService>()));
-        _ = services.AddScoped<IProtocolHandler, ProtocolHandler>();
-        _ = services.AddScoped<IUpdateService>(provider =>
+        _ = services.AddSingleton<IProtocolHandler, ProtocolHandler>();
+        _ = services.AddSingleton<IUpdateService>(provider =>
             new UpdateService("https://api.github.com/repos/your-repo/releases/latest", "1.0.0"));
 
         // Presentation Services

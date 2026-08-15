@@ -209,7 +209,7 @@ public class InfrastructureServicesTests
     public void LogService_Constructor_ShouldInitializeCorrectly()
     {
         // Act
-        var logService = new LogService();
+        using var logService = new LogService();
 
         // Assert
         logService.Should().NotBeNull();
@@ -222,7 +222,7 @@ public class InfrastructureServicesTests
     public void LogService_Log_WithValidMessage_ShouldLogMessage()
     {
         // Arrange
-        var logService = new LogService();
+        using var logService = new LogService();
 
         // Act
         logService.Log(LogLevel.Information, "Test message");
@@ -239,7 +239,7 @@ public class InfrastructureServicesTests
     public void LogService_Log_WithDifferentLevels_ShouldLogAllLevels()
     {
         // Arrange
-        var logService = new LogService();
+        using var logService = new LogService();
 
         // Act & Assert
         logService.Log(LogLevel.Debug, "Debug message");
@@ -259,7 +259,7 @@ public class InfrastructureServicesTests
     public void LogService_UpdateLogSettings_WithValidSettings_ShouldUpdateSettings()
     {
         // Arrange
-        var logService = new LogService();
+        using var logService = new LogService();
         var newSettings = new LogSettings
         {
             LogLevel = LogLevel.Information,

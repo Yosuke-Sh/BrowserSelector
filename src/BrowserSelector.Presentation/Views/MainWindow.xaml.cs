@@ -37,9 +37,6 @@ public partial class MainWindow : Window
         _ = Activate();
         _ = Focus();
 
-        // ウィンドウのLoadedイベントでサイズ設定を再適用
-        Loaded += MainWindow_Loaded;
-
         // ウィンドウを確実に表示（App.xaml.csでShow()が呼ばれるため削除）
         // this.Show();
         BringIntoView();
@@ -181,29 +178,6 @@ public partial class MainWindow : Window
             Top = 100;
             Width = 800;
             Height = 600;
-        }
-        #pragma warning restore CA1031
-    }
-
-    /// <summary>
-    /// ウィンドウのLoadedイベントハンドラー.
-    /// </summary>
-    private void MainWindow_Loaded(object sender, RoutedEventArgs e)
-    {
-        try
-        {
-            // ウィンドウが完全に読み込まれた後にサイズ設定を再適用
-            if (DataContext is MainViewModel viewModel)
-            {
-                _logService?.LogDebug("MainWindow_Loaded: サイズ設定を再適用", "MainWindow");
-                ApplyInitialSizeSettings(viewModel);
-            }
-        }
-        // CA1031: ウィンドウ初期化/イベントハンドラーの最上位try-catch。UI操作由来の例外種別が多岐にわたり、フォールバック値を設定してUIスレッドを継続させるための意図的な汎用catch。
-        #pragma warning disable CA1031
-        catch (Exception ex)
-        {
-            _logService?.LogError($"MainWindow_Loaded エラー: {ex.Message}", "MainWindow", ex);
         }
         #pragma warning restore CA1031
     }

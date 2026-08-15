@@ -5,7 +5,6 @@ using BrowserSelector.Infrastructure.SystemIntegration;
 using BrowserSelector.Presentation.Converters;
 using BrowserSelector.Presentation.Extensions;
 using BrowserSelector.Presentation.Helpers;
-using BrowserSelector.Presentation.Services;
 using BrowserSelector.Presentation.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -103,25 +102,6 @@ public partial class App : Application
             }
             #pragma warning restore CA1031
 
-            // 不足アイコンの作成
-            try
-            {
-                IconResourceService iconService = new();
-                string[] missingIcons = iconService.GetMissingIcons();
-                if (missingIcons.Length > 0)
-                {
-                    int createdCount = iconService.CreateMissingIcons(missingIcons);
-                    _logService?.LogInformation($"不足アイコンを {createdCount} 個作成しました: {string.Join(", ", missingIcons)}", "App");
-                }
-            }
-            // CA1031: アプリ起動/終了時の最上位フォールバック処理。DIコンテナ初期化やホスト起動、UI適用など例外種別が広範なため、アプリのクラッシュを防ぐ意図的な汎用catch。
-            #pragma warning disable CA1031
-            catch (Exception iconEx)
-            {
-                _logService?.LogError($"アイコン作成エラー: {iconEx.Message}", "App", iconEx);
-            }
-            #pragma warning restore CA1031
-
             // 起動引数からURLを取得
             string? initialUrl = null;
             if (e.Args.Length > 0)
@@ -171,102 +151,10 @@ public partial class App : Application
             }
 
             _logService?.LogInformation("テストモード: MainWindowを作成", "App");
+            // 背景・サイズの初期設定はMainWindowのコンストラクタ（ApplyInitialBackgroundSettings/ApplyInitialSizeSettings）に一本化。
+            // 従来ここでApp.xaml.cs側でも背景色を直接適用していたため、初期化経路が重複していた。
             Presentation.Views.MainWindow mainWindow = new(mainViewModel, _logService!);
             _logService?.LogInformation("MainWindow作成完了", "App");
-
-            // MainViewModelで既にVisualSettingsが読み込まれているので、それを取得
-            Core.Models.VisualSettings v = mainViewModel.VisualSettings;
-            _logService?.LogDebug($"Startup.VisualSettings.Load.Success BackgroundColor={v.BackgroundColor}, UseBackgroundGradient={v.UseBackgroundGradient}, GradientDirection={v.GradientDirection}", "App");
-
-            // 起動時即座に背景色設定を実行
-            _logService?.LogDebug("Startup.VisualSettings.Apply.Start Target=MainWindow (Immediate)", "App");
-            try
-            {
-                // 背景（グラデーション or 単色）
-                if (v.UseBackgroundGradient)
-                {
-                    // グラデーション方向に応じてStartPointとEndPointを設定
-                    System.Windows.Point startPoint, endPoint;
-                    switch (v.GradientDirection)
-                    {
-                        case BrowserSelector.Core.Enums.GradientDirection.Horizontal:
-                            startPoint = new System.Windows.Point(0, 0);
-                            endPoint = new System.Windows.Point(1, 0);
-                            break;
-                        case BrowserSelector.Core.Enums.GradientDirection.Diagonal:
-                            startPoint = new System.Windows.Point(0, 0);
-                            endPoint = new System.Windows.Point(1, 1);
-                            break;
-                        default: // Vertical
-                            startPoint = new System.Windows.Point(0, 0);
-                            endPoint = new System.Windows.Point(0, 1);
-                            break;
-                    }
-
-                    mainWindow.Background = new System.Windows.Media.LinearGradientBrush
-                    {
-                        StartPoint = startPoint,
-                        EndPoint = endPoint,
-                        GradientStops =
-                        [
-                            new System.Windows.Media.GradientStop(v.GradientStartColor, 0),
-                            new System.Windows.Media.GradientStop(v.GradientEndColor, 1)
-                        ]
-                    };
-                    _logService?.LogDebug($"起動時背景グラデーション設定完了: 方向={v.GradientDirection}, 開始色={v.GradientStartColor}, 終了色={v.GradientEndColor}", "App");
-                }
-                else
-                {
-                    System.Windows.Media.SolidColorBrush brush = new(v.BackgroundColor);
-                    mainWindow.Background = brush;
-                    _logService?.LogDebug($"起動時背景色設定完了: 設定値={v.BackgroundColor}, 適用後={mainWindow.Background}", "App");
-                }
-
-                _logService?.LogDebug("Startup.VisualSettings.Apply.Success Target=MainWindow (Immediate)", "App");
-            }
-            // CA1031: アプリ起動/終了時の最上位フォールバック処理。DIコンテナ初期化やホスト起動、UI適用など例外種別が広範なため、アプリのクラッシュを防ぐ意図的な汎用catch。
-            #pragma warning disable CA1031
-            catch (Exception aex)
-            {
-                _logService?.LogDebug($"Startup.VisualSettings.Apply.Error {aex.Message}", "App", aex);
-            }
-            #pragma warning restore CA1031
-
-            // 追加でLoadedイベントでも設定を適用（二重適用防止のため条件付き）
-            mainWindow.Loaded += (_, __) =>
-            {
-                _logService?.LogDebug("Startup.VisualSettings.Apply.Start Target=MainWindow (Loaded Event)", "App");
-                try
-                {
-                    // 既に設定済みの場合はスキップ
-                    if (mainWindow.Background is System.Windows.Media.SolidColorBrush currentBrush)
-                    {
-                        System.Windows.Media.Color currentColor = currentBrush.Color;
-                        if (currentColor == v.BackgroundColor)
-                        {
-                            _logService?.LogDebug("起動時背景色設定は既に適用済みです", "App");
-                            return;
-                        }
-                    }
-
-                    // 背景色を再適用
-                    if (!v.UseBackgroundGradient)
-                    {
-                        System.Windows.Media.SolidColorBrush brush = new(v.BackgroundColor);
-                        mainWindow.Background = brush;
-                        _logService?.LogDebug($"Loadedイベントで背景色再適用完了: {v.BackgroundColor}", "App");
-                    }
-
-                    _logService?.LogDebug("Startup.VisualSettings.Apply.Success Target=MainWindow (Loaded Event)", "App");
-                }
-                // CA1031: アプリ起動/終了時の最上位フォールバック処理。DIコンテナ初期化やホスト起動、UI適用など例外種別が広範なため、アプリのクラッシュを防ぐ意図的な汎用catch。
-                #pragma warning disable CA1031
-                catch (Exception aex)
-                {
-                    _logService?.LogDebug($"Startup.VisualSettings.Apply.Error (Loaded Event) {aex.Message}", "App", aex);
-                }
-                #pragma warning restore CA1031
-            };
 
             MainWindow = mainWindow;
             _logService?.LogInformation("MainWindow表示開始", "App");

@@ -27,7 +27,7 @@ public class BrowserService : IBrowserService
     /// <param name="registryService">registryService.</param>
     /// <param name="urlService">urlService.</param>
     public BrowserService(IRegistryService registryService, IUrlService urlService)
-        : this(registryService, urlService, new LogService())
+        : this(registryService, urlService, SharedNullLogService.Instance)
     {
     }
 
