@@ -1,5 +1,4 @@
 using FluentAssertions;
-using Xunit;
 using System.IO;
 
 namespace BrowserSelector.UITests;
@@ -7,12 +6,17 @@ namespace BrowserSelector.UITests;
 /// <summary>
 /// シンプルなUIテスト（実際のUI操作なし）.
 /// </summary>
-public class SimpleUITests
+// CA1812: MSTestがリフレクション経由でインスタンス化するテストクラスのため、
+// 静的解析からは「未使用」に見えるが実際には実行時に使用される（正当な理由による抑制）。
+#pragma warning disable CA1812
+[TestClass]
+internal sealed class SimpleUITests
+#pragma warning restore CA1812
 {
     /// <summary>
     /// UIテストの基本動作確認.
     /// </summary>
-    [Fact]
+    [TestMethod]
     public void UITest_ShouldRunSuccessfully()
     {
         // Arrange
@@ -25,7 +29,7 @@ public class SimpleUITests
     /// <summary>
     /// UIテストの並列実行確認.
     /// </summary>
-    [Fact]
+    [TestMethod]
     public void UITest_ShouldSupportParallelExecution()
     {
         // Arrange
@@ -43,7 +47,7 @@ public class SimpleUITests
     /// <summary>
     /// UIテストの環境確認.
     /// </summary>
-    [Fact]
+    [TestMethod]
     public void UITest_ShouldHaveValidEnvironment()
     {
         // Arrange & Act
@@ -58,7 +62,7 @@ public class SimpleUITests
     /// <summary>
     /// UIテストのメモリ使用量確認.
     /// </summary>
-    [Fact]
+    [TestMethod]
     public void UITest_ShouldHaveReasonableMemoryUsage()
     {
         // Arrange & Act
@@ -82,7 +86,7 @@ public class SimpleUITests
     /// <summary>
     /// UIテストのスレッド確認.
     /// </summary>
-    [Fact]
+    [TestMethod]
     public void UITest_ShouldRunOnValidThread()
     {
         // Arrange & Act

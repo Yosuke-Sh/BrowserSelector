@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
@@ -21,7 +21,8 @@
     </PackageReference>
     <PackageReference Include="FluentAssertions" />
     <PackageReference Include="Moq" />
-    <PackageReference Include="System.Text.RegularExpressions" />
+    <!-- System.Text.RegularExpressions は net10.0-windows のシェアードフレームワークに含まれるため、
+         明示的なPackageReferenceは不要（NU1510）。コード上の using/型参照はそのまま利用可能 -->
   </ItemGroup>
 
   <ItemGroup>

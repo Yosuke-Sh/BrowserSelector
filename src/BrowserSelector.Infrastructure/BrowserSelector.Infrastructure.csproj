@@ -9,7 +9,8 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="Microsoft.Extensions.Localization" />
     <PackageReference Include="Microsoft.Extensions.Logging" />
-    <PackageReference Include="System.Drawing.Common" />
+    <!-- System.Drawing.Common は net10.0-windows のシェアードフレームワークに含まれるため、
+         明示的なPackageReferenceは不要（NU1510）。コード上の using/型参照はそのまま利用可能 -->
   </ItemGroup>
 
   <ItemGroup>
@@ -17,7 +18,7 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>

@@ -15,13 +15,19 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" />
   </ItemGroup>
 
+  <!-- AppTestsからinternal型（App, ServiceCollectionExtensions等）へのリフレクション/直接参照アクセスを許可 -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="BrowserSelector.AppTests" />
+  </ItemGroup>
+
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>BrowserSelector_Icon_256.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
     <StartupObject>BrowserSelector.App.App</StartupObject>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AssemblyName>BrowserSelector</AssemblyName>

@@ -5,9 +5,8 @@
     <ProjectReference Include="..\BrowserSelector.Infrastructure\BrowserSelector.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="System.Drawing.Common" />
-  </ItemGroup>
+  <!-- System.Drawing.Common は net10.0-windows のシェアードフレームワークに含まれるため、
+       明示的なPackageReferenceは不要（NU1510）。コード上の using/型参照はそのまま利用可能 -->
 
   <ItemGroup>
     <Resource Include="Resources\Images\*.png" />
@@ -16,7 +15,7 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
