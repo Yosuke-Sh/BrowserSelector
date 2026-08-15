@@ -5,20 +5,11 @@
     <Application.Resources>
         <!-- グローバルコンバーター -->
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-        
-        <!-- グローバルスタイル -->
-        
-        <Style TargetType="TextBox">
-            <Setter Property="Padding" Value="8,5"/>
-            <Setter Property="Margin" Value="5"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="BorderBrush" Value="#BDBDBD"/>
-            <Setter Property="Background" Value="White"/>
-        </Style>
-        
-        <Style TargetType="TextBlock">
-            <Setter Property="Margin" Value="5"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-        </Style>
+
+        <!--
+            グローバルなTextBox/TextBlockスタイルは Resources/Themes/Controls.xaml へ移設した
+            （トークン参照によるダークモード対応のため）。Controls.xaml は App.xaml.cs の起動処理内で
+            Application.Resources.MergedDictionaries へ動的に追加される。
+        -->
     </Application.Resources>
 </Application>

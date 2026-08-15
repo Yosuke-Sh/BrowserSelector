@@ -160,7 +160,7 @@
                                             Command="{Binding SelectBackgroundColorCommand}"/>
                                     <!-- 現在色を可視化 -->
                                     <Border Grid.Column="2" Width="24" Height="24" Margin="10,0,0,0"
-                                            BorderBrush="#DDD" BorderThickness="1"
+                                            BorderBrush="{DynamicResource Brush.Border}" BorderThickness="1"
                                             Background="{Binding VisualSettings.BackgroundColor, Converter={StaticResource ColorToBrushConverter}}" />
                                 </Grid>
 
@@ -186,7 +186,7 @@
                                             Command="{Binding SelectGradientStartColorCommand}"/>
                                     <!-- 現在色を可視化 -->
                                     <Border Grid.Column="2" Width="24" Height="24" Margin="10,0,0,0"
-                                            BorderBrush="#DDD" BorderThickness="1"
+                                            BorderBrush="{DynamicResource Brush.Border}" BorderThickness="1"
                                             Background="{Binding VisualSettings.GradientStartColor, Converter={StaticResource ColorToBrushConverter}}" />
                                 </Grid>
 
@@ -202,7 +202,7 @@
                                             Command="{Binding SelectGradientEndColorCommand}"/>
                                     <!-- 現在色を可視化 -->
                                     <Border Grid.Column="2" Width="24" Height="24" Margin="10,0,0,0"
-                                            BorderBrush="#DDD" BorderThickness="1"
+                                            BorderBrush="{DynamicResource Brush.Border}" BorderThickness="1"
                                             Background="{Binding VisualSettings.GradientEndColor, Converter={StaticResource ColorToBrushConverter}}" />
                                 </Grid>
 
@@ -303,7 +303,7 @@
                                             Command="{Binding SelectBrowserButtonBackgroundColorCommand}"/>
                                     <!-- 現在色を可視化 -->
                                     <Border Grid.Column="2" Width="24" Height="24" Margin="10,0,0,0"
-                                            BorderBrush="#DDD" BorderThickness="1"
+                                            BorderBrush="{DynamicResource Brush.Border}" BorderThickness="1"
                                             Background="{Binding VisualSettings.BrowserButtonBackgroundColor, Converter={StaticResource ColorToBrushConverter}}" />
                                 </Grid>
 
@@ -319,7 +319,7 @@
                                             Command="{Binding SelectBrowserButtonForegroundColorCommand}"/>
                                     <!-- 現在色を可視化 -->
                                     <Border Grid.Column="2" Width="24" Height="24" Margin="10,0,0,0"
-                                            BorderBrush="#DDD" BorderThickness="1"
+                                            BorderBrush="{DynamicResource Brush.Border}" BorderThickness="1"
                                             Background="{Binding VisualSettings.BrowserButtonForegroundColor, Converter={StaticResource ColorToBrushConverter}}" />
                                 </Grid>
 

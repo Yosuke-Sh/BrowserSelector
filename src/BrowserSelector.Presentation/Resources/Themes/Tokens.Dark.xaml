@@ -1,0 +1,34 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ダークテーマのデザイントークン。Tokens.Light.xamlと同一キー群を維持する。 -->
+
+    <Color x:Key="Color.Surface">#202026</Color>
+    <Color x:Key="Color.SurfaceAlt">#2A2A31</Color>
+    <Color x:Key="Color.SurfaceHover">#33445E</Color>
+    <Color x:Key="Color.SurfaceDisabled">#2C2C32</Color>
+    <Color x:Key="Color.Accent">#4DA3FF</Color>
+    <Color x:Key="Color.TextPrimary">#F0F0F0</Color>
+    <Color x:Key="Color.TextSecondary">#B0B0B8</Color>
+    <Color x:Key="Color.TextDisabled">#6E6E76</Color>
+    <Color x:Key="Color.TextOnAccent">#0B0B0D</Color>
+    <Color x:Key="Color.Border">#3C3C44</Color>
+    <Color x:Key="Color.BorderStrong">#4C4C56</Color>
+    <Color x:Key="Color.FocusRing">#4DA3FF</Color>
+    <Color x:Key="Color.Scrim">#A0000000</Color>
+
+    <SolidColorBrush x:Key="Brush.Surface" Color="{StaticResource Color.Surface}"/>
+    <SolidColorBrush x:Key="Brush.SurfaceAlt" Color="{StaticResource Color.SurfaceAlt}"/>
+    <SolidColorBrush x:Key="Brush.SurfaceHover" Color="{StaticResource Color.SurfaceHover}"/>
+    <SolidColorBrush x:Key="Brush.SurfaceDisabled" Color="{StaticResource Color.SurfaceDisabled}"/>
+    <SolidColorBrush x:Key="Brush.Accent" Color="{StaticResource Color.Accent}"/>
+    <SolidColorBrush x:Key="Brush.TextPrimary" Color="{StaticResource Color.TextPrimary}"/>
+    <SolidColorBrush x:Key="Brush.TextSecondary" Color="{StaticResource Color.TextSecondary}"/>
+    <SolidColorBrush x:Key="Brush.TextDisabled" Color="{StaticResource Color.TextDisabled}"/>
+    <SolidColorBrush x:Key="Brush.TextOnAccent" Color="{StaticResource Color.TextOnAccent}"/>
+    <SolidColorBrush x:Key="Brush.Border" Color="{StaticResource Color.Border}"/>
+    <SolidColorBrush x:Key="Brush.BorderStrong" Color="{StaticResource Color.BorderStrong}"/>
+    <SolidColorBrush x:Key="Brush.FocusRing" Color="{StaticResource Color.FocusRing}"/>
+    <SolidColorBrush x:Key="Brush.Scrim" Color="{StaticResource Color.Scrim}"/>
+
+</ResourceDictionary>

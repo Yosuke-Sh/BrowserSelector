@@ -3,6 +3,7 @@ using BrowserSelector.Infrastructure.Localization;
 using BrowserSelector.Infrastructure.Services;
 using BrowserSelector.Infrastructure.SystemIntegration;
 using BrowserSelector.Infrastructure.Updates;
+using BrowserSelector.Presentation.Services;
 using BrowserSelector.Presentation.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -44,6 +45,10 @@ internal static class ServiceCollectionExtensions
         _ = services.AddSingleton<IProtocolHandler, ProtocolHandler>();
         _ = services.AddSingleton<IUpdateService>(provider =>
             new UpdateService("https://api.github.com/repos/your-repo/releases/latest", "1.0.0"));
+
+        // Presentation Services (WPFのApplication.Currentに依存するため型はPresentation層)
+        _ = services.AddSingleton<IThemeService>(provider =>
+            new ThemeService(provider.GetRequiredService<ILogService>()));
 
         // Presentation Services
         _ = services.AddTransient<MainViewModel>();

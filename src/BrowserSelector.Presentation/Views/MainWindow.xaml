@@ -83,12 +83,12 @@
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsEnabled" Value="False">
                                 <Setter Property="Opacity" Value="0.5"/>
-                                <Setter Property="Background" Value="#F0F0F0"/>
-                                <Setter Property="BorderBrush" Value="#D0D0D0"/>
+                                <Setter Property="Background" Value="{DynamicResource Brush.SurfaceDisabled}"/>
+                                <Setter Property="BorderBrush" Value="{DynamicResource Brush.BorderStrong}"/>
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#E3F2FD"/>
-                                <Setter Property="BorderBrush" Value="#2196F3"/>
+                                <Setter Property="Background" Value="{DynamicResource Brush.SurfaceHover}"/>
+                                <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -97,7 +97,7 @@
         </Style>
 
         <Style x:Key="StatusTextStyle" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="#666666"/>
+            <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}"/>
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
             <Setter Property="Margin" Value="5"/>
@@ -117,7 +117,7 @@
                 Background="{Binding VisualSettings, Converter={StaticResource BackgroundBrushConverter}}"/>
 
         <!-- ヘッダー -->
-        <Grid Grid.Row="0" Margin="20,20,20,15" 
+        <Grid Grid.Row="0" Margin="20,20,20,15"
               Visibility="{Binding VisualSettings.ShowLogo, Converter={StaticResource BoolToVisibilityConverter}}"
               AutomationProperties.Name="HeaderGrid">
             <Grid.ColumnDefinitions>
@@ -128,49 +128,37 @@
             <!-- ロゴ（左上） -->
             <Image Grid.Column="0"
                    Source="/BrowserSelector.Presentation;component/Resources/Images/BrowserSelector_Logo_240.png"
-                   Width="157" 
+                   Stretch="Uniform"
                    Height="79"
                    HorizontalAlignment="Left"
                    VerticalAlignment="Top"
-                   Margin="-15,-9,0,0"
-                   RenderOptions.BitmapScalingMode="HighQuality" Grid.ColumnSpan="2"
+                   RenderOptions.BitmapScalingMode="HighQuality"
                    AutomationProperties.Name="LogoImage"/>
 
-            <!-- タイトルテキスト（中央） -->
+            <!-- タイトルテキスト（右側、可変幅） -->
             <TextBlock Grid.Column="1"
                        Text="{Binding TitleMessage}"
-                       FontSize="20" 
+                       FontSize="20"
+                       Foreground="{DynamicResource Brush.TextPrimary}"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"
-                       Width="443"
-                       AutomationProperties.Name="TitleTextBlock"
-                       >
-                <TextBlock.Effect>
-                    <DropShadowEffect
-                          ShadowDepth="3"
-                          Direction="330"
-                          Color="{DynamicResource {x:Static SystemColors.GrayTextColorKey}}"
-                          Opacity="0.5"
-                         BlurRadius="2"/>
-                </TextBlock.Effect>
-                <TextBlock.Background>
-                    <SolidColorBrush  Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}" Opacity="0.10"/>
-                </TextBlock.Background>
-            </TextBlock>
+                       TextTrimming="CharacterEllipsis"
+                       Margin="10,0,0,0"
+                       AutomationProperties.Name="TitleTextBlock"/>
         </Grid>
 
         <!-- URLが指定されている場合の表示 -->
-        <TextBlock Grid.Row="0" 
+        <TextBlock Grid.Row="0"
                    Text="{Binding Url, StringFormat='URL: {0}'}"
-                   FontSize="14" 
+                   FontSize="14"
                    HorizontalAlignment="Center"
                    Margin="20,70,20,0"
-                   Foreground="#666666"
+                   Foreground="{DynamicResource Brush.TextSecondary}"
                    Visibility="{Binding Url, Converter={StaticResource BoolToVisibilityConverter}}"
                    AutomationProperties.Name="UrlDisplayTextBlock"/>
 
         <!-- URL入力 -->
-        <Grid Grid.Row="1" Margin="20,10" 
+        <Grid Grid.Row="1" Margin="20,10"
               Visibility="{Binding VisualSettings.ShowUrlInput, Converter={StaticResource BoolToVisibilityConverter}}"
               AutomationProperties.Name="UrlInputGrid">
             <Grid.ColumnDefinitions>
@@ -179,48 +167,57 @@
             </Grid.ColumnDefinitions>
 
             <Grid Grid.Column="0" AutomationProperties.Name="UrlTextBoxContainer">
-                <TextBox Text="{Binding Url, UpdateSourceTrigger=PropertyChanged}"
-                          FontSize="16"
-                          Padding="40,8,10,8"
-                          Margin="0,0,10,0"
-                          VerticalAlignment="Center"
-                          Background="#FAFAFA"
-                          BorderBrush="#E0E0E0"
-                          BorderThickness="1"
-                          AutomationProperties.Name="UrlInputTextBox">
-                    <TextBox.Style>
-                        <Style TargetType="TextBox">
-                            <Style.Triggers>
-                                <Trigger Property="Text" Value="">
-                                    <Setter Property="Background">
-                                        <Setter.Value>
-                                            <VisualBrush AlignmentX="Left" AlignmentY="Center" Stretch="None">
-                                                <VisualBrush.Visual>
-                                                    <StackPanel Orientation="Horizontal" Margin="10,0,0,0">
-                                                        <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Globe.png"
-                                                                Width="16" Height="16" Margin="0,0,8,0"/>
-                                                        <TextBlock Text="{extensions:Localization MainWindow.UrlPrompt}" 
-                                                                    Foreground="Gray" 
-                                                                    FontSize="16" 
-                                                                    VerticalAlignment="Center"/>
-                                                    </StackPanel>
-                                                </VisualBrush.Visual>
-                                            </VisualBrush>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBox.Style>
-                </TextBox>
+                <!--
+                    プレースホルダーはBackground上のVisualBrushではなく、TextBoxに重ねたTextBlockで表現する。
+                    以前はTextBox.Backgroundにローカル値(#FAFAFA)を設定しつつ、同じプロパティに
+                    Style.Triggerでプレースホルダー用VisualBrushを設定していたため、
+                    WPFの依存関係プロパティ優先順位（ローカル値 > スタイルトリガー）により
+                    トリガーが常に無視され、プレースホルダーが表示されない不具合があった（Phase C-0b）。
+                -->
+                <TextBox x:Name="UrlTextBox"
+                         Text="{Binding Url, UpdateSourceTrigger=PropertyChanged}"
+                         FontSize="16"
+                         Padding="40,8,10,8"
+                         Margin="0,0,10,0"
+                         VerticalAlignment="Center"
+                         Background="{DynamicResource Brush.SurfaceAlt}"
+                         Foreground="{DynamicResource Brush.TextPrimary}"
+                         BorderBrush="{DynamicResource Brush.Border}"
+                         BorderThickness="1"
+                         AutomationProperties.Name="UrlInputTextBox"/>
 
-                <!-- グローブアイコン（常時表示） -->
+                <!-- 地球アイコン（常時表示） -->
                 <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Globe.png"
-                        Width="16" Height="16" 
-                        HorizontalAlignment="Left" 
+                        Width="16" Height="16"
+                        HorizontalAlignment="Left"
                         VerticalAlignment="Center"
                         Margin="12,0,0,0"
-                        Opacity="0.6"/>
+                        Opacity="0.6"
+                        IsHitTestVisible="False"/>
+
+                <!-- プレースホルダー文言（URL未入力かつ未フォーカス時のみ表示） -->
+                <TextBlock Text="{extensions:Localization MainWindow.UrlPrompt}"
+                           Foreground="{DynamicResource Brush.TextSecondary}"
+                           FontSize="16"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Center"
+                           Margin="40,0,0,0"
+                           IsHitTestVisible="False">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding Text, ElementName=UrlTextBox}" Value=""/>
+                                        <Condition Binding="{Binding IsKeyboardFocused, ElementName=UrlTextBox}" Value="False"/>
+                                    </MultiDataTrigger.Conditions>
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </MultiDataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
             </Grid>
 
         </Grid>
@@ -261,9 +258,9 @@
                      Padding="15,8"
                      Margin="0,10,0,0"
                      HorizontalAlignment="Center"
-                     Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
-                     Foreground="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
-                     BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"
+                     Background="{DynamicResource Brush.SurfaceAlt}"
+                     Foreground="{DynamicResource Brush.TextPrimary}"
+                     BorderBrush="{DynamicResource Brush.Border}"
                      BorderThickness="1"
                      Cursor="Hand"
                      AutomationProperties.Name="SettingsButton">
@@ -300,18 +297,18 @@
                    Style="{StaticResource StatusTextStyle}"/>
 
         <!-- ローディング表示 -->
-        <Grid Grid.Row="2" 
-              Background="#80000000"
+        <Grid Grid.Row="2"
+              Background="{DynamicResource Brush.Scrim}"
               Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}"
               Panel.ZIndex="1000">
-            <StackPanel HorizontalAlignment="Center" 
+            <StackPanel HorizontalAlignment="Center"
                         VerticalAlignment="Center">
-                <ProgressBar IsIndeterminate="True" 
-                             Width="100" 
-                             Height="4" 
+                <ProgressBar IsIndeterminate="True"
+                             Width="100"
+                             Height="4"
                              Margin="0,0,0,10"/>
-                <TextBlock Text="{extensions:Localization MainWindow.Loading}" 
-                           Foreground="White" 
+                <TextBlock Text="{extensions:Localization MainWindow.Loading}"
+                           Foreground="{DynamicResource Brush.TextOnAccent}"
                            HorizontalAlignment="Center"/>
             </StackPanel>
         </Grid>

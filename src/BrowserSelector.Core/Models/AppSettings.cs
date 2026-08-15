@@ -2,6 +2,7 @@
 // Copyright (c) 2024 BrowserSelector. All rights reserved.
 // </copyright>
 
+using BrowserSelector.Core.Enums;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace BrowserSelector.Core.Models
@@ -13,6 +14,9 @@ namespace BrowserSelector.Core.Models
     {
         [ObservableProperty]
         private bool _enableLogging = true;
+
+        [ObservableProperty]
+        private ThemeMode _themeMode = ThemeMode.System;
 
         [ObservableProperty]
         private string _logLevel = "Information";

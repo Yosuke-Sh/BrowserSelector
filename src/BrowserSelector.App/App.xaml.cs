@@ -83,22 +83,32 @@ public partial class App : Application
             // アイコンキャッシュサービスの設定
             IconPathConverter.SetIconCacheService(_host.Services.GetRequiredService<IIconCacheService>());
 
-            // 設定された言語を適用
+            // 共通コントロールスタイルを読み込み（トークン参照のため、テーマ辞書より先に追加）
+            Resources.MergedDictionaries.Add(new ResourceDictionary
+            {
+                Source = new Uri("/BrowserSelector.Presentation;component/Resources/Themes/Controls.xaml", UriKind.Relative),
+            });
+
+            // 設定された言語・テーマを適用
             try
             {
                 ISettingsService settingsService = _host.Services.GetRequiredService<ISettingsService>();
                 Core.Models.AppSettings appSettings = settingsService.LoadAppSettingsAsync().GetAwaiter().GetResult();
                 System.Globalization.CultureInfo culture = new(appSettings.Language);
                 localizationService.SetLanguage(culture).GetAwaiter().GetResult();
+
+                IThemeService themeService = _host.Services.GetRequiredService<IThemeService>();
+                themeService.ApplyTheme(appSettings.ThemeMode);
             }
             // CA1031: アプリ起動/終了時の最上位フォールバック処理。DIコンテナ初期化やホスト起動、UI適用など例外種別が広範なため、アプリのクラッシュを防ぐ意図的な汎用catch。
             #pragma warning disable CA1031
             catch (Exception ex)
             {
-                // 設定読み込みに失敗した場合はデフォルト言語（日本語）を使用
-                _logService?.LogWarning($"設定読み込みに失敗、デフォルト言語を使用: {ex.Message}", "App");
+                // 設定読み込みに失敗した場合はデフォルト言語・テーマを使用
+                _logService?.LogWarning($"設定読み込みに失敗、デフォルト言語・テーマを使用: {ex.Message}", "App");
                 System.Globalization.CultureInfo defaultCulture = new("ja-JP");
                 localizationService.SetLanguage(defaultCulture).GetAwaiter().GetResult();
+                _host.Services.GetRequiredService<IThemeService>().ApplyTheme(BrowserSelector.Core.Enums.ThemeMode.System);
             }
             #pragma warning restore CA1031
 
