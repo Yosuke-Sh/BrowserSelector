@@ -52,6 +52,19 @@ public partial class MainViewModel : ObservableObject
     private bool _closeAfterLaunch;
 
     /// <summary>
+    /// Gets or sets カウントダウン自動起動の残り秒数（Phase D）。0または非表示状態のときは非表示にする.
+    /// </summary>
+    [ObservableProperty]
+    private int _countdownRemainingSeconds;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether カウントダウン自動起動が有効な状態かどうか（Phase D）.
+    /// UIの残り秒数ラベルの表示切替に使用する.
+    /// </summary>
+    [ObservableProperty]
+    private bool _isCountdownActive;
+
+    /// <summary>
     /// Ctrl+クリックによる「その起動に限り自動クローズを抑制」フラグ（Phase C-4）.
     /// <see cref="LaunchBrowserCommand"/> 実行前に <see cref="MainWindow"/> 側で一時的に立てる.
     /// </summary>
@@ -280,6 +293,25 @@ public partial class MainViewModel : ObservableObject
     public void SuppressAutoCloseOnce()
     {
         _suppressAutoCloseOnce = true;
+    }
+
+    /// <summary>
+    /// 既定ブラウザへ起動する（Phase D: カウントダウン自動起動・<c>--silent</c>/<c>--auto-launch</c>CLIオプションから使用）.
+    /// URLが未設定の場合は何もしない。既定ブラウザが見つからない場合は先頭のブラウザへフォールバックする.
+    /// </summary>
+    /// <returns>representing the asynchronous operation.</returns>
+    public async Task LaunchDefaultBrowserAsync()
+    {
+        if (string.IsNullOrWhiteSpace(Url))
+        {
+            return;
+        }
+
+        Browser? target = Browsers.FirstOrDefault(b => b.IsDefault) ?? Browsers.FirstOrDefault();
+        if (target != null)
+        {
+            await LaunchBrowserAsync(target).ConfigureAwait(false);
+        }
     }
 
     /// <summary>

@@ -235,7 +235,7 @@
         <KeyBinding Modifiers="Ctrl" Key="OemComma" Command="{Binding OpenSettingsCommand}"/>
     </Window.InputBindings>
 
-    <Grid AutomationProperties.Name="MainContentGrid" PreviewKeyDown="OnPreviewKeyDown">
+    <Grid AutomationProperties.Name="MainContentGrid" PreviewKeyDown="OnPreviewKeyDown" PreviewMouseMove="MainWindow_PreviewMouseMove">
         <Grid.RowDefinitions>
             <RowDefinition Height="36"/>
             <RowDefinition Height="Auto"/>
@@ -255,6 +255,7 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0"
@@ -265,7 +266,26 @@
                        Foreground="{DynamicResource Brush.TextSecondary}"
                        TextTrimming="CharacterEllipsis"/>
 
-            <Button Grid.Column="1"
+            <!-- カウントダウン自動起動の残り秒数（Phase D） -->
+            <Border Grid.Column="1"
+                    Margin="0,0,4,0"
+                    Padding="8,3"
+                    CornerRadius="10"
+                    Background="{DynamicResource Brush.SurfaceAlt}"
+                    VerticalAlignment="Center"
+                    Visibility="{Binding IsCountdownActive, Converter={StaticResource BoolToVisibilityConverter}}"
+                    AutomationProperties.Name="CountdownBadge">
+                <TextBlock FontSize="11"
+                           Foreground="{DynamicResource Brush.TextSecondary}">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="{}{0}s">
+                            <Binding Path="CountdownRemainingSeconds"/>
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+            </Border>
+
+            <Button Grid.Column="2"
                     Style="{StaticResource TitleBarButtonStyle}"
                     Command="{Binding OpenSettingsCommand}"
                     ToolTip="{extensions:Localization MainWindow.SettingsButton.Tooltip}"
@@ -273,7 +293,7 @@
                 <TextBlock Text="&#xE713;" FontFamily="Segoe MDL2 Assets" FontSize="14"/>
             </Button>
 
-            <Button Grid.Column="2"
+            <Button Grid.Column="3"
                     Style="{StaticResource TitleBarButtonStyle}"
                     Click="MinimizeButton_Click"
                     ToolTip="{extensions:Localization MainWindow.MinimizeButton.Tooltip}"
@@ -281,7 +301,7 @@
                 <TextBlock Text="&#xE921;" FontFamily="Segoe MDL2 Assets" FontSize="10"/>
             </Button>
 
-            <Button Grid.Column="3"
+            <Button Grid.Column="4"
                     Style="{StaticResource CloseButtonStyle}"
                     Click="CloseButton_Click"
                     ToolTip="{extensions:Localization MainWindow.CloseButton.Tooltip}"

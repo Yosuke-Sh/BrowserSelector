@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace BrowserSelector.Presentation.Views;
 
@@ -18,6 +19,8 @@ public partial class MainWindow : Window
     private readonly ILogService _logService;
     private readonly IThemeService? _themeService;
     private readonly ISettingsService? _settingsService;
+    private readonly CountdownController _countdownController = new();
+    private DispatcherTimer? _countdownTimer;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MainWindow"/> class.
@@ -43,6 +46,9 @@ public partial class MainWindow : Window
         // 初期背景設定を適用
         ApplyInitialBackgroundSettings(viewModel);
 
+        // カウントダウン自動起動の初期化（Phase D）
+        InitializeCountdown();
+
         // ウィンドウをアクティブにする
         _ = Activate();
         _ = Focus();
@@ -51,6 +57,11 @@ public partial class MainWindow : Window
         // this.Show();
         BringIntoView();
     }
+
+    /// <summary>
+    /// Gets カウントダウン制御を外部（トレイ常駐等）から操作するためのコントローラー（Phase D）.
+    /// </summary>
+    public CountdownController Countdown => _countdownController;
 
     /// <summary>
     /// DataContext変更時の処理.
@@ -222,10 +233,78 @@ public partial class MainWindow : Window
 
     /// <summary>
     /// 閉じるボタンのクリックハンドラー（Phase C-2）.
+    /// <see cref="AppSettings.AlwaysResidentInTray"/>が有効な場合、実際の終了はApp側（<see cref="Window.Closing"/>）で
+    /// トレイ格納に差し替えられる（Phase D）。
     /// </summary>
     private void CloseButton_Click(object sender, RoutedEventArgs e)
     {
         Close();
+    }
+
+    /// <summary>
+    /// マウス移動を検知してカウントダウンを一時停止する（Phase D）.
+    /// </summary>
+    private void MainWindow_PreviewMouseMove(object sender, MouseEventArgs e)
+    {
+        PauseCountdownOnActivity();
+    }
+
+    /// <summary>
+    /// カウントダウン自動起動を初期化する（Phase D）。
+    /// <see cref="AppSettings.DefaultDelay"/>秒後に既定ブラウザへ自動起動する。
+    /// マウス移動・キー入力があれば一時停止する.
+    /// </summary>
+    private void InitializeCountdown()
+    {
+        if (DataContext is not MainViewModel viewModel)
+        {
+            return;
+        }
+
+        _countdownController.TickOccurred += (_, remaining) =>
+        {
+            viewModel.CountdownRemainingSeconds = remaining;
+            viewModel.IsCountdownActive = remaining > 0;
+        };
+        _countdownController.Elapsed += async (_, _) =>
+        {
+            viewModel.IsCountdownActive = false;
+            await viewModel.LaunchDefaultBrowserAsync().ConfigureAwait(true);
+        };
+
+        _countdownTimer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromSeconds(1),
+        };
+        _countdownTimer.Tick += (_, _) => _countdownController.Tick();
+        _countdownTimer.Start();
+
+        try
+        {
+            int delaySeconds = _settingsService?.LoadAppSettingsAsync().GetAwaiter().GetResult().DefaultDelay ?? 0;
+            _countdownController.Start(delaySeconds);
+            viewModel.IsCountdownActive = delaySeconds > 0;
+            viewModel.CountdownRemainingSeconds = delaySeconds;
+        }
+        // CA1031: ウィンドウ初期化の最上位try-catch。設定読み込み失敗時はカウントダウンを開始しないだけで、
+        // ウィンドウ表示自体は継続させるための意図的な汎用catch。
+#pragma warning disable CA1031
+        catch (Exception ex)
+        {
+            _logService?.LogError($"カウントダウン初期化エラー: {ex.Message}", "MainWindow", ex);
+        }
+#pragma warning restore CA1031
+    }
+
+    /// <summary>
+    /// マウス移動・キー入力を検知してカウントダウンを一時停止する（Phase D）.
+    /// </summary>
+    private void PauseCountdownOnActivity()
+    {
+        if (_countdownController.IsRunning)
+        {
+            _countdownController.Pause();
+        }
     }
 
     /// <summary>
@@ -242,10 +321,12 @@ public partial class MainWindow : Window
 
     /// <summary>
     /// キーボード操作（Phase C-4）: Esc（閉じる）、Enter/Space（起動）、矢印キー（グリッド移動、端で回り込み）、
-    /// 1-9/A-Z（ホットキー起動）を処理する。
+    /// 1-9/A-Z（ホットキー起動）を処理する。キー入力はカウントダウンを一時停止させる（Phase D）.
     /// </summary>
     private void OnPreviewKeyDown(object sender, KeyEventArgs e)
     {
+        PauseCountdownOnActivity();
+
         if (DataContext is not MainViewModel viewModel)
         {
             return;

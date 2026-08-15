@@ -44,7 +44,9 @@ internal static class ServiceCollectionExtensions
             new WindowsRegistryService(provider.GetRequiredService<ILogService>()));
         _ = services.AddSingleton<IProtocolHandler, ProtocolHandler>();
         _ = services.AddSingleton<IUpdateService>(provider =>
-            new UpdateService("https://api.github.com/repos/your-repo/releases/latest", "1.0.0"));
+            new UpdateService(Core.AppInfo.LatestReleaseApiUrl, Core.AppInfo.CurrentVersion.ToString()));
+        _ = services.AddSingleton<IExternalLinkService>(provider =>
+            new ExternalLinkService(provider.GetRequiredService<IBrowserService>(), provider.GetRequiredService<ILogService>()));
 
         // Presentation Services (WPFのApplication.Currentに依存するため型はPresentation層)
         _ = services.AddSingleton<IThemeService>(provider =>

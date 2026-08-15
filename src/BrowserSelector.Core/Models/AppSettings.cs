@@ -52,5 +52,19 @@ namespace BrowserSelector.Core.Models
         /// </summary>
         [ObservableProperty]
         private bool _enableAnimations = true;
+
+        /// <summary>
+        /// Gets or sets 既定ブラウザへ自動起動するまでのカウントダウン秒数（Phase D）.
+        /// 0の場合はカウントダウン自動起動を無効にする. 既定値は5秒.
+        /// </summary>
+        [ObservableProperty]
+        private int _defaultDelay = 5;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether ウィンドウを閉じた際にアプリを終了せずシステムトレイへ常駐するか（Phase D）.
+        /// trueの場合、✕ボタンでの終了はトレイへの最小化として扱われる.
+        /// </summary>
+        [ObservableProperty]
+        private bool _alwaysResidentInTray;
     }
 }

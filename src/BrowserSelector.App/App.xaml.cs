@@ -1,5 +1,8 @@
+using BrowserSelector.App.CommandLine;
 using BrowserSelector.App.DependencyInjection;
+using BrowserSelector.App.SystemIntegration;
 using BrowserSelector.Core.Enums;
+using BrowserSelector.Core.Models;
 using BrowserSelector.Core.Services;
 using BrowserSelector.Infrastructure.SystemIntegration;
 using BrowserSelector.Presentation.Converters;
@@ -21,13 +24,15 @@ namespace BrowserSelector.App;
 // CA1001: IDisposableフィールド(_singleInstanceManager/_host)はOnExit()で確実にDisposeしている。
 // Applicationは基底側の設計上IDisposableを実装しないため、型自体をIDisposable化はしない。
 #pragma warning disable CA1515, CA1001
-public partial class App : Application
+public partial class App : System.Windows.Application
 #pragma warning restore CA1515, CA1001
 {
     private IHost? _host;
     private ILogService? _logService;
     private SingleInstanceManager? _singleInstanceManager;
     private MainViewModel? _mainViewModel;
+    private TrayIconManager? _trayIconManager;
+    private CommandLineOptions? _commandLineOptions;
 
     /// <inheritdoc/>
     protected override void OnStartup(StartupEventArgs e)
@@ -35,8 +40,24 @@ public partial class App : Application
         ArgumentNullException.ThrowIfNull(e);
         try
         {
+            // コマンドライン引数のパース（Phase D）: -d/--delay, -b/--browser, --silent, --auto-launch, -h/--help, -v/--version
+            _commandLineOptions = CommandLineParser.Parse(e.Args);
+            if (_commandLineOptions.ShowHelp)
+            {
+                _ = System.Windows.MessageBox.Show(CommandLineParser.HelpText, "BrowserSelector", MessageBoxButton.OK, MessageBoxImage.Information);
+                Shutdown();
+                return;
+            }
+
+            if (_commandLineOptions.ShowVersion)
+            {
+                _ = System.Windows.MessageBox.Show($"BrowserSelector v{Core.AppInfo.CurrentVersion}", "BrowserSelector", MessageBoxButton.OK, MessageBoxImage.Information);
+                Shutdown();
+                return;
+            }
+
             // テストモードの確認
-            bool isTestMode = e.Args.Contains("--test-mode") ||
+            bool isTestMode = e.Args.Contains("--test-mode") || _commandLineOptions.TestMode ||
                              Environment.GetEnvironmentVariable("BROWSERSELECTOR_TEST_MODE") == "true";
 
             // 単一インスタンス判定: 先行インスタンスが存在する場合はURLを転送して即終了
@@ -112,11 +133,16 @@ public partial class App : Application
             }
             #pragma warning restore CA1031
 
-            // 起動引数からURLを取得
-            string? initialUrl = null;
-            if (e.Args.Length > 0)
+            // 起動引数からURLを取得（Phase D: CommandLineParserがオプションを除去済みのURLを返す。
+            // 未指定時は従来どおり先頭の非オプション引数へフォールバック）
+            string? initialUrl = _commandLineOptions.Url;
+            if (string.IsNullOrEmpty(initialUrl) && e.Args.Length > 0 && !e.Args[0].StartsWith('-'))
             {
                 initialUrl = e.Args[0];
+            }
+
+            if (!string.IsNullOrEmpty(initialUrl))
+            {
                 _logService?.LogDetailed(LogLevel.Debug, $"起動引数でURLを受信: {initialUrl}", "App",
                                       "ARGS", initialUrl, "System", "Args", "Parse", "Success");
             }
@@ -169,10 +195,26 @@ public partial class App : Application
             Presentation.Views.MainWindow mainWindow = new(mainViewModel, _logService!, themeServiceForWindow, settingsServiceForWindow);
             _logService?.LogInformation("MainWindow作成完了", "App");
 
+            // Phase D: --delay/--browser/--silent/--auto-launchオプションの適用
+            ApplyCommandLineOptions(_commandLineOptions, mainWindow, mainViewModel);
+
+            // Phase D: トレイ常駐設定に応じてトレイアイコンを準備し、✕での終了をトレイ格納に差し替える
+            SetupTrayIcon(mainWindow, settingsServiceForWindow, localizationService);
+
             MainWindow = mainWindow;
-            _logService?.LogInformation("MainWindow表示開始", "App");
-            mainWindow.Show(); // 起動時の背景色設定のため必要
-            _logService?.LogInformation("MainWindow表示完了", "App");
+
+            if (_commandLineOptions.Silent)
+            {
+                // --silent: UIを表示せず既定ブラウザへ直接遷移する
+                _logService?.LogInformation("--silentオプションによりUIを表示せず既定ブラウザへ遷移します", "App");
+                _ = mainViewModel.LaunchDefaultBrowserAsync();
+            }
+            else
+            {
+                _logService?.LogInformation("MainWindow表示開始", "App");
+                mainWindow.Show(); // 起動時の背景色設定のため必要
+                _logService?.LogInformation("MainWindow表示完了", "App");
+            }
 
             base.OnStartup(e);
             _logService?.LogTrace($"アプリケーション起動処理完了: MainWindow表示済み, 初期URL={initialUrl ?? "なし"}", "App");
@@ -205,7 +247,7 @@ public partial class App : Application
             }
 
             // 通常モードではメッセージボックスを表示
-            _ = MessageBox.Show($"アプリケーションの起動に失敗しました: {ex.Message}",
+            _ = System.Windows.MessageBox.Show($"アプリケーションの起動に失敗しました: {ex.Message}",
                           "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
             Shutdown();
         }
@@ -224,6 +266,9 @@ public partial class App : Application
                 _singleInstanceManager.Dispose();
                 _singleInstanceManager = null;
             }
+
+            _trayIconManager?.Dispose();
+            _trayIconManager = null;
 
             if (_host != null)
             {
@@ -270,6 +315,71 @@ public partial class App : Application
                 _mainViewModel?.SetInitialUrl(uri);
             }
         });
+    }
+
+    /// <summary>
+    /// コマンドライン引数（Phase D: <c>-d/--delay</c>, <c>-b/--browser</c>, <c>--auto-launch</c>）を
+    /// カウントダウンコントローラー・選択ブラウザへ適用する。<c>--silent</c>は呼び出し元で個別に扱う.
+    /// </summary>
+    private void ApplyCommandLineOptions(CommandLineOptions options, Presentation.Views.MainWindow mainWindow, MainViewModel mainViewModel)
+    {
+        if (options.Delay.HasValue)
+        {
+            mainWindow.Countdown.Start(options.Delay.Value);
+            _logService?.LogInformation($"CLIオプションによりカウントダウン遅延を上書き: {options.Delay.Value}秒", "App");
+        }
+
+        if (options.BrowserId.HasValue)
+        {
+            Browser? requestedBrowser = mainViewModel.Browsers.FirstOrDefault(b => b.Id == options.BrowserId.Value);
+            if (requestedBrowser != null)
+            {
+                mainViewModel.SelectedBrowser = requestedBrowser;
+                _logService?.LogInformation($"CLIオプションによりブラウザを指定: {requestedBrowser.Name}", "App");
+            }
+            else
+            {
+                _logService?.LogWarning($"CLIオプションで指定されたブラウザGUIDが見つかりません: {options.BrowserId.Value}", "App");
+            }
+        }
+    }
+
+    /// <summary>
+    /// トレイ常駐（Phase D: <see cref="AppSettings.AlwaysResidentInTray"/>）を準備する。
+    /// 有効な場合、✕ボタン/システムメニューでの終了をトレイ格納に差し替え、
+    /// トレイ格納中・復帰時にカウントダウンを確実に停止・リセットする（BrowserChooser3 v0.1.5 既知バグ対策）.
+    /// </summary>
+    private void SetupTrayIcon(Presentation.Views.MainWindow mainWindow, ISettingsService settingsService, ILocalizationService localizationService)
+    {
+        try
+        {
+            AppSettings appSettings = settingsService.LoadAppSettingsAsync().GetAwaiter().GetResult();
+            if (!appSettings.AlwaysResidentInTray)
+            {
+                return;
+            }
+
+            IBrowserService browserService = _host!.Services.GetRequiredService<IBrowserService>();
+            _trayIconManager = new TrayIconManager(mainWindow, browserService, localizationService);
+            _trayIconManager.MinimizedToTray += (_, _) => mainWindow.Countdown.SuspendForTray();
+            _trayIconManager.RestoredFromTray += (_, _) => mainWindow.Countdown.ResumeFromTray();
+
+            mainWindow.Closing += (_, closingArgs) =>
+            {
+                if (_trayIconManager != null && !_trayIconManager.IsMinimizedToTray)
+                {
+                    closingArgs.Cancel = true;
+                    _trayIconManager.MinimizeToTray();
+                }
+            };
+        }
+        // CA1031: トレイアイコン初期化失敗時はトレイ常駐無しで継続させるための意図的な汎用catch。
+#pragma warning disable CA1031
+        catch (Exception ex)
+        {
+            _logService?.LogError($"トレイアイコン初期化エラー: {ex.Message}", "App", ex);
+        }
+#pragma warning restore CA1031
     }
 }
 

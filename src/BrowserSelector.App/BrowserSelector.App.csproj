@@ -26,6 +26,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <!-- トレイ常駐（Phase D）でSystem.Windows.Forms.NotifyIconを使用するため有効化 -->
+    <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon>BrowserSelector_Icon_256.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <StartupObject>BrowserSelector.App.App</StartupObject>
@@ -33,7 +35,10 @@
     <AssemblyName>BrowserSelector</AssemblyName>
     <!-- <ApplicationIcon>..\..\BrowserSelector_Icon.ico</ApplicationIcon> -->
     <!-- アプリケーションの特性上、対処困難または不要な警告を無効化 -->
-    <NoWarn>$(NoWarn);CA1052;CA1063;CA1303;CA1310;CA1724;CA1805;CA1816;CA1859;CA1869;S1075;S108;S1118;S125;S4144;S6602;SA1005;SA1009;SA1025;SA1028;SA1111;SA1116;SA1117;SA1505;SA1507;SA1515;SA1518;SA1513;SA1512;SA1500;SA1501;SA1503;SA1505;SA1508;SA1108;SA1116;SA1117;SA1119;SA1010;SA1636;CA1303;CA1304;CA1305;CA1307;CA1311;CA1508;CA1851;CA1862;CA1869;S6966;CA2227;CA1002;CA1819;CA1055</NoWarn>
+    <NoWarn>$(NoWarn);CA1052;CA1063;CA1303;CA1310;CA1724;CA1805;CA1816;CA1859;CA1869;S1075;S108;S1118;S125;S4144;S6602;SA1005;SA1009;SA1025;SA1028;SA1111;SA1116;SA1117;SA1505;SA1507;SA1515;SA1518;SA1513;SA1512;SA1500;SA1501;SA1503;SA1505;SA1508;SA1108;SA1116;SA1117;SA1119;SA1010;SA1636;CA1303;CA1304;CA1305;CA1307;CA1311;CA1508;CA1851;CA1862;CA1869;S6966;CA2227;CA1002;CA1819;CA1055;WFO0003</NoWarn>
+    <!-- WFO0003: トレイ常駐（Phase D）のSystem.Windows.Forms.NotifyIcon利用のためUseWindowsFormsを有効化した副作用で、
+         WinForms系アナライザーがapp.manifestのPerMonitorV2 DPI設定を「WinForms用のApplicationHighDpiModeで設定すべき」と誤検知する。
+         本アプリはWPFであり、DPI設定はapp.manifest（Phase A-4）が正の情報源のため、この警告のみプロジェクト全体で抑制する。 -->
     <!-- リリースビルド時のPDBファイル生成を無効化してサイズ削減 -->
     <DebugSymbols Condition="'$(Configuration)' == 'Release'">false</DebugSymbols>
     <DebugType Condition="'$(Configuration)' == 'Release'">none</DebugType>
