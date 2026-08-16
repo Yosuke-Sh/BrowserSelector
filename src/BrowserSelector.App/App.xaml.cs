@@ -27,6 +27,7 @@ namespace BrowserSelector.App;
 public partial class App : System.Windows.Application
 #pragma warning restore CA1515, CA1001
 {
+    private readonly CancellationTokenSource _updateCheckCts = new();
     private IHost? _host;
     private ILogService? _logService;
     private SingleInstanceManager? _singleInstanceManager;
@@ -218,6 +219,22 @@ public partial class App : System.Windows.Application
                 _logService?.LogInformation("MainWindow表示開始", "App");
                 mainWindow.Show(); // 起動時の背景色設定のため必要
                 _logService?.LogInformation("MainWindow表示完了", "App");
+
+                // Phase H-10: 起動を一切ブロックしない。ブラウザ検出・ウィンドウ表示・DWM適用が
+                // 落ち着いてから走らせる（v0.2.0の起動速度対策を打ち消さないこと）。
+                // --silentはUIが無く通知できないため対象外。
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        await Task.Delay(TimeSpan.FromSeconds(5), _updateCheckCts.Token).ConfigureAwait(false);
+                        await TryCheckForUpdatesAsync(_updateCheckCts.Token).ConfigureAwait(false);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        // アプリ終了によるキャンセルは正常系のため何もしない
+                    }
+                });
             }
 
             base.OnStartup(e);
@@ -263,6 +280,9 @@ public partial class App : System.Windows.Application
         try
         {
             _logService?.LogInformation("アプリケーション終了開始", "App");
+
+            _updateCheckCts.Cancel();
+            _updateCheckCts.Dispose();
 
             if (_singleInstanceManager != null)
             {
@@ -382,6 +402,80 @@ public partial class App : System.Windows.Application
         catch (Exception ex)
         {
             _logService?.LogError($"トレイアイコン初期化エラー: {ex.Message}", "App", ex);
+        }
+#pragma warning restore CA1031
+    }
+
+    /// <summary>
+    /// 起動5秒後にバックグラウンドで自動アップデート確認を行う（Phase H-10）.
+    /// <c>--silent</c>指定時は呼び出し元（<see cref="OnStartup(StartupEventArgs)"/>）で既に除外済み.
+    /// </summary>
+    private async Task TryCheckForUpdatesAsync(CancellationToken cancellationToken)
+    {
+        if (_host == null || _mainViewModel == null)
+        {
+            return;
+        }
+
+        try
+        {
+            IUpdateService updateService = _host.Services.GetRequiredService<IUpdateService>();
+            ISettingsService settingsService = _host.Services.GetRequiredService<ISettingsService>();
+
+            AppSettings appSettings = await settingsService.LoadAppSettingsAsync().ConfigureAwait(false);
+            if (!appSettings.CheckForUpdates)
+            {
+                return;
+            }
+
+            bool isPendingLaunchCheck = appSettings.UpdatePendingOnNextLaunch;
+            if (!isPendingLaunchCheck)
+            {
+                DateTimeOffset? lastCheck = appSettings.LastUpdateCheckUtc;
+                if (lastCheck.HasValue && lastCheck.Value.AddHours(appSettings.UpdateCheckInterval) > DateTimeOffset.UtcNow)
+                {
+                    return;
+                }
+            }
+
+            UpdateInfo? updateInfo = await updateService.CheckForUpdatesAsync(cancellationToken).ConfigureAwait(false);
+
+            appSettings.LastUpdateCheckUtc = DateTimeOffset.UtcNow;
+            if (isPendingLaunchCheck)
+            {
+                appSettings.UpdatePendingOnNextLaunch = false;
+            }
+
+            _ = await settingsService.SaveAppSettingsAsync(appSettings).ConfigureAwait(false);
+
+            if (updateInfo == null)
+            {
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(appSettings.SkippedUpdateVersion) &&
+                string.Equals(appSettings.SkippedUpdateVersion, updateInfo.TagName, StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            if (updateInfo.IsPrerelease && !appSettings.IncludePrereleases)
+            {
+                return;
+            }
+
+            Dispatcher.Invoke(() => _mainViewModel.ShowUpdateNotification(updateInfo));
+        }
+        catch (OperationCanceledException)
+        {
+            // アプリ終了によるキャンセルは正常系のため何もしない
+        }
+        // CA1031: バックグラウンド自動確認処理の最上位フォールバック。ネットワーク・ファイルI/O等
+        // 例外種別が多岐にわたり、UIに影響を与えず静かに失敗させるための意図的な汎用catch。
+#pragma warning disable CA1031
+        catch (Exception ex)
+        {
+            _logService?.LogWarning($"自動アップデート確認でエラーが発生しました: {ex.Message}", "App");
         }
 #pragma warning restore CA1031
     }
