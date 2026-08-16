@@ -44,7 +44,9 @@ internal static class ServiceCollectionExtensions
             new WindowsRegistryService(provider.GetRequiredService<ILogService>()));
         _ = services.AddSingleton<IProtocolHandler, ProtocolHandler>();
         _ = services.AddSingleton<IUpdateService>(provider =>
-            new UpdateService(Core.AppInfo.LatestReleaseApiUrl, Core.AppInfo.CurrentVersion.ToString()));
+            new UpdateService(
+                provider.GetRequiredService<ISettingsService>(),
+                provider.GetRequiredService<ILogService>()));
         _ = services.AddSingleton<IExternalLinkService>(provider =>
             new ExternalLinkService(provider.GetRequiredService<IBrowserService>(), provider.GetRequiredService<ILogService>()));
 

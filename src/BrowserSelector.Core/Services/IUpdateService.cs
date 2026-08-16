@@ -6,7 +6,9 @@ using BrowserSelector.Core.Models;
 namespace BrowserSelector.Core.Services;
 
 /// <summary>
-/// 自動アップデート機能を提供するサービスのインターフェース.
+/// 自動アップデート機能を提供するサービスのインターフェース（Phase H-1で再設計）.
+/// ロールバックとバックアップはアプリが動いていない状態でしか意味をなさないため、
+/// このインターフェースからは削除しBrowserSelector.Updater.exe側へ移設した.
 /// </summary>
 public interface IUpdateService : IDisposable
 {
@@ -16,35 +18,41 @@ public interface IUpdateService : IDisposable
     event EventHandler<UpdateAvailableEventArgs>? UpdateAvailable;
 
     /// <summary>
-    /// アップデートをチェック.
+    /// GitHub Releasesの最新リリースを確認し、現在のバージョンより新しければその情報を返す.
+    /// ネットワーク不通・タイムアウト・レート制限といった異常系では例外を投げずnullを返す
+    /// （呼び出し側での握り潰しを不要にするため）.
     /// </summary>
-    /// <returns>アップデート情報.</returns>
-    Task<UpdateInfo?> CheckForUpdatesAsync();
+    /// <param name="cancellationToken">キャンセルトークン.</param>
+    /// <returns>利用可能なアップデート情報。更新が無い場合・確認に失敗した場合はnull.</returns>
+    Task<UpdateInfo?> CheckForUpdatesAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// アップデートをダウンロード.
+    /// 指定チャネルのアセットをダウンロードし、SHA256による完全性検証を行う.
+    /// Portableチャネルの場合はZIPの展開（Zip Slip対策込み）までを行う.
     /// </summary>
     /// <param name="updateInfo">アップデート情報.</param>
-    /// <param name="progress">進捗報告.</param>
-    /// <returns>ダウンロードが成功したかどうか.</returns>
-    Task<bool> DownloadUpdateAsync(UpdateInfo updateInfo, IProgress<int>? progress = null);
+    /// <param name="channel">適用経路.</param>
+    /// <param name="progress">0-100の進捗報告.</param>
+    /// <param name="cancellationToken">キャンセルトークン.</param>
+    /// <returns>成否と失敗理由を含む結果.</returns>
+    Task<UpdateDownloadResult> DownloadUpdateAsync(
+        UpdateInfo updateInfo,
+        UpdateChannel channel,
+        IProgress<int>? progress = null,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// アップデートをインストール.
+    /// ダウンロード済みのアップデートを適用する（インストーラ実行、またはUpdater.exeの起動）.
+    /// アプリケーションの終了は呼び出し側（ViewModel）の責務であり、このメソッドは行わない.
     /// </summary>
-    /// <param name="updateInfo">アップデート情報.</param>
-    /// <returns>インストールが成功したかどうか.</returns>
-    Task<bool> InstallUpdateAsync(UpdateInfo updateInfo);
+    /// <param name="updateInfo">ダウンロード済みのアップデート情報.</param>
+    /// <param name="cancellationToken">キャンセルトークン.</param>
+    /// <returns>適用プロセスの起動に成功したかどうか。UACキャンセル時はfalse.</returns>
+    Task<bool> ApplyUpdateAsync(UpdateInfo updateInfo, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// アップデートをロールバック.
+    /// 現在の実行環境がインストーラ配置かポータブル配置かを判定する.
     /// </summary>
-    /// <returns>ロールバックが成功したかどうか.</returns>
-    Task<bool> RollbackUpdateAsync();
-
-    /// <summary>
-    /// バックアップを作成.
-    /// </summary>
-    /// <returns>バックアップが成功したかどうか.</returns>
-    bool CreateBackup();
+    /// <returns>適用経路.</returns>
+    UpdateChannel ResolveChannel();
 }

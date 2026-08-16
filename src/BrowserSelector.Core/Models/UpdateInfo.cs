@@ -5,98 +5,67 @@
 namespace BrowserSelector.Core.Models
 {
     /// <summary>
-    /// アップデート情報.
+    /// GitHub Releasesの1リリースから解決したアップデート情報（Phase H-1で再設計）.
+    /// v0.2.0までは18プロパティを持っていたが、GitHub Releasesに対応物が無く永久に既定値のままだった
+    /// プロパティ（IsInstalled/IsAvailable/IsRequired/Description/Title/UpdateType/Priority/Category/Tags/Metadata）を削除し、
+    /// アセット固有の情報（サイズ・チェックサム・URL）は<see cref="UpdateAsset"/>へ移した.
     /// </summary>
     public class UpdateInfo
     {
         /// <summary>
-        /// Gets or sets バージョン.
+        /// Gets or sets リリースのバージョン（tag_nameから"v"とプレリリース識別子を除去してパースしたもの）.
         /// </summary>
-        public string Version { get; set; } = string.Empty;
+        public Version Version { get; set; } = new Version(0, 0, 0);
 
         /// <summary>
-        /// Gets or sets ダウンロードURL.
+        /// Gets or sets タグ名の原文（例: v0.3.0）.
         /// </summary>
-        public Uri DownloadUrl { get; set; } = new Uri("https://example.com", UriKind.Absolute);
+        public string TagName { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets リリースノート.
+        /// Gets or sets リリースノート本文（GitHub APIのbody）.
         /// </summary>
         public string ReleaseNotes { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets ファイルサイズ.
+        /// Gets or sets リリースページのURL（GitHub APIのhtml_url）.
         /// </summary>
-        public long FileSize { get; set; }
+        public string ReleasePageUrl { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets チェックサム.
+        /// Gets or sets リリース公開日時。取得できない場合はnull.
         /// </summary>
-        public string Checksum { get; set; } = string.Empty;
+        public DateTimeOffset? PublishedAt { get; set; }
 
         /// <summary>
-        /// Gets or sets リリース日.
+        /// Gets or sets a value indicating whether プレリリースかどうか.
         /// </summary>
-        public DateTime ReleaseDate { get; set; }
+        public bool IsPrerelease { get; set; }
 
         /// <summary>
-        /// Gets or sets ローカルファイルパス.
+        /// Gets or sets インストーラアセット（BrowserSelector-Setup-v*.exe）。存在しない場合はnull.
+        /// </summary>
+        public UpdateAsset? InstallerAsset { get; set; }
+
+        /// <summary>
+        /// Gets or sets ポータブルZIPアセット（BrowserSelector-v*-win-x64.zip）。存在しない場合はnull.
+        /// </summary>
+        public UpdateAsset? PortableAsset { get; set; }
+
+        /// <summary>
+        /// Gets or sets チェックサムファイルのアセット（SHA256SUMS.txt）。存在しない場合はnull.
+        /// </summary>
+        public UpdateAsset? ChecksumsAsset { get; set; }
+
+        /// <summary>
+        /// Gets or sets ダウンロード済み成果物のローカルパス.
+        /// Installerはインストーラexeのパス、Portableは展開済みディレクトリのパス.
         /// </summary>
         public string? LocalFilePath { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether ダウンロードが完了しているかどうか.
+        /// Gets or sets a value indicating whether ダウンロードと完全性検証が完了しているかどうか.
         /// </summary>
         public bool IsDownloaded { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether インストールが完了しているかどうか.
-        /// </summary>
-        public bool IsInstalled { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether アップデートが利用可能かどうか.
-        /// </summary>
-        public bool IsAvailable { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether アップデートが必須かどうか.
-        /// </summary>
-        public bool IsRequired { get; set; }
-
-        /// <summary>
-        /// Gets or sets アップデートの説明.
-        /// </summary>
-        public string Description { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets アップデートのタイトル.
-        /// </summary>
-        public string Title { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets アップデートの種類.
-        /// </summary>
-        public string UpdateType { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets アップデートの優先度.
-        /// </summary>
-        public int Priority { get; set; }
-
-        /// <summary>
-        /// Gets or sets アップデートのカテゴリ.
-        /// </summary>
-        public string Category { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets アップデートのタグ.
-        /// </summary>
-        public string[] Tags { get; set; } = [];
-
-        /// <summary>
-        /// Gets or sets アップデートのメタデータ.
-        /// </summary>
-        public Dictionary<string, string> Metadata { get; set; } = [];
     }
 }
