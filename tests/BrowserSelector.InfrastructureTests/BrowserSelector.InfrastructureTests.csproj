@@ -39,6 +39,10 @@
     </PackageReference>
     <PackageReference Include="Moq" />
     <PackageReference Include="FluentAssertions" />
+    <!-- UpdateServiceのテストで本番と同じ経路（AddHttpClient + ConfigurePrimaryHttpMessageHandler）に
+         スタブハンドラーを差し込むために使用する（Phase H-3） -->
+    <PackageReference Include="Microsoft.Extensions.Http" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
   </ItemGroup>
 
   <ItemGroup>

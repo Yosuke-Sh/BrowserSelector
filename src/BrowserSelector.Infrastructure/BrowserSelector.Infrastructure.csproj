@@ -7,6 +7,9 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <!-- IHttpClientFactory（Phase H-3）: 本番と同じ経路にHttpMessageHandlerのスタブを
+         差し込めるようにするため、Singleton HttpClientではなくFactoryを採用する -->
+    <PackageReference Include="Microsoft.Extensions.Http" />
     <PackageReference Include="Microsoft.Extensions.Localization" />
     <PackageReference Include="Microsoft.Extensions.Logging" />
     <!-- System.Drawing.Common は net10.0-windows のシェアードフレームワークに含まれるため、

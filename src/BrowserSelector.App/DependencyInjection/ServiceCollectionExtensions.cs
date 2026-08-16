@@ -1,3 +1,5 @@
+using System.Net;
+using System.Net.Http;
 using BrowserSelector.Core.Services;
 using BrowserSelector.Infrastructure.Localization;
 using BrowserSelector.Infrastructure.Services;
@@ -43,8 +45,26 @@ internal static class ServiceCollectionExtensions
         _ = services.AddSingleton<IRegistryService>(provider =>
             new WindowsRegistryService(provider.GetRequiredService<ILogService>()));
         _ = services.AddSingleton<IProtocolHandler, ProtocolHandler>();
+        // アップデート用の名前付きHttpClient（Phase H-3）。
+        // Singleton HttpClientではなくIHttpClientFactoryを使うのは、テストで
+        // ConfigurePrimaryHttpMessageHandlerにより本番と同じ経路へスタブを差し込めるようにするため。
+        _ = services.AddHttpClient(UpdateService.HttpClientName, client =>
+        {
+            client.DefaultRequestHeaders.UserAgent.ParseAdd($"BrowserSelector/{Core.AppInfo.CurrentVersion}");
+            client.DefaultRequestHeaders.Accept.ParseAdd("application/vnd.github+json");
+            client.DefaultRequestHeaders.Add("X-GitHub-Api-Version", "2022-11-28");
+            client.Timeout = TimeSpan.FromSeconds(30);
+        })
+        .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler
+        {
+            AllowAutoRedirect = true,
+            MaxAutomaticRedirections = 5,
+            AutomaticDecompression = DecompressionMethods.All,
+        });
+
         _ = services.AddSingleton<IUpdateService>(provider =>
             new UpdateService(
+                provider.GetRequiredService<IHttpClientFactory>(),
                 provider.GetRequiredService<ISettingsService>(),
                 provider.GetRequiredService<ILogService>()));
         _ = services.AddSingleton<IExternalLinkService>(provider =>
