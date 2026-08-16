@@ -54,10 +54,15 @@ public partial class SettingsViewModel
 
         try
         {
-            UpdateInfo? updateInfo = await _updateService.CheckForUpdatesAsync().ConfigureAwait(false);
+            // このメソッドはUIバインド対象のRelayCommandで、await後の継続でObservableProperty
+            // （UI状態）を更新するため、ConfigureAwait(false)は使わずUIスレッドの
+            // SynchronizationContextへの自動復帰に委ねる。バックグラウンドスレッドから
+            // Dispatcher.Invokeで戻す方式は、モーダルダイアログの入れ子メッセージループとの
+            // 組み合わせでスレッド検証に失敗する事例が実機で確認されたため採用しない。
+            UpdateInfo? updateInfo = await _updateService.CheckForUpdatesAsync().ConfigureAwait(true);
 
             AppSettings.LastUpdateCheckUtc = DateTimeOffset.UtcNow;
-            _ = await _settingsService.SaveAppSettingsAsync(AppSettings).ConfigureAwait(false);
+            _ = await _settingsService.SaveAppSettingsAsync(AppSettings).ConfigureAwait(true);
             OnPropertyChanged(nameof(LastUpdateCheckDisplay));
 
             UpdateCheckStatusMessage = updateInfo != null
@@ -94,6 +99,6 @@ public partial class SettingsViewModel
     {
         AppSettings.SkippedUpdateVersion = string.Empty;
         OnPropertyChanged(nameof(HasSkippedUpdateVersion));
-        _ = await _settingsService.SaveAppSettingsAsync(AppSettings).ConfigureAwait(false);
+        _ = await _settingsService.SaveAppSettingsAsync(AppSettings).ConfigureAwait(true);
     }
 }

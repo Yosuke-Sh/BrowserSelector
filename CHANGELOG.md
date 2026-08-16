@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-08-16
+
+### 🐛 Fixed
+- Fixed a `System.InvalidOperationException` ("The calling thread cannot access this object because a different thread owns it") that occurred when clicking "Check Now" in Settings or "Update Now" in the update notification bar. The `RelayCommand` implementations for these actions used `ConfigureAwait(false)`, resuming on a background thread after `await` while still updating UI-bound `ObservableProperty` values; when combined with the nested Dispatcher message loop of a modal `ShowDialog()`, this could bypass the thread-affinity checks WPF relies on. Removed `ConfigureAwait(false)` from all update-related `RelayCommand` methods (`SettingsViewModel.CheckForUpdatesNowAsync`/`ClearSkippedVersionAsync`, `MainViewModel.StartUpdateAsync`/`DeferUpdateAsync`/`SkipUpdateAsync`/`OpenUpdateReleaseNotesAsync`) so continuations resume on the UI thread's `SynchronizationContext` as WPF expects.
+
 ## [0.3.0] - 2026-08-16
 
 ### 🔄 Automatic Update System
