@@ -1,6 +1,9 @@
 // <copyright file="UpdateService.cs" company="BrowserSelector">
 // Copyright (c) BrowserSelector. All rights reserved.
 // </copyright>
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -26,9 +29,33 @@ public class UpdateService : IUpdateService
     /// </summary>
     internal const string LogCategory = "Update";
 
+    /// <summary>
+    /// ポータブル更新を担う別プロセスの実行ファイル名.
+    /// </summary>
+    internal const string UpdaterExecutableName = "BrowserSelector.Updater.exe";
+
+    /// <summary>
+    /// 更新後に再起動する本体の実行ファイル名.
+    /// </summary>
+    internal const string ApplicationExecutableName = "BrowserSelector.exe";
+
+    /// <summary>
+    /// Inno Setupのサイレント実行引数.
+    /// </summary>
+    /// <remarks>
+    /// /VERYSILENTではなく/SILENTを選ぶ — 進捗を見せた方が「勝手に何か動いた」という不安が小さい.
+    /// </remarks>
+    internal const string InstallerArguments = "/SILENT /CLOSEAPPLICATIONS /RESTARTAPPLICATIONS /NORESTART";
+
+    /// <summary>
+    /// UACダイアログをユーザーがキャンセルしたときのWin32エラーコード（ERROR_CANCELLED）.
+    /// </summary>
+    private const int ErrorCancelled = 1223;
+
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ISettingsService _settingsService;
     private readonly ILogService _logService;
+    private readonly IProcessLauncher _processLauncher;
     private readonly string _checkStatePath;
     private readonly Uri _latestReleaseApiUrl;
     private readonly Version _currentVersion;
@@ -50,7 +77,8 @@ public class UpdateService : IUpdateService
             logService,
             UpdatePaths.GetCheckStatePath(),
             AppInfo.CurrentVersion,
-            AppContext.BaseDirectory)
+            AppContext.BaseDirectory,
+            new ProcessLauncher())
     {
     }
 
@@ -64,13 +92,15 @@ public class UpdateService : IUpdateService
     /// <param name="checkStatePath">チェック状態ファイルのパス.</param>
     /// <param name="currentVersion">現在のアプリケーションバージョン.</param>
     /// <param name="baseDirectory">実行ファイルの配置ディレクトリ.</param>
+    /// <param name="processLauncher">プロセス起動の抽象.</param>
     internal UpdateService(
         IHttpClientFactory httpClientFactory,
         ISettingsService settingsService,
         ILogService logService,
         string checkStatePath,
         Version currentVersion,
-        string baseDirectory)
+        string baseDirectory,
+        IProcessLauncher processLauncher)
     {
         ArgumentNullException.ThrowIfNull(httpClientFactory);
         ArgumentNullException.ThrowIfNull(settingsService);
@@ -78,10 +108,12 @@ public class UpdateService : IUpdateService
         ArgumentNullException.ThrowIfNull(checkStatePath);
         ArgumentNullException.ThrowIfNull(currentVersion);
         ArgumentNullException.ThrowIfNull(baseDirectory);
+        ArgumentNullException.ThrowIfNull(processLauncher);
 
         _httpClientFactory = httpClientFactory;
         _settingsService = settingsService;
         _logService = logService;
+        _processLauncher = processLauncher;
         _checkStatePath = checkStatePath;
         _currentVersion = currentVersion;
         _baseDirectory = baseDirectory;
@@ -342,8 +374,21 @@ public class UpdateService : IUpdateService
     {
         ArgumentNullException.ThrowIfNull(updateInfo);
 
-        // H-6で実装する。
-        return Task.FromResult(false);
+        if (!updateInfo.IsDownloaded || string.IsNullOrEmpty(updateInfo.LocalFilePath))
+        {
+            _logService.LogWarning("ダウンロードと検証が完了していないため適用できません", LogCategory);
+            return Task.FromResult(false);
+        }
+
+        cancellationToken.ThrowIfCancellationRequested();
+
+        // 適用は「プロセスを起動して自分は終了する」だけなので同期処理で完結する。
+        // インターフェースがTaskを返すのは、将来インストーラの終了待ちを挟めるようにするため。
+        bool result = ResolveChannel() == UpdateChannel.Installer
+            ? ApplyWithInstaller(updateInfo)
+            : ApplyWithUpdater(updateInfo);
+
+        return Task.FromResult(result);
     }
 
     /// <inheritdoc/>
@@ -498,6 +543,111 @@ public class UpdateService : IUpdateService
 
         // ヘッダーが読めない場合は保守的に1時間抑止する（GitHubのレート制限窓と同じ長さ）。
         return DateTimeOffset.UtcNow.AddHours(1);
+    }
+
+    /// <summary>
+    /// インストーラを昇格つきで起動する（主経路）.
+    /// </summary>
+    /// <param name="updateInfo">ダウンロード済みのアップデート情報.</param>
+    /// <returns>起動できた場合はtrue.</returns>
+    /// <remarks>
+    /// .issがDefaultDirName={autopf} + PrivilegesRequired=adminのため、既定インストールでは
+    /// こちらが実質の主経路になる.
+    /// </remarks>
+    private bool ApplyWithInstaller(UpdateInfo updateInfo)
+    {
+        string installerPath = updateInfo.LocalFilePath!;
+
+        if (!File.Exists(installerPath))
+        {
+            _logService.LogError($"インストーラが見つかりません: {installerPath}", LogCategory);
+            return false;
+        }
+
+        try
+        {
+            ProcessStartInfo startInfo = new()
+            {
+                FileName = installerPath,
+                Arguments = InstallerArguments,
+                UseShellExecute = true,
+                Verb = "runas",
+            };
+
+            _ = _processLauncher.Start(startInfo);
+            _logService.LogInformation($"インストーラを起動しました: {Path.GetFileName(installerPath)}", LogCategory);
+            return true;
+        }
+        catch (Win32Exception ex) when (ex.NativeErrorCode == ErrorCancelled)
+        {
+            // ユーザーがUACを明示的に拒否した。意図した操作なのでエラーダイアログは出さない。
+            _logService.LogInformation("ユーザーがアップデートの昇格をキャンセルしました", LogCategory);
+            return false;
+        }
+        catch (Exception ex) when (ex is Win32Exception or InvalidOperationException)
+        {
+            _logService.LogError($"インストーラの起動に失敗しました: {ex.Message}", LogCategory);
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// 展開済みディレクトリをUpdater.exeへ渡して適用させる（ポータブル経路）.
+    /// </summary>
+    /// <param name="updateInfo">ダウンロード済みのアップデート情報.</param>
+    /// <returns>起動できた場合はtrue.</returns>
+    private bool ApplyWithUpdater(UpdateInfo updateInfo)
+    {
+        string extractedPath = updateInfo.LocalFilePath!;
+
+        if (!Directory.Exists(extractedPath))
+        {
+            _logService.LogError($"展開済みディレクトリが見つかりません: {extractedPath}", LogCategory);
+            return false;
+        }
+
+        string updaterPath = Path.Combine(_baseDirectory, UpdaterExecutableName);
+        if (!File.Exists(updaterPath))
+        {
+            _logService.LogError($"{UpdaterExecutableName}が見つかりません: {updaterPath}", LogCategory);
+            return false;
+        }
+
+        string backupPath = Path.Combine(
+            UpdatePaths.GetBackupRoot(),
+            DateTime.Now.ToString("yyyyMMdd_HHmmss", CultureInfo.InvariantCulture));
+
+        try
+        {
+            ProcessStartInfo startInfo = new()
+            {
+                FileName = updaterPath,
+                UseShellExecute = false,
+            };
+
+            // 名前付き引数で渡す（パスに空白が含まれてもArgumentListなら引用符の心配が要らない）。
+            startInfo.ArgumentList.Add("--mode");
+            startInfo.ArgumentList.Add("apply-zip");
+            startInfo.ArgumentList.Add("--pid");
+            startInfo.ArgumentList.Add(Environment.ProcessId.ToString(CultureInfo.InvariantCulture));
+            startInfo.ArgumentList.Add("--source");
+            startInfo.ArgumentList.Add(extractedPath);
+            startInfo.ArgumentList.Add("--target");
+            startInfo.ArgumentList.Add(_baseDirectory);
+            startInfo.ArgumentList.Add("--backup");
+            startInfo.ArgumentList.Add(backupPath);
+            startInfo.ArgumentList.Add("--exe");
+            startInfo.ArgumentList.Add(ApplicationExecutableName);
+
+            _ = _processLauncher.Start(startInfo);
+            _logService.LogInformation($"{UpdaterExecutableName}を起動しました（backup: {backupPath}）", LogCategory);
+            return true;
+        }
+        catch (Exception ex) when (ex is Win32Exception or InvalidOperationException)
+        {
+            _logService.LogError($"{UpdaterExecutableName}の起動に失敗しました: {ex.Message}", LogCategory);
+            return false;
+        }
     }
 
     private void TryDeleteFile(string path)

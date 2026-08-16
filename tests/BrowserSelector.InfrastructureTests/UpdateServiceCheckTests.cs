@@ -268,6 +268,7 @@ public sealed class UpdateServiceCheckTests : IDisposable
             Mock.Of<ILogService>(),
             _statePath,
             currentVersion,
-            _stateDirectory);
+            _stateDirectory,
+            new RecordingProcessLauncher());
     }
 }

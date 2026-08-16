@@ -271,6 +271,7 @@ public sealed class UpdateServiceDownloadTests : IDisposable
             Mock.Of<ILogService>(),
             Path.Combine(_workDirectory, "etag.json"),
             new Version(0, 3, 0),
-            _workDirectory);
+            _workDirectory,
+            new RecordingProcessLauncher());
     }
 }
