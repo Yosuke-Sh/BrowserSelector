@@ -59,10 +59,9 @@ This project adheres to a code of conduct. By participating, you are expected to
 ### Branch Strategy
 
 - **master**: Production-ready code (GitHub default branch)
-- **developer**: Integration branch for development
-- **feature/***: Feature development branches
-- **hotfix/***: Critical bug fixes
-- **release/***: Release preparation branches
+- **developer**: Development branch (the maintainer usually works directly on this branch)
+
+For external contributions, please use a feature branch on your fork (e.g. `feature/your-feature-name`) and open a pull request against `developer` or `master`.
 
 ### Workflow
 

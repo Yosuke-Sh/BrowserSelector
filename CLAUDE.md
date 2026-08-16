@@ -62,15 +62,14 @@ dotnet test
 - ビルドログの一時ファイルは `tmp/`（`.gitignore`済み）に `build_*.log` 形式で置く。
 - PowerShellでビルド出力を一貫させるため `$env:DOTNET_CLI_UI_LANGUAGE="en"` を使う。
 
-## ブランチ戦略（GitHub Flow）
+## ブランチ戦略
+
+個人開発のため、`feature/*`・`release/*`・`hotfix/*`のような細かいブランチ分割は行わない簡素な2本体制。
 
 - `master`: 本番リリース用（GitHub上のデフォルトブランチ、保護、PR必須）
-- `developer`: 開発統合用（保護、PR推奨）— **現在のデフォルト作業ブランチ**
-- `feature/*`: 機能開発（自由にpush可、developerへはPR必須）
-- `hotfix/*`: 緊急修正
-- `release/*`: リリース準備
+- `developer`: 開発用ブランチ（**通常はここで直接作業する**）
 
-フロー: `feature/*` → `developer` → `release/*` → `master`
+フロー: `developer`で開発 → `master`へPRを作成してマージ → 必要に応じて`master`にリリースタグを打つ
 
 ## 開発の進め方
 
