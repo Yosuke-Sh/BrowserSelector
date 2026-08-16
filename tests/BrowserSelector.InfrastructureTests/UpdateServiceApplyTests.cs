@@ -137,9 +137,21 @@ public sealed class UpdateServiceApplyTests : IDisposable
         await File.WriteAllTextAsync(installerPath, "installer");
 
         // Program Files配下を模擬できないため、経路を直接指定してインストーラ起動のみを検証する。
-        using UpdateService service = CreateService(baseDirectory: Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles));
+        string baseDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+        using UpdateService service = CreateService(baseDirectory: baseDirectory);
 
         bool result = await service.ApplyUpdateAsync(CreateDownloaded(installerPath));
+
+        // DIAG: CI環境固有の失敗原因調査のための一時診断出力（原因特定後に削除する）。
+        if (!result)
+        {
+            Console.WriteLine($"[DIAG] baseDirectory={baseDirectory}");
+            Console.WriteLine($"[DIAG] ResolveChannelFor={UpdateService.ResolveChannelFor(baseDirectory)}");
+            Console.WriteLine($"[DIAG] installerPath={installerPath}");
+            Console.WriteLine($"[DIAG] File.Exists(installerPath)={File.Exists(installerPath)}");
+            Console.WriteLine($"[DIAG] _workDirectory={_workDirectory}, exists={Directory.Exists(_workDirectory)}");
+            Console.WriteLine($"[DIAG] started.Count={_launcher.Started.Count}");
+        }
 
         result.Should().BeTrue();
         _launcher.Started.Should().ContainSingle();
