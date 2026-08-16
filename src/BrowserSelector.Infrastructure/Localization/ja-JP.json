@@ -271,6 +271,7 @@
     "Settings.App.UpToDate": "最新の状態です",
     "Settings.App.UpdateFound": "新しいバージョン {0} が見つかりました",
     "Settings.App.CheckFailed": "確認に失敗しました",
+    "Settings.App.ApplyUpdate": "更新を適用",
     "Settings.App.ClearSkippedVersion": "スキップを解除",
     "Update.Notification.Title": "アップデートが利用可能です",
     "Update.Notification.Message": "新しいバージョン {0} が利用可能です",

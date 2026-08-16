@@ -160,4 +160,93 @@ public class SettingsViewModelUpdateTests
         _ = await act.Should().NotThrowAsync();
         _ = viewModel.UpdateCheckStatusMessage.Should().NotBeNullOrEmpty();
     }
+
+    [Fact]
+    public async Task CheckForUpdatesNowCommand_UpdateAvailable_SetsHasFoundUpdate()
+    {
+        // 「今すぐ確認」で見つかった更新は、設定画面のその場で適用ボタンを出すため
+        // HasFoundUpdateへ保持されなければならない（回帰: 従来は確認のみで捨てられていた）。
+        SettingsViewModel viewModel = CreateViewModel(_mockUpdateService.Object);
+        await viewModel.InitializationTask;
+
+        UpdateInfo updateInfo = new() { TagName = "v0.3.1", Version = new Version(0, 3, 1) };
+        _ = _mockUpdateService
+            .Setup(x => x.CheckForUpdatesAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(updateInfo);
+
+        _ = viewModel.HasFoundUpdate.Should().BeFalse();
+
+        await viewModel.CheckForUpdatesNowCommand.ExecuteAsync(null);
+
+        _ = viewModel.HasFoundUpdate.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task ApplyUpdateNowCommand_NoFoundUpdate_DoesNothing()
+    {
+        SettingsViewModel viewModel = CreateViewModel(_mockUpdateService.Object);
+        await viewModel.InitializationTask;
+
+        await viewModel.ApplyUpdateNowCommand.ExecuteAsync(null);
+
+        _mockUpdateService.Verify(
+            x => x.DownloadUpdateAsync(It.IsAny<UpdateInfo>(), It.IsAny<UpdateChannel>(), It.IsAny<IProgress<int>>(), It.IsAny<CancellationToken>()),
+            Times.Never);
+    }
+
+    [Fact]
+    public async Task ApplyUpdateNowCommand_DownloadAndApplySucceed_RaisesShutdownRequested()
+    {
+        SettingsViewModel viewModel = CreateViewModel(_mockUpdateService.Object);
+        await viewModel.InitializationTask;
+
+        UpdateInfo updateInfo = new() { TagName = "v0.3.1", Version = new Version(0, 3, 1) };
+        _ = _mockUpdateService
+            .Setup(x => x.CheckForUpdatesAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(updateInfo);
+        await viewModel.CheckForUpdatesNowCommand.ExecuteAsync(null);
+
+        _ = _mockUpdateService.Setup(x => x.ResolveChannel()).Returns(UpdateChannel.Installer);
+        _ = _mockUpdateService
+            .Setup(x => x.DownloadUpdateAsync(It.IsAny<UpdateInfo>(), It.IsAny<UpdateChannel>(), It.IsAny<IProgress<int>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(UpdateDownloadResult.Succeeded(@"C:\temp\setup.exe"));
+        _ = _mockUpdateService
+            .Setup(x => x.ApplyUpdateAsync(It.IsAny<UpdateInfo>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+
+        bool shutdownRaised = false;
+        viewModel.ShutdownRequested += (_, _) => shutdownRaised = true;
+
+        await viewModel.ApplyUpdateNowCommand.ExecuteAsync(null);
+
+        _ = shutdownRaised.Should().BeTrue();
+        _ = viewModel.IsApplyingUpdate.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task ApplyUpdateNowCommand_DownloadFails_DoesNotRaiseShutdown()
+    {
+        SettingsViewModel viewModel = CreateViewModel(_mockUpdateService.Object);
+        await viewModel.InitializationTask;
+
+        UpdateInfo updateInfo = new() { TagName = "v0.3.1", Version = new Version(0, 3, 1) };
+        _ = _mockUpdateService
+            .Setup(x => x.CheckForUpdatesAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(updateInfo);
+        await viewModel.CheckForUpdatesNowCommand.ExecuteAsync(null);
+
+        _ = _mockUpdateService.Setup(x => x.ResolveChannel()).Returns(UpdateChannel.Portable);
+        _ = _mockUpdateService
+            .Setup(x => x.DownloadUpdateAsync(It.IsAny<UpdateInfo>(), It.IsAny<UpdateChannel>(), It.IsAny<IProgress<int>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(UpdateDownloadResult.Failed(UpdateDownloadFailure.Network));
+
+        bool shutdownRaised = false;
+        viewModel.ShutdownRequested += (_, _) => shutdownRaised = true;
+
+        await viewModel.ApplyUpdateNowCommand.ExecuteAsync(null);
+
+        _ = shutdownRaised.Should().BeFalse();
+        _mockUpdateService.Verify(x => x.ApplyUpdateAsync(It.IsAny<UpdateInfo>(), It.IsAny<CancellationToken>()), Times.Never);
+        _ = viewModel.IsApplyingUpdate.Should().BeFalse();
+    }
 }

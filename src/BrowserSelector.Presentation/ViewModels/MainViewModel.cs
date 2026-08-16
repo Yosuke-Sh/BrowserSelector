@@ -599,11 +599,32 @@ public partial class MainViewModel : ObservableObject
             settingsViewModel.SettingsChanged += OnSettingsChanged;
             settingsViewModel.BrowserChanged += OnBrowserChanged;
 
+            // 設定画面の「更新を適用」からアプリ終了が要求された場合、ダイアログを閉じてから
+            // MainViewModel.ShutdownRequestedへ委譲する（ShowDialog()実行中に直接Shutdownを
+            // 呼ぶとネストされたDispatcherフレームと整合しないため、フラグで戻り値を待つ）。
+            bool updateShutdownRequested = false;
+            settingsViewModel.ShutdownRequested += (_, _) =>
+            {
+                updateShutdownRequested = true;
+                settingsWindow.Close();
+            };
+
             bool? result = settingsWindow.ShowDialog();
 
             // イベントハンドラーを解除
             settingsViewModel.SettingsChanged -= OnSettingsChanged;
             settingsViewModel.BrowserChanged -= OnBrowserChanged;
+
+            // S2583: updateShutdownRequestedはShutdownRequestedイベントハンドラー（クロージャ）内で
+            // trueへ書き換えられる可能性があるが、静的解析はShowDialog()呼び出しを挟んだ
+            // イベント発火のタイミングを追跡できず「常にfalse」と誤検知するため抑制する。
+#pragma warning disable S2583
+            if (updateShutdownRequested)
+#pragma warning restore S2583
+            {
+                ShutdownRequested?.Invoke(this, EventArgs.Empty);
+                return;
+            }
 
             // 設定画面が閉じられた後、設定が保存された場合は再読み込み
             if (result == true)

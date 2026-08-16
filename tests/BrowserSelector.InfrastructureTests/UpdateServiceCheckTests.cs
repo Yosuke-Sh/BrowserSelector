@@ -104,9 +104,11 @@ public sealed class UpdateServiceCheckTests : IDisposable
     [Fact]
     public async Task CheckForUpdatesAsync_ShouldStoreETagAndSendItOnNextCall()
     {
+        // 現在バージョンが既に最新版と同じ（＝更新は無い）場合は、キャッシュされたタグ名が
+        // 現在バージョンより新しくないため、通常どおり2回目以降はETagを送って304運用へ入る。
         using var handler = new StubHttpMessageHandler(_ =>
         {
-            HttpResponseMessage response = JsonResponse(ReleaseJson("v0.9.0"));
+            HttpResponseMessage response = JsonResponse(ReleaseJson("v0.3.0"));
             response.Headers.ETag = new System.Net.Http.Headers.EntityTagHeaderValue("\"abc123\"");
             return response;
         });
@@ -128,6 +130,79 @@ public sealed class UpdateServiceCheckTests : IDisposable
         using UpdateService service = CreateService(handler, currentVersion: new Version(0, 3, 0));
 
         (await service.CheckForUpdatesAsync()).Should().BeNull();
+    }
+
+    [Fact]
+    public async Task CheckForUpdatesAsync_ShouldKeepReturningUpdateOnRepeatedChecksWhenNotYetApplied()
+    {
+        // 1回目: 新版を検出してETagをキャッシュする（ユーザーがまだ適用していない状況を模す）。
+        // 2回目以降: GitHub側は同じリリースのため304を返すはずだが、キャッシュされたタグ名が
+        // 現在バージョンより新しいままなので、ETagを送らずフルリクエストへフォールバックし、
+        // 「最新の状態です」という誤った判定にならないことを確認する回帰テスト。
+        int requestCount = 0;
+        using var handler = new StubHttpMessageHandler(request =>
+        {
+            requestCount++;
+            if (requestCount == 1)
+            {
+                HttpResponseMessage first = JsonResponse(ReleaseJson("v0.9.0"));
+                first.Headers.ETag = new System.Net.Http.Headers.EntityTagHeaderValue("\"abc123\"");
+                return first;
+            }
+
+            // 2回目以降、If-None-Matchが付いていれば304を返す通常のGitHub API挙動を模す。
+            if (request.Headers.Contains("If-None-Match"))
+            {
+                return new HttpResponseMessage(HttpStatusCode.NotModified);
+            }
+
+            HttpResponseMessage subsequent = JsonResponse(ReleaseJson("v0.9.0"));
+            subsequent.Headers.ETag = new System.Net.Http.Headers.EntityTagHeaderValue("\"abc123\"");
+            return subsequent;
+        });
+        using UpdateService service = CreateService(handler, currentVersion: new Version(0, 3, 0));
+
+        UpdateInfo? first = await service.CheckForUpdatesAsync();
+        UpdateInfo? second = await service.CheckForUpdatesAsync();
+
+        first.Should().NotBeNull();
+        second.Should().NotBeNull();
+        second!.TagName.Should().Be("v0.9.0");
+
+        // アプリ未更新のままの間はETagを送らないため、2リクエストとも If-None-Match なしで届く。
+        handler.Requests.Should().HaveCount(2);
+        handler.Requests[1].Headers.Contains("If-None-Match").Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task CheckForUpdatesAsync_ShouldReturnNullOnNotModifiedAfterUpdateIsApplied()
+    {
+        // キャッシュされたタグ名と同じバージョンで起動した（＝適用済み）場合は、
+        // 通常どおりETagを送って304を受け入れ、レート制限を節約する。
+        using var handler = new StubHttpMessageHandler(request =>
+        {
+            if (request.Headers.Contains("If-None-Match"))
+            {
+                return new HttpResponseMessage(HttpStatusCode.NotModified);
+            }
+
+            HttpResponseMessage response = JsonResponse(ReleaseJson("v0.9.0"));
+            response.Headers.ETag = new System.Net.Http.Headers.EntityTagHeaderValue("\"abc123\"");
+            return response;
+        });
+
+        // 1回目はv0.3.0として実行し、v0.9.0を検出・ETagをキャッシュさせる。
+        using (UpdateService firstRun = CreateService(handler, currentVersion: new Version(0, 3, 0)))
+        {
+            (await firstRun.CheckForUpdatesAsync()).Should().NotBeNull();
+        }
+
+        // 2回目はv0.9.0（適用済み）として実行する。
+        using UpdateService secondRun = CreateService(handler, currentVersion: new Version(0, 9, 0));
+        (await secondRun.CheckForUpdatesAsync()).Should().BeNull();
+
+        handler.Requests.Should().HaveCount(2);
+        handler.Requests[1].Headers.Contains("If-None-Match").Should().BeTrue();
     }
 
     [Fact]

@@ -733,6 +733,9 @@
   <data name="Settings.App.CheckFailed" xml:space="preserve">
     <value>確認に失敗しました</value>
   </data>
+  <data name="Settings.App.ApplyUpdate" xml:space="preserve">
+    <value>更新を適用</value>
+  </data>
   <data name="Settings.App.ClearSkippedVersion" xml:space="preserve">
     <value>スキップを解除</value>
   </data>
