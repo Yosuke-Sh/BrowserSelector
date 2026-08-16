@@ -39,6 +39,19 @@ public partial class MainViewModel
     public event EventHandler? ShutdownRequested;
 
     /// <summary>
+    /// 更新通知バーを表示したときに発火する.
+    /// </summary>
+    /// <remarks>
+    /// 通知バーはIsCountdownActive==falseの間しか見えない（MainWindow.xaml参照）。
+    /// カウントダウン自動起動と通知チェックが同じ既定タイミング（起動5秒後）のため、
+    /// 何もしないとカウントダウンでブラウザが自動起動・ウィンドウが閉じられ、
+    /// ユーザーが通知に気づけないまま更新が見送られ続ける実機不具合があった。
+    /// MainWindow側でこのイベントを購読してカウントダウンを一時停止させることで、
+    /// 通知バーが必ず操作可能な状態で表示されるようにする.
+    /// </remarks>
+    public event EventHandler? UpdateNotificationShown;
+
+    /// <summary>
     /// 起動時バックグラウンドチェック（Phase H-10）から呼び出され、通知バーを表示する.
     /// </summary>
     /// <param name="updateInfo">検出されたアップデート情報.</param>
@@ -48,6 +61,7 @@ public partial class MainViewModel
         _pendingUpdate = updateInfo;
         UpdateNotificationMessage = LocalizedLogHelper.GetString("Update.Notification.Message", updateInfo.TagName);
         IsUpdateNotificationVisible = true;
+        UpdateNotificationShown?.Invoke(this, EventArgs.Empty);
     }
 
     /// <summary>

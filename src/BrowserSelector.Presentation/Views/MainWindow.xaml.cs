@@ -312,6 +312,16 @@ public partial class MainWindow : Window
             await viewModel.LaunchDefaultBrowserAsync().ConfigureAwait(true);
         };
 
+        // Phase H-10補完: 更新通知バーはIsCountdownActive==falseの間しか見えないため、
+        // カウントダウンと同時に検出された更新をユーザーが確認する前にカウントダウンが
+        // 既定ブラウザを自動起動してウィンドウが閉じられ、通知が見送られ続ける不具合があった。
+        // 通知表示のタイミングでカウントダウンを一時停止し、通知バーを確実に表示・操作可能にする.
+        viewModel.UpdateNotificationShown += (_, _) =>
+        {
+            _countdownController.Pause();
+            viewModel.IsCountdownActive = false;
+        };
+
         _countdownTimer = new DispatcherTimer
         {
             Interval = TimeSpan.FromSeconds(1),

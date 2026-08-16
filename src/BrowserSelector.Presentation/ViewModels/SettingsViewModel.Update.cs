@@ -22,6 +22,21 @@ public partial class SettingsViewModel
     [ObservableProperty]
     private string _updateCheckStatusMessage = string.Empty;
 
+    [ObservableProperty]
+    private bool _isApplyingUpdate;
+
+    [ObservableProperty]
+    private int _applyUpdateProgress;
+
+    private UpdateInfo? _foundUpdate;
+
+    /// <summary>
+    /// アプリケーションの終了が必要になったときに発火する（更新適用後のシャットダウン）.
+    /// <see cref="MainViewModel.ShutdownRequested"/>と同じ理由でViewModelから直接Shutdownを
+    /// 呼ばず、呼び出し元（MainViewModel.OpenSettings）に委譲する.
+    /// </summary>
+    public event EventHandler? ShutdownRequested;
+
     /// <summary>
     /// Gets 最終アップデート確認日時の表示用文字列。未チェックの場合はローカライズされた「未チェック」を返す.
     /// </summary>
@@ -34,6 +49,19 @@ public partial class SettingsViewModel
     /// Gets a value indicating whether 「このバージョンをスキップ」が設定されているか（スキップ解除ボタンの表示条件）.
     /// </summary>
     public bool HasSkippedUpdateVersion => !string.IsNullOrEmpty(AppSettings.SkippedUpdateVersion);
+
+    /// <summary>
+    /// Gets a value indicating whether 「今すぐ確認」で更新が見つかっており、この場で適用できる状態かどうか
+    /// （「更新を適用」ボタンの表示条件）.
+    /// </summary>
+    /// <remarks>
+    /// 従来は「今すぐ確認」が確認のみを行い、実際のダウンロード・適用はメインウィンドウ下部の
+    /// 通知バーでしか行えなかった。設定画面を確認して閉じただけでは更新が一切適用されず、
+    /// 「次回確認すると最新の状態です」と表示される（実際は304キャッシュのバグと、
+    /// 適用未完了のまま終了しているだけ）という分かりにくさがあったため、設定画面のその場で
+    /// 適用まで完結できるようにする.
+    /// </remarks>
+    public bool HasFoundUpdate => _foundUpdate != null;
 
     /// <summary>
     /// 「今すぐ確認」コマンド。<see cref="IUpdateService.CheckForUpdatesAsync"/>を実行し、結果をステータスメッセージへ反映する.
@@ -65,6 +93,9 @@ public partial class SettingsViewModel
             _ = await _settingsService.SaveAppSettingsAsync(AppSettings).ConfigureAwait(true);
             OnPropertyChanged(nameof(LastUpdateCheckDisplay));
 
+            _foundUpdate = updateInfo;
+            OnPropertyChanged(nameof(HasFoundUpdate));
+
             UpdateCheckStatusMessage = updateInfo != null
                 ? LocalizedLogHelper.GetString("Settings.App.UpdateFound", updateInfo.TagName)
                 : LocalizedLogHelper.GetString("Settings.App.UpToDate");
@@ -89,6 +120,71 @@ public partial class SettingsViewModel
     partial void OnIsCheckingForUpdatesChanged(bool value)
     {
         CheckForUpdatesNowCommand.NotifyCanExecuteChanged();
+    }
+
+    /// <summary>
+    /// 「更新を適用」コマンド。「今すぐ確認」で見つかった更新をダウンロード・検証・適用する.
+    /// 成功時は<see cref="ShutdownRequested"/>を発火する（呼び出し元がウィンドウを閉じてから
+    /// アプリを終了させる）.
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanApplyUpdateNow))]
+    private async Task ApplyUpdateNowAsync()
+    {
+        if (_updateService == null || _foundUpdate == null)
+        {
+            return;
+        }
+
+        IsApplyingUpdate = true;
+        ApplyUpdateProgress = 0;
+
+        try
+        {
+            Core.Models.UpdateChannel channel = _updateService.ResolveChannel();
+            Progress<int> progress = new(p => ApplyUpdateProgress = p);
+
+            UpdateDownloadResult downloadResult = await _updateService.DownloadUpdateAsync(_foundUpdate, channel, progress).ConfigureAwait(true);
+            if (!downloadResult.Success)
+            {
+                UpdateCheckStatusMessage = downloadResult.Failure == UpdateDownloadFailure.ChecksumMismatch
+                    ? LocalizedLogHelper.GetString("Update.Error.ChecksumMismatch")
+                    : LocalizedLogHelper.GetString("Update.Error.DownloadFailed");
+                LogService?.LogWarning($"アップデートのダウンロードに失敗しました: {downloadResult.Failure}", "SettingsViewModel");
+                return;
+            }
+
+            bool applied = await _updateService.ApplyUpdateAsync(_foundUpdate).ConfigureAwait(true);
+            if (applied)
+            {
+                LogService?.LogInformation("アップデート適用プロセスを起動しました。アプリケーションを終了します。", "SettingsViewModel");
+                ShutdownRequested?.Invoke(this, EventArgs.Empty);
+            }
+            else
+            {
+                UpdateCheckStatusMessage = LocalizedLogHelper.GetString("Update.Error.DownloadFailed");
+                LogService?.LogWarning("アップデートの適用が開始されませんでした（UACキャンセル等）", "SettingsViewModel");
+            }
+        }
+        // CA1031: RelayCommandハンドラーの最上位try-catch。ネットワーク・ファイルI/O・プロセス起動など
+        // 例外種別が多岐にわたり、UIスレッドをクラッシュさせないための意図的な汎用catch。
+#pragma warning disable CA1031
+        catch (Exception ex)
+        {
+            UpdateCheckStatusMessage = LocalizedLogHelper.GetString("Update.Error.DownloadFailed");
+            LogService?.LogError($"アップデート適用中にエラーが発生しました: {ex.Message}", "SettingsViewModel", ex);
+        }
+#pragma warning restore CA1031
+        finally
+        {
+            IsApplyingUpdate = false;
+        }
+    }
+
+    private bool CanApplyUpdateNow() => HasFoundUpdate && !IsApplyingUpdate;
+
+    partial void OnIsApplyingUpdateChanged(bool value)
+    {
+        ApplyUpdateNowCommand.NotifyCanExecuteChanged();
     }
 
     /// <summary>

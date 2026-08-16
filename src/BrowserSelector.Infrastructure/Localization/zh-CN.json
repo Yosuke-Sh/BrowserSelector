@@ -269,6 +269,7 @@
     "Settings.App.UpToDate": "已是最新版本",
     "Settings.App.UpdateFound": "发现新版本 {0}",
     "Settings.App.CheckFailed": "检查失败",
+    "Settings.App.ApplyUpdate": "应用更新",
     "Settings.App.ClearSkippedVersion": "取消跳过",
     "Update.Notification.Title": "有可用更新",
     "Update.Notification.Message": "新版本 {0} 现已可用",

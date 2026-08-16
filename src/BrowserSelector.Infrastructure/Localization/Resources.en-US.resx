@@ -733,6 +733,9 @@
   <data name="Settings.App.CheckFailed" xml:space="preserve">
     <value>Check failed</value>
   </data>
+  <data name="Settings.App.ApplyUpdate" xml:space="preserve">
+    <value>Apply update</value>
+  </data>
   <data name="Settings.App.ClearSkippedVersion" xml:space="preserve">
     <value>Clear skipped version</value>
   </data>

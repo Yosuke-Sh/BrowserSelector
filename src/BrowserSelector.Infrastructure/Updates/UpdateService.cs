@@ -148,13 +148,20 @@ public class UpdateService : IUpdateService
                 return null;
             }
 
+            HttpClient client = _httpClientFactory.CreateClient(HttpClientName);
+
+            // ETagが前回チェック時点でキャッシュされたタグに対するものであり、キャッシュされたタグ自体が
+            // まだ現在バージョンより新しい（＝前回検出した更新が未適用の）場合は、304で早期リターンせず
+            // 完全なUpdateInfoを取得し直す。304時点ではボディが無くUpdateAssetsを再構築できないため、
+            // ここでETagを送らずフルリクエストにフォールバックする（適用済みなら通常どおりETagで
+            // レート制限を節約する）。
+            bool forceFullRequest = IsCachedTagNewerThanCurrent(state.CachedTagName);
             using HttpRequestMessage request = new(HttpMethod.Get, _latestReleaseApiUrl);
-            if (!string.IsNullOrEmpty(state.ETag))
+            if (!forceFullRequest && !string.IsNullOrEmpty(state.ETag))
             {
                 request.Headers.TryAddWithoutValidation("If-None-Match", state.ETag);
             }
 
-            HttpClient client = _httpClientFactory.CreateClient(HttpClientName);
             using HttpResponseMessage response = await client
                 .SendAsync(request, HttpCompletionOption.ResponseContentRead, cancellationToken)
                 .ConfigureAwait(false);
@@ -543,6 +550,28 @@ public class UpdateService : IUpdateService
 
         // ヘッダーが読めない場合は保守的に1時間抑止する（GitHubのレート制限窓と同じ長さ）。
         return DateTimeOffset.UtcNow.AddHours(1);
+    }
+
+    /// <summary>
+    /// 前回304応答時にキャッシュしたタグ名が、現在の実行バージョンより新しいかどうかを判定する.
+    /// </summary>
+    /// <remarks>
+    /// 「一度更新を検出したがユーザーが適用しなかった」場合、次回以降はETagにより304が返り続け、
+    /// バージョン比較（<see cref="CheckForUpdatesAsync"/>本体）に到達できず「更新なし」のまま
+    /// 通知され続けなくなる不具合があった。ここでキャッシュタグと現在バージョンを比較し、
+    /// まだ新しいままであれば呼び出し元でETagを送らずフルリクエストへフォールバックさせる.
+    /// </remarks>
+    /// <param name="cachedTagName">前回304応答時にキャッシュしたタグ名.</param>
+    /// <returns>キャッシュタグが現在バージョンより新しい場合はtrue.</returns>
+    private bool IsCachedTagNewerThanCurrent(string? cachedTagName)
+    {
+        if (string.IsNullOrEmpty(cachedTagName))
+        {
+            return false;
+        }
+
+        return GitHubReleaseMapper.TryParseVersion(cachedTagName, out Version? cachedVersion)
+            && cachedVersion! > _currentVersion;
     }
 
     /// <summary>

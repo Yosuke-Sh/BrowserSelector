@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.2] - 2026-08-16
+
+### 🐛 Fixed
+- Fixed a bug where an update that was detected but not yet applied would stop being reported after the first check. `CheckForUpdatesAsync` used an ETag-based conditional request; once the ETag was cached, subsequent checks received `304 Not Modified` from GitHub and returned `null` unconditionally, without ever comparing the cached release against the running version. If the user dismissed the update notification (e.g., by closing the Settings window without clicking "Update Now" in the main window's notification bar), later checks would incorrectly report "You're up to date" even though the app was still running the old version. `CheckForUpdatesAsync` now compares the cached tag against the current version before deciding whether to send the `If-None-Match` header, falling back to a full request (bypassing the cache) whenever a previously detected update has not yet been applied.
+- Fixed the update notification bar in the main window never becoming visible when the countdown auto-launch timer and the background update check completed around the same time (both default to 5 seconds after startup). The notification bar is only shown while `IsCountdownActive` is `false`, so a detected update could go unnoticed while the countdown silently launched the default browser and closed the window. `MainWindow` now pauses the countdown as soon as an update notification is shown.
+
+### ✨ Added
+- Added an "Apply update" button to the Settings window, enabled once "Check Now" finds a new version. This lets the update be downloaded, verified, and applied without leaving Settings, instead of requiring the user to also act on the separate notification bar in the main window.
+
 ## [0.3.1] - 2026-08-16
 
 ### 🐛 Fixed

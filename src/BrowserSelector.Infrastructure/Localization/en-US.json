@@ -265,6 +265,7 @@
     "Settings.App.UpToDate": "You're up to date",
     "Settings.App.UpdateFound": "New version {0} is available",
     "Settings.App.CheckFailed": "Check failed",
+    "Settings.App.ApplyUpdate": "Apply update",
     "Settings.App.ClearSkippedVersion": "Clear skipped version",
     "Update.Notification.Title": "Update available",
     "Update.Notification.Message": "Version {0} is available",
