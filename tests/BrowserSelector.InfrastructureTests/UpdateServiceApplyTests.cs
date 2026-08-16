@@ -137,21 +137,14 @@ public sealed class UpdateServiceApplyTests : IDisposable
         await File.WriteAllTextAsync(installerPath, "installer");
 
         // Program Files配下を模擬できないため、経路を直接指定してインストーラ起動のみを検証する。
-        string baseDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-        using UpdateService service = CreateService(baseDirectory: baseDirectory);
+        // IsUnderProgramFilesはサブディレクトリ判定（前方一致 + セパレータ）のため、
+        // Program Filesディレクトリそのものではなくサブディレクトリを渡す必要がある。
+        // 直接渡すとCI（管理者権限のrunneradminユーザー）ではProgram Files直下への書き込みが
+        // 成功してしまいPortable判定になり、ローカル（非管理者）では書き込み不可でInstaller判定に
+        // なるという実行ユーザー権限依存の不安定なテストになっていた。
+        using UpdateService service = CreateService(baseDirectory: ProgramFilesAppDirectory());
 
         bool result = await service.ApplyUpdateAsync(CreateDownloaded(installerPath));
-
-        // DIAG: CI環境固有の失敗原因調査のための一時診断出力（原因特定後に削除する）。
-        if (!result)
-        {
-            Console.WriteLine($"[DIAG] baseDirectory={baseDirectory}");
-            Console.WriteLine($"[DIAG] ResolveChannelFor={UpdateService.ResolveChannelFor(baseDirectory)}");
-            Console.WriteLine($"[DIAG] installerPath={installerPath}");
-            Console.WriteLine($"[DIAG] File.Exists(installerPath)={File.Exists(installerPath)}");
-            Console.WriteLine($"[DIAG] _workDirectory={_workDirectory}, exists={Directory.Exists(_workDirectory)}");
-            Console.WriteLine($"[DIAG] started.Count={_launcher.Started.Count}");
-        }
 
         result.Should().BeTrue();
         _launcher.Started.Should().ContainSingle();
@@ -176,7 +169,7 @@ public sealed class UpdateServiceApplyTests : IDisposable
 
         _launcher.ThrowOnStart = RecordingProcessLauncher.CreateUacCancellation();
 
-        using UpdateService service = CreateService(baseDirectory: Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles));
+        using UpdateService service = CreateService(baseDirectory: ProgramFilesAppDirectory());
 
         bool result = await service.ApplyUpdateAsync(CreateDownloaded(installerPath));
 
@@ -187,7 +180,7 @@ public sealed class UpdateServiceApplyTests : IDisposable
     [Fact]
     public async Task ApplyUpdateAsync_InstallerRouteWithMissingFile_ReturnsFalse()
     {
-        using UpdateService service = CreateService(baseDirectory: Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles));
+        using UpdateService service = CreateService(baseDirectory: ProgramFilesAppDirectory());
 
         bool result = await service.ApplyUpdateAsync(
             CreateDownloaded(Path.Combine(_workDirectory, "missing-installer.exe")));
@@ -225,6 +218,12 @@ public sealed class UpdateServiceApplyTests : IDisposable
         IsDownloaded = true,
         LocalFilePath = localPath,
     };
+
+    // IsUnderProgramFilesは前方一致 + セパレータでのサブディレクトリ判定のため、
+    // Program Filesディレクトリそのものではなくサブディレクトリを渡す必要がある
+    // （実インストール先を模したパス。実行ユーザーの権限に依存しない）。
+    private static string ProgramFilesAppDirectory() => Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "BrowserSelector");
 
     private string CreateExtractedDirectory()
     {
