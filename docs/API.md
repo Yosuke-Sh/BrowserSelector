@@ -94,19 +94,64 @@ public interface ISettingsService
 
 ### IUpdateService
 
-Skeleton interface for automatic updates. **Not yet implemented — planned for v0.3.0.** Only the interface and a minimal `UpdateService` shell exist today; none of the methods below perform real GitHub Releases integration yet.
+Implemented in v0.3.0. Integrates with GitHub Releases, verifies downloads via SHA256, and applies updates through one of two channel-specific paths. Rollback and backup are intentionally **not** exposed here — they only make sense while the app isn't running, so they live in the standalone `BrowserSelector.Updater.exe` process instead.
 
 ```csharp
 public interface IUpdateService : IDisposable
 {
     event EventHandler<UpdateAvailableEventArgs>? UpdateAvailable;
-    Task<UpdateInfo?> CheckForUpdatesAsync();
-    Task<bool> DownloadUpdateAsync(UpdateInfo updateInfo, IProgress<int>? progress = null);
-    Task<bool> InstallUpdateAsync(UpdateInfo updateInfo);
-    Task<bool> RollbackUpdateAsync();
-    bool CreateBackup();
+
+    // Never throws on network failure — returns null instead so callers don't need to catch.
+    Task<UpdateInfo?> CheckForUpdatesAsync(CancellationToken cancellationToken = default);
+
+    Task<UpdateDownloadResult> DownloadUpdateAsync(
+        UpdateInfo updateInfo,
+        UpdateChannel channel,
+        IProgress<int>? progress = null,
+        CancellationToken cancellationToken = default);
+
+    // Returns success/failure only; shutting down the app is the caller's (ViewModel's) responsibility.
+    Task<bool> ApplyUpdateAsync(UpdateInfo updateInfo, CancellationToken cancellationToken = default);
+
+    // Determines whether the running instance is a Program Files install (Installer) or a writable
+    // portable deployment (Portable); falls back to Installer when the location isn't writable.
+    UpdateChannel ResolveChannel();
 }
 ```
+
+#### `UpdateInfo`
+
+```csharp
+public class UpdateInfo
+{
+    public Version Version { get; set; }              // parsed from tag_name (leading 'v' stripped)
+    public string TagName { get; set; }                // raw tag_name, e.g. "v0.3.0"
+    public string ReleaseNotes { get; set; }            // release body (Markdown)
+    public string ReleasePageUrl { get; set; }          // html_url
+    public DateTimeOffset? PublishedAt { get; set; }
+    public bool IsPrerelease { get; set; }
+    public UpdateAsset? InstallerAsset { get; set; }     // BrowserSelector-Setup-v*.exe
+    public UpdateAsset? PortableAsset { get; set; }      // BrowserSelector-v*-win-x64.zip
+    public UpdateAsset? ChecksumsAsset { get; set; }     // SHA256SUMS.txt
+    public string? LocalFilePath { get; set; }           // set once DownloadUpdateAsync succeeds
+    public bool IsDownloaded { get; set; }
+}
+
+public sealed record UpdateAsset(string Name, Uri DownloadUrl, long Size, string? Sha256 = null);
+
+public enum UpdateChannel { Installer, Portable }
+
+public enum UpdateDownloadFailure { None, Network, ChecksumMismatch, ChecksumUnavailable, Canceled, Io }
+```
+
+`UpdateDownloadResult` carries `Success`, `FilePath`, and `Failure` — a bool return value alone can't distinguish "checksum mismatch" (dangerous, reject) from "network unreachable" (harmless, retry later), so the UI gets a typed reason instead.
+
+#### Security model
+
+The app is not code-signed, so host allow-listing and checksum verification are the only guarantees that a downloaded asset is genuine:
+- Only `https://api.github.com`, `https://github.com`, and hosts ending in `.githubusercontent.com` are accepted for both the API call and asset downloads — checked again on the final URL after redirects (`evil-githubusercontent.com` does not match the suffix check)
+- Every download is verified against `SHA256SUMS.txt`; a mismatch or unavailable checksum file both fail closed (asset deleted, not applied)
+- Portable ZIP extraction validates each entry against Zip Slip (path traversal, absolute paths, alternate data streams) and enforces entry-count/size caps
 
 ### ILocalizationService
 
@@ -434,7 +479,11 @@ public static IServiceCollection AddBrowserSelectorServices(this IServiceCollect
     services.AddSingleton<IIconCacheService>(provider => /* ... */);
     services.AddSingleton<IRegistryService>(provider => /* ... */);
     services.AddSingleton<IProtocolHandler, ProtocolHandler>();
-    services.AddSingleton<IUpdateService>(provider => /* ... */); // skeleton only, not functional yet
+
+    // Named HttpClient for updates (IHttpClientFactory, not a singleton HttpClient) so tests can
+    // substitute a stub handler through the same code path as production.
+    services.AddHttpClient(UpdateService.HttpClientName, client => { /* User-Agent, Accept, etc. */ });
+    services.AddSingleton<IUpdateService>(provider => /* ... */);
     services.AddSingleton<IExternalLinkService>(provider => /* ... */);
     services.AddSingleton<IThemeService>(provider => /* ... */);
 
@@ -503,9 +552,7 @@ visualSettings.BrowserButtonCornerRadius = 12.0;
 await settingsService.SaveVisualSettingsAsync(visualSettings);
 ```
 
-### Update Check (not yet functional — v0.3.0)
-
-`IUpdateService` currently only exposes the skeleton shown below; `CheckForUpdatesAsync()` and friends do not perform real GitHub Releases integration yet. The example illustrates the intended future usage once v0.3.0 lands.
+### Update Check
 
 ```csharp
 var updateService = serviceProvider.GetRequiredService<IUpdateService>();
@@ -514,11 +561,17 @@ updateService.UpdateAvailable += (sender, args) =>
     Console.WriteLine($"Update available: {args.UpdateInfo.Version}");
 };
 
-var updateInfo = await updateService.CheckForUpdatesAsync();
+UpdateInfo? updateInfo = await updateService.CheckForUpdatesAsync();
 if (updateInfo != null)
 {
-    await updateService.DownloadUpdateAsync(updateInfo);
-    await updateService.InstallUpdateAsync(updateInfo);
+    UpdateChannel channel = updateService.ResolveChannel();
+    UpdateDownloadResult result = await updateService.DownloadUpdateAsync(updateInfo, channel);
+    if (result.Success)
+    {
+        bool applied = await updateService.ApplyUpdateAsync(updateInfo);
+        // On success, shut the application down — ApplyUpdateAsync only starts the
+        // installer/Updater.exe process; it does not exit the app itself.
+    }
 }
 ```
 
@@ -529,7 +582,8 @@ if (updateInfo != null)
 - Process execution is validated and sanitized
 - User input is sanitized to prevent injection attacks
 - Executable/installer are **not code-signed** at this time
-- Update download verification (checksums) is planned for v0.3.0 alongside the real `IUpdateService` implementation — not yet in place
+- Update download verification: SHA256 checksums from `SHA256SUMS.txt` are required for every download; a mismatch or unavailable checksum file causes the download to fail closed (see `IUpdateService` above)
+- Update host allow-listing: `api.github.com`, `github.com`, and `*.githubusercontent.com` only, re-checked after redirects
 
 ## 📚 Additional Resources
 
