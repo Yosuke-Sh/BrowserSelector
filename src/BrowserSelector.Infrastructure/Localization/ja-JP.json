@@ -40,6 +40,7 @@
     "MainWindow.MinimizeButton.Tooltip": "最小化",
     "MainWindow.CloseButton.Tooltip": "閉じる",
     "MainWindow.SettingsButton.Tooltip": "設定",
+    "MainWindow.HamburgerMenu.Tooltip": "メニュー",
     "MainWindow.CloseAfterLaunch": "起動後に閉じる",
     "MainWindow.DefaultBrowserBadge": "既定",
     "MainWindow.BrowserTooltip": "{0}\nパス: {1}\n引数: {2}",

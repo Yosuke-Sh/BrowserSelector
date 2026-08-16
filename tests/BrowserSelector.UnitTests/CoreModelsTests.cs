@@ -195,7 +195,7 @@ public class CoreModelsTests
         _ = settings.FocusWidth.Should().Be(100.0, "フォーカス幅は100.0");
         _ = settings.InitialWindowWidth.Should().Be(800.0, "初期ウィンドウ幅は800.0");
         _ = settings.InitialWindowHeight.Should().Be(600.0, "初期ウィンドウ高さは600.0");
-        _ = settings.ShowLogo.Should().BeTrue("ロゴ表示は有効");
+        _ = settings.ShowLogo.Should().BeFalse("ロゴ表示は初期状態で無効");
         _ = settings.ShowUrlInput.Should().BeTrue("URL入力表示は有効");
         _ = settings.BrowserButtonWidth.Should().Be(120.0, "ブラウザボタン幅は120.0");
         _ = settings.BrowserButtonHeight.Should().Be(90.0, "ブラウザボタン高さは90.0");
@@ -229,7 +229,7 @@ public class CoreModelsTests
         settings.FocusWidth = 150.0;
         settings.InitialWindowWidth = 1000.0;
         settings.InitialWindowHeight = 800.0;
-        settings.ShowLogo = false;
+        settings.ShowLogo = true;
         settings.ShowUrlInput = false;
         settings.BrowserButtonWidth = 150.0;
         settings.BrowserButtonHeight = 100.0;

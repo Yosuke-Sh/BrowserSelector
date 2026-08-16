@@ -248,6 +248,34 @@
         <Border Grid.RowSpan="5"
                 Background="{Binding VisualSettings, Converter={StaticResource BackgroundBrushConverter}}"/>
 
+        <!-- ハンバーガーメニュー（Phase E-3: タイトルバー非表示時の代替導線）。
+             ShowTitleBar=falseの場合、CustomTitleBarRowの高さが0になり設定/最小化/閉じるボタンが操作不能になるため、
+             常時表示されるオーバーレイとして右上に設定・最小化・閉じるへの導線を提供する。 -->
+        <Button Grid.Row="0" Grid.RowSpan="5"
+                Style="{StaticResource TitleBarButtonStyle}"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Click="HamburgerMenuButton_Click"
+                ToolTip="{extensions:Localization MainWindow.HamburgerMenu.Tooltip}"
+                Visibility="{Binding ShowTitleBar, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Invert}"
+                AutomationProperties.Name="HamburgerMenuButton">
+            <TextBlock Text="&#xE700;" FontFamily="Segoe MDL2 Assets" FontSize="14"/>
+            <Button.ContextMenu>
+                <ContextMenu x:Name="HamburgerContextMenu" Placement="Bottom">
+                    <MenuItem Header="{extensions:Localization MainWindow.SettingsButton.Tooltip}"
+                              Command="{Binding OpenSettingsCommand}"
+                              AutomationProperties.Name="HamburgerMenu_Settings"/>
+                    <MenuItem Header="{extensions:Localization MainWindow.MinimizeButton.Tooltip}"
+                              Click="MinimizeButton_Click"
+                              AutomationProperties.Name="HamburgerMenu_Minimize"/>
+                    <Separator/>
+                    <MenuItem Header="{extensions:Localization MainWindow.CloseButton.Tooltip}"
+                              Click="CloseButton_Click"
+                              AutomationProperties.Name="HamburgerMenu_Close"/>
+                </ContextMenu>
+            </Button.ContextMenu>
+        </Button>
+
         <!-- カスタムタイトルバー（Phase C-2） -->
         <Grid Grid.Row="0" AutomationProperties.Name="CustomTitleBar">
             <Grid.ColumnDefinitions>

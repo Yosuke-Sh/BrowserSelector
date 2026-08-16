@@ -53,6 +53,14 @@ public partial class MainViewModel : ObservableObject
     private bool _closeAfterLaunch;
 
     /// <summary>
+    /// Gets or sets a value indicating whether カスタムタイトルバーを表示するか（<see cref="AppSettings.ShowTitleBar"/>）.
+    /// falseの場合、タイトルバー内の設定・最小化・閉じるボタンが操作不能になるため、
+    /// 代わりにハンバーガーメニュー（<see cref="HamburgerMenuCommand"/>）を表示する.
+    /// </summary>
+    [ObservableProperty]
+    private bool _showTitleBar = true;
+
+    /// <summary>
     /// Gets or sets カウントダウン自動起動の残り秒数（Phase D）。0または非表示状態のときは非表示にする.
     /// </summary>
     [ObservableProperty]
@@ -170,6 +178,7 @@ public partial class MainViewModel : ObservableObject
             {
                 AppSettings initialAppSettings = _settingsService.LoadAppSettingsAsync().GetAwaiter().GetResult();
                 _closeAfterLaunch = initialAppSettings.CloseAfterUrlRuleMatch;
+                ShowTitleBar = initialAppSettings.ShowTitleBar;
             }
             // CA1031: RelayCommand/イベントハンドラーの最上位try-catch。サービス呼び出しやUI操作など例外種別が多岐にわたり、UIスレッドをクラッシュさせないための意図的な汎用catch。
             #pragma warning disable CA1031

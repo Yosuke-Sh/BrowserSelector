@@ -151,6 +151,11 @@ public partial class MainWindow : Window
                 {
                     titleBarRow.Height = appSettings.ShowTitleBar ? new GridLength(36) : new GridLength(0);
                 }
+
+                if (DataContext is MainViewModel viewModel)
+                {
+                    viewModel.ShowTitleBar = appSettings.ShowTitleBar;
+                }
             }
 
             // 半透明単色/不透明はDWMバックドロップを使わずフォールバック描画に直接倒す
@@ -242,6 +247,19 @@ public partial class MainWindow : Window
             _logService?.LogDebug("MainWindow: VisualSettingsプロパティ変更を検知しました。UI更新を通知します。", "MainWindow");
             // UI更新を強制（UIスレッドで実行）
             Dispatcher.Invoke(() => InvalidateVisual());
+        }
+    }
+
+    /// <summary>
+    /// ハンバーガーメニューボタンのクリックハンドラー（Phase E-3）.
+    /// タイトルバー非表示時の代替導線として、左クリックで<see cref="Button.ContextMenu"/>を開く.
+    /// </summary>
+    private void HamburgerMenuButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button { ContextMenu: not null } button)
+        {
+            button.ContextMenu.PlacementTarget = button;
+            button.ContextMenu.IsOpen = true;
         }
     }
 

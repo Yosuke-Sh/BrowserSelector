@@ -40,6 +40,7 @@
     "MainWindow.MinimizeButton.Tooltip": "Minimize",
     "MainWindow.CloseButton.Tooltip": "Close",
     "MainWindow.SettingsButton.Tooltip": "Settings",
+    "MainWindow.HamburgerMenu.Tooltip": "Menu",
     "MainWindow.CloseAfterLaunch": "Close after launch",
     "MainWindow.DefaultBrowserBadge": "Default",
     "MainWindow.BrowserTooltip": "{0}\nPath: {1}\nArguments: {2}",

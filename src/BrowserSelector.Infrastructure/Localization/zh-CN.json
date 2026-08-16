@@ -39,6 +39,7 @@
     "MainWindow.MinimizeButton.Tooltip": "最小化",
     "MainWindow.CloseButton.Tooltip": "关闭",
     "MainWindow.SettingsButton.Tooltip": "设置",
+    "MainWindow.HamburgerMenu.Tooltip": "菜单",
     "MainWindow.CloseAfterLaunch": "启动后关闭",
     "MainWindow.DefaultBrowserBadge": "默认",
     "MainWindow.BrowserTooltip": "{0}\n路径: {1}\n参数: {2}",

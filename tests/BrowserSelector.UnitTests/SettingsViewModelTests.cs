@@ -184,7 +184,7 @@ public class SettingsViewModelTests
         _ = _viewModel.VisualSettings.FocusWidth.Should().Be(100.0);
         _ = _viewModel.VisualSettings.BackgroundColor.Should().Be(System.Windows.Media.Colors.White);
         _ = _viewModel.VisualSettings.IconScale.Should().Be(1.0);
-        _ = _viewModel.VisualSettings.ShowLogo.Should().BeTrue();
+        _ = _viewModel.VisualSettings.ShowLogo.Should().BeFalse();
         _ = _viewModel.VisualSettings.ShowUrlInput.Should().BeTrue();
         _ = _viewModel.VisualSettings.BrowserButtonWidth.Should().Be(120.0);
         _ = _viewModel.VisualSettings.BrowserButtonHeight.Should().Be(90.0);
