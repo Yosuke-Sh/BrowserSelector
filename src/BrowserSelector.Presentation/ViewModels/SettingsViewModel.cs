@@ -84,6 +84,7 @@ public partial class SettingsViewModel : ObservableObject
     private readonly ILocalizationService _localizationService;
     private readonly IUrlRuleService _urlRuleService;
     private readonly IExternalLinkService? _externalLinkService;
+    private readonly IUpdateService? _updateService;
 
     [ObservableProperty]
     private bool _showFocusIndicator = true;
@@ -172,6 +173,10 @@ public partial class SettingsViewModel : ObservableObject
     /// 外部リンク（GitHubリポジトリ・Issues・リリース一覧、Phase E-2）を開くためのサービス。省略可（テスト互換のため）.
     /// 未指定の場合、Aboutセクションのリンクボタンは動作しない.
     /// </param>
+    /// <param name="updateService">
+    /// 「今すぐ確認」ボタン（Phase H-8）用のアップデートサービス。省略可（テスト互換のため）.
+    /// 未指定の場合、「今すぐ確認」は失敗表示になる.
+    /// </param>
     public SettingsViewModel(
         ISettingsService settingsService,
         IBrowserService browserService,
@@ -179,7 +184,8 @@ public partial class SettingsViewModel : ObservableObject
         ICustomLanguageService customLanguageService,
         IUrlRuleService urlRuleService,
         ILogService logService,
-        IExternalLinkService? externalLinkService = null)
+        IExternalLinkService? externalLinkService = null,
+        IUpdateService? updateService = null)
     {
         _settingsService = settingsService;
         _browserService = browserService;
@@ -188,6 +194,7 @@ public partial class SettingsViewModel : ObservableObject
         _urlRuleService = urlRuleService;
         LogService = logService;
         _externalLinkService = externalLinkService;
+        _updateService = updateService;
 
         // 初期化処理（完了をInitializationTaskで外部から待機可能にする。
         // テストがコンストラクタ直後にコマンドを実行すると、この非同期初期化と

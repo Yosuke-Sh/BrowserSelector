@@ -5,7 +5,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
-    <NoWarn>SA1010;SA1636;CA2227;CA1002;S1075;CA1819;CA1055;SA0001</NoWarn>
+    <!-- CA1055/CA1056: URLはAbout画面表示・IExternalLinkServiceへの受け渡し等、文字列のまま使う箇所が
+         大半のため意図的にstringで公開する（AppInfoと同じ方針。呼び出し側の都度ToString()を避ける） -->
+    <NoWarn>SA1010;SA1636;CA2227;CA1002;S1075;CA1819;CA1055;CA1056;SA0001</NoWarn>
     <!-- リリースビルド時のPDBファイル生成を無効化してサイズ削減 -->
     <DebugSymbols Condition="'$(Configuration)' == 'Release'">false</DebugSymbols>
     <DebugType Condition="'$(Configuration)' == 'Release'">none</DebugType>

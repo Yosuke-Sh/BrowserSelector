@@ -7,8 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Planned for v0.3.0
-- Automatic update system (GitHub Releases integration, differential updates, rollback)
+## [0.3.0] - 2026-08-16
+
+### 🔄 Automatic Update System
+
+- **Update Checking**: Background check against GitHub Releases 5 seconds after startup (does not block "launch → select browser" flow), with ETag-based conditional requests and rate-limit backoff
+- **Integrity Verification**: SHA256 checksum verification against `SHA256SUMS.txt`; mismatched or unverifiable downloads are rejected and deleted rather than silently applied
+- **Two Apply Paths**: Program Files installs relaunch the signed-path installer with `/SILENT /CLOSEAPPLICATIONS` (UAC elevation); portable installs are replaced by a standalone `BrowserSelector.Updater.exe` that waits for the running process to exit, backs up, swaps files, and relaunches
+- **Non-Modal Notification**: A dismissible bar at the bottom of the main window offers "Update Now", "Next Launch", "Skip This Version", and "Release Notes" — no dialog interrupts the startup flow
+- **Settings**: "Include prereleases", last-check timestamp, "Check Now", and "Clear Skipped Version" added to the General tab
+- **Prerelease Filtering**: Off by default; opt-in via settings
+
+### 🔧 Changed
+- **`IUpdateService`** (breaking): `CheckForUpdatesAsync`/`DownloadUpdateAsync`/`ApplyUpdateAsync`/`ResolveChannel`; `RollbackUpdateAsync`/`CreateBackup` removed (moved to `BrowserSelector.Updater.exe`, which only makes sense while the app isn't running)
+- **`UpdateInfo`** (breaking): reduced from 18 to 11 properties; `Version` is now `System.Version` instead of `string`; asset details moved into new `UpdateAsset` records (`InstallerAsset`/`PortableAsset`/`ChecksumsAsset`)
+- **HTTP**: `IHttpClientFactory` adopted for the update client instead of a raw `HttpClient`, enabling stub-based testing through the same code path as production
+
+### 🐛 Fixed
+- GitHub API responses were deserialized directly into `UpdateInfo`, which has no field matching `tag_name`/`assets[]` — updates could never be detected. Replaced with `GitHubReleaseMapper`.
+- Downloaded files were saved via `Path.GetRandomFileName()` with no extension, so installers could never be launched via `Process.Start`. Downloads now keep the asset's original file name.
+- `AppContext.BaseDirectory` (a directory) was passed where a file path was expected for backup/rollback, making both silently no-ops.
+
+### 🧪 Testing
+- **Total**: 858 tests, zero build warnings (up from 658 in v0.2.0)
+  - New: `BrowserSelector.UpdaterTests` (36 tests, standalone updater project)
+  - InfrastructureTests grew from 28 to 160 (GitHub API mapping, checksum parsing, download/verify, host-allowlist and Zip Slip security tests, channel resolution)
+  - UnitTests grew to include update notification/settings ViewModel coverage
 
 ## [0.2.0] - 2026-08-16
 

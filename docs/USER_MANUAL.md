@@ -11,6 +11,7 @@
 - [外観設定](#-外観設定--appearance-settings)
 - [起動制御（トレイ常駐・自動起動・CLIオプション）](#-起動制御トレイ常駐自動起動cliオプション--startup-control-tray-residency-auto-launch-cli-options)
 - [機能詳細](#機能詳細)
+- [アップデート](#-アップデート--updates)
 - [トラブルシューティング](#トラブルシューティング)
 - [FAQ](#faq)
 
@@ -23,6 +24,7 @@
 - [Appearance Settings](#-外観設定--appearance-settings)
 - [Startup Control (Tray, Auto-launch, CLI Options)](#-起動制御トレイ常駐自動起動cliオプション--startup-control-tray-residency-auto-launch-cli-options)
 - [Feature Details](#feature-details)
+- [Updates](#-アップデート--updates)
 - [Troubleshooting](#troubleshooting)
 - [FAQ](#faq)
 
@@ -197,12 +199,12 @@ BrowserSelector supports full keyboard operation so the app can be used without 
 ##### 日本語
 - **URLルールマッチ後に閉じる**: URLルールにマッチしたブラウザを起動後にアプリケーションを閉じる
 - **言語設定**: アプリケーションの表示言語を選択（日本語・英語対応）
-- **自動更新チェック / 更新チェック間隔**: 設定項目自体は存在するが、更新チェック機能自体が未実装（v0.3.0予定）のため現時点では効果を持たない
+- **自動更新チェック / 更新チェック間隔 / プレリリースを含める / 今すぐ確認**: v0.3.0で実装完了。詳細は[アップデート](#-アップデート--updates)章を参照
 
 ##### English
 - **Close After URL Rule Match**: Close application after launching browser that matches URL rule
 - **Language Settings**: Select application display language (Japanese/English support)
-- **Automatic Update Check / Update Check Interval**: These settings exist in the configuration model, but have no effect yet since the update-check feature itself is not implemented (planned for v0.3.0)
+- **Automatic Update Check / Update Check Interval / Include Prereleases / Check Now**: Implemented in v0.3.0. See the [Updates](#-アップデート--updates) section for details
 
 #### 表示設定 / Display Settings
 
@@ -432,22 +434,70 @@ Check application operation status through logs:
    - File log settings
    - Log file location
 
-## 🔄 自動アップデート / Auto-update
+## 🔄 アップデート / Updates
 
 ### 日本語
 
-**自動アップデート機能は現時点では未実装です。** `IUpdateService`のインターフェース定義とサービスの骨格のみが実装されており、GitHub Releases連携・ダウンロード・インストール・ロールバックといった実際の更新処理は動作しません。この機能は**v0.3.0で実装予定**です。
+BrowserSelectorはv0.3.0より、GitHub Releasesと連携した自動アップデート機能を搭載しています。
 
-現在、最新バージョンを入手するには以下の手動手順を使用してください：
+#### 自動チェックの挙動
+- アプリ起動の5秒後（起動→ブラウザ選択の動線を妨げないタイミング）にバックグラウンドで新バージョンを確認します
+- 「設定」→「一般」の**自動更新チェック**がオフの場合、確認は行われません
+- **更新チェック間隔**（既定24時間）内に確認済みの場合は再チェックしません
+- `--silent`オプションで起動した場合（UIを表示せず既定ブラウザへ直接遷移するモード）は確認を行いません
+
+#### 更新が見つかったときの3択
+メインウィンドウ最下部に非モーダルの通知バーが表示され、以下から選べます（ダイアログでの操作ブロックはありません）。
+- **今すぐ更新**: ダウンロード・SHA256による完全性検証・適用を行います。適用開始後アプリは自動的に終了します
+- **次回起動時**: 今は何もせず、次回起動時に間隔を無視して即座に再提示します
+- **このバージョンをスキップ**: 選択したバージョンは以後提示されません（「スキップを解除」ボタンで取り消せます）
+- **リリースノート**: GitHub Releasesの該当ページをブラウザで開きます
+
+#### 設定項目
+- **プレリリースを含める**: オンにするとベータ版等のプレリリースも更新対象になります（既定オフ）
+- **最終チェック日時**: 直近の確認日時を表示します
+- **今すぐ確認**: 間隔を無視して即座に確認します
+- **スキップを解除**: 「このバージョンをスキップ」の指定を取り消します
+
+#### 適用方法の違い（インストーラー版 / ポータブル版）
+- **インストーラー版**（既定のProgram Filesインストール）: インストーラーを`/SILENT`モードでUAC昇格起動して上書き更新します。UACをキャンセルした場合は何も起こりません
+- **ポータブル版**（書き込み可能な場所へ展開して利用している場合）: 別プロセス`BrowserSelector.Updater.exe`がBrowserSelector本体の終了を待ってからファイルを置き換え、自動的に再起動します
+
+#### 手動確認の導線
+自動チェックを待たずに更新したい場合は、「設定」→「一般」→「今すぐ確認」を使用してください。何らかの理由で自動アップデートが機能しない場合は、従来どおり以下の手動手順でも入手できます。
 1. [GitHub Releases](https://github.com/Yosuke-Sh/BrowserSelector/releases)にアクセス
 2. 最新のインストーラーをダウンロード
 3. インストーラーを管理者権限で実行し、上書きインストール
 
 ### English
 
-**Automatic update functionality is not yet implemented.** Only the `IUpdateService` interface definition and a minimal service skeleton exist; GitHub Releases integration, downloading, installation, and rollback do not actually function yet. This feature is **planned for v0.3.0**.
+Starting with v0.3.0, BrowserSelector includes automatic updates integrated with GitHub Releases.
 
-For now, obtain the latest version manually:
+#### Automatic check behavior
+- Checks for a new version in the background 5 seconds after startup (timed to avoid interrupting the "launch → select browser" flow)
+- No check is performed if **Automatic Update Check** is off in Settings → General
+- No check is performed if the **Update Check Interval** (24 hours by default) has not elapsed since the last check
+- No check is performed when launched with `--silent` (the mode that skips the UI and launches the default browser directly)
+
+#### The three choices when an update is found
+A non-modal notification bar appears at the bottom of the main window (no dialog blocks interaction):
+- **Update Now**: Downloads, verifies integrity via SHA256, and applies the update. The app exits automatically once the apply process starts
+- **Next Launch**: Does nothing now; re-prompts immediately (ignoring the interval) on the next launch
+- **Skip This Version**: That version will not be offered again (can be reversed via "Clear Skipped Version")
+- **Release Notes**: Opens the corresponding GitHub Releases page in your browser
+
+#### Settings
+- **Include Prereleases**: When on, beta and other prerelease versions are also considered (off by default)
+- **Last Update Check**: Shows the timestamp of the most recent check
+- **Check Now**: Checks immediately, ignoring the interval
+- **Clear Skipped Version**: Reverses a "Skip This Version" selection
+
+#### Apply method differences (installer vs. portable)
+- **Installer install** (default, Program Files): Relaunches the installer in `/SILENT` mode with UAC elevation to overwrite-update. If UAC is canceled, nothing happens
+- **Portable install** (extracted to a writable location): A separate process, `BrowserSelector.Updater.exe`, waits for BrowserSelector to exit, replaces the files, and relaunches automatically
+
+#### Manual check
+To update without waiting for the automatic check, use Settings → General → **Check Now**. If automatic updates aren't working for some reason, you can still fall back to the manual steps:
 1. Visit [GitHub Releases](https://github.com/Yosuke-Sh/BrowserSelector/releases)
 2. Download the latest installer
 3. Run the installer with administrator privileges to overwrite-install
@@ -607,10 +657,30 @@ A: Can be uninstalled from Control Panel "Add or Remove Programs".
 ### Q: 自動アップデート機能はありますか？ / Q: Is there an automatic update feature?
 
 #### 日本語
-A: 現時点では未実装です（v0.3.0で実装予定）。最新版はGitHub Releasesから手動でダウンロードしてください。
+A: はい、v0.3.0から搭載しています。起動5秒後にバックグラウンドで確認し、更新があれば非モーダルの通知バーで提示します。詳細は[アップデート](#-アップデート--updates)章を参照してください。
 
 #### English
-A: Not yet implemented (planned for v0.3.0). Please download the latest version manually from GitHub Releases for now.
+A: Yes, since v0.3.0. It checks in the background 5 seconds after startup and, if an update is found, presents it via a non-modal notification bar. See the [Updates](#-アップデート--updates) section for details.
+
+### Q: アップデートが検出されない場合は？ / Q: What if an update isn't detected?
+
+#### 日本語
+A: 主な原因は次のいずれかです。
+- **GitHub APIのレート制限**: 未認証リクエストは1時間あたりの上限があります。時間を置いて「今すぐ確認」を試してください
+- **プレリリース設定**: 確認したいバージョンがプレリリース（ベータ等）の場合、設定の「プレリリースを含める」がオフだと対象外になります
+- **スキップ済み**: 「このバージョンをスキップ」を選択したバージョンは再提示されません。「スキップを解除」ボタンで解除できます
+- **自動更新チェックがオフ**: 設定の「自動更新チェック」がオフの場合は自動確認自体が行われません
+
+いずれの場合も、設定画面の「今すぐ確認」で手動確認できます。
+
+#### English
+A: The most common causes are:
+- **GitHub API rate limiting**: Unauthenticated requests have an hourly cap. Wait a while and try "Check Now"
+- **Prerelease setting**: If the version you're expecting is a prerelease (beta, etc.), it's excluded unless "Include Prereleases" is on
+- **Already skipped**: A version marked via "Skip This Version" won't be re-offered until you use "Clear Skipped Version"
+- **Automatic Update Check is off**: If this setting is off, no automatic check happens at all
+
+In any case, you can check manually via "Check Now" in Settings.
 
 ## 📞 サポート / Support
 

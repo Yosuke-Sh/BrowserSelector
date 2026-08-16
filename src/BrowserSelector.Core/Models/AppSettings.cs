@@ -96,5 +96,32 @@ namespace BrowserSelector.Core.Models
         /// </summary>
         [ObservableProperty]
         private bool _alwaysOnTop = true;
+
+        /// <summary>
+        /// Gets or sets 最後にアップデート確認を行った日時（Phase H-1）.
+        /// タイムゾーンをまたいでも間隔判定が壊れないようUTC固定で保存する. 未チェックの場合はnull.
+        /// </summary>
+        [ObservableProperty]
+        private DateTimeOffset? _lastUpdateCheckUtc;
+
+        /// <summary>
+        /// Gets or sets ユーザーが「このバージョンをスキップ」を選んだバージョン（Phase H-1）.
+        /// このバージョンは再提示しない. 空文字の場合はスキップ指定なし.
+        /// </summary>
+        [ObservableProperty]
+        private string _skippedUpdateVersion = string.Empty;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether プレリリースも更新対象に含めるか（Phase H-1）.
+        /// </summary>
+        [ObservableProperty]
+        private bool _includePrereleases;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether ユーザーが「次回起動時に更新」を選んだ状態かどうか（Phase H-1）.
+        /// trueの場合、次回起動時はUpdateCheckIntervalを無視して即座に確認する.
+        /// </summary>
+        [ObservableProperty]
+        private bool _updatePendingOnNextLaunch;
     }
 }

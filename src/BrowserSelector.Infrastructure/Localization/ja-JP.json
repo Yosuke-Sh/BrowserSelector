@@ -262,6 +262,26 @@
     "Settings.About.LicenseValue": "MIT License",
     "Settings.About.Repository": "GitHubリポジトリ",
     "Settings.About.Issues": "Issues",
-    "Settings.About.Releases": "リリース一覧"
+    "Settings.About.Releases": "リリース一覧",
+    "Settings.App.IncludePrereleases": "プレリリースを含める",
+    "Settings.App.LastUpdateCheck": "最終チェック日時",
+    "Settings.App.LastUpdateCheckNever": "未チェック",
+    "Settings.App.CheckNow": "今すぐ確認",
+    "Settings.App.Checking": "確認中...",
+    "Settings.App.UpToDate": "最新の状態です",
+    "Settings.App.UpdateFound": "新しいバージョン {0} が見つかりました",
+    "Settings.App.CheckFailed": "確認に失敗しました",
+    "Settings.App.ClearSkippedVersion": "スキップを解除",
+    "Update.Notification.Title": "アップデートが利用可能です",
+    "Update.Notification.Message": "新しいバージョン {0} が利用可能です",
+    "Update.Notification.UpdateNow": "今すぐ更新",
+    "Update.Notification.NextLaunch": "次回起動時",
+    "Update.Notification.Skip": "このバージョンをスキップ",
+    "Update.Notification.ReleaseNotes": "リリースノート",
+    "Update.Notification.Dismiss": "閉じる",
+    "Update.Progress.Downloading": "ダウンロード中...",
+    "Update.Progress.Verifying": "検証中...",
+    "Update.Error.ChecksumMismatch": "ファイルの検証に失敗しました。アップデートは適用されませんでした。",
+    "Update.Error.DownloadFailed": "アップデートのダウンロードに失敗しました。"
   }
 }

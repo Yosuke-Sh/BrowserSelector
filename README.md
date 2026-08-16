@@ -30,7 +30,7 @@
 - **URLルール管理**: 特定のURLパターンに対して自動的にブラウザを選択
 - **キーボード操作**: Esc/Enter/Space/矢印キー/Tab/ホットキーによる操作、Ctrl+,での設定画面呼び出し
 - **起動制御**: カウントダウン自動起動、トレイ常駐、CLIオプション（-d/-b/--silent/--auto-launch等）
-- **自動アップデート**: v0.3.0で実装予定（現状は`UpdateService`の骨格のみ実装済み）
+- **自動アップデート**: GitHub Releases連携、SHA256完全性検証、非モーダル通知UI
 
 ### 🚀 使用方法
 
@@ -179,11 +179,13 @@ dotnet build --configuration Release
 
 ## 🔄 自動アップデート
 
-自動アップデート機能は**v0.3.0で実装予定**です。現状は`IUpdateService`/`UpdateService`の骨格（インターフェース定義）のみが実装されており、以下の機能は未実装です：
-- 起動時の自動更新チェック
-- GitHub Releases API連携
-- セキュアな更新プロセス
-- ロールバック機能
+v0.3.0より、GitHub Releasesと連携した自動アップデート機能を搭載しています。
+- **起動時の自動更新チェック**: 起動5秒後にバックグラウンドで確認（起動速度に影響しない）
+- **完全性検証**: SHA256チェックサムによる検証。不一致の場合は適用せずファイルを削除
+- **2つの適用経路**: インストーラー版はUAC昇格インストーラー、ポータブル版は別プロセス`BrowserSelector.Updater.exe`による自己置換
+- **非モーダル通知**: メインウィンドウ下部のバーで「今すぐ更新」「次回起動時」「スキップ」「リリースノート」を選択可能
+
+詳細は[USER_MANUAL.md](docs/USER_MANUAL.md#-アップデート--updates)を参照してください。
 
 ## 📄 ライセンス
 
@@ -247,7 +249,7 @@ dotnet build --configuration Release
 - **URL Rule Management**: Automatically select browsers for specific URL patterns
 - **Keyboard Operation**: Esc/Enter/Space/arrow keys/Tab/hotkeys, Ctrl+, to open settings
 - **Startup Control**: Countdown auto-launch, tray residency, CLI options (-d/-b/--silent/--auto-launch, etc.)
-- **Automatic Updates**: Planned for v0.3.0 (only the `UpdateService` skeleton exists today)
+- **Automatic Updates**: GitHub Releases integration, SHA256 integrity verification, non-modal notification UI
 
 ### 🚀 Usage
 
@@ -324,11 +326,13 @@ dotnet test --collect:"XPlat Code Coverage"
 
 ### 🔄 Automatic Updates
 
-Automatic update functionality is **planned for v0.3.0**. Only the `IUpdateService`/`UpdateService` skeleton (interface definitions) exists today; the following are not yet implemented:
-- Automatic update check on startup
-- GitHub Releases API integration
-- Secure update process
-- Rollback functionality
+Since v0.3.0, BrowserSelector includes automatic updates integrated with GitHub Releases.
+- **Automatic check on startup**: Checked in the background 5 seconds after launch (does not affect startup speed)
+- **Integrity verification**: SHA256 checksum verification; mismatched downloads are rejected and deleted, never applied
+- **Two apply paths**: Installer installs are updated via a UAC-elevated installer; portable installs are self-replaced by a separate `BrowserSelector.Updater.exe` process
+- **Non-modal notification**: A bar at the bottom of the main window offers "Update Now", "Next Launch", "Skip", and "Release Notes"
+
+See [USER_MANUAL.md](docs/USER_MANUAL.md#-アップデート--updates) for details.
 
 ### 📄 License
 

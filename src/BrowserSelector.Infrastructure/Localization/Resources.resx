@@ -709,4 +709,64 @@
   <data name="Dialog.UrlRuleEdit.PriorityDescription" xml:space="preserve">
     <value>数値が大きいほど優先度が高くなります（0-100）</value>
   </data>
+  <data name="Settings.App.IncludePrereleases" xml:space="preserve">
+    <value>プレリリースを含める</value>
+  </data>
+  <data name="Settings.App.LastUpdateCheck" xml:space="preserve">
+    <value>最終チェック日時</value>
+  </data>
+  <data name="Settings.App.LastUpdateCheckNever" xml:space="preserve">
+    <value>未チェック</value>
+  </data>
+  <data name="Settings.App.CheckNow" xml:space="preserve">
+    <value>今すぐ確認</value>
+  </data>
+  <data name="Settings.App.Checking" xml:space="preserve">
+    <value>確認中...</value>
+  </data>
+  <data name="Settings.App.UpToDate" xml:space="preserve">
+    <value>最新の状態です</value>
+  </data>
+  <data name="Settings.App.UpdateFound" xml:space="preserve">
+    <value>新しいバージョン {0} が見つかりました</value>
+  </data>
+  <data name="Settings.App.CheckFailed" xml:space="preserve">
+    <value>確認に失敗しました</value>
+  </data>
+  <data name="Settings.App.ClearSkippedVersion" xml:space="preserve">
+    <value>スキップを解除</value>
+  </data>
+  <data name="Update.Notification.Title" xml:space="preserve">
+    <value>アップデートが利用可能です</value>
+  </data>
+  <data name="Update.Notification.Message" xml:space="preserve">
+    <value>新しいバージョン {0} が利用可能です</value>
+  </data>
+  <data name="Update.Notification.UpdateNow" xml:space="preserve">
+    <value>今すぐ更新</value>
+  </data>
+  <data name="Update.Notification.NextLaunch" xml:space="preserve">
+    <value>次回起動時</value>
+  </data>
+  <data name="Update.Notification.Skip" xml:space="preserve">
+    <value>このバージョンをスキップ</value>
+  </data>
+  <data name="Update.Notification.ReleaseNotes" xml:space="preserve">
+    <value>リリースノート</value>
+  </data>
+  <data name="Update.Notification.Dismiss" xml:space="preserve">
+    <value>閉じる</value>
+  </data>
+  <data name="Update.Progress.Downloading" xml:space="preserve">
+    <value>ダウンロード中...</value>
+  </data>
+  <data name="Update.Progress.Verifying" xml:space="preserve">
+    <value>検証中...</value>
+  </data>
+  <data name="Update.Error.ChecksumMismatch" xml:space="preserve">
+    <value>ファイルの検証に失敗しました。アップデートは適用されませんでした。</value>
+  </data>
+  <data name="Update.Error.DownloadFailed" xml:space="preserve">
+    <value>アップデートのダウンロードに失敗しました。</value>
+  </data>
 </root>

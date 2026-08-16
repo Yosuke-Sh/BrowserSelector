@@ -169,6 +169,60 @@
                                     <TextBox Grid.Column="1" Text="{Binding AppSettings.UpdateCheckInterval}"
                                              VerticalAlignment="Center" HorizontalAlignment="Right"/>
                                 </Grid>
+
+                                <!-- プレリリースを含める（Phase H-8） -->
+                                <Grid Style="{StaticResource SettingRowStyle}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{extensions:Localization Settings.App.IncludePrereleases}" VerticalAlignment="Center"/>
+                                    <CheckBox Grid.Column="1" IsChecked="{Binding AppSettings.IncludePrereleases}" HorizontalAlignment="Left" Margin="8,5,5,5"
+                                              AutomationProperties.Name="IncludePrereleasesCheckBox"/>
+                                </Grid>
+
+                                <!-- 最終チェック日時（Phase H-8） -->
+                                <Grid Style="{StaticResource SettingRowStyle}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{extensions:Localization Settings.App.LastUpdateCheck}" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding LastUpdateCheckDisplay}" VerticalAlignment="Center"
+                                               Foreground="{DynamicResource Brush.TextSecondary}"
+                                               AutomationProperties.Name="LastUpdateCheckTextBlock"/>
+                                </Grid>
+
+                                <!-- 今すぐ確認（Phase H-8） -->
+                                <Grid Style="{StaticResource SettingRowStyle}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding UpdateCheckStatusMessage}" VerticalAlignment="Center"
+                                               Foreground="{DynamicResource Brush.TextSecondary}"
+                                               TextTrimming="CharacterEllipsis"
+                                               AutomationProperties.Name="UpdateCheckStatusTextBlock"/>
+                                    <Button Grid.Column="1" Content="{extensions:Localization Settings.App.CheckNow}"
+                                            Command="{Binding CheckForUpdatesNowCommand}"
+                                            Padding="10,5" Margin="10,0,0,0"
+                                            AutomationProperties.Name="CheckForUpdatesNowButton"/>
+                                </Grid>
+
+                                <!-- スキップを解除（Phase H-8、SkippedUpdateVersionが設定されているときのみ表示） -->
+                                <Grid Style="{StaticResource SettingRowStyle}"
+                                      Visibility="{Binding HasSkippedUpdateVersion, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding AppSettings.SkippedUpdateVersion, StringFormat='v{0}'}" VerticalAlignment="Center"
+                                               Foreground="{DynamicResource Brush.TextSecondary}"/>
+                                    <Button Grid.Column="1" Content="{extensions:Localization Settings.App.ClearSkippedVersion}"
+                                            Command="{Binding ClearSkippedVersionCommand}"
+                                            Padding="10,5" Margin="10,0,0,0"
+                                            AutomationProperties.Name="ClearSkippedVersionButton"/>
+                                </Grid>
                             </StackPanel>
                         </GroupBox>
 

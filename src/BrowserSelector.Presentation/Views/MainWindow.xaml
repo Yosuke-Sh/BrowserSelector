@@ -242,16 +242,17 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <!-- 背景（ガラス効果無効時のフォールバック。有効時はWindow.Background=Transparentのまま） -->
-        <Border Grid.RowSpan="5"
+        <Border Grid.RowSpan="6"
                 Background="{Binding VisualSettings, Converter={StaticResource BackgroundBrushConverter}}"/>
 
         <!-- ハンバーガーメニュー（Phase E-3: タイトルバー非表示時の代替導線）。
              ShowTitleBar=falseの場合、CustomTitleBarRowの高さが0になり設定/最小化/閉じるボタンが操作不能になるため、
              常時表示されるオーバーレイとして右上に設定・最小化・閉じるへの導線を提供する。 -->
-        <Button Grid.Row="0" Grid.RowSpan="5"
+        <Button Grid.Row="0" Grid.RowSpan="6"
                 Style="{StaticResource TitleBarButtonStyle}"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
@@ -544,6 +545,86 @@
         <TextBlock Grid.Row="4"
                    Text="{Binding StatusMessage}"
                    Style="{StaticResource StatusTextStyle}"/>
+
+        <!--
+            更新通知バー（Phase H-9）。モーダルは出さず「起動→ブラウザ選択」の最短動線を阻害しない。
+            SizeToContent="WidthAndHeight"のためバー表示でウィンドウが伸びる → カウントダウン実行中は
+            IsCountdownActive==falseをAND条件にして非表示にする（MultiDataTriggerで判定）。
+            ダウンロード中はボタン群を隠しProgressBarを表示する。
+        -->
+        <Border Grid.Row="5"
+                BorderThickness="0,1,0,0"
+                BorderBrush="{DynamicResource Brush.Accent}"
+                Background="{DynamicResource Brush.SurfaceAlt}"
+                Padding="12,8"
+                AutomationProperties.Name="UpdateNotificationBar">
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding IsUpdateNotificationVisible}" Value="True"/>
+                                <Condition Binding="{Binding IsCountdownActive}" Value="False"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </MultiDataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- アイコン（Segoe MDL2 更新シンボル） -->
+                <TextBlock Grid.Column="0"
+                           Text="&#xE895;"
+                           FontFamily="Segoe MDL2 Assets"
+                           FontSize="16"
+                           Foreground="{DynamicResource Brush.Accent}"
+                           VerticalAlignment="Center"
+                           Margin="0,0,10,0"/>
+
+                <!-- メッセージ + ダウンロード中はProgressBar -->
+                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding UpdateNotificationMessage}"
+                               Foreground="{DynamicResource Brush.TextPrimary}"
+                               FontSize="12"
+                               TextTrimming="CharacterEllipsis"
+                               AutomationProperties.Name="UpdateNotificationMessageTextBlock"/>
+                    <ProgressBar Value="{Binding UpdateDownloadProgress, Mode=OneWay}"
+                                 Minimum="0" Maximum="100"
+                                 Height="4" Margin="0,4,0,0"
+                                 Visibility="{Binding IsUpdateDownloading, Converter={StaticResource BoolToVisibilityConverter}}"
+                                 AutomationProperties.Name="UpdateDownloadProgressBar"/>
+                </StackPanel>
+
+                <!-- ボタン群（ダウンロード中は非表示） -->
+                <StackPanel Grid.Column="2" Orientation="Horizontal"
+                            VerticalAlignment="Center"
+                            Visibility="{Binding IsUpdateDownloading, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Invert}">
+                    <Button Content="{extensions:Localization Update.Notification.ReleaseNotes}"
+                            Command="{Binding OpenUpdateReleaseNotesCommand}"
+                            Padding="8,4" Margin="0,0,6,0"
+                            AutomationProperties.Name="UpdateReleaseNotesButton"/>
+                    <Button Content="{extensions:Localization Update.Notification.UpdateNow}"
+                            Command="{Binding StartUpdateCommand}"
+                            Padding="8,4" Margin="0,0,6,0"
+                            AutomationProperties.Name="UpdateNowButton"/>
+                    <Button Content="{extensions:Localization Update.Notification.NextLaunch}"
+                            Command="{Binding DeferUpdateCommand}"
+                            Padding="8,4" Margin="0,0,6,0"
+                            AutomationProperties.Name="UpdateDeferButton"/>
+                    <Button Content="{extensions:Localization Update.Notification.Skip}"
+                            Command="{Binding SkipUpdateCommand}"
+                            Padding="8,4"
+                            AutomationProperties.Name="UpdateSkipButton"/>
+                </StackPanel>
+            </Grid>
+        </Border>
 
         <!-- ローディング表示 -->
         <Grid Grid.Row="3"
