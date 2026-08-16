@@ -69,21 +69,22 @@ public partial class MainViewModel
             Core.Models.UpdateChannel channel = _updateService.ResolveChannel();
             Progress<int> progress = new(p => UpdateDownloadProgress = p);
 
-            UpdateDownloadResult downloadResult = await _updateService.DownloadUpdateAsync(_pendingUpdate, channel, progress).ConfigureAwait(false);
+            // このメソッドはUIバインド対象のRelayCommandで、await後の継続でObservableProperty
+            // （UI状態）を更新するため、ConfigureAwait(false)は使わずUIスレッドの
+            // SynchronizationContextへの自動復帰に委ねる。バックグラウンドスレッドから
+            // Dispatcher.Invokeで戻す方式は、モーダルダイアログの入れ子メッセージループとの
+            // 組み合わせでスレッド検証に失敗する事例が実機で確認されたため採用しない。
+            UpdateDownloadResult downloadResult = await _updateService.DownloadUpdateAsync(_pendingUpdate, channel, progress).ConfigureAwait(true);
             if (!downloadResult.Success)
             {
                 _logService?.LogWarning($"アップデートのダウンロードに失敗しました: {downloadResult.Failure}", "MainViewModel");
-
-                // ConfigureAwait(false)によりここからの継続はUIスレッド以外で実行されている。
-                // ObservableProperty（バインディング対象）の更新は必ずUIスレッドへ戻してから行う。
-                UiThreadHelper.Invoke(() =>
-                    UpdateNotificationMessage = downloadResult.Failure == UpdateDownloadFailure.ChecksumMismatch
-                        ? LocalizedLogHelper.GetString("Update.Error.ChecksumMismatch")
-                        : LocalizedLogHelper.GetString("Update.Error.DownloadFailed"));
+                UpdateNotificationMessage = downloadResult.Failure == UpdateDownloadFailure.ChecksumMismatch
+                    ? LocalizedLogHelper.GetString("Update.Error.ChecksumMismatch")
+                    : LocalizedLogHelper.GetString("Update.Error.DownloadFailed");
                 return;
             }
 
-            bool applied = await _updateService.ApplyUpdateAsync(_pendingUpdate).ConfigureAwait(false);
+            bool applied = await _updateService.ApplyUpdateAsync(_pendingUpdate).ConfigureAwait(true);
             if (applied)
             {
                 _logService?.LogInformation("アップデート適用プロセスを起動しました。アプリケーションを終了します。", "MainViewModel");
@@ -100,13 +101,12 @@ public partial class MainViewModel
         catch (Exception ex)
         {
             _logService?.LogError($"アップデート適用中にエラーが発生しました: {ex.Message}", "MainViewModel", ex);
-            UiThreadHelper.Invoke(() =>
-                UpdateNotificationMessage = LocalizedLogHelper.GetString("Update.Error.DownloadFailed"));
+            UpdateNotificationMessage = LocalizedLogHelper.GetString("Update.Error.DownloadFailed");
         }
 #pragma warning restore CA1031
         finally
         {
-            UiThreadHelper.Invoke(() => IsUpdateDownloading = false);
+            IsUpdateDownloading = false;
         }
     }
 
@@ -118,9 +118,9 @@ public partial class MainViewModel
     {
         try
         {
-            AppSettings appSettings = await _settingsService.LoadAppSettingsAsync().ConfigureAwait(false);
+            AppSettings appSettings = await _settingsService.LoadAppSettingsAsync().ConfigureAwait(true);
             appSettings.UpdatePendingOnNextLaunch = true;
-            _ = await _settingsService.SaveAppSettingsAsync(appSettings).ConfigureAwait(false);
+            _ = await _settingsService.SaveAppSettingsAsync(appSettings).ConfigureAwait(true);
         }
         // CA1031: RelayCommandハンドラーの最上位try-catch。設定保存の失敗で通知バーを閉じる操作自体を
         // 妨げないようにするための意図的な汎用catch。
@@ -132,8 +132,7 @@ public partial class MainViewModel
 #pragma warning restore CA1031
         finally
         {
-            // ConfigureAwait(false)によりここまでの継続はUIスレッド以外で実行されている。
-            UiThreadHelper.Invoke(() => IsUpdateNotificationVisible = false);
+            IsUpdateNotificationVisible = false;
         }
     }
 
@@ -147,9 +146,9 @@ public partial class MainViewModel
         {
             if (_pendingUpdate != null)
             {
-                AppSettings appSettings = await _settingsService.LoadAppSettingsAsync().ConfigureAwait(false);
+                AppSettings appSettings = await _settingsService.LoadAppSettingsAsync().ConfigureAwait(true);
                 appSettings.SkippedUpdateVersion = _pendingUpdate.TagName;
-                _ = await _settingsService.SaveAppSettingsAsync(appSettings).ConfigureAwait(false);
+                _ = await _settingsService.SaveAppSettingsAsync(appSettings).ConfigureAwait(true);
             }
         }
         // CA1031: RelayCommandハンドラーの最上位try-catch。設定保存の失敗で通知バーを閉じる操作自体を
@@ -162,8 +161,7 @@ public partial class MainViewModel
 #pragma warning restore CA1031
         finally
         {
-            // ConfigureAwait(false)によりここまでの継続はUIスレッド以外で実行されている。
-            UiThreadHelper.Invoke(() => IsUpdateNotificationVisible = false);
+            IsUpdateNotificationVisible = false;
         }
     }
 
@@ -180,7 +178,7 @@ public partial class MainViewModel
 
         try
         {
-            _ = await _externalLinkService.OpenAsync(_pendingUpdate.ReleasePageUrl).ConfigureAwait(false);
+            _ = await _externalLinkService.OpenAsync(_pendingUpdate.ReleasePageUrl).ConfigureAwait(true);
         }
         // CA1031: RelayCommandハンドラーの最上位try-catch。ブラウザ起動処理は例外種別が多岐にわたり、
         // UIスレッドをクラッシュさせないための意図的な汎用catch。

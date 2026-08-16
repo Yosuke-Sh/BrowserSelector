@@ -54,34 +54,33 @@ public partial class SettingsViewModel
 
         try
         {
-            UpdateInfo? updateInfo = await _updateService.CheckForUpdatesAsync().ConfigureAwait(false);
+            // このメソッドはUIバインド対象のRelayCommandで、await後の継続でObservableProperty
+            // （UI状態）を更新するため、ConfigureAwait(false)は使わずUIスレッドの
+            // SynchronizationContextへの自動復帰に委ねる。バックグラウンドスレッドから
+            // Dispatcher.Invokeで戻す方式は、モーダルダイアログの入れ子メッセージループとの
+            // 組み合わせでスレッド検証に失敗する事例が実機で確認されたため採用しない。
+            UpdateInfo? updateInfo = await _updateService.CheckForUpdatesAsync().ConfigureAwait(true);
 
             AppSettings.LastUpdateCheckUtc = DateTimeOffset.UtcNow;
-            _ = await _settingsService.SaveAppSettingsAsync(AppSettings).ConfigureAwait(false);
+            _ = await _settingsService.SaveAppSettingsAsync(AppSettings).ConfigureAwait(true);
+            OnPropertyChanged(nameof(LastUpdateCheckDisplay));
 
-            // ConfigureAwait(false)によりここまでの継続はUIスレッド以外で実行されている。
-            // ObservableProperty（バインディング対象）の更新は必ずUIスレッドへ戻してから行う。
-            UiThreadHelper.Invoke(() =>
-            {
-                OnPropertyChanged(nameof(LastUpdateCheckDisplay));
-                UpdateCheckStatusMessage = updateInfo != null
-                    ? LocalizedLogHelper.GetString("Settings.App.UpdateFound", updateInfo.TagName)
-                    : LocalizedLogHelper.GetString("Settings.App.UpToDate");
-            });
+            UpdateCheckStatusMessage = updateInfo != null
+                ? LocalizedLogHelper.GetString("Settings.App.UpdateFound", updateInfo.TagName)
+                : LocalizedLogHelper.GetString("Settings.App.UpToDate");
         }
         // CA1031: RelayCommandハンドラーの最上位try-catch。ネットワーク呼び出しは例外種別が多岐にわたり、
         // UIスレッドをクラッシュさせないための意図的な汎用catch。
 #pragma warning disable CA1031
         catch (Exception ex)
         {
-            UiThreadHelper.Invoke(() =>
-                UpdateCheckStatusMessage = LocalizedLogHelper.GetString("Settings.App.CheckFailed"));
+            UpdateCheckStatusMessage = LocalizedLogHelper.GetString("Settings.App.CheckFailed");
             LogService?.LogError($"アップデート確認エラー: {ex.Message}", "SettingsViewModel", ex);
         }
 #pragma warning restore CA1031
         finally
         {
-            UiThreadHelper.Invoke(() => IsCheckingForUpdates = false);
+            IsCheckingForUpdates = false;
         }
     }
 
@@ -100,6 +99,6 @@ public partial class SettingsViewModel
     {
         AppSettings.SkippedUpdateVersion = string.Empty;
         OnPropertyChanged(nameof(HasSkippedUpdateVersion));
-        _ = await _settingsService.SaveAppSettingsAsync(AppSettings).ConfigureAwait(false);
+        _ = await _settingsService.SaveAppSettingsAsync(AppSettings).ConfigureAwait(true);
     }
 }
