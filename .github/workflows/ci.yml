@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, developer ]
+    branches: [ master, developer ]
   pull_request:
-    branches: [ main, developer ]
+    branches: [ master, developer ]
 
 env:
   DOTNET_VERSION: '10.0.x'
@@ -81,7 +81,7 @@ jobs:
   release-prep:
     runs-on: windows-latest
     needs: build-and-test
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
     
     steps:
     - name: Checkout code

@@ -206,9 +206,9 @@ dotnet build --configuration Release
 - ドキュメント: 変更には適切なドキュメント更新
 
 ### ブランチ戦略（簡易）
-- ブランチ: `main`（安定版）、`developer`（統合）、`feature/*`、`hotfix/*`、`release/*`
-- フロー: `feature/*` → `developer` → `release/*` → `main`
-- ルール: `main`/`developer`はPR必須・直接プッシュ禁止
+- ブランチ: `master`（安定版）、`developer`（統合）、`feature/*`、`hotfix/*`、`release/*`
+- フロー: `feature/*` → `developer` → `release/*` → `master`
+- ルール: `master`/`developer`はPR必須・直接プッシュ禁止
 
 ## 📞 サポート
 
@@ -351,9 +351,9 @@ Pull requests and issue reports are welcome.
 - Documentation: Update documentation for changes
 
 #### Branch Strategy (Quick)
-- Branches: `main` (stable), `developer` (integration), `feature/*`, `hotfix/*`, `release/*`
-- Flow: `feature/*` → `developer` → `release/*` → `main`
-- Rules: PR required, no direct push to `main`/`developer`
+- Branches: `master` (stable), `developer` (integration), `feature/*`, `hotfix/*`, `release/*`
+- Flow: `feature/*` → `developer` → `release/*` → `master`
+- Rules: PR required, no direct push to `master`/`developer`
 
 ### 📞 Support
 

@@ -58,7 +58,7 @@ This project adheres to a code of conduct. By participating, you are expected to
 
 ### Branch Strategy
 
-- **main**: Production-ready code
+- **master**: Production-ready code (GitHub default branch)
 - **developer**: Integration branch for development
 - **feature/***: Feature development branches
 - **hotfix/***: Critical bug fixes

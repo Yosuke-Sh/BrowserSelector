@@ -2,9 +2,9 @@ name: Code Quality
 
 on:
   push:
-    branches: [ main, developer ]
+    branches: [ master, developer ]
   pull_request:
-    branches: [ main, developer ]
+    branches: [ master, developer ]
 
 env:
   DOTNET_VERSION: '10.0.x'

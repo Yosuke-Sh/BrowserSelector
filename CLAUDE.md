@@ -64,13 +64,13 @@ dotnet test
 
 ## ブランチ戦略（GitHub Flow）
 
-- `main`: 本番リリース用（保護、PR必須）
+- `master`: 本番リリース用（GitHub上のデフォルトブランチ、保護、PR必須）
 - `developer`: 開発統合用（保護、PR推奨）— **現在のデフォルト作業ブランチ**
 - `feature/*`: 機能開発（自由にpush可、developerへはPR必須）
 - `hotfix/*`: 緊急修正
 - `release/*`: リリース準備
 
-フロー: `feature/*` → `developer` → `release/*` → `main`
+フロー: `feature/*` → `developer` → `release/*` → `master`
 
 ## 開発の進め方
 
