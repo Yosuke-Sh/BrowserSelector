@@ -58,24 +58,30 @@ public partial class SettingsViewModel
 
             AppSettings.LastUpdateCheckUtc = DateTimeOffset.UtcNow;
             _ = await _settingsService.SaveAppSettingsAsync(AppSettings).ConfigureAwait(false);
-            OnPropertyChanged(nameof(LastUpdateCheckDisplay));
 
-            UpdateCheckStatusMessage = updateInfo != null
-                ? LocalizedLogHelper.GetString("Settings.App.UpdateFound", updateInfo.TagName)
-                : LocalizedLogHelper.GetString("Settings.App.UpToDate");
+            // ConfigureAwait(false)によりここまでの継続はUIスレッド以外で実行されている。
+            // ObservableProperty（バインディング対象）の更新は必ずUIスレッドへ戻してから行う。
+            UiThreadHelper.Invoke(() =>
+            {
+                OnPropertyChanged(nameof(LastUpdateCheckDisplay));
+                UpdateCheckStatusMessage = updateInfo != null
+                    ? LocalizedLogHelper.GetString("Settings.App.UpdateFound", updateInfo.TagName)
+                    : LocalizedLogHelper.GetString("Settings.App.UpToDate");
+            });
         }
         // CA1031: RelayCommandハンドラーの最上位try-catch。ネットワーク呼び出しは例外種別が多岐にわたり、
         // UIスレッドをクラッシュさせないための意図的な汎用catch。
 #pragma warning disable CA1031
         catch (Exception ex)
         {
-            UpdateCheckStatusMessage = LocalizedLogHelper.GetString("Settings.App.CheckFailed");
+            UiThreadHelper.Invoke(() =>
+                UpdateCheckStatusMessage = LocalizedLogHelper.GetString("Settings.App.CheckFailed"));
             LogService?.LogError($"アップデート確認エラー: {ex.Message}", "SettingsViewModel", ex);
         }
 #pragma warning restore CA1031
         finally
         {
-            IsCheckingForUpdates = false;
+            UiThreadHelper.Invoke(() => IsCheckingForUpdates = false);
         }
     }
 

@@ -73,9 +73,13 @@ public partial class MainViewModel
             if (!downloadResult.Success)
             {
                 _logService?.LogWarning($"アップデートのダウンロードに失敗しました: {downloadResult.Failure}", "MainViewModel");
-                UpdateNotificationMessage = downloadResult.Failure == UpdateDownloadFailure.ChecksumMismatch
-                    ? LocalizedLogHelper.GetString("Update.Error.ChecksumMismatch")
-                    : LocalizedLogHelper.GetString("Update.Error.DownloadFailed");
+
+                // ConfigureAwait(false)によりここからの継続はUIスレッド以外で実行されている。
+                // ObservableProperty（バインディング対象）の更新は必ずUIスレッドへ戻してから行う。
+                UiThreadHelper.Invoke(() =>
+                    UpdateNotificationMessage = downloadResult.Failure == UpdateDownloadFailure.ChecksumMismatch
+                        ? LocalizedLogHelper.GetString("Update.Error.ChecksumMismatch")
+                        : LocalizedLogHelper.GetString("Update.Error.DownloadFailed"));
                 return;
             }
 
@@ -96,12 +100,13 @@ public partial class MainViewModel
         catch (Exception ex)
         {
             _logService?.LogError($"アップデート適用中にエラーが発生しました: {ex.Message}", "MainViewModel", ex);
-            UpdateNotificationMessage = LocalizedLogHelper.GetString("Update.Error.DownloadFailed");
+            UiThreadHelper.Invoke(() =>
+                UpdateNotificationMessage = LocalizedLogHelper.GetString("Update.Error.DownloadFailed"));
         }
 #pragma warning restore CA1031
         finally
         {
-            IsUpdateDownloading = false;
+            UiThreadHelper.Invoke(() => IsUpdateDownloading = false);
         }
     }
 
@@ -127,7 +132,8 @@ public partial class MainViewModel
 #pragma warning restore CA1031
         finally
         {
-            IsUpdateNotificationVisible = false;
+            // ConfigureAwait(false)によりここまでの継続はUIスレッド以外で実行されている。
+            UiThreadHelper.Invoke(() => IsUpdateNotificationVisible = false);
         }
     }
 
@@ -156,7 +162,8 @@ public partial class MainViewModel
 #pragma warning restore CA1031
         finally
         {
-            IsUpdateNotificationVisible = false;
+            // ConfigureAwait(false)によりここまでの継続はUIスレッド以外で実行されている。
+            UiThreadHelper.Invoke(() => IsUpdateNotificationVisible = false);
         }
     }
 
