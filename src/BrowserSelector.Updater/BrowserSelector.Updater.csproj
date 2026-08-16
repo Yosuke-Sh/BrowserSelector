@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- OutputTypeはWinExeではなくExe。コンソール出力をそのままログに使うため。 -->
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UseWPF>false</UseWPF>
+    <UseWindowsForms>false</UseWindowsForms>
+    <SelfContained>false</SelfContained>
+    <AssemblyName>BrowserSelector.Updater</AssemblyName>
+    <RootNamespace>BrowserSelector.Updater</RootNamespace>
+    <!-- CA1303: Updaterは非ローカライズ設計（ILocalizationServiceを参照できないため）。
+         ログ・コンソール出力はすべてリテラルで持つ。 -->
+    <!-- SA0001: GenerateDocumentationFileを有効にしていないため常時出る。Core/Infrastructureと同じ扱い。 -->
+    <NoWarn>$(NoWarn);CA1303;SA0001</NoWarn>
+    <DebugSymbols Condition="'$(Configuration)' == 'Release'">false</DebugSymbols>
+    <DebugType Condition="'$(Configuration)' == 'Release'">none</DebugType>
+  </PropertyGroup>
+
+  <!-- ProjectReference / PackageReference は意図的にゼロ。
+       Core/Infrastructure のDLLはまさに置換対象であり、Updaterがロードしていると
+       ファイルロックで置換が失敗する。定数の重複はコメントで意図を明示して許容する。 -->
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="BrowserSelector.UpdaterTests" />
+  </ItemGroup>
+
+</Project>
