@@ -189,8 +189,10 @@ public partial class SettingsViewModel : ObservableObject
         LogService = logService;
         _externalLinkService = externalLinkService;
 
-        // 初期化処理
-        _ = Task.Run(InitializeInternal);
+        // 初期化処理（完了をInitializationTaskで外部から待機可能にする。
+        // テストがコンストラクタ直後にコマンドを実行すると、この非同期初期化と
+        // 競合しAppSettings/VisualSettingsが未読み込みのまま操作されうるため）
+        InitializationTask = Task.Run(InitializeInternal);
     }
 
     /// <summary>
@@ -202,6 +204,11 @@ public partial class SettingsViewModel : ObservableObject
     /// ブラウザ変更イベント.
     /// </summary>
     public event EventHandler<BrowserChangedEventArgs>? BrowserChanged;
+
+    /// <summary>
+    /// コンストラクタで開始したバックグラウンド初期化処理の完了を表す<see cref="Task"/>（テスト用）.
+    /// </summary>
+    public Task InitializationTask { get; }
 
     /// <summary>
     /// Gets the custom language service.
@@ -218,7 +225,7 @@ public partial class SettingsViewModel : ObservableObject
     /// </summary>
     public Task InitializeAsync()
     {
-        return Task.Run(() => InitializeInternal());
+        return Task.Run(InitializeInternal);
     }
 
     /// <summary>
@@ -260,7 +267,7 @@ public partial class SettingsViewModel : ObservableObject
     /// <summary>
     /// 初期化処理.
     /// </summary>
-    private async void InitializeInternal()
+    private async Task InitializeInternal()
     {
         try
         {
@@ -308,7 +315,7 @@ public partial class SettingsViewModel : ObservableObject
             LogService?.LogDebug($"VisualSettings読み込み完了: BackgroundColor={VisualSettings.BackgroundColor}, UseBackgroundGradient={VisualSettings.UseBackgroundGradient}, GradientDirection={VisualSettings.GradientDirection}", "SettingsViewModel");
 
             // 言語リストを初期化
-            InitializeLanguages();
+            await InitializeLanguagesAsync().ConfigureAwait(false);
             LogService?.LogDebug("言語リスト初期化完了", "SettingsViewModel");
 
             // ブラウザリストを更新
@@ -328,7 +335,7 @@ public partial class SettingsViewModel : ObservableObject
             LogService?.LogDebug("ログ設定読み込み完了", "SettingsViewModel");
 
             // 言語リストを初期化
-            InitializeLanguages();
+            await InitializeLanguagesAsync().ConfigureAwait(false);
 
             // プロパティ変更イベントを監視
             PropertyChanged += OnPropertyChanged;
@@ -346,15 +353,7 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     /// <summary>
-    /// 言語リストを初期化（同期版）.
-    /// </summary>
-    private void InitializeLanguages()
-    {
-        _ = Task.Run(InitializeLanguagesAsync);
-    }
-
-    /// <summary>
-    /// 言語リストを初期化（非同期版）.
+    /// 言語リストを初期化.
     /// </summary>
     private async Task InitializeLanguagesAsync()
     {

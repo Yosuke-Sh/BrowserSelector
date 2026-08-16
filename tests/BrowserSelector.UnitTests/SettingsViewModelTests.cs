@@ -56,6 +56,10 @@ public class SettingsViewModelTests
             .Setup(x => x.GetAllRulesAsync())
             .ReturnsAsync([]);
 
+        _ = _mockSettingsService
+            .Setup(x => x.LoadLogSettingsAsync())
+            .ReturnsAsync(new LogSettings());
+
         // カスタム言語サービスのモック設定
         _ = _mockCustomLanguageService
             .Setup(x => x.GetAvailableLanguagesAsync())
@@ -257,6 +261,11 @@ public class SettingsViewModelTests
         _ = _mockSettingsService
             .Setup(x => x.SaveVisualSettingsAsync(It.IsAny<VisualSettings>()))
             .ReturnsAsync(true);
+
+        // コンストラクタが起動したバックグラウンド初期化の完了を待ってから操作する。
+        // 待たずに実行するとCI環境ではタイミング次第で初期化未完了のまま
+        // SaveSettingsが呼ばれ、稀に失敗するフレーキーテストになっていた。
+        await _viewModel.InitializationTask;
 
         // Act
         await _viewModel.SaveSettingsCommand.ExecuteAsync(null);
