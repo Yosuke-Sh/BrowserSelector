@@ -85,8 +85,24 @@ dotnet test
 - [CHANGELOG.md](CHANGELOG.md) — Keep a Changelog形式のリリース履歴とロードマップ
 - [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) — 貢献ガイド、PRテンプレート、コーディング規約
 - [docs/API.md](docs/API.md), [docs/USER_MANUAL.md](docs/USER_MANUAL.md), [docs/RELEASE_NOTES_v0.1.0.md](docs/RELEASE_NOTES_v0.1.0.md)
+- [GitHub Wiki](https://github.com/Yosuke-Sh/BrowserSelector/wiki) — `docs/USER_MANUAL.md` の内容をエンドユーザー向けに公開したもの。実体は別リポジトリ（`https://github.com/Yosuke-Sh/BrowserSelector.wiki.git`）で、`git clone` して編集・pushする。**バージョンを追従させる責任はリポジトリ側にあり、放置すると自動では同期されない**
 
 ドキュメントを更新する際は、機能追加・仕様変更の内容に応じて README.md / PROJECT_STATUS_AND_PLAN.md / CHANGELOG.md の該当箇所を揃えて更新すること（状況の食い違いを防ぐため）。
+
+## リリース手順
+
+`developer` → `master` へのマージが完了し、リリースタグ（`vX.Y.Z`）をpushする際は、以下を漏れなく実施する。
+
+1. `docs/USER_MANUAL.md` を最新の機能・設定項目に更新する（README.md / PROJECT_STATUS_AND_PLAN.md / CHANGELOG.md と同様、リリースのたびに内容が古びやすい）
+2. **GitHub Wikiを更新する**（`docs/USER_MANUAL.md` の内容を反映）:
+   ```bash
+   git clone https://github.com/Yosuke-Sh/BrowserSelector.wiki.git
+   # Home.md を docs/USER_MANUAL.md ベースで更新（Wiki内リンクはリポジトリへの絶対URLに変換すること）
+   git add Home.md && git commit -m "..." && git push
+   ```
+3. `vX.Y.Z` タグをpushし、`.github/workflows/release.yml` の完走を確認する（インストーラー・ポータブルZIP・SHA256SUMS.txtがGitHub Releaseに添付されること）
+
+過去にWiki更新が抜け落ち、v0.1.0時代の内容（.NET 8.0前提、未実装の自動アップデート機能を実装済みと誤記）のまま放置された実績があるため、**タグpush前のチェックリストとして必ず参照すること**。
 
 ## サブエージェント
 
