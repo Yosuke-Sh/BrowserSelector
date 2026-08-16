@@ -9,6 +9,9 @@ env:
   DOTNET_VERSION: '10.0.x'
   APP_PROJECT: 'src/BrowserSelector.App/BrowserSelector.App.csproj'
 
+permissions:
+  contents: write
+
 jobs:
   release:
     runs-on: windows-latest
