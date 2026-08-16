@@ -256,6 +256,26 @@
     "Settings.About.LicenseValue": "MIT License",
     "Settings.About.Repository": "GitHub Repository",
     "Settings.About.Issues": "Issues",
-    "Settings.About.Releases": "Releases"
+    "Settings.About.Releases": "Releases",
+    "Settings.App.IncludePrereleases": "Include prereleases",
+    "Settings.App.LastUpdateCheck": "Last checked",
+    "Settings.App.LastUpdateCheckNever": "Never checked",
+    "Settings.App.CheckNow": "Check now",
+    "Settings.App.Checking": "Checking...",
+    "Settings.App.UpToDate": "You're up to date",
+    "Settings.App.UpdateFound": "New version {0} is available",
+    "Settings.App.CheckFailed": "Check failed",
+    "Settings.App.ClearSkippedVersion": "Clear skipped version",
+    "Update.Notification.Title": "Update available",
+    "Update.Notification.Message": "Version {0} is available",
+    "Update.Notification.UpdateNow": "Update now",
+    "Update.Notification.NextLaunch": "Next launch",
+    "Update.Notification.Skip": "Skip this version",
+    "Update.Notification.ReleaseNotes": "Release notes",
+    "Update.Notification.Dismiss": "Dismiss",
+    "Update.Progress.Downloading": "Downloading...",
+    "Update.Progress.Verifying": "Verifying...",
+    "Update.Error.ChecksumMismatch": "File verification failed. The update was not applied.",
+    "Update.Error.DownloadFailed": "Failed to download the update."
   }
 }

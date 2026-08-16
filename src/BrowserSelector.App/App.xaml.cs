@@ -160,6 +160,10 @@ public partial class App : System.Windows.Application
                 mainViewModel = _host.Services.GetRequiredService<MainViewModel>();
                 _mainViewModel = mainViewModel;
 
+                // Phase H-9: 更新適用後のシャットダウン要求をUIスレッドへディスパッチする。
+                // MainViewModelから直接Application.Current.Shutdown()を呼ばせないのはテスト容易性のため。
+                mainViewModel.ShutdownRequested += (_, _) => Dispatcher.Invoke(Shutdown);
+
                 _logService?.LogDetailed(LogLevel.Debug, "DIコンテナからMainViewModel取得完了", "App",
                                       "MVVM_CREATE", "ViewModel", "System", "MainViewModel", "Resolve", "Success");
 

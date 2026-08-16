@@ -709,4 +709,64 @@
   <data name="Dialog.UrlRuleEdit.PriorityDescription" xml:space="preserve">
     <value>Higher numbers have higher priority (0-100)</value>
   </data>
+  <data name="Settings.App.IncludePrereleases" xml:space="preserve">
+    <value>Include prereleases</value>
+  </data>
+  <data name="Settings.App.LastUpdateCheck" xml:space="preserve">
+    <value>Last checked</value>
+  </data>
+  <data name="Settings.App.LastUpdateCheckNever" xml:space="preserve">
+    <value>Never checked</value>
+  </data>
+  <data name="Settings.App.CheckNow" xml:space="preserve">
+    <value>Check now</value>
+  </data>
+  <data name="Settings.App.Checking" xml:space="preserve">
+    <value>Checking...</value>
+  </data>
+  <data name="Settings.App.UpToDate" xml:space="preserve">
+    <value>You're up to date</value>
+  </data>
+  <data name="Settings.App.UpdateFound" xml:space="preserve">
+    <value>New version {0} is available</value>
+  </data>
+  <data name="Settings.App.CheckFailed" xml:space="preserve">
+    <value>Check failed</value>
+  </data>
+  <data name="Settings.App.ClearSkippedVersion" xml:space="preserve">
+    <value>Clear skipped version</value>
+  </data>
+  <data name="Update.Notification.Title" xml:space="preserve">
+    <value>Update available</value>
+  </data>
+  <data name="Update.Notification.Message" xml:space="preserve">
+    <value>Version {0} is available</value>
+  </data>
+  <data name="Update.Notification.UpdateNow" xml:space="preserve">
+    <value>Update now</value>
+  </data>
+  <data name="Update.Notification.NextLaunch" xml:space="preserve">
+    <value>Next launch</value>
+  </data>
+  <data name="Update.Notification.Skip" xml:space="preserve">
+    <value>Skip this version</value>
+  </data>
+  <data name="Update.Notification.ReleaseNotes" xml:space="preserve">
+    <value>Release notes</value>
+  </data>
+  <data name="Update.Notification.Dismiss" xml:space="preserve">
+    <value>Dismiss</value>
+  </data>
+  <data name="Update.Progress.Downloading" xml:space="preserve">
+    <value>Downloading...</value>
+  </data>
+  <data name="Update.Progress.Verifying" xml:space="preserve">
+    <value>Verifying...</value>
+  </data>
+  <data name="Update.Error.ChecksumMismatch" xml:space="preserve">
+    <value>File verification failed. The update was not applied.</value>
+  </data>
+  <data name="Update.Error.DownloadFailed" xml:space="preserve">
+    <value>Failed to download the update.</value>
+  </data>
 </root>
