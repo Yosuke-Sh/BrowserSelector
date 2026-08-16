@@ -34,4 +34,9 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <!-- UnitTestsからSettingsServiceのテスト専用コンストラクタ（設定ディレクトリ注入）へのアクセスを許可 -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="BrowserSelector.UnitTests" />
+  </ItemGroup>
+
 </Project>

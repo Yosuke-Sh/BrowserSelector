@@ -23,13 +23,22 @@ public class SettingsService : ISettingsService
     /// </summary>
     /// <param name="logService">logService.</param>
     public SettingsService(ILogService? logService = null)
+        : this(
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BrowserSelector"),
+            logService)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SettingsService"/> class with an explicit settings directory.
+    /// テストが実際の%AppData%と競合しないよう、専用の一時ディレクトリを指定できるようにするためのテスト専用コンストラクタ.
+    /// </summary>
+    /// <param name="settingsDirectory">設定ファイル群を保存するディレクトリ.</param>
+    /// <param name="logService">logService.</param>
+    internal SettingsService(string settingsDirectory, ILogService? logService = null)
     {
         _logService = logService;
-
-        // ユーザーのアプリケーションデータフォルダに設定を保存
-        _settingsDirectory = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "BrowserSelector");
+        _settingsDirectory = settingsDirectory;
 
         // 設定ディレクトリが存在しない場合は作成
         if (!Directory.Exists(_settingsDirectory))

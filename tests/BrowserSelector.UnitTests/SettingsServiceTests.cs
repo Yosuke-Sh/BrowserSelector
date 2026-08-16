@@ -19,8 +19,8 @@ public class SettingsServiceTests
         _testDirectory = Path.Combine(Path.GetTempPath(), "BrowserSelectorTests", Guid.NewGuid().ToString());
         _ = Directory.CreateDirectory(_testDirectory);
 
-        // テスト用のSettingsServiceを作成（ログサービスなし）
-        _settingsService = new SettingsService(null);
+        // テスト用のSettingsServiceを作成（実際の%AppData%と競合しないよう専用ディレクトリを注入、ログサービスなし）
+        _settingsService = new SettingsService(Path.Combine(_testDirectory, "settings"), null);
     }
 
 
