@@ -35,8 +35,12 @@
   </ItemGroup>
 
   <!-- UnitTestsからSettingsServiceのテスト専用コンストラクタ（設定ディレクトリ注入）へのアクセスを許可 -->
+  <!-- InfrastructureTests/SecurityTestsからは、GitHub APIマッピング層（Phase H-2）と
+       ホスト検証（H-3）のinternal型をテストするために許可する -->
   <ItemGroup>
     <InternalsVisibleTo Include="BrowserSelector.UnitTests" />
+    <InternalsVisibleTo Include="BrowserSelector.InfrastructureTests" />
+    <InternalsVisibleTo Include="BrowserSelector.SecurityTests" />
   </ItemGroup>
 
 </Project>
