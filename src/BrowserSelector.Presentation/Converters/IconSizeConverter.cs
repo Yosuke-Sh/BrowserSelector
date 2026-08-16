@@ -12,6 +12,7 @@ public class IconSizeConverter : IMultiValueConverter
     /// <inheritdoc/>
     public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
     {
+        ArgumentNullException.ThrowIfNull(values);
         if (values.Length < 2 || values[0] is not double baseSize || values[1] is not bool showBrowserName)
         {
             return 32.0; // デフォルトサイズ

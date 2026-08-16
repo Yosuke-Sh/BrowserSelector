@@ -159,11 +159,14 @@ public static class LocalizedMessageBox
 
             return isTest;
         }
+        // CA1031: リフレクション/環境判定処理はSecurityException等の予測困難な例外を返しうるため、安全側にフォールバックするための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch
         {
             // エラーが発生した場合は安全側に倒してテスト環境と判定
             return true;
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>
@@ -199,9 +202,12 @@ public static class LocalizedMessageBox
             }
             return false;
         }
+        // CA1031: リフレクション/環境判定処理はSecurityException等の予測困難な例外を返しうるため、安全側にフォールバックするための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch
         {
             return false;
         }
+        #pragma warning restore CA1031
     }
 }

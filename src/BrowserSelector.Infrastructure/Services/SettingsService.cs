@@ -23,13 +23,22 @@ public class SettingsService : ISettingsService
     /// </summary>
     /// <param name="logService">logService.</param>
     public SettingsService(ILogService? logService = null)
+        : this(
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BrowserSelector"),
+            logService)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SettingsService"/> class with an explicit settings directory.
+    /// テストが実際の%AppData%と競合しないよう、専用の一時ディレクトリを指定できるようにするためのテスト専用コンストラクタ.
+    /// </summary>
+    /// <param name="settingsDirectory">設定ファイル群を保存するディレクトリ.</param>
+    /// <param name="logService">logService.</param>
+    internal SettingsService(string settingsDirectory, ILogService? logService = null)
     {
         _logService = logService;
-
-        // ユーザーのアプリケーションデータフォルダに設定を保存
-        _settingsDirectory = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "BrowserSelector");
+        _settingsDirectory = settingsDirectory;
 
         // 設定ディレクトリが存在しない場合は作成
         if (!Directory.Exists(_settingsDirectory))
@@ -384,7 +393,7 @@ public class SettingsService : ISettingsService
                 }
 
                 // ファイルを展開
-                using Stream entryStream = entry.Open();
+                using Stream entryStream = await entry.OpenAsync().ConfigureAwait(false);
                 using FileStream targetStream = new(targetPath, FileMode.Create, FileAccess.Write);
                 await entryStream.CopyToAsync(targetStream).ConfigureAwait(false);
 
@@ -497,7 +506,7 @@ public class SettingsService : ISettingsService
 
         string exportInfoJson = JsonSerializer.Serialize(exportInfo, GetJsonSerializerOptions());
         ZipArchiveEntry exportInfoEntry = archive.CreateEntry("export-info.json");
-        using Stream exportInfoStream = exportInfoEntry.Open();
+        using Stream exportInfoStream = await exportInfoEntry.OpenAsync().ConfigureAwait(false);
         using StreamWriter exportInfoWriter = new(exportInfoStream);
         await exportInfoWriter.WriteAsync(exportInfoJson).ConfigureAwait(false);
     }
@@ -510,7 +519,7 @@ public class SettingsService : ISettingsService
         if (File.Exists(filePath))
         {
             ZipArchiveEntry entry = archive.CreateEntry(entryName);
-            using Stream entryStream = entry.Open();
+            using Stream entryStream = await entry.OpenAsync().ConfigureAwait(false);
             using FileStream fileStream = new(filePath, FileMode.Open, FileAccess.Read);
             await fileStream.CopyToAsync(entryStream).ConfigureAwait(false);
             _logService?.LogDebug($"ZIPに追加: {entryName}", "SettingsService");

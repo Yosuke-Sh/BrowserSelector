@@ -83,6 +83,7 @@ public partial class SettingsViewModel : ObservableObject
     private readonly IBrowserService _browserService;
     private readonly ILocalizationService _localizationService;
     private readonly IUrlRuleService _urlRuleService;
+    private readonly IExternalLinkService? _externalLinkService;
 
     [ObservableProperty]
     private bool _showFocusIndicator = true;
@@ -167,13 +168,18 @@ public partial class SettingsViewModel : ObservableObject
     /// <param name="customLanguageService">カスタム言語サービス.</param>
     /// <param name="urlRuleService">URLルールサービス.</param>
     /// <param name="logService">ログサービス.</param>
+    /// <param name="externalLinkService">
+    /// 外部リンク（GitHubリポジトリ・Issues・リリース一覧、Phase E-2）を開くためのサービス。省略可（テスト互換のため）.
+    /// 未指定の場合、Aboutセクションのリンクボタンは動作しない.
+    /// </param>
     public SettingsViewModel(
         ISettingsService settingsService,
         IBrowserService browserService,
         ILocalizationService localizationService,
         ICustomLanguageService customLanguageService,
         IUrlRuleService urlRuleService,
-        ILogService logService)
+        ILogService logService,
+        IExternalLinkService? externalLinkService = null)
     {
         _settingsService = settingsService;
         _browserService = browserService;
@@ -181,9 +187,12 @@ public partial class SettingsViewModel : ObservableObject
         CustomLanguageService = customLanguageService;
         _urlRuleService = urlRuleService;
         LogService = logService;
+        _externalLinkService = externalLinkService;
 
-        // 初期化処理
-        _ = Task.Run(InitializeInternal);
+        // 初期化処理（完了をInitializationTaskで外部から待機可能にする。
+        // テストがコンストラクタ直後にコマンドを実行すると、この非同期初期化と
+        // 競合しAppSettings/VisualSettingsが未読み込みのまま操作されうるため）
+        InitializationTask = Task.Run(InitializeInternal);
     }
 
     /// <summary>
@@ -195,6 +204,11 @@ public partial class SettingsViewModel : ObservableObject
     /// ブラウザ変更イベント.
     /// </summary>
     public event EventHandler<BrowserChangedEventArgs>? BrowserChanged;
+
+    /// <summary>
+    /// コンストラクタで開始したバックグラウンド初期化処理の完了を表す<see cref="Task"/>（テスト用）.
+    /// </summary>
+    public Task InitializationTask { get; }
 
     /// <summary>
     /// Gets the custom language service.
@@ -211,7 +225,7 @@ public partial class SettingsViewModel : ObservableObject
     /// </summary>
     public Task InitializeAsync()
     {
-        return Task.Run(() => InitializeInternal());
+        return Task.Run(InitializeInternal);
     }
 
     /// <summary>
@@ -253,7 +267,7 @@ public partial class SettingsViewModel : ObservableObject
     /// <summary>
     /// 初期化処理.
     /// </summary>
-    private async void InitializeInternal()
+    private async Task InitializeInternal()
     {
         try
         {
@@ -301,7 +315,7 @@ public partial class SettingsViewModel : ObservableObject
             LogService?.LogDebug($"VisualSettings読み込み完了: BackgroundColor={VisualSettings.BackgroundColor}, UseBackgroundGradient={VisualSettings.UseBackgroundGradient}, GradientDirection={VisualSettings.GradientDirection}", "SettingsViewModel");
 
             // 言語リストを初期化
-            InitializeLanguages();
+            await InitializeLanguagesAsync().ConfigureAwait(false);
             LogService?.LogDebug("言語リスト初期化完了", "SettingsViewModel");
 
             // ブラウザリストを更新
@@ -321,7 +335,7 @@ public partial class SettingsViewModel : ObservableObject
             LogService?.LogDebug("ログ設定読み込み完了", "SettingsViewModel");
 
             // 言語リストを初期化
-            InitializeLanguages();
+            await InitializeLanguagesAsync().ConfigureAwait(false);
 
             // プロパティ変更イベントを監視
             PropertyChanged += OnPropertyChanged;
@@ -329,22 +343,17 @@ public partial class SettingsViewModel : ObservableObject
 
             LogService?.LogDebug("SettingsViewModel初期化完了", "SettingsViewModel");
         }
+        // CA1031: RelayCommandハンドラーの最上位try-catch。WPFダイアログ表示やサービス呼び出しなど例外種別が多岐にわたり、UIスレッドをクラッシュさせないための最終防御であるため意図的に汎用catchとする。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             LogService?.LogError($"設定画面の初期化エラー: {ex.Message}", "SettingsViewModel", ex);
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>
-    /// 言語リストを初期化（同期版）.
-    /// </summary>
-    private void InitializeLanguages()
-    {
-        _ = Task.Run(InitializeLanguagesAsync);
-    }
-
-    /// <summary>
-    /// 言語リストを初期化（非同期版）.
+    /// 言語リストを初期化.
     /// </summary>
     private async Task InitializeLanguagesAsync()
     {
@@ -370,6 +379,8 @@ public partial class SettingsViewModel : ObservableObject
 
             LogService?.LogDebug($"言語リスト初期化完了: {AvailableLanguages.Count}個の言語", "SettingsViewModel");
         }
+        // CA1031: RelayCommandハンドラーの最上位try-catch。WPFダイアログ表示やサービス呼び出しなど例外種別が多岐にわたり、UIスレッドをクラッシュさせないための最終防御であるため意図的に汎用catchとする。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             LogService?.LogError($"言語リストの初期化に失敗しました: {ex.Message}", "SettingsViewModel", ex);
@@ -381,6 +392,7 @@ public partial class SettingsViewModel : ObservableObject
             SelectedLanguage = AvailableLanguages.FirstOrDefault(l => l.CultureCode == AppSettings.Language)
                               ?? AvailableLanguages.First();
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>
@@ -402,9 +414,12 @@ public partial class SettingsViewModel : ObservableObject
                 }
             });
         }
+        // CA1031: RelayCommandハンドラーの最上位try-catch。WPFダイアログ表示やサービス呼び出しなど例外種別が多岐にわたり、UIスレッドをクラッシュさせないための最終防御であるため意図的に汎用catchとする。
+        #pragma warning disable CA1031
         catch (Exception)
         {
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>
@@ -426,9 +441,12 @@ public partial class SettingsViewModel : ObservableObject
                 }
             });
         }
+        // CA1031: RelayCommandハンドラーの最上位try-catch。WPFダイアログ表示やサービス呼び出しなど例外種別が多岐にわたり、UIスレッドをクラッシュさせないための最終防御であるため意図的に汎用catchとする。
+        #pragma warning disable CA1031
         catch (Exception)
         {
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>
@@ -452,11 +470,14 @@ public partial class SettingsViewModel : ObservableObject
 
             // デバッグ情報を出力
         }
+        // CA1031: RelayCommandハンドラーの最上位try-catch。WPFダイアログ表示やサービス呼び出しなど例外種別が多岐にわたり、UIスレッドをクラッシュさせないための最終防御であるため意図的に汎用catchとする。
+        #pragma warning disable CA1031
         catch (Exception)
         {
             // エラー時はデフォルト設定を使用
             await RefreshLogSettingsAsync().ConfigureAwait(false);
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>
@@ -488,9 +509,12 @@ public partial class SettingsViewModel : ObservableObject
 
             // デバッグ情報を出力
         }
+        // CA1031: RelayCommandハンドラーの最上位try-catch。WPFダイアログ表示やサービス呼び出しなど例外種別が多岐にわたり、UIスレッドをクラッシュさせないための最終防御であるため意図的に汎用catchとする。
+        #pragma warning disable CA1031
         catch (Exception)
         {
         }
+        #pragma warning restore CA1031
 
         return Task.CompletedTask;
     }
@@ -608,10 +632,13 @@ public partial class SettingsViewModel : ObservableObject
                 LogService?.LogWarning("設定の保存に失敗しました", "SettingsViewModel");
             }
         }
+        // CA1031: RelayCommandハンドラーの最上位try-catch。WPFダイアログ表示やサービス呼び出しなど例外種別が多岐にわたり、UIスレッドをクラッシュさせないための最終防御であるため意図的に汎用catchとする。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             LogService?.LogError($"視覚設定更新エラー: {ex.Message}", "SettingsViewModel", ex);
         }
+        #pragma warning restore CA1031
     }
 
 
@@ -696,10 +723,13 @@ public partial class SettingsViewModel : ObservableObject
 
             LogService?.LogDebug("ApplyVisualToActiveWindow完了", "SettingsViewModel");
         }
+        // CA1031: RelayCommandハンドラーの最上位try-catch。WPFダイアログ表示やサービス呼び出しなど例外種別が多岐にわたり、UIスレッドをクラッシュさせないための最終防御であるため意図的に汎用catchとする。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             LogService?.LogError($"視覚設定即時適用エラー: {ex.Message}", "SettingsViewModel", ex);
         }
+        #pragma warning restore CA1031
     }
 
     #region Commands
@@ -731,12 +761,15 @@ public partial class SettingsViewModel : ObservableObject
 
             _ = LocalizedMessageBox.Show($"ブラウザ {browsers.Count()} 個を検出しました。", "完了");
         }
+        // CA1031: RelayCommandハンドラーの最上位try-catch。WPFダイアログ表示やサービス呼び出しなど例外種別が多岐にわたり、UIスレッドをクラッシュさせないための最終防御であるため意図的に汎用catchとする。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             LogService?.LogError($"ブラウザ再検出エラー: {ex.Message}", "SettingsViewModel", ex);
 
             _ = LocalizedMessageBox.ShowError($"ブラウザの再検出中にエラーが発生しました: {ex.Message}");
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>
@@ -772,11 +805,14 @@ public partial class SettingsViewModel : ObservableObject
                 }
             }
         }
+        // CA1031: RelayCommandハンドラーの最上位try-catch。WPFダイアログ表示やサービス呼び出しなど例外種別が多岐にわたり、UIスレッドをクラッシュさせないための最終防御であるため意図的に汎用catchとする。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             LogService?.LogError($"ブラウザ追加エラー: {ex.Message}", "SettingsViewModel", ex);
             _ = LocalizedMessageBox.ShowError($"ブラウザの追加中にエラーが発生しました: {ex.Message}");
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>
@@ -816,11 +852,14 @@ public partial class SettingsViewModel : ObservableObject
                 }
             }
         }
+        // CA1031: RelayCommandハンドラーの最上位try-catch。WPFダイアログ表示やサービス呼び出しなど例外種別が多岐にわたり、UIスレッドをクラッシュさせないための最終防御であるため意図的に汎用catchとする。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             LogService?.LogError($"URLルール追加エラー: {ex.Message}", "SettingsViewModel", ex);
             _ = MessageBox.Show($"URLルールの追加中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>
@@ -851,11 +890,14 @@ public partial class SettingsViewModel : ObservableObject
                 }
             }
         }
+        // CA1031: RelayCommandハンドラーの最上位try-catch。WPFダイアログ表示やサービス呼び出しなど例外種別が多岐にわたり、UIスレッドをクラッシュさせないための最終防御であるため意図的に汎用catchとする。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             LogService?.LogError($"URLルール編集エラー: {ex.Message}", "SettingsViewModel", ex);
             _ = MessageBox.Show($"URLルールの編集中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>
@@ -890,11 +932,14 @@ public partial class SettingsViewModel : ObservableObject
                 }
             }
         }
+        // CA1031: RelayCommandハンドラーの最上位try-catch。WPFダイアログ表示やサービス呼び出しなど例外種別が多岐にわたり、UIスレッドをクラッシュさせないための最終防御であるため意図的に汎用catchとする。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             LogService?.LogError($"URLルール削除エラー: {ex.Message}", "SettingsViewModel", ex);
             _ = MessageBox.Show($"URLルールの削除中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>
@@ -925,11 +970,14 @@ public partial class SettingsViewModel : ObservableObject
                 TestResultColor = Brushes.Orange;
             }
         }
+        // CA1031: RelayCommandハンドラーの最上位try-catch。WPFダイアログ表示やサービス呼び出しなど例外種別が多岐にわたり、UIスレッドをクラッシュさせないための最終防御であるため意図的に汎用catchとする。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             TestResult = LocalizedLogHelper.GetString("Settings.UrlRules.TestError", ex.Message);
             TestResultColor = Brushes.Red;
         }
+        #pragma warning restore CA1031
     }
 
 
@@ -940,7 +988,7 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private void SelectBackgroundColor()
     {
-        System.Windows.Forms.ColorDialog colorDialog = new();
+        using System.Windows.Forms.ColorDialog colorDialog = new();
         if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
         {
             Color color = Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
@@ -954,7 +1002,7 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private void SelectGradientStartColor()
     {
-        System.Windows.Forms.ColorDialog colorDialog = new();
+        using System.Windows.Forms.ColorDialog colorDialog = new();
         if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
         {
             Color color = Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
@@ -968,7 +1016,7 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private void SelectGradientEndColor()
     {
-        System.Windows.Forms.ColorDialog colorDialog = new();
+        using System.Windows.Forms.ColorDialog colorDialog = new();
         if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
         {
             Color color = Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
@@ -984,7 +1032,7 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private void SelectFocusColor()
     {
-        System.Windows.Forms.ColorDialog colorDialog = new();
+        using System.Windows.Forms.ColorDialog colorDialog = new();
         if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
         {
             Color color = Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
@@ -998,7 +1046,7 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private void SelectBrowserButtonBackgroundColor()
     {
-        System.Windows.Forms.ColorDialog colorDialog = new();
+        using System.Windows.Forms.ColorDialog colorDialog = new();
         if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
         {
             Color color = Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
@@ -1012,7 +1060,7 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private void SelectBrowserButtonForegroundColor()
     {
-        System.Windows.Forms.ColorDialog colorDialog = new();
+        using System.Windows.Forms.ColorDialog colorDialog = new();
         if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
         {
             Color color = Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
@@ -1037,9 +1085,12 @@ public partial class SettingsViewModel : ObservableObject
                 await InitializeLanguagesAsync().ConfigureAwait(false);
             }
         }
+        // CA1031: RelayCommandハンドラーの最上位try-catch。WPFダイアログ表示やサービス呼び出しなど例外種別が多岐にわたり、UIスレッドをクラッシュさせないための最終防御であるため意図的に汎用catchとする。
+        #pragma warning disable CA1031
         catch (Exception)
         {
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>
@@ -1079,11 +1130,14 @@ public partial class SettingsViewModel : ObservableObject
                 }
             }
         }
+        // CA1031: RelayCommandハンドラーの最上位try-catch。WPFダイアログ表示やサービス呼び出しなど例外種別が多岐にわたり、UIスレッドをクラッシュさせないための最終防御であるため意図的に汎用catchとする。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             LogService?.LogError($"設定インポートエラー: {ex.Message}", "SettingsViewModel", ex);
             _ = LocalizedMessageBox.ShowError($"設定のインポート中にエラーが発生しました: {ex.Message}");
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>
@@ -1118,11 +1172,14 @@ public partial class SettingsViewModel : ObservableObject
                 }
             }
         }
+        // CA1031: RelayCommandハンドラーの最上位try-catch。WPFダイアログ表示やサービス呼び出しなど例外種別が多岐にわたり、UIスレッドをクラッシュさせないための最終防御であるため意図的に汎用catchとする。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             LogService?.LogError($"設定エクスポートエラー: {ex.Message}", "SettingsViewModel", ex);
             _ = LocalizedMessageBox.ShowError($"設定のエクスポート中にエラーが発生しました: {ex.Message}");
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>
@@ -1204,10 +1261,13 @@ public partial class SettingsViewModel : ObservableObject
                             LogService?.LogWarning("設定ウィンドウが見つかりません", "SettingsViewModel");
                         }
                     }
+                    // CA1031: RelayCommandハンドラーの最上位try-catch。WPFダイアログ表示やサービス呼び出しなど例外種別が多岐にわたり、UIスレッドをクラッシュさせないための最終防御であるため意図的に汎用catchとする。
+                    #pragma warning disable CA1031
                     catch (Exception ex)
                     {
                         LogService?.LogError($"UIスレッドでの処理エラー: {ex.Message}", "SettingsViewModel", ex);
                     }
+                    #pragma warning restore CA1031
                 });
             }
             else
@@ -1217,10 +1277,13 @@ public partial class SettingsViewModel : ObservableObject
 
             LogService?.LogDebug("SaveSettings完了", "SettingsViewModel");
         }
+        // CA1031: RelayCommandハンドラーの最上位try-catch。WPFダイアログ表示やサービス呼び出しなど例外種別が多岐にわたり、UIスレッドをクラッシュさせないための最終防御であるため意図的に汎用catchとする。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             LogService?.LogError($"設定保存エラー: {ex.Message}", "SettingsViewModel", ex);
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>
@@ -1247,7 +1310,7 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
-            System.Windows.Forms.FolderBrowserDialog folderDialog = new()
+            using System.Windows.Forms.FolderBrowserDialog folderDialog = new()
             {
                 Description = "ログ出力フォルダを選択してください",
                 SelectedPath = LogSettings.LogOutputFolder
@@ -1260,9 +1323,12 @@ public partial class SettingsViewModel : ObservableObject
                 LogService.UpdateSettings(LogSettings);
             }
         }
+        // CA1031: RelayCommandハンドラーの最上位try-catch。WPFダイアログ表示やサービス呼び出しなど例外種別が多岐にわたり、UIスレッドをクラッシュさせないための最終防御であるため意図的に汎用catchとする。
+        #pragma warning disable CA1031
         catch (Exception)
         {
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>
@@ -1277,9 +1343,12 @@ public partial class SettingsViewModel : ObservableObject
             Views.LogViewerWindow logWindow = new(logContent);
             _ = logWindow.ShowDialog();
         }
+        // CA1031: RelayCommandハンドラーの最上位try-catch。WPFダイアログ表示やサービス呼び出しなど例外種別が多岐にわたり、UIスレッドをクラッシュさせないための最終防御であるため意図的に汎用catchとする。
+        #pragma warning disable CA1031
         catch (Exception)
         {
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>
@@ -1299,9 +1368,12 @@ public partial class SettingsViewModel : ObservableObject
                 _ = LocalizedMessageBox.ShowLogClearComplete();
             }
         }
+        // CA1031: RelayCommandハンドラーの最上位try-catch。WPFダイアログ表示やサービス呼び出しなど例外種別が多岐にわたり、UIスレッドをクラッシュさせないための最終防御であるため意図的に汎用catchとする。
+        #pragma warning disable CA1031
         catch (Exception)
         {
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>
@@ -1320,9 +1392,12 @@ public partial class SettingsViewModel : ObservableObject
                 _ = LocalizedMessageBox.ShowOldLogDeleteComplete();
             }
         }
+        // CA1031: RelayCommandハンドラーの最上位try-catch。WPFダイアログ表示やサービス呼び出しなど例外種別が多岐にわたり、UIスレッドをクラッシュさせないための最終防御であるため意図的に汎用catchとする。
+        #pragma warning disable CA1031
         catch (Exception)
         {
         }
+        #pragma warning restore CA1031
     }
 
     #endregion
@@ -1368,11 +1443,14 @@ public partial class SettingsViewModel : ObservableObject
                 }
             }
         }
+        // CA1031: RelayCommandハンドラーの最上位try-catch。WPFダイアログ表示やサービス呼び出しなど例外種別が多岐にわたり、UIスレッドをクラッシュさせないための最終防御であるため意図的に汎用catchとする。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             LogService?.LogError($"ブラウザ編集エラー: {ex.Message}", "SettingsViewModel", ex);
             _ = MessageBox.Show($"ブラウザの編集中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>
@@ -1425,11 +1503,14 @@ public partial class SettingsViewModel : ObservableObject
                 }
             }
         }
+        // CA1031: RelayCommandハンドラーの最上位try-catch。WPFダイアログ表示やサービス呼び出しなど例外種別が多岐にわたり、UIスレッドをクラッシュさせないための最終防御であるため意図的に汎用catchとする。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             LogService?.LogError($"ブラウザ削除エラー: {ex.Message}", "SettingsViewModel", ex);
             _ = MessageBox.Show($"ブラウザの削除中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>
@@ -1458,10 +1539,13 @@ public partial class SettingsViewModel : ObservableObject
                 LogService?.LogInformation($"ブラウザ順序変更: {browser.Name} を上に移動", "SettingsViewModel");
             }
         }
+        // CA1031: RelayCommandハンドラーの最上位try-catch。WPFダイアログ表示やサービス呼び出しなど例外種別が多岐にわたり、UIスレッドをクラッシュさせないための最終防御であるため意図的に汎用catchとする。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             LogService?.LogError($"ブラウザ順序変更エラー: {ex.Message}", "SettingsViewModel", ex);
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>
@@ -1490,10 +1574,13 @@ public partial class SettingsViewModel : ObservableObject
                 LogService?.LogInformation($"ブラウザ順序変更: {browser.Name} を下に移動", "SettingsViewModel");
             }
         }
+        // CA1031: RelayCommandハンドラーの最上位try-catch。WPFダイアログ表示やサービス呼び出しなど例外種別が多岐にわたり、UIスレッドをクラッシュさせないための最終防御であるため意図的に汎用catchとする。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             LogService?.LogError($"ブラウザ順序変更エラー: {ex.Message}", "SettingsViewModel", ex);
         }
+        #pragma warning restore CA1031
     }
 
     #endregion

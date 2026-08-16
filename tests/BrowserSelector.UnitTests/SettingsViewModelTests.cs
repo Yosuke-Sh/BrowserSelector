@@ -56,6 +56,10 @@ public class SettingsViewModelTests
             .Setup(x => x.GetAllRulesAsync())
             .ReturnsAsync([]);
 
+        _ = _mockSettingsService
+            .Setup(x => x.LoadLogSettingsAsync())
+            .ReturnsAsync(new LogSettings());
+
         // カスタム言語サービスのモック設定
         _ = _mockCustomLanguageService
             .Setup(x => x.GetAvailableLanguagesAsync())
@@ -184,7 +188,7 @@ public class SettingsViewModelTests
         _ = _viewModel.VisualSettings.FocusWidth.Should().Be(100.0);
         _ = _viewModel.VisualSettings.BackgroundColor.Should().Be(System.Windows.Media.Colors.White);
         _ = _viewModel.VisualSettings.IconScale.Should().Be(1.0);
-        _ = _viewModel.VisualSettings.ShowLogo.Should().BeTrue();
+        _ = _viewModel.VisualSettings.ShowLogo.Should().BeFalse();
         _ = _viewModel.VisualSettings.ShowUrlInput.Should().BeTrue();
         _ = _viewModel.VisualSettings.BrowserButtonWidth.Should().Be(120.0);
         _ = _viewModel.VisualSettings.BrowserButtonHeight.Should().Be(90.0);
@@ -257,6 +261,11 @@ public class SettingsViewModelTests
         _ = _mockSettingsService
             .Setup(x => x.SaveVisualSettingsAsync(It.IsAny<VisualSettings>()))
             .ReturnsAsync(true);
+
+        // コンストラクタが起動したバックグラウンド初期化の完了を待ってから操作する。
+        // 待たずに実行するとCI環境ではタイミング次第で初期化未完了のまま
+        // SaveSettingsが呼ばれ、稀に失敗するフレーキーテストになっていた。
+        await _viewModel.InitializationTask;
 
         // Act
         await _viewModel.SaveSettingsCommand.ExecuteAsync(null);

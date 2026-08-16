@@ -1,9 +1,13 @@
+using BrowserSelector.App.CommandLine;
 using BrowserSelector.App.DependencyInjection;
+using BrowserSelector.App.SystemIntegration;
 using BrowserSelector.Core.Enums;
+using BrowserSelector.Core.Models;
 using BrowserSelector.Core.Services;
+using BrowserSelector.Infrastructure.SystemIntegration;
+using BrowserSelector.Presentation.Converters;
 using BrowserSelector.Presentation.Extensions;
 using BrowserSelector.Presentation.Helpers;
-using BrowserSelector.Presentation.Services;
 using BrowserSelector.Presentation.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -15,19 +19,62 @@ namespace BrowserSelector.App;
 /// <summary>
 /// Interaction logic for App.xaml.
 /// </summary>
-public partial class App : Application
+// CA1515: WPFのXAMLコンパイラが生成する部分クラス(App.g.cs)は常にpublicのため、
+// アクセシビリティを一致させる必要があり internal 化できない（正当な設計上の制約）。
+// CA1001: IDisposableフィールド(_singleInstanceManager/_host)はOnExit()で確実にDisposeしている。
+// Applicationは基底側の設計上IDisposableを実装しないため、型自体をIDisposable化はしない。
+#pragma warning disable CA1515, CA1001
+public partial class App : System.Windows.Application
+#pragma warning restore CA1515, CA1001
 {
     private IHost? _host;
     private ILogService? _logService;
+    private SingleInstanceManager? _singleInstanceManager;
+    private MainViewModel? _mainViewModel;
+    private TrayIconManager? _trayIconManager;
+    private CommandLineOptions? _commandLineOptions;
 
     /// <inheritdoc/>
     protected override void OnStartup(StartupEventArgs e)
     {
+        ArgumentNullException.ThrowIfNull(e);
         try
         {
+            // コマンドライン引数のパース（Phase D）: -d/--delay, -b/--browser, --silent, --auto-launch, -h/--help, -v/--version
+            _commandLineOptions = CommandLineParser.Parse(e.Args);
+            if (_commandLineOptions.ShowHelp)
+            {
+                _ = System.Windows.MessageBox.Show(CommandLineParser.HelpText, "BrowserSelector", MessageBoxButton.OK, MessageBoxImage.Information);
+                Shutdown();
+                return;
+            }
+
+            if (_commandLineOptions.ShowVersion)
+            {
+                _ = System.Windows.MessageBox.Show($"BrowserSelector v{Core.AppInfo.CurrentVersion}", "BrowserSelector", MessageBoxButton.OK, MessageBoxImage.Information);
+                Shutdown();
+                return;
+            }
+
             // テストモードの確認
-            bool isTestMode = e.Args.Contains("--test-mode") ||
+            bool isTestMode = e.Args.Contains("--test-mode") || _commandLineOptions.TestMode ||
                              Environment.GetEnvironmentVariable("BROWSERSELECTOR_TEST_MODE") == "true";
+
+            // 単一インスタンス判定: 先行インスタンスが存在する場合はURLを転送して即終了
+            _singleInstanceManager = new SingleInstanceManager();
+            if (!_singleInstanceManager.TryAcquire())
+            {
+                Uri? forwardedUrl = e.Args.Length > 0 && Uri.TryCreate(e.Args[0], UriKind.Absolute, out Uri? parsedUri)
+                    ? parsedUri
+                    : null;
+                _ = SingleInstanceManager.TrySendToExistingInstanceAsync(forwardedUrl).GetAwaiter().GetResult();
+                _singleInstanceManager.Dispose();
+                _singleInstanceManager = null;
+                Shutdown();
+                return;
+            }
+
+            _singleInstanceManager.UrlReceived += OnUrlReceivedFromNewInstance;
 
             _logService?.LogTrace($"アプリケーション起動処理開始: コマンドライン引数={string.Join(" ", e.Args)}, テストモード={isTestMode}", "App");
             // ホストの構築
@@ -54,43 +101,48 @@ public partial class App : Application
             LocalizedLogHelper.SetLocalizationService(localizationService);
             LocalizedFormatHelper.SetLocalizationService(localizationService);
 
-            // 設定された言語を適用
+            // アイコンキャッシュサービスの設定
+            IconPathConverter.SetIconCacheService(_host.Services.GetRequiredService<IIconCacheService>());
+
+            // 共通コントロールスタイルを読み込み（トークン参照のため、テーマ辞書より先に追加）
+            Resources.MergedDictionaries.Add(new ResourceDictionary
+            {
+                Source = new Uri("/BrowserSelector.Presentation;component/Resources/Themes/Controls.xaml", UriKind.Relative),
+            });
+
+            // 設定された言語・テーマを適用
             try
             {
                 ISettingsService settingsService = _host.Services.GetRequiredService<ISettingsService>();
                 Core.Models.AppSettings appSettings = settingsService.LoadAppSettingsAsync().GetAwaiter().GetResult();
                 System.Globalization.CultureInfo culture = new(appSettings.Language);
                 localizationService.SetLanguage(culture).GetAwaiter().GetResult();
+
+                IThemeService themeService = _host.Services.GetRequiredService<IThemeService>();
+                themeService.ApplyTheme(appSettings.ThemeMode);
             }
+            // CA1031: アプリ起動/終了時の最上位フォールバック処理。DIコンテナ初期化やホスト起動、UI適用など例外種別が広範なため、アプリのクラッシュを防ぐ意図的な汎用catch。
+            #pragma warning disable CA1031
             catch (Exception ex)
             {
-                // 設定読み込みに失敗した場合はデフォルト言語（日本語）を使用
-                _logService?.LogWarning($"設定読み込みに失敗、デフォルト言語を使用: {ex.Message}", "App");
+                // 設定読み込みに失敗した場合はデフォルト言語・テーマを使用
+                _logService?.LogWarning($"設定読み込みに失敗、デフォルト言語・テーマを使用: {ex.Message}", "App");
                 System.Globalization.CultureInfo defaultCulture = new("ja-JP");
                 localizationService.SetLanguage(defaultCulture).GetAwaiter().GetResult();
+                _host.Services.GetRequiredService<IThemeService>().ApplyTheme(BrowserSelector.Core.Enums.ThemeMode.System);
             }
+            #pragma warning restore CA1031
 
-            // 不足アイコンの作成
-            try
-            {
-                IconResourceService iconService = new();
-                string[] missingIcons = iconService.GetMissingIcons();
-                if (missingIcons.Length > 0)
-                {
-                    int createdCount = iconService.CreateMissingIcons(missingIcons);
-                    _logService?.LogInformation($"不足アイコンを {createdCount} 個作成しました: {string.Join(", ", missingIcons)}", "App");
-                }
-            }
-            catch (Exception iconEx)
-            {
-                _logService?.LogError($"アイコン作成エラー: {iconEx.Message}", "App", iconEx);
-            }
-
-            // 起動引数からURLを取得
-            string? initialUrl = null;
-            if (e.Args.Length > 0)
+            // 起動引数からURLを取得（Phase D: CommandLineParserがオプションを除去済みのURLを返す。
+            // 未指定時は従来どおり先頭の非オプション引数へフォールバック）
+            string? initialUrl = _commandLineOptions.Url;
+            if (string.IsNullOrEmpty(initialUrl) && e.Args.Length > 0 && !e.Args[0].StartsWith('-'))
             {
                 initialUrl = e.Args[0];
+            }
+
+            if (!string.IsNullOrEmpty(initialUrl))
+            {
                 _logService?.LogDetailed(LogLevel.Debug, $"起動引数でURLを受信: {initialUrl}", "App",
                                       "ARGS", initialUrl, "System", "Args", "Parse", "Success");
             }
@@ -106,6 +158,7 @@ public partial class App : Application
                                       "MVVM_CREATE", "ViewModel", "System", "MainViewModel", "Resolve", "Started");
 
                 mainViewModel = _host.Services.GetRequiredService<MainViewModel>();
+                _mainViewModel = mainViewModel;
 
                 _logService?.LogDetailed(LogLevel.Debug, "DIコンテナからMainViewModel取得完了", "App",
                                       "MVVM_CREATE", "ViewModel", "System", "MainViewModel", "Resolve", "Success");
@@ -134,101 +187,34 @@ public partial class App : Application
             }
 
             _logService?.LogInformation("テストモード: MainWindowを作成", "App");
-            Presentation.Views.MainWindow mainWindow = new(mainViewModel, _logService!);
+            // 背景・サイズの初期設定はMainWindowのコンストラクタ（ApplyInitialBackgroundSettings/ApplyInitialSizeSettings）に一本化。
+            // 従来ここでApp.xaml.cs側でも背景色を直接適用していたため、初期化経路が重複していた。
+            // IThemeService/ISettingsServiceはPhase C-1のDWMバックドロップ適用（ダーク/ライト判定・ガラス効果設定）に使用。
+            IThemeService themeServiceForWindow = _host.Services.GetRequiredService<IThemeService>();
+            ISettingsService settingsServiceForWindow = _host.Services.GetRequiredService<ISettingsService>();
+            Presentation.Views.MainWindow mainWindow = new(mainViewModel, _logService!, themeServiceForWindow, settingsServiceForWindow);
             _logService?.LogInformation("MainWindow作成完了", "App");
 
-            // MainViewModelで既にVisualSettingsが読み込まれているので、それを取得
-            Core.Models.VisualSettings v = mainViewModel.VisualSettings;
-            _logService?.LogDebug($"Startup.VisualSettings.Load.Success BackgroundColor={v.BackgroundColor}, UseBackgroundGradient={v.UseBackgroundGradient}, GradientDirection={v.GradientDirection}", "App");
+            // Phase D: --delay/--browser/--silent/--auto-launchオプションの適用
+            ApplyCommandLineOptions(_commandLineOptions, mainWindow, mainViewModel);
 
-            // 起動時即座に背景色設定を実行
-            _logService?.LogDebug("Startup.VisualSettings.Apply.Start Target=MainWindow (Immediate)", "App");
-            try
-            {
-                // 背景（グラデーション or 単色）
-                if (v.UseBackgroundGradient)
-                {
-                    // グラデーション方向に応じてStartPointとEndPointを設定
-                    System.Windows.Point startPoint, endPoint;
-                    switch (v.GradientDirection)
-                    {
-                        case BrowserSelector.Core.Enums.GradientDirection.Horizontal:
-                            startPoint = new System.Windows.Point(0, 0);
-                            endPoint = new System.Windows.Point(1, 0);
-                            break;
-                        case BrowserSelector.Core.Enums.GradientDirection.Diagonal:
-                            startPoint = new System.Windows.Point(0, 0);
-                            endPoint = new System.Windows.Point(1, 1);
-                            break;
-                        default: // Vertical
-                            startPoint = new System.Windows.Point(0, 0);
-                            endPoint = new System.Windows.Point(0, 1);
-                            break;
-                    }
-
-                    mainWindow.Background = new System.Windows.Media.LinearGradientBrush
-                    {
-                        StartPoint = startPoint,
-                        EndPoint = endPoint,
-                        GradientStops =
-                        [
-                            new System.Windows.Media.GradientStop(v.GradientStartColor, 0),
-                            new System.Windows.Media.GradientStop(v.GradientEndColor, 1)
-                        ]
-                    };
-                    _logService?.LogDebug($"起動時背景グラデーション設定完了: 方向={v.GradientDirection}, 開始色={v.GradientStartColor}, 終了色={v.GradientEndColor}", "App");
-                }
-                else
-                {
-                    System.Windows.Media.SolidColorBrush brush = new(v.BackgroundColor);
-                    mainWindow.Background = brush;
-                    _logService?.LogDebug($"起動時背景色設定完了: 設定値={v.BackgroundColor}, 適用後={mainWindow.Background}", "App");
-                }
-
-                _logService?.LogDebug("Startup.VisualSettings.Apply.Success Target=MainWindow (Immediate)", "App");
-            }
-            catch (Exception aex)
-            {
-                _logService?.LogDebug($"Startup.VisualSettings.Apply.Error {aex.Message}", "App", aex);
-            }
-
-            // 追加でLoadedイベントでも設定を適用（二重適用防止のため条件付き）
-            mainWindow.Loaded += (_, __) =>
-            {
-                _logService?.LogDebug("Startup.VisualSettings.Apply.Start Target=MainWindow (Loaded Event)", "App");
-                try
-                {
-                    // 既に設定済みの場合はスキップ
-                    if (mainWindow.Background is System.Windows.Media.SolidColorBrush currentBrush)
-                    {
-                        System.Windows.Media.Color currentColor = currentBrush.Color;
-                        if (currentColor == v.BackgroundColor)
-                        {
-                            _logService?.LogDebug("起動時背景色設定は既に適用済みです", "App");
-                            return;
-                        }
-                    }
-
-                    // 背景色を再適用
-                    if (!v.UseBackgroundGradient)
-                    {
-                        System.Windows.Media.SolidColorBrush brush = new(v.BackgroundColor);
-                        mainWindow.Background = brush;
-                        _logService?.LogDebug($"Loadedイベントで背景色再適用完了: {v.BackgroundColor}", "App");
-                    }
-
-                    _logService?.LogDebug("Startup.VisualSettings.Apply.Success Target=MainWindow (Loaded Event)", "App");
-                }
-                catch (Exception aex)
-                {
-                    _logService?.LogDebug($"Startup.VisualSettings.Apply.Error (Loaded Event) {aex.Message}", "App", aex);
-                }
-            };
+            // Phase D: トレイ常駐設定に応じてトレイアイコンを準備し、✕での終了をトレイ格納に差し替える
+            SetupTrayIcon(mainWindow, settingsServiceForWindow, localizationService);
 
             MainWindow = mainWindow;
-            _logService?.LogInformation("MainWindow表示開始", "App");
-            mainWindow.Show(); // 起動時の背景色設定のため必要
-            _logService?.LogInformation("MainWindow表示完了", "App");
+
+            if (_commandLineOptions.Silent)
+            {
+                // --silent: UIを表示せず既定ブラウザへ直接遷移する
+                _logService?.LogInformation("--silentオプションによりUIを表示せず既定ブラウザへ遷移します", "App");
+                _ = mainViewModel.LaunchDefaultBrowserAsync();
+            }
+            else
+            {
+                _logService?.LogInformation("MainWindow表示開始", "App");
+                mainWindow.Show(); // 起動時の背景色設定のため必要
+                _logService?.LogInformation("MainWindow表示完了", "App");
+            }
 
             base.OnStartup(e);
             _logService?.LogTrace($"アプリケーション起動処理完了: MainWindow表示済み, 初期URL={initialUrl ?? "なし"}", "App");
@@ -261,7 +247,7 @@ public partial class App : Application
             }
 
             // 通常モードではメッセージボックスを表示
-            _ = MessageBox.Show($"アプリケーションの起動に失敗しました: {ex.Message}",
+            _ = System.Windows.MessageBox.Show($"アプリケーションの起動に失敗しました: {ex.Message}",
                           "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
             Shutdown();
         }
@@ -274,6 +260,16 @@ public partial class App : Application
         {
             _logService?.LogInformation("アプリケーション終了開始", "App");
 
+            if (_singleInstanceManager != null)
+            {
+                _singleInstanceManager.UrlReceived -= OnUrlReceivedFromNewInstance;
+                _singleInstanceManager.Dispose();
+                _singleInstanceManager = null;
+            }
+
+            _trayIconManager?.Dispose();
+            _trayIconManager = null;
+
             if (_host != null)
             {
                 _host.StopAsync().GetAwaiter().GetResult();
@@ -282,12 +278,108 @@ public partial class App : Application
 
             _logService?.LogInformation("アプリケーション終了完了", "App");
         }
+        // CA1031: アプリ起動/終了時の最上位フォールバック処理。DIコンテナ初期化やホスト起動、UI適用など例外種別が広範なため、アプリのクラッシュを防ぐ意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             _logService?.LogError($"アプリケーション終了エラー: {ex.Message}", "App", ex);
         }
+        #pragma warning restore CA1031
 
         base.OnExit(e);
+    }
+
+    /// <summary>
+    /// 後続インスタンスから転送されたURLを受信した際の処理.
+    /// パイプ受信スレッド上で発火するためUIスレッドへディスパッチする.
+    /// </summary>
+    private void OnUrlReceivedFromNewInstance(object? sender, UrlReceivedEventArgs e)
+    {
+        Dispatcher.Invoke(() =>
+        {
+            _logService?.LogInformation($"後続インスタンスからURLを受信: {e.Url}", "App");
+
+            if (MainWindow != null)
+            {
+                if (MainWindow.WindowState == WindowState.Minimized)
+                {
+                    MainWindow.WindowState = WindowState.Normal;
+                }
+
+                MainWindow.Show();
+                _ = MainWindow.Activate();
+            }
+
+            if (!string.IsNullOrWhiteSpace(e.Url) && Uri.TryCreate(e.Url, UriKind.Absolute, out Uri? uri))
+            {
+                _mainViewModel?.SetInitialUrl(uri);
+            }
+        });
+    }
+
+    /// <summary>
+    /// コマンドライン引数（Phase D: <c>-d/--delay</c>, <c>-b/--browser</c>, <c>--auto-launch</c>）を
+    /// カウントダウンコントローラー・選択ブラウザへ適用する。<c>--silent</c>は呼び出し元で個別に扱う.
+    /// </summary>
+    private void ApplyCommandLineOptions(CommandLineOptions options, Presentation.Views.MainWindow mainWindow, MainViewModel mainViewModel)
+    {
+        if (options.Delay.HasValue)
+        {
+            mainWindow.Countdown.Start(options.Delay.Value);
+            _logService?.LogInformation($"CLIオプションによりカウントダウン遅延を上書き: {options.Delay.Value}秒", "App");
+        }
+
+        if (options.BrowserId.HasValue)
+        {
+            Browser? requestedBrowser = mainViewModel.Browsers.FirstOrDefault(b => b.Id == options.BrowserId.Value);
+            if (requestedBrowser != null)
+            {
+                mainViewModel.SelectedBrowser = requestedBrowser;
+                _logService?.LogInformation($"CLIオプションによりブラウザを指定: {requestedBrowser.Name}", "App");
+            }
+            else
+            {
+                _logService?.LogWarning($"CLIオプションで指定されたブラウザGUIDが見つかりません: {options.BrowserId.Value}", "App");
+            }
+        }
+    }
+
+    /// <summary>
+    /// トレイ常駐（Phase D: <see cref="AppSettings.AlwaysResidentInTray"/>）を準備する。
+    /// 有効な場合、✕ボタン/システムメニューでの終了をトレイ格納に差し替え、
+    /// トレイ格納中・復帰時にカウントダウンを確実に停止・リセットする（BrowserChooser3 v0.1.5 既知バグ対策）.
+    /// </summary>
+    private void SetupTrayIcon(Presentation.Views.MainWindow mainWindow, ISettingsService settingsService, ILocalizationService localizationService)
+    {
+        try
+        {
+            AppSettings appSettings = settingsService.LoadAppSettingsAsync().GetAwaiter().GetResult();
+            if (!appSettings.AlwaysResidentInTray)
+            {
+                return;
+            }
+
+            IBrowserService browserService = _host!.Services.GetRequiredService<IBrowserService>();
+            _trayIconManager = new TrayIconManager(mainWindow, browserService, localizationService);
+            _trayIconManager.MinimizedToTray += (_, _) => mainWindow.Countdown.SuspendForTray();
+            _trayIconManager.RestoredFromTray += (_, _) => mainWindow.Countdown.ResumeFromTray();
+
+            mainWindow.Closing += (_, closingArgs) =>
+            {
+                if (_trayIconManager != null && !_trayIconManager.IsMinimizedToTray)
+                {
+                    closingArgs.Cancel = true;
+                    _trayIconManager.MinimizeToTray();
+                }
+            };
+        }
+        // CA1031: トレイアイコン初期化失敗時はトレイ常駐無しで継続させるための意図的な汎用catch。
+#pragma warning disable CA1031
+        catch (Exception ex)
+        {
+            _logService?.LogError($"トレイアイコン初期化エラー: {ex.Message}", "App", ex);
+        }
+#pragma warning restore CA1031
     }
 }
 

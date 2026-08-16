@@ -7,57 +7,64 @@ on:
     branches: [ main, developer ]
 
 env:
-  DOTNET_VERSION: '8.0.x'
+  DOTNET_VERSION: '10.0.x'
   SOLUTION_FILE: 'BrowserSelector.WPF.sln'
 
 jobs:
   # ビルドとテスト
   build-and-test:
-    runs-on: windows-2022
-    
+    runs-on: windows-latest
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
-        
+
     - name: Restore dependencies
       run: dotnet restore ${{ env.SOLUTION_FILE }}
-      
-    - name: Build solution
-      run: dotnet build ${{ env.SOLUTION_FILE }} --configuration Release --no-restore --verbosity normal
-      
-    - name: Check for build warnings
+
+    - name: Build solution and check for warnings
       run: |
         $buildOutput = dotnet build ${{ env.SOLUTION_FILE }} --configuration Release --no-restore --verbosity normal 2>&1
-        $warnings = $buildOutput | Select-String "warning"
+        $buildOutput | ForEach-Object { Write-Host $_ }
+        if ($LASTEXITCODE -ne 0) {
+          Write-Error "Build failed"
+          exit 1
+        }
+        $warnings = $buildOutput | Select-String "warning "
         if ($warnings) {
-          Write-Warning "Build warnings detected (non-critical):"
-          $warnings | ForEach-Object { Write-Warning $_.Line }
-          Write-Host "⚠️ Build warnings found but continuing build (warnings are non-critical)"
+          Write-Host "::error::Build warnings detected. This project's policy is zero warnings."
+          $warnings | ForEach-Object { Write-Host "::error::$($_.Line)" }
+          exit 1
         } else {
           Write-Host "✅ No build warnings detected - Build is clean"
         }
-      
+
     - name: Run all tests
       run: |
         Write-Host "Running all tests..."
         $testProjects = @(
           "tests/BrowserSelector.UnitTests",
+          "tests/BrowserSelector.CoreTests",
+          "tests/BrowserSelector.InfrastructureTests",
           "tests/BrowserSelector.IntegrationTests",
           "tests/BrowserSelector.AppTests",
           "tests/BrowserSelector.SecurityTests",
           "tests/BrowserSelector.UITests",
-          "tests/BrowserSelector.LibraryTests",
           "tests/BrowserSelector.E2ETests"
         )
-        
+
         foreach ($project in $testProjects) {
           Write-Host "Running tests for: $project"
           dotnet test $project --configuration Release --no-build --verbosity normal --logger trx --results-directory TestResults
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "Tests failed for: $project"
+            exit 1
+          }
         }
         Write-Host "All tests completed"
       continue-on-error: false
@@ -72,7 +79,7 @@ jobs:
 
   # リリース準備（mainブランチのみ）
   release-prep:
-    runs-on: windows-2022
+    runs-on: windows-latest
     needs: build-and-test
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     

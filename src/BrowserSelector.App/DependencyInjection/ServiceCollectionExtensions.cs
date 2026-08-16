@@ -3,6 +3,7 @@ using BrowserSelector.Infrastructure.Localization;
 using BrowserSelector.Infrastructure.Services;
 using BrowserSelector.Infrastructure.SystemIntegration;
 using BrowserSelector.Infrastructure.Updates;
+using BrowserSelector.Presentation.Services;
 using BrowserSelector.Presentation.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,7 +12,7 @@ namespace BrowserSelector.App.DependencyInjection;
 /// <summary>
 /// 依存性注入のためのサービスコレクション拡張メソッドを提供します.
 /// </summary>
-public static class ServiceCollectionExtensions
+internal static class ServiceCollectionExtensions
 {
     /// <summary>
     /// BrowserSelectorアプリケーションに必要なすべてのサービスをサービスコレクションに追加します.
@@ -21,25 +22,35 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddBrowserSelectorServices(this IServiceCollection services)
     {
         // Core Services
-        _ = services.AddScoped<IBrowserService, BrowserService>();
-        _ = services.AddScoped<ISettingsService>(provider =>
+        // WPFはルートのDIプロバイダから解決するため、Scopedは実質Singletonと同じ生存期間になり誤解を招く。
+        // アプリ生存期間で共有する意図を明確にするためSingletonとして登録する。
+        _ = services.AddSingleton<IBrowserService, BrowserService>();
+        _ = services.AddSingleton<ISettingsService>(provider =>
             new SettingsService(provider.GetRequiredService<ILogService>()));
-        _ = services.AddScoped<ICustomLanguageService>(provider =>
+        _ = services.AddSingleton<ICustomLanguageService>(provider =>
             new CustomLanguageService(provider.GetRequiredService<ILogService>()));
-        _ = services.AddScoped<ILocalizationService>(provider =>
+        _ = services.AddSingleton<ILocalizationService>(provider =>
             new LocalizationService(provider.GetRequiredService<ICustomLanguageService>(), provider.GetRequiredService<ILogService>()));
-        _ = services.AddScoped<IUrlService>(provider =>
+        _ = services.AddSingleton<IUrlService>(provider =>
             new UrlService(provider.GetRequiredService<ISettingsService>(), provider.GetRequiredService<ILogService>()));
-        _ = services.AddScoped<IUrlRuleService>(provider =>
+        _ = services.AddSingleton<IUrlRuleService>(provider =>
             new UrlRuleService(provider.GetRequiredService<ILogService>()));
 
         // Infrastructure Services
         _ = services.AddSingleton<ILogService, BrowserSelector.Infrastructure.Logging.LogService>();
-        _ = services.AddScoped<IRegistryService>(provider =>
+        _ = services.AddSingleton<IIconCacheService>(provider =>
+            new IconCacheService(provider.GetRequiredService<ILogService>()));
+        _ = services.AddSingleton<IRegistryService>(provider =>
             new WindowsRegistryService(provider.GetRequiredService<ILogService>()));
-        _ = services.AddScoped<IProtocolHandler, ProtocolHandler>();
-        _ = services.AddScoped<IUpdateService>(provider =>
-            new UpdateService("https://api.github.com/repos/your-repo/releases/latest", "1.0.0"));
+        _ = services.AddSingleton<IProtocolHandler, ProtocolHandler>();
+        _ = services.AddSingleton<IUpdateService>(provider =>
+            new UpdateService(Core.AppInfo.LatestReleaseApiUrl, Core.AppInfo.CurrentVersion.ToString()));
+        _ = services.AddSingleton<IExternalLinkService>(provider =>
+            new ExternalLinkService(provider.GetRequiredService<IBrowserService>(), provider.GetRequiredService<ILogService>()));
+
+        // Presentation Services (WPFのApplication.Currentに依存するため型はPresentation層)
+        _ = services.AddSingleton<IThemeService>(provider =>
+            new ThemeService(provider.GetRequiredService<ILogService>()));
 
         // Presentation Services
         _ = services.AddTransient<MainViewModel>();

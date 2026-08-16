@@ -50,7 +50,7 @@ public partial class VisualSettings : ObservableObject
     private double _initialWindowHeight = 600.0;
 
     [ObservableProperty]
-    private bool _showLogo = true;
+    private bool _showLogo = false;
 
     [ObservableProperty]
     private bool _showUrlInput = true;

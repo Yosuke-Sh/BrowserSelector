@@ -7,7 +7,7 @@ namespace BrowserSelector.UnitTests;
 /// <summary>
 /// テスト用の設定サービス.
 /// </summary>
-public class TestSettingsService : ISettingsService
+internal sealed class TestSettingsService : ISettingsService
 {
     private readonly string _settingsDirectory;
     private readonly string _appSettingsPath;

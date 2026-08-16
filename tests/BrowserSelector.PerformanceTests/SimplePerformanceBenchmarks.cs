@@ -16,7 +16,11 @@ namespace BrowserSelector.PerformanceTests;
 [MaxColumn]
 [MeanColumn]
 [MedianColumn]
-public class SimplePerformanceBenchmarks
+// CA1812: BenchmarkDotNetがリフレクション経由でインスタンス化するため、
+// 静的解析からは「未使用」に見えるが実際には実行時に使用される（正当な理由による抑制）。
+#pragma warning disable CA1812
+internal sealed class SimplePerformanceBenchmarks
+#pragma warning restore CA1812
 {
     /// <summary>
     /// URL検証応答時間の測定.

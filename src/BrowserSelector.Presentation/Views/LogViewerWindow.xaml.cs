@@ -66,10 +66,13 @@ public partial class LogViewerViewModel : ObservableObject
             Clipboard.SetText(LogContent);
             _ = LocalizedMessageBox.ShowInformation("Dialog.LogViewer.CopyToClipboardComplete", "MessageBox.Complete");
         }
+        // CA1031: RelayCommandハンドラーの最上位try-catch。クリップボード操作は環境依存の例外が発生しうるため、UIスレッドをクラッシュさせないための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             _ = LocalizedMessageBox.ShowError($"Dialog.LogViewer.CopyToClipboardError: {ex.Message}", "MessageBox.Error");
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>

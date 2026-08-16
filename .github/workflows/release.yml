@@ -1,0 +1,105 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+env:
+  DOTNET_VERSION: '10.0.x'
+  APP_PROJECT: 'src/BrowserSelector.App/BrowserSelector.App.csproj'
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Extract version from tag
+      id: version
+      shell: pwsh
+      run: |
+        $tag = "${{ github.ref_name }}"
+        $version = $tag -replace '^v', ''
+        # System.Version想定のためタグはmajor.minor.patch固定（G-4規約）
+        if ($version -notmatch '^\d+\.\d+\.\d+$') {
+          Write-Error "Tag '$tag' does not match required v{major}.{minor}.{patch} format"
+          exit 1
+        }
+        echo "VERSION=$version" >> $env:GITHUB_OUTPUT
+        echo "IS_PRERELEASE=false" >> $env:GITHUB_OUTPUT
+
+    - name: Restore dependencies
+      run: dotnet restore BrowserSelector.WPF.sln
+
+    - name: Publish application (ReadyToRun)
+      run: >
+        dotnet publish ${{ env.APP_PROJECT }}
+        --configuration Release
+        --runtime win-x64
+        --self-contained false
+        -p:PublishReadyToRun=true
+        -p:Version=${{ steps.version.outputs.VERSION }}
+        --output src/BrowserSelector.App/bin/Release/net10.0-windows/win-x64/publish
+
+    - name: Build installer (Inno Setup)
+      shell: pwsh
+      run: |
+        $isccCandidates = @(
+          "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe",
+          "$env:ProgramFiles\Inno Setup 6\ISCC.exe"
+        )
+        $iscc = $isccCandidates | Where-Object { Test-Path $_ } | Select-Object -First 1
+        if (-not $iscc) {
+          choco install innosetup -y --no-progress
+          $iscc = $isccCandidates | Where-Object { Test-Path $_ } | Select-Object -First 1
+        }
+        if (-not $iscc) {
+          Write-Error "ISCC.exe not found after installing Inno Setup"
+          exit 1
+        }
+        & $iscc "/DMyAppVersion=${{ steps.version.outputs.VERSION }}" "deployment\InnoSetup\BrowserSelector.iss"
+
+    - name: Prepare portable ZIP
+      shell: pwsh
+      run: |
+        $version = "${{ steps.version.outputs.VERSION }}"
+        $publishDir = "src/BrowserSelector.App/bin/Release/net10.0-windows/win-x64/publish"
+        $zipName = "release-artifacts/BrowserSelector-v$version-win-x64.zip"
+        New-Item -ItemType Directory -Force -Path "release-artifacts" | Out-Null
+        Compress-Archive -Path "$publishDir/*" -DestinationPath $zipName -Force
+
+    - name: Generate SHA256SUMS.txt
+      shell: pwsh
+      run: |
+        Push-Location release-artifacts
+        $lines = Get-ChildItem -File | Where-Object { $_.Name -ne 'SHA256SUMS.txt' } | ForEach-Object {
+          $hash = (Get-FileHash -Algorithm SHA256 -Path $_.Name).Hash.ToLower()
+          "$hash  $($_.Name)"
+        }
+        $lines | Set-Content -Path 'SHA256SUMS.txt' -Encoding utf8NoBOM
+        Get-Content SHA256SUMS.txt
+        Pop-Location
+
+    - name: List release artifacts
+      shell: pwsh
+      run: Get-ChildItem release-artifacts
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ github.ref_name }}
+        name: BrowserSelector ${{ github.ref_name }}
+        prerelease: ${{ steps.version.outputs.IS_PRERELEASE }}
+        generate_release_notes: true
+        files: |
+          release-artifacts/*.exe
+          release-artifacts/*.zip
+          release-artifacts/SHA256SUMS.txt

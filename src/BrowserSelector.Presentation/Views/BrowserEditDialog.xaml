@@ -88,6 +88,7 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="120"/>
@@ -95,24 +96,33 @@
                         </Grid.ColumnDefinitions>
 
                         <!-- 表示順序 -->
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{extensions:Localization Dialog.BrowserEdit.DisplayOrder}" 
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{extensions:Localization Dialog.BrowserEdit.DisplayOrder}"
                                    VerticalAlignment="Center" Margin="0,5"/>
                         <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBox Text="{Binding DisplayOrder}" Width="60" Margin="0,5,5,5" 
+                            <TextBox Text="{Binding DisplayOrder}" Width="60" Margin="0,5,5,5"
                                      ToolTip="{extensions:Localization Dialog.BrowserEdit.DisplayOrderTooltip}"/>
-                            <Button Content="↑" Width="30" Height="30" Margin="2,0" Click="MoveUp_Click" 
+                            <Button Content="↑" Width="30" Height="30" Margin="2,0" Click="MoveUp_Click"
                                     ToolTip="{extensions:Localization Dialog.BrowserEdit.MoveUpTooltip}"
                                     FontFamily="Segoe UI Symbol" FontSize="12" FontWeight="Bold"/>
-                            <Button Content="↓" Width="30" Height="30" Margin="2,0" Click="MoveDown_Click" 
+                            <Button Content="↓" Width="30" Height="30" Margin="2,0" Click="MoveDown_Click"
                                     ToolTip="{extensions:Localization Dialog.BrowserEdit.MoveDownTooltip}"
                                     FontFamily="Segoe UI Symbol" FontSize="12" FontWeight="Bold"/>
                         </StackPanel>
 
-                        <!-- 有効/無効 -->
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{extensions:Localization Dialog.BrowserEdit.Enabled}" 
+                        <!-- ホットキー（Phase E-1） -->
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{extensions:Localization Dialog.BrowserEdit.Hotkey}"
                                    VerticalAlignment="Center" Margin="0,5"/>
-                        <CheckBox Grid.Row="1" Grid.Column="1" 
-                                  IsChecked="{Binding IsEnabled}" VerticalAlignment="Center" 
+                        <TextBox Grid.Row="1" Grid.Column="1"
+                                 Text="{Binding Hotkey}" Width="60" HorizontalAlignment="Left"
+                                 MaxLength="1" Margin="0,5"
+                                 ToolTip="{extensions:Localization Dialog.BrowserEdit.HotkeyTooltip}"
+                                 AutomationProperties.Name="HotkeyTextBox"/>
+
+                        <!-- 有効/無効 -->
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="{extensions:Localization Dialog.BrowserEdit.Enabled}"
+                                   VerticalAlignment="Center" Margin="0,5"/>
+                        <CheckBox Grid.Row="2" Grid.Column="1"
+                                  IsChecked="{Binding IsEnabled}" VerticalAlignment="Center"
                                   Margin="0,5" Content="{extensions:Localization Dialog.BrowserEdit.EnableBrowser}"/>
                     </Grid>
                 </GroupBox>

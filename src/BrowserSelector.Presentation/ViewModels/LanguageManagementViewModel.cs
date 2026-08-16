@@ -62,11 +62,14 @@ public partial class LanguageManagementViewModel : ObservableObject
             await RefreshLanguagesAsync().ConfigureAwait(false);
             _logService?.LogDebug("LanguageManagementViewModel初期化完了", "LanguageManagementViewModel");
         }
+        // CA1031: RelayCommandハンドラーの最上位try-catch。ファイルIO/プロセス起動/サービス呼び出しなど例外種別が多岐にわたり、UIスレッドをクラッシュさせないための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             _logService?.LogError($"言語管理の初期化に失敗しました: {ex.Message}", "LanguageManagementViewModel", ex);
             StatusMessage = $"初期化エラー: {ex.Message}";
         }
+        #pragma warning restore CA1031
     }
 
     partial void OnSelectedLanguageCodeChanged(LanguageCodeInfo? value)
@@ -204,11 +207,14 @@ public partial class LanguageManagementViewModel : ObservableObject
             StatusMessage = $"利用可能な言語: {AvailableLanguages.Count}個";
             _logService?.LogDebug($"言語一覧を更新しました: {AvailableLanguages.Count}個", "LanguageManagementViewModel");
         }
+        // CA1031: RelayCommandハンドラーの最上位try-catch。ファイルIO/プロセス起動/サービス呼び出しなど例外種別が多岐にわたり、UIスレッドをクラッシュさせないための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             _logService?.LogError($"言語一覧の更新に失敗しました: {ex.Message}", "LanguageManagementViewModel", ex);
             StatusMessage = $"更新エラー: {ex.Message}";
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>
@@ -233,7 +239,7 @@ public partial class LanguageManagementViewModel : ObservableObject
             {
                 CultureInfo culture = new(NewLanguageCode);
             }
-            catch
+            catch (CultureNotFoundException)
             {
                 StatusMessage = "無効な言語コードです（例: zh-CN, ko-KR）";
                 return;
@@ -254,11 +260,14 @@ public partial class LanguageManagementViewModel : ObservableObject
                 StatusMessage = "テンプレートの生成に失敗しました";
             }
         }
+        // CA1031: RelayCommandハンドラーの最上位try-catch。ファイルIO/プロセス起動/サービス呼び出しなど例外種別が多岐にわたり、UIスレッドをクラッシュさせないための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             _logService?.LogError($"言語テンプレートの生成に失敗しました: {ex.Message}", "LanguageManagementViewModel", ex);
             StatusMessage = $"生成エラー: {ex.Message}";
         }
+        #pragma warning restore CA1031
         finally
         {
             IsGeneratingTemplate = false;
@@ -299,11 +308,14 @@ public partial class LanguageManagementViewModel : ObservableObject
                 StatusMessage = "言語の削除に失敗しました";
             }
         }
+        // CA1031: RelayCommandハンドラーの最上位try-catch。ファイルIO/プロセス起動/サービス呼び出しなど例外種別が多岐にわたり、UIスレッドをクラッシュさせないための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             _logService?.LogError($"言語の削除に失敗しました: {ex.Message}", "LanguageManagementViewModel", ex);
             StatusMessage = $"削除エラー: {ex.Message}";
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>
@@ -325,11 +337,14 @@ public partial class LanguageManagementViewModel : ObservableObject
             StatusMessage = $"言語フォルダを開きました: {folderPath}";
             _logService?.LogDebug($"言語フォルダを開きました: {folderPath}", "LanguageManagementViewModel");
         }
+        // CA1031: RelayCommandハンドラーの最上位try-catch。ファイルIO/プロセス起動/サービス呼び出しなど例外種別が多岐にわたり、UIスレッドをクラッシュさせないための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             _logService?.LogError($"言語フォルダの表示に失敗しました: {ex.Message}", "LanguageManagementViewModel", ex);
             StatusMessage = $"フォルダ表示エラー: {ex.Message}";
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>
@@ -359,10 +374,13 @@ public partial class LanguageManagementViewModel : ObservableObject
 
             StatusMessage = isValid ? $"言語ファイルは有効です: {SelectedLanguage.DisplayName}" : $"言語ファイルに問題があります: {SelectedLanguage.DisplayName}";
         }
+        // CA1031: RelayCommandハンドラーの最上位try-catch。ファイルIO/プロセス起動/サービス呼び出しなど例外種別が多岐にわたり、UIスレッドをクラッシュさせないための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             _logService?.LogError($"言語ファイルの検証に失敗しました: {ex.Message}", "LanguageManagementViewModel", ex);
             StatusMessage = $"検証エラー: {ex.Message}";
         }
+        #pragma warning restore CA1031
     }
 }

@@ -1,10 +1,15 @@
 ; BrowserSelector Inno Setup Script
-; Version: 0.1.0
+; Version: 0.2.0
 ; Author: Yosuke-Sh
 ; Description: BrowserSelector WPF Application Installer
 
 #define MyAppName "BrowserSelector"
-#define MyAppVersion "0.1.0"
+; MyAppVersion（Phase E-2b）: Directory.Build.props の <Version> が単一の情報源。
+; ビルド時は `ISCC /DMyAppVersion=0.2.0 BrowserSelector.iss` のように /D で上書きして注入する
+; （release.yml からの自動注入はPhase G-4で実装。ここでの既定値はDirectory.Build.propsと手動で同期させておく）。
+#ifndef MyAppVersion
+  #define MyAppVersion "0.2.0"
+#endif
 #define MyAppPublisher "Yosuke-Sh"
 #define MyAppURL "https://github.com/Yosuke-Sh/BrowserSelector"
 #define MyAppExeName "BrowserSelector.exe"
@@ -55,7 +60,7 @@ Name: "set_default_browser"; Description: "BrowserSelectorを既定のブラウ�
 Name: "open_default_apps"; Description: "インストール後に既定のアプリ設定を開く"; GroupDescription: "Default Browser Settings"; Flags: unchecked
 
 [Files]
-Source: "..\..\src\BrowserSelector.App\bin\Release\net8.0-windows\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\..\src\BrowserSelector.App\bin\Release\net10.0-windows\win-x64\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "*.pdb,*.map,*.ilk"
 Source: "..\..\src\BrowserSelector.App\BrowserSelector_Icon_256.ico"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\README.md"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\CHANGELOG.md"; DestDir: "{app}"; Flags: ignoreversion
@@ -78,6 +83,7 @@ Filename: "{cmd}"; Parameters: "/c start ms-settings:defaultapps"; Tasks: open_d
 Type: filesandordirs; Name: "{app}\logs"
 Type: filesandordirs; Name: "{app}\backup"
 Type: files; Name: "{app}\settings.json"
+Type: filesandordirs; Name: "{userappdata}\BrowserSelector"
 
 [Registry]
 ; HTTPプロトコルハンドラーの設定
@@ -134,54 +140,133 @@ Root: HKLM; Subkey: "SOFTWARE\Classes\browser\shell\open\command"; ValueType: st
 
 
 [Code]
-function InitializeSetup(): Boolean;
+const
+  DotNetRuntimeDownloadUrl = 'https://aka.ms/dotnet/10.0/windowsdesktop-runtime-win-x64.exe';
+  DotNetRuntimeManualDownloadPage = 'https://dotnet.microsoft.com/download/dotnet/10.0';
+
+// {commonpf64}\dotnet\shared\Microsoft.WindowsDesktop.App 配下に "10." で始まるディレクトリがあるか確認する
+function FindFirstDotNet10SharedFxDir(): Boolean;
 var
-  ErrorCode: Integer;
-  DotNetVersion: string;
-  DotNet8Installed: Boolean;
+  FindRec: TFindRec;
+  BaseDir: string;
+begin
+  Result := False;
+  BaseDir := ExpandConstant('{commonpf64}\dotnet\shared\Microsoft.WindowsDesktop.App');
+
+  if FindFirst(BaseDir + '\10.*', FindRec) then
+  begin
+    try
+      Result := True;
+    finally
+      FindClose(FindRec);
+    end;
+  end;
+end;
+
+// Microsoft.WindowsDesktop.App 10.x が導入済みかどうかを判定する。
+// レジストリでの確認を主とし、フォルダー存在確認をフォールバックとして併用する。
+function IsWindowsDesktopRuntime10Installed(): Boolean;
+var
+  Names: TArrayOfString;
+  I: Integer;
+begin
+  Result := False;
+
+  if RegGetSubkeyNames(HKLM, 'SOFTWARE\dotnet\Setup\InstalledVersions\x64\sharedfx\Microsoft.WindowsDesktop.App', Names) then
+  begin
+    for I := 0 to GetArrayLength(Names) - 1 do
+    begin
+      if (Length(Names[I]) > 0) and (Names[I][1] = '1') then
+      begin
+        Result := True;
+        Exit;
+      end;
+    end;
+  end;
+
+  if DirExists(ExpandConstant('{commonpf64}\dotnet\shared\Microsoft.WindowsDesktop.App')) then
+  begin
+    if FindFirstDotNet10SharedFxDir() then
+    begin
+      Result := True;
+      Exit;
+    end;
+  end;
+end;
+
+function OnDownloadProgress(const Url, FileName: string; const Progress, ProgressMax: Int64): Boolean;
 begin
   Result := True;
-  DotNet8Installed := False;
-  
-  // Check for .NET 8.0 Runtime - try multiple registry locations
-  // Method 1: Check shared frameworks
-  if RegQueryStringValue(HKLM, 'SOFTWARE\dotnet\Setup\InstalledVersions\x64\Microsoft.NETCore.App', '8.0', DotNetVersion) then
-    DotNet8Installed := True
-  else if RegQueryStringValue(HKLM, 'SOFTWARE\dotnet\Setup\InstalledVersions\x64\Microsoft.WindowsDesktop.App', '8.0', DotNetVersion) then
-    DotNet8Installed := True
-  else if RegQueryStringValue(HKLM, 'SOFTWARE\dotnet\Setup\InstalledVersions\x64\Microsoft.AspNetCore.App', '8.0', DotNetVersion) then
-    DotNet8Installed := True;
-    
-  // Method 2: Check if dotnet command is available and has .NET 8.0
-  if not DotNet8Installed then
+end;
+
+// .NET Desktop Runtime 10 をダウンロードし、サイレントインストールする。
+// 失敗した場合は手動導入用のURLを提示してセットアップを中断する。
+function EnsureDotNetDesktopRuntimeInstalled(): Boolean;
+var
+  ResultCode: Integer;
+  DownloadOk: Boolean;
+begin
+  Result := True;
+
+  if IsWindowsDesktopRuntime10Installed() then
+    Exit;
+
+  if not WizardSilent() then
   begin
-    if Exec('cmd.exe', '/c dotnet --list-runtimes | findstr "Microsoft.WindowsDesktop.App 8.0"', '', SW_HIDE, ewWaitUntilTerminated, ErrorCode) then
+    if MsgBox('BrowserSelectorの実行には .NET 10 Desktop Runtime が必要です。' + #13#10 +
+              '未導入のため、ダウンロードしてインストールします。よろしいですか？',
+              mbConfirmation, MB_YESNO) = IDNO then
     begin
-      if ErrorCode = 0 then
-        DotNet8Installed := True;
+      Result := False;
+      Exit;
     end;
   end;
-  
-  if not DotNet8Installed then
+
+  DownloadOk := False;
+  try
+    DownloadTemporaryFile(DotNetRuntimeDownloadUrl, 'windowsdesktop-runtime-win-x64.exe', '', @OnDownloadProgress);
+    DownloadOk := True;
+  except
+    DownloadOk := False;
+  end;
+
+  if not DownloadOk then
   begin
-    if ActiveLanguage = 'japanese' then
-    begin
-      if MsgBox('BrowserSelectorには.NET 8.0 Runtimeが必要です。' + #13#10 + #13#10 +
-                '今すぐダウンロードしますか？', mbConfirmation, MB_YESNO) = IDYES then
-      begin
-        ShellExec('open', 'https://dotnet.microsoft.com/download/dotnet/8.0', '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);
-      end;
-    end
-    else
-    begin
-      if MsgBox('BrowserSelector requires .NET 8.0 Runtime to be installed.' + #13#10 + #13#10 +
-                'Would you like to download it now?', mbConfirmation, MB_YESNO) = IDYES then
-      begin
-        ShellExec('open', 'https://dotnet.microsoft.com/download/dotnet/8.0', '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);
-      end;
-    end;
+    MsgBox('.NET 10 Desktop Runtime のダウンロードに失敗しました。' + #13#10 +
+           '以下のURLから手動でダウンロード・インストールしてから、再度セットアップを実行してください:' + #13#10 +
+           DotNetRuntimeManualDownloadPage,
+           mbError, MB_OK);
     Result := False;
+    Exit;
   end;
+
+  if not Exec(ExpandConstant('{tmp}\windowsdesktop-runtime-win-x64.exe'), '/install /quiet /norestart', '',
+              SW_SHOW, ewWaitUntilTerminated, ResultCode) then
+  begin
+    MsgBox('.NET 10 Desktop Runtime のインストールに失敗しました。' + #13#10 +
+           '以下のURLから手動でダウンロード・インストールしてから、再度セットアップを実行してください:' + #13#10 +
+           DotNetRuntimeManualDownloadPage,
+           mbError, MB_OK);
+    Result := False;
+    Exit;
+  end;
+
+  if not IsWindowsDesktopRuntime10Installed() then
+  begin
+    MsgBox('.NET 10 Desktop Runtime のインストールを完了できませんでした。' + #13#10 +
+           '以下のURLから手動でダウンロード・インストールしてから、再度セットアップを実行してください:' + #13#10 +
+           DotNetRuntimeManualDownloadPage,
+           mbError, MB_OK);
+    Result := False;
+    Exit;
+  end;
+end;
+
+function PrepareToInstall(var NeedsRestart: Boolean): string;
+begin
+  Result := '';
+  if not EnsureDotNetDesktopRuntimeInstalled() then
+    Result := '.NET 10 Desktop Runtime が導入されなかったため、セットアップを中断しました。';
 end;
 
 procedure CurStepChanged(CurStep: TSetupStep);

@@ -8,7 +8,7 @@ namespace BrowserSelector.AppTests;
 /// WPFテスト用のヘルパークラス
 /// WPFアプリケーションのテストを支援するユーティリティ.
 /// </summary>
-public static class WpfTestHelper
+internal static class WpfTestHelper
 {
     /// <summary>
     /// WPFアプリケーションのテスト用コンテキストを作成.

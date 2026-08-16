@@ -69,10 +69,13 @@ public partial class UrlRuleEditDialog : Window
                 AvailableBrowsers.Add(browser);
             }
         }
+        // CA1031: イベントハンドラーの最上位try-catch。サービス呼び出しやバリデーション処理由来の例外種別が多岐にわたり、UIスレッドをクラッシュさせないための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             _logService?.LogError($"ブラウザ一覧読み込みエラー: {ex.Message}", "UrlRuleEditDialog", ex);
         }
+        #pragma warning restore CA1031
     }
 
 
@@ -100,10 +103,13 @@ public partial class UrlRuleEditDialog : Window
             DialogResult = true;
             Close();
         }
+        // CA1031: イベントハンドラーの最上位try-catch。サービス呼び出しやバリデーション処理由来の例外種別が多岐にわたり、UIスレッドをクラッシュさせないための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             _logService?.LogError($"URLルール保存エラー: {ex.Message}", "UrlRuleEditDialog", ex);
             _ = LocalizedMessageBox.ShowError($"Dialog.UrlRuleEdit.SaveError: {ex.Message}", "MessageBox.Error");
         }
+        #pragma warning restore CA1031
     }
 }

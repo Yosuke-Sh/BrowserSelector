@@ -6,13 +6,13 @@ using BrowserSelector.Core.Models;
 namespace BrowserSelector.Core.Services;
 
 /// <summary>
-/// Windows繝ｬ繧ｸ繧ｹ繝医Μ縺九ｉ繝悶Λ繧ｦ繧ｶ諠・ｱ繧貞叙蠕励☆繧九し繝ｼ繝薙せ縺ｮ繧､繝ｳ繧ｿ繝ｼ繝輔ぉ繝ｼ繧ｹ.
+/// Windowsレジストリからブラウザ情報を取得するサービスのインターフェース.
 /// </summary>
 public interface IRegistryService
 {
     /// <summary>
-    /// 繝ｬ繧ｸ繧ｹ繝医Μ縺九ｉ繝悶Λ繧ｦ繧ｶ繧呈､懷・.
+    /// レジストリからブラウザを検出.
     /// </summary>
-    /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
+    /// <returns>検出されたブラウザの一覧.</returns>
     Task<IEnumerable<Browser>> DetectBrowsersFromRegistryAsync();
 }

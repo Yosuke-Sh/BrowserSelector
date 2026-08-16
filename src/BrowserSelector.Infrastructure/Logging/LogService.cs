@@ -1,22 +1,31 @@
 using BrowserSelector.Core.Enums;
 using BrowserSelector.Core.Models;
 using BrowserSelector.Core.Services;
+using System.Collections.Concurrent;
 using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace BrowserSelector.Infrastructure.Logging;
 
 /// <summary>
 /// ログサービスの実装.
+/// ファイル書き込みは行ごとのopen/closeを避けるためバッファリングし、
+/// アイドルタイマーとDispose時にまとめてフラッシュする.
 /// </summary>
-public class LogService : ILogService
+public sealed class LogService : ILogService, IDisposable
 {
+    private const int FlushIntervalMs = 2000;
+
     private readonly object _lockObject = new();
     private readonly string _defaultLogFolder;
+    private readonly ConcurrentQueue<string> _pendingLines = new();
+    private readonly Timer _flushTimer;
     private LogSettings _settings;
     private int _eventCounter;
+    private bool _disposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LogService"/> class.
@@ -45,11 +54,29 @@ public class LogService : ILogService
         // ログフォルダが存在しない場合は作成
         EnsureLogDirectoryExists();
 
+        // アイドル時に溜まったログをまとめてディスクへフラッシュするタイマー
+        _flushTimer = new Timer(_ => FlushToDisk(), null, FlushIntervalMs, FlushIntervalMs);
+
         // 起動時のログ（INFO） - テスト環境では出力しない
         if (!IsTestEnvironment())
         {
             LogInformation("LogService初期化完了", "LogService");
         }
+    }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        _disposed = true;
+        _flushTimer.Dispose();
+
+        // アプリ終了時に未フラッシュのログを失わないよう最終フラッシュ
+        FlushToDisk();
     }
 
     /// <summary>
@@ -212,6 +239,9 @@ public class LogService : ILogService
     /// </summary>
     public void ClearLogs()
     {
+        // 未フラッシュの行はクリア対象に含める（書き込んでから消す必要はない）
+        _pendingLines.Clear();
+
         try
         {
             string logFilePath = _settings.GetLogFilePath();
@@ -289,6 +319,9 @@ public class LogService : ILogService
     /// <returns> ログファイルの内容.</returns>
     public string GetLogContent(int maxLines = 1000)
     {
+        // 未フラッシュの行が読み取り結果に反映されるよう、読み取り前にディスクへ書き出す
+        FlushToDisk();
+
         try
         {
             string logFilePath = _settings.GetLogFilePath();
@@ -482,24 +515,56 @@ public class LogService : ILogService
     }
 
     /// <summary>
-    /// ファイルにログを出力.
+    /// ログをバッファへ追加（実際のディスク書き込みはフラッシュ時にまとめて行う）.
     /// </summary>
     private void WriteToFile(string message)
     {
-        try
+        _pendingLines.Enqueue(message);
+    }
+
+    /// <summary>
+    /// バッファに溜まったログ行をまとめてディスクへ書き込む.
+    /// アイドルタイマー、明示的な読み取り操作（<see cref="GetLogContent"/> 等）、
+    /// および<see cref="Dispose()"/> 時に呼ばれる.
+    /// </summary>
+    private void FlushToDisk()
+    {
+        if (_pendingLines.IsEmpty)
         {
-            string logFilePath = _settings.GetLogFilePath();
-            string logMessage = message + Environment.NewLine;
-
-            // ファイルサイズチェック
-            CheckAndRotateLogFile(logFilePath);
-
-            // ログファイルに追記
-            File.AppendAllText(logFilePath, logMessage, Encoding.UTF8);
+            return;
         }
-        catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException)
+
+        lock (_lockObject)
         {
-            // ログファイル出力エラーは無視
+            if (_pendingLines.IsEmpty)
+            {
+                return;
+            }
+
+            StringBuilder builder = new();
+            while (_pendingLines.TryDequeue(out string? line))
+            {
+                _ = builder.Append(line).Append(Environment.NewLine);
+            }
+
+            if (builder.Length == 0)
+            {
+                return;
+            }
+
+            try
+            {
+                string logFilePath = _settings.GetLogFilePath();
+
+                // ファイルサイズチェック（ローテーションのログ自体は次回フラッシュへ回すため再帰させない）
+                CheckAndRotateLogFile(logFilePath);
+
+                File.AppendAllText(logFilePath, builder.ToString(), Encoding.UTF8);
+            }
+            catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException)
+            {
+                // ログファイル出力エラーは無視
+            }
         }
     }
 
@@ -526,7 +591,6 @@ public class LogService : ILogService
                     StringComparison.Ordinal);
 
                 File.Move(logFilePath, backupPath);
-                LogInformation($"ログファイルをローテーションしました: {backupPath}", "LogService");
             }
         }
         catch (Exception ex) when (ex is DirectoryNotFoundException or UnauthorizedAccessException or IOException)

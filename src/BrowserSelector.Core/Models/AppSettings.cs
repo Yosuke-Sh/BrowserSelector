@@ -2,6 +2,7 @@
 // Copyright (c) 2024 BrowserSelector. All rights reserved.
 // </copyright>
 
+using BrowserSelector.Core.Enums;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace BrowserSelector.Core.Models
@@ -13,6 +14,9 @@ namespace BrowserSelector.Core.Models
     {
         [ObservableProperty]
         private bool _enableLogging = true;
+
+        [ObservableProperty]
+        private ThemeMode _themeMode = ThemeMode.System;
 
         [ObservableProperty]
         private string _logLevel = "Information";
@@ -34,5 +38,63 @@ namespace BrowserSelector.Core.Models
 
         [ObservableProperty]
         private bool _closeAfterUrlRuleMatch = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether DWMによるガラス効果（Mica/Acrylic）を有効にするか.
+        /// falseの場合、<see cref="Helpers.WindowBackdropHelper"/> は半透明単色ブラシへフォールバックする.
+        /// </summary>
+        [ObservableProperty]
+        private bool _enableGlassEffect = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether ホバー・フォーカス等のUIアニメーション（拡大・影の遷移）を有効にするか.
+        /// Windowsの「アニメーションを表示する」設定と併用し、falseの場合は影・スケール変化を全て無効化する.
+        /// </summary>
+        [ObservableProperty]
+        private bool _enableAnimations = true;
+
+        /// <summary>
+        /// Gets or sets 既定ブラウザへ自動起動するまでのカウントダウン秒数（Phase D）.
+        /// 0の場合はカウントダウン自動起動を無効にする. 既定値は5秒.
+        /// </summary>
+        [ObservableProperty]
+        private int _defaultDelay = 5;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether ウィンドウを閉じた際にアプリを終了せずシステムトレイへ常駐するか（Phase D）.
+        /// trueの場合、✕ボタンでの終了はトレイへの最小化として扱われる.
+        /// </summary>
+        [ObservableProperty]
+        private bool _alwaysResidentInTray;
+
+        /// <summary>
+        /// Gets or sets ウィンドウ背景の描画方式（Phase E-1: 外観タブ）.
+        /// </summary>
+        [ObservableProperty]
+        private BackdropMode _backdropMode = BackdropMode.Mica;
+
+        /// <summary>
+        /// Gets or sets ウィンドウ全体の不透明度（Phase E-1）。0.3〜1.0の範囲.
+        /// </summary>
+        [ObservableProperty]
+        private double _windowOpacity = 1.0;
+
+        /// <summary>
+        /// Gets or sets ウィンドウの角丸半径（Phase E-1、DWM側の丸め対応環境で有効）.
+        /// </summary>
+        [ObservableProperty]
+        private double _windowCornerRadius = 8.0;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether カスタムタイトルバーを表示するか（Phase E-1）.
+        /// </summary>
+        [ObservableProperty]
+        private bool _showTitleBar = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether ウィンドウを常に最前面に表示するか（Phase E-1）.
+        /// </summary>
+        [ObservableProperty]
+        private bool _alwaysOnTop = true;
     }
 }
