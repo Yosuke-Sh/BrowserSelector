@@ -267,6 +267,7 @@ public sealed class UpdateServiceCheckTests : IDisposable
             settingsService.Object,
             Mock.Of<ILogService>(),
             _statePath,
-            currentVersion);
+            currentVersion,
+            _stateDirectory);
     }
 }
