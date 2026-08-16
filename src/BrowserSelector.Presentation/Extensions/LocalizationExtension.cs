@@ -65,9 +65,12 @@ public class LocalizationExtension : MarkupExtension
                 ? _localizationService.GetString(Key, Parameters)
                 : _localizationService.GetString(Key);
         }
+        // CA1031: XAML MarkupExtensionはUIレンダリング中に呼び出されるため、いかなる例外でもキーそのものにフォールバックしUIを継続させる意図的な汎用catch。
+        #pragma warning disable CA1031
         catch
         {
             return Key;
         }
+        #pragma warning restore CA1031
     }
 }

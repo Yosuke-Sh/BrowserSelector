@@ -8,7 +8,7 @@ namespace BrowserSelector.E2ETests;
 /// テスト用の設定サービス実装
 /// 実際のファイルシステムではなく、テスト用の一時ディレクトリを使用.
 /// </summary>
-public class TestSettingsService : ISettingsService
+internal sealed class TestSettingsService : ISettingsService
 {
     private readonly ILogService? _logService;
     private readonly string _settingsDirectory;

@@ -6,61 +6,61 @@ using BrowserSelector.Core.Models;
 namespace BrowserSelector.Core.Services;
 
 /// <summary>
-/// 繧ｫ繧ｹ繧ｿ繝險隱槭ヵ繧｡繧､繝ｫ邂｡逅・し繝ｼ繝薙せ縺ｮ繧､繝ｳ繧ｿ繝ｼ繝輔ぉ繝ｼ繧ｹ.
+/// カスタム言語ファイル管理サービスのインターフェース.
 /// </summary>
 public interface ICustomLanguageService
 {
     /// <summary>
-    /// 蛻ｩ逕ｨ蜿ｯ閭ｽ縺ｪ險隱樔ｸ隕ｧ繧貞叙蠕・.
+    /// 利用可能な言語一覧を取得.
     /// </summary>
-    /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
+    /// <returns>利用可能な言語の一覧.</returns>
     Task<IEnumerable<LanguageInfo>> GetAvailableLanguagesAsync();
 
     /// <summary>
-    /// 繧ｫ繧ｹ繧ｿ繝險隱槭ヵ繧｡繧､繝ｫ繧定ｿｽ蜉.
+    /// カスタム言語ファイルを追加.
     /// </summary>
-    /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
+    /// <returns>追加が成功したかどうか.</returns>
     Task<bool> AddCustomLanguageAsync(string languageFilePath);
 
     /// <summary>
-    /// 繧ｫ繧ｹ繧ｿ繝險隱槭ｒ蜑企勁.
+    /// カスタム言語を削除.
     /// </summary>
-    /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
+    /// <returns>削除が成功したかどうか.</returns>
     Task<bool> RemoveCustomLanguageAsync(string cultureCode);
 
     /// <summary>
-    /// 險隱槭ヵ繧｡繧､繝ｫ縺ｮ讀懆ｨｼ.
+    /// 言語ファイルの検証.
     /// </summary>
-    /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
+    /// <returns>検証が成功したかどうか.</returns>
     Task<bool> ValidateLanguageFileAsync(string languageFilePath);
 
     /// <summary>
-    /// 繧ｫ繧ｹ繧ｿ繝險隱槭ヵ繧ｩ繝ｫ繝縺ｮ繝代せ繧貞叙蠕・.
+    /// カスタム言語フォルダのパスを取得.
     /// </summary>
     /// <returns></returns>
     string GetCustomLanguageFolder();
 
     /// <summary>
-    /// 繧ｫ繧ｹ繧ｿ繝險隱槭ヵ繧｡繧､繝ｫ縺ｮ隱ｭ縺ｿ霎ｼ縺ｿ.
+    /// カスタム言語ファイルの読み込み.
     /// </summary>
-    /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
+    /// <returns>読み込まれた言語リソース（失敗時はnull）.</returns>
     Task<Dictionary<string, string>?> LoadCustomLanguageAsync(string cultureCode);
 
     /// <summary>
-    /// 繧ｫ繧ｹ繧ｿ繝險隱槭ヵ繧｡繧､繝ｫ縺ｮ菫晏ｭ・.
+    /// カスタム言語ファイルの保存.
     /// </summary>
-    /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
+    /// <returns>保存が成功したかどうか.</returns>
     Task<bool> SaveCustomLanguageAsync(string cultureCode, string displayName, Dictionary<string, string> resources);
 
     /// <summary>
-    /// 險隱槭ヵ繧｡繧､繝ｫ繝・Φ繝励Ξ繝ｼ繝医ｒ逕滓・.
+    /// 言語ファイルテンプレートを生成.
     /// </summary>
-    /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
+    /// <returns>生成が成功したかどうか.</returns>
     Task<bool> GenerateLanguageTemplateAsync(string cultureCode, string displayName);
 
     /// <summary>
-    /// 蛻ｩ逕ｨ蜿ｯ閭ｽ縺ｪ繝ｪ繧ｽ繝ｼ繧ｹ繧ｭ繝ｼ縺ｮ荳隕ｧ繧貞叙蠕・.
+    /// 利用可能なリソースキーの一覧を取得.
     /// </summary>
-    /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
+    /// <returns>リソースキーの一覧.</returns>
     Task<IEnumerable<string>> GetAvailableResourceKeysAsync();
 }

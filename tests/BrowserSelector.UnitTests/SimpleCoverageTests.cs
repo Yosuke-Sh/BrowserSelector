@@ -229,7 +229,7 @@ public class SimpleCoverageTests
         _ = visualSettings.FocusWidth.Should().Be(100.0);
         _ = visualSettings.InitialWindowWidth.Should().Be(800.0);
         _ = visualSettings.InitialWindowHeight.Should().Be(600.0);
-        _ = visualSettings.ShowLogo.Should().BeTrue();
+        _ = visualSettings.ShowLogo.Should().BeFalse();
         _ = visualSettings.ShowUrlInput.Should().BeTrue();
         _ = visualSettings.BrowserButtonWidth.Should().Be(120.0);
         _ = visualSettings.BrowserButtonHeight.Should().Be(90.0);

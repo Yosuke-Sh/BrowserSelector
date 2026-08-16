@@ -5,6 +5,11 @@ coverage
 TestResults
 coverage-integrated
 coverage-results
+coverage-report
 BenchmarkDotNet.Artifacts
-/tmp
+tmp
 publish
+release-artifacts
+build.log
+build_*.log
+*.csproj.user

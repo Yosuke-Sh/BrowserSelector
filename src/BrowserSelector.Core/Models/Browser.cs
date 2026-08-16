@@ -93,6 +93,13 @@ namespace BrowserSelector.Core.Models
         private int _useCount;
 
         /// <summary>
+        /// Gets or sets ユーザーが明示的に割り当てたホットキー文字（1文字、Phase E-1）.
+        /// 未設定の場合は空文字。設定されている場合、表示順に基づく既定のホットキーバッジより優先される.
+        /// </summary>
+        [ObservableProperty]
+        private string _hotkey = string.Empty;
+
+        /// <summary>
         /// Gets or sets ブラウザの一意識別子.
         /// </summary>
         public Guid Id { get; set; } = Guid.NewGuid();
@@ -138,7 +145,8 @@ namespace BrowserSelector.Core.Models
                 IsDefault = false, // 複製時はデフォルトをfalseにする
                 IsEnabled = IsEnabled,
                 DisplayOrder = DisplayOrder,
-                Type = Type
+                Type = Type,
+                Hotkey = Hotkey
             };
         }
     }

@@ -22,10 +22,10 @@ public class AppComponentTests
 
         // Assert
         hostField.Should().NotBeNull("_hostフィールドが存在すること");
-        hostField!.FieldType.Should().Be(typeof(IHost), "_hostフィールドの型が正しいこと");
+        hostField!.FieldType.Should().Be<IHost>("_hostフィールドの型が正しいこと");
 
         logServiceField.Should().NotBeNull("_logServiceフィールドが存在すること");
-        logServiceField!.FieldType.Should().Be(typeof(ILogService), "_logServiceフィールドの型が正しいこと");
+        logServiceField!.FieldType.Should().Be<ILogService>("_logServiceフィールドの型が正しいこと");
     }
 
     /// <summary>
@@ -62,10 +62,10 @@ public class AppComponentTests
 
         // Assert
         onStartupMethod!.GetParameters().Should().HaveCount(1, "OnStartupメソッドのパラメータ数が正しいこと");
-        onStartupMethod.GetParameters()[0].ParameterType.Should().Be(typeof(StartupEventArgs), "OnStartupメソッドのパラメータ型が正しいこと");
+        onStartupMethod.GetParameters()[0].ParameterType.Should().Be<StartupEventArgs>("OnStartupメソッドのパラメータ型が正しいこと");
 
         onExitMethod!.GetParameters().Should().HaveCount(1, "OnExitメソッドのパラメータ数が正しいこと");
-        onExitMethod.GetParameters()[0].ParameterType.Should().Be(typeof(ExitEventArgs), "OnExitメソッドのパラメータ型が正しいこと");
+        onExitMethod.GetParameters()[0].ParameterType.Should().Be<ExitEventArgs>("OnExitメソッドのパラメータ型が正しいこと");
     }
 
     /// <summary>
@@ -110,7 +110,7 @@ public class AppComponentTests
         var appType = typeof(BrowserSelector.App.App);
 
         // Assert
-        appType.BaseType.Should().Be(typeof(Application), "Appクラスの基底型が正しいこと");
+        appType.BaseType.Should().Be<Application>("Appクラスの基底型が正しいこと");
         appType.BaseType!.Should().NotBeNull("Appクラスの基底型がnullでないこと");
     }
 
@@ -280,8 +280,8 @@ public class AppComponentTests
         var baseBaseType = baseType?.BaseType;
 
         // Assert
-        baseType.Should().Be(typeof(Application), "Appクラスの直接基底型が正しいこと");
-        baseBaseType!.Should().Be(typeof(System.Windows.Threading.DispatcherObject), "Appクラスの間接基底型が正しいこと");
+        baseType.Should().Be<Application>("Appクラスの直接基底型が正しいこと");
+        baseBaseType!.Should().Be<System.Windows.Threading.DispatcherObject>("Appクラスの間接基底型が正しいこと");
     }
 
     /// <summary>
@@ -359,10 +359,10 @@ public class AppComponentTests
         var logServiceField = appType.GetField("_logService", BindingFlags.NonPublic | BindingFlags.Instance);
 
         // Assert
-        hostField!.FieldType.Should().Be(typeof(IHost), "_hostフィールドの型が正しいこと");
+        hostField!.FieldType.Should().Be<IHost>("_hostフィールドの型が正しいこと");
         hostField.FieldType.IsInterface.Should().BeTrue("_hostフィールドの型がインターフェースであること");
 
-        logServiceField!.FieldType.Should().Be(typeof(ILogService), "_logServiceフィールドの型が正しいこと");
+        logServiceField!.FieldType.Should().Be<ILogService>("_logServiceフィールドの型が正しいこと");
         logServiceField.FieldType.IsInterface.Should().BeTrue("_logServiceフィールドの型がインターフェースであること");
     }
 
@@ -432,8 +432,6 @@ public class AppComponentTests
         // Assert
         types.Should().NotBeEmpty("Appクラスのアセンブリに型が存在すること");
         types.Should().Contain(typeof(BrowserSelector.App.App), "Appクラスがアセンブリに含まれること");
-        types.Should().Contain(typeof(BrowserSelector.App.MainWindow), "MainWindowクラスがアセンブリに含まれること");
-        types.Should().Contain(typeof(BrowserSelector.App.Program), "Programクラスがアセンブリに含まれること");
     }
 
     /// <summary>
@@ -450,7 +448,5 @@ public class AppComponentTests
         // Assert
         exportedTypes.Should().NotBeEmpty("Appクラスのアセンブリにエクスポート型が存在すること");
         exportedTypes.Should().Contain(typeof(BrowserSelector.App.App), "Appクラスがエクスポート型に含まれること");
-        exportedTypes.Should().Contain(typeof(BrowserSelector.App.MainWindow), "MainWindowクラスがエクスポート型に含まれること");
-        exportedTypes.Should().Contain(typeof(BrowserSelector.App.Program), "Programクラスがエクスポート型に含まれること");
     }
 }

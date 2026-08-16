@@ -9,8 +9,12 @@ using System.Diagnostics;
 
 namespace BrowserSelector.E2ETests;
 
+// CA1812: NUnitがリフレクション経由でインスタンス化するテストクラスのため、
+// 静的解析からは「未使用」に見えるが実際には実行時に使用される（正当な理由による抑制）。
+#pragma warning disable CA1812
 [TestFixture]
-public class BrowserSelectorE2ETests
+internal sealed class BrowserSelectorE2ETests
+#pragma warning restore CA1812
 {
     private Process? _appProcess = null;
     private IServiceProvider? _serviceProvider = null;

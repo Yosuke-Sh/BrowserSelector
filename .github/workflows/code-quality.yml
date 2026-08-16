@@ -1,63 +1,45 @@
-name: Test Suite
+name: Code Quality
 
 on:
   push:
-    branches: [ main, developer ]
+    branches: [ master, developer ]
   pull_request:
-    branches: [ main, developer ]
+    branches: [ master, developer ]
+
+env:
+  DOTNET_VERSION: '10.0.x'
+  SOLUTION_FILE: 'BrowserSelector.WPF.sln'
 
 jobs:
-  test:
-    runs-on: windows-2022
-    
+  # 静的解析専用ジョブ。テスト実行は ci.yml に一本化済み（Phase F-3）。
+  static-analysis:
+    runs-on: windows-latest
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-    
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '8.0.x'
-    
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
     - name: Restore dependencies
-      run: dotnet restore
-    
-    - name: Build project
-      run: dotnet build --configuration Release --no-restore
-    
-    - name: Run all tests
+      run: dotnet restore ${{ env.SOLUTION_FILE }}
+
+    - name: Build with analyzers (warnings fail the job)
       run: |
-        Write-Host "Running all tests..."
-        $testProjects = @(
-          "tests/BrowserSelector.UnitTests",
-          "tests/BrowserSelector.IntegrationTests", 
-          "tests/BrowserSelector.CoreTests",
-          "tests/BrowserSelector.InfrastructureTests",
-          "tests/BrowserSelector.AppTests",
-          "tests/BrowserSelector.E2ETests",
-          "tests/BrowserSelector.UITests",
-          "tests/BrowserSelector.LibraryTests",
-          "tests/BrowserSelector.SecurityTests"
-        )
-        
-        foreach ($project in $testProjects) {
-          Write-Host "Running tests for: $project"
-          try {
-            dotnet test $project --configuration Release --no-build --logger trx --results-directory TestResults --verbosity normal
-            Write-Host "Tests completed successfully for: $project"
-          } catch {
-            Write-Host "Tests failed for: $project - $($_.Exception.Message)"
-          }
+        $buildOutput = dotnet build ${{ env.SOLUTION_FILE }} --configuration Release --no-restore --verbosity normal 2>&1
+        $buildOutput | ForEach-Object { Write-Host $_ }
+        if ($LASTEXITCODE -ne 0) {
+          Write-Error "Build failed"
+          exit 1
         }
-        Write-Host "All tests execution completed"
-      continue-on-error: true
-    
-    - name: Upload test results
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: test-results
-        path: TestResults/
-        retention-days: 7
-
-
+        $warnings = $buildOutput | Select-String "warning "
+        if ($warnings) {
+          Write-Host "::error::Build warnings detected. This project's policy is zero warnings."
+          $warnings | ForEach-Object { Write-Host "::error::$($_.Line)" }
+          exit 1
+        } else {
+          Write-Host "✅ No build warnings detected - Build is clean"
+        }

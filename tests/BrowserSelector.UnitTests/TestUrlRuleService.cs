@@ -8,7 +8,7 @@ namespace BrowserSelector.UnitTests;
 /// テスト用のURLルールサービス実装
 /// 実際のファイルシステムではなく、テスト用の一時ディレクトリを使用.
 /// </summary>
-public class TestUrlRuleService : IUrlRuleService
+internal sealed class TestUrlRuleService : IUrlRuleService
 {
     private readonly List<UrlRule> _rules = [];
     private readonly string _rulesFilePath;

@@ -65,10 +65,13 @@ public partial class IconSelectionDialog : Window
 
             }
         }
+        // CA1031: アイコン抽出処理はWin32 API/System.Drawing/ファイルIO由来の多様な例外を返しうるベストエフォート処理。失敗時はアイコン表示を諦めてUIを継続させるための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception)
         {
             // 実行ファイルアイコン読み込みエラーは無視
         }
+        #pragma warning restore CA1031
     }
 
     #region Win32 API
@@ -129,6 +132,8 @@ public partial class IconSelectionDialog : Window
                 }
             }
         }
+        // CA1031: アイコン抽出処理はWin32 API/System.Drawing/ファイルIO由来の多様な例外を返しうるベストエフォート処理。失敗時はアイコン表示を諦めてUIを継続させるための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             _logService?.LogError($"アイコン抽出エラー: {executablePath}, {ex.Message}", "IconSelectionDialog", ex);
@@ -148,11 +153,15 @@ public partial class IconSelectionDialog : Window
                     });
                 }
             }
+            // CA1031: アイコン抽出処理はWin32 API/System.Drawing/ファイルIO由来の多様な例外を返しうるベストエフォート処理。失敗時はアイコン表示を諦めてUIを継続させるための意図的な汎用catch。
+            #pragma warning disable CA1031
             catch (Exception fallbackEx)
             {
                 _logService?.LogError($"フォールバックアイコン抽出エラー: {fallbackEx.Message}", "IconSelectionDialog", fallbackEx);
             }
+            #pragma warning restore CA1031
         }
+        #pragma warning restore CA1031
 
         return icons;
     }
@@ -195,18 +204,24 @@ public partial class IconSelectionDialog : Window
                             }
                         }
                     }
+                    // CA1031: アイコン抽出処理はWin32 API/System.Drawing/ファイルIO由来の多様な例外を返しうるベストエフォート処理。失敗時はアイコン表示を諦めてUIを継続させるための意図的な汎用catch。
+                    #pragma warning disable CA1031
                     catch (Exception ex)
                     {
                         // フォルダアクセスエラーは無視
                         _logService?.LogWarning($"フォルダアクセスエラー: {folder}, {ex.Message}", "IconSelectionDialog");
                     }
+                    #pragma warning restore CA1031
                 }
             }
         }
+        // CA1031: アイコン抽出処理はWin32 API/System.Drawing/ファイルIO由来の多様な例外を返しうるベストエフォート処理。失敗時はアイコン表示を諦めてUIを継続させるための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             _logService?.LogError($"システムアイコン読み込みエラー: {ex.Message}", "IconSelectionDialog", ex);
         }
+        #pragma warning restore CA1031
     }
 
     private List<string> GetRecentIcons()
@@ -241,10 +256,13 @@ public partial class IconSelectionDialog : Window
                 }
             }
         }
+        // CA1031: アイコン抽出処理はWin32 API/System.Drawing/ファイルIO由来の多様な例外を返しうるベストエフォート処理。失敗時はアイコン表示を諦めてUIを継続させるための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             _logService?.LogError($"最近使用アイコン読み込みエラー: {ex.Message}", "IconSelectionDialog", ex);
         }
+        #pragma warning restore CA1031
     }
 
     private void AddIconButton(IconInfo iconInfo, WrapPanel panel)
@@ -273,10 +291,13 @@ public partial class IconSelectionDialog : Window
             button.Click += IconButton_Click;
             _ = panel.Children.Add(button);
         }
+        // CA1031: アイコン抽出処理はWin32 API/System.Drawing/ファイルIO由来の多様な例外を返しうるベストエフォート処理。失敗時はアイコン表示を諦めてUIを継続させるための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             _logService?.LogError($"アイコンボタン作成エラー: {iconInfo.Path}, {ex.Message}", "IconSelectionDialog", ex);
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>
@@ -314,11 +335,14 @@ public partial class IconSelectionDialog : Window
 
             return bitmap;
         }
+        // CA1031: アイコン抽出処理はWin32 API/System.Drawing/ファイルIO由来の多様な例外を返しうるベストエフォート処理。失敗時はアイコン表示を諦めてUIを継続させるための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             _logService?.LogError($"アイコン変換エラー: {ex.Message}", "IconSelectionDialog", ex);
             return null!;
         }
+        #pragma warning restore CA1031
     }
 
     private bool IsValidIconFile(string filePath)
@@ -337,10 +361,13 @@ public partial class IconSelectionDialog : Window
                 return icon != null;
             }
         }
-        catch
+        // CA1031: アイコン抽出処理はWin32 API/System.Drawing/ファイルIO由来の多様な例外を返しうるベストエフォート処理。失敗時は無効なファイルとして扱うための意図的な汎用catch。
+#pragma warning disable CA1031
+        catch (Exception)
         {
             // エラーが発生した場合は無効なファイルとして扱う
         }
+#pragma warning restore CA1031
         return false;
     }
 
@@ -387,10 +414,13 @@ public partial class IconSelectionDialog : Window
 
             _logService?.LogInformation($"アイコンが選択されました: {iconInfo.Path}, インデックス: {iconInfo.Index}", "IconSelectionDialog");
         }
+        // CA1031: アイコン抽出処理はWin32 API/System.Drawing/ファイルIO由来の多様な例外を返しうるベストエフォート処理。失敗時はアイコン表示を諦めてUIを継続させるための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             _logService?.LogError($"アイコン表示更新エラー: {iconInfo.Path}, {ex.Message}", "IconSelectionDialog", ex);
         }
+        #pragma warning restore CA1031
     }
 
     private void BrowseCustomIcon_Click(object sender, RoutedEventArgs e)

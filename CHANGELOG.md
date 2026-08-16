@@ -7,12 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Planned for v0.2.0
-- Performance optimization and monitoring
-- Enhanced accessibility features
-- Additional language support (Chinese, Korean)
-- Advanced installer packages (MSI)
-- Plugin system architecture
+### Planned for v0.3.0
+- Automatic update system (GitHub Releases integration, differential updates, rollback)
+
+## [0.2.0] - 2026-08-16
+
+### 🚀 .NET 10 Migration & Glass UI Overhaul
+
+- **.NET 10 Migration**: All projects retargeted from `net8.0-windows` to `net10.0-windows`
+- **Glass UI**: Mica/Acrylic/MicaAlt DWM backdrops, with solid-translucent and fully opaque fallbacks for non-DWM environments
+- **Browser Tile Redesign**: Hover animations, focus rings, hotkey badges, layered depth
+- **Keyboard Operation**: Esc to close, Enter/Space to launch, arrow keys/Tab for grid navigation, 1-9/A-Z hotkeys per browser, Ctrl+, to open settings, Ctrl+click/Ctrl+Enter to launch without closing
+- **Startup Control**: Countdown auto-launch, tray residency, CLI options (`-d`/`--delay`, `-b`/`--browser`, `--silent`, `--auto-launch`, `-h`/`--help`, `-v`/`--version`)
+- **Settings Redesign**: New Appearance tab (backdrop mode, opacity, corner radius, title bar toggle, always-on-top, theme), restored Accessibility tab
+- **About Section**: New version-info section with `.iss` installer version auto-injected from `Directory.Build.props`
+- **Performance**: Single-instance enforcement, icon caching, ReadyToRun publishing for faster startup
+- **New Logo**: Refreshed application logo and icon set
+- **New Services**: `IIconCacheService`, `IThemeService`, `IExternalLinkService`, `ISingleInstanceManager`, `ICustomLanguageService`
+- **CI/CD**: New `release.yml` workflow (tag-triggered Inno Setup installer build and GitHub Release publishing)
+
+### 🧪 Testing
+- **Total**: 658 tests (657 passing, one known flaky test excluded), zero build warnings
+  - UnitTests: 241 (240 passing)
+  - CoreTests: 31
+  - InfrastructureTests: 28
+  - IntegrationTests: 23
+  - SecurityTests: 238
+  - AppTests: 88
+  - UITests: 5
+  - E2ETests: 4
 
 ## [0.1.1] - 2025-09-13
 
@@ -38,7 +61,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### ✨ Added
 - **Core Browser Management**: Automatic browser detection, custom browser support
 - **High-Quality Icon Display**: Win32 API-based icon extraction and rendering
-- **Modern UI/UX**: Transparent windows, custom backgrounds, rounded corners
+- **Modern UI/UX**: Custom backgrounds, rounded corners (note: true window transparency/glass backdrops were not yet implemented at this point — see v0.2.0 for the Mica/Acrylic glass UI)
 - **Multi-Language Support**: Japanese and English with dynamic language switching
 - **Protocol Association**: Automatic `browser://` protocol registration
 - **Settings Management**: Comprehensive configuration system
@@ -83,34 +106,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Installer Localization**: Multi-language installer interface
 
 ### 🔒 Security
-- **Code Signing**: Digitally signed executable and installer
+- **Code Signing**: Not implemented (executable and installer are unsigned)
 - **Input Validation**: Comprehensive URL and file path validation
 - **Registry Security**: Safe registry access with proper permissions
 - **File System Security**: Secure file operations with proper error handling
 
 ## Future Roadmap
 
-### v0.2.0 - Performance Optimization
-- [ ] **Performance Monitoring**: Real-time metrics collection and analysis
-- [ ] **Startup Optimization**: Reduce application startup time to under 2 seconds
-- [ ] **Memory Optimization**: Reduce memory usage to under 50MB
-- [ ] **UI Responsiveness**: Improve UI response time to under 50ms
-- [ ] **Browser Detection Speed**: Optimize browser detection to under 1 second
-- [ ] **Icon Loading Performance**: Optimize icon loading to under 200ms
+### v0.2.0 - .NET 10 Migration & Glass UI ✅ Completed
+- [x] **.NET 10 Migration**: All projects retargeted to `net10.0-windows`
+- [x] **Glass UI**: Mica/Acrylic/MicaAlt backdrops, browser tile redesign
+- [x] **Keyboard Operation**: Full keyboard navigation and hotkeys
+- [x] **Startup Optimization**: Single-instance enforcement, icon caching, ReadyToRun
+- [x] **Startup Control**: Countdown auto-launch, tray residency, CLI options
+- [x] **Settings Redesign**: Appearance tab, Accessibility tab
 
-### v0.3.0 - Enhanced Features
+### v0.3.0 - Automatic Update System
+- [ ] **Auto-Update System**: Complete GitHub Releases integration
+- [ ] **Differential Updates**: Settings file differential update logic
+- [ ] **Rollback Functionality**: Backup and rollback on failed updates
+- [ ] **Secure Update Process**: Checksum/signature verification for update packages
+
+### v0.4.0 - Enhanced Features
 - [ ] **Advanced Installer**: MSI package with advanced features
 - [ ] **Plugin System**: Extensible architecture for third-party plugins
 - [ ] **Advanced Customization**: Theme system and advanced UI customization
 - [ ] **Accessibility**: Complete screen reader support and keyboard navigation
 
-### v0.4.0 - Internationalization
+### v0.5.0 - Internationalization
 - [ ] **Additional Languages**: Chinese (zh-CN), Korean (ko-KR)
 - [ ] **RTL Support**: Arabic and Hebrew language support
 - [ ] **Regional Settings**: Culture-specific formatting and preferences
 
-### v0.5.0 - Advanced Features
-- [ ] **Auto-Update System**: Complete GitHub Releases integration
+### v0.6.0 - Advanced Features
 - [ ] **Cloud Sync**: Settings synchronization across devices
 - [ ] **Advanced URL Rules**: Complex pattern matching and conditions
 - [ ] **Browser Profiles**: Support for browser profiles and containers

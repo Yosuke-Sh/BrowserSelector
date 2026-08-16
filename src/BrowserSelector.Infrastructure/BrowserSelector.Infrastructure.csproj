@@ -5,11 +5,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.8" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.8" />
-    <PackageReference Include="Microsoft.Extensions.Localization" Version="9.0.8" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.8" />
-    <PackageReference Include="System.Drawing.Common" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="Microsoft.Extensions.Localization" />
+    <PackageReference Include="Microsoft.Extensions.Logging" />
+    <!-- System.Drawing.Common は net10.0-windows のシェアードフレームワークに含まれるため、
+         明示的なPackageReferenceは不要（NU1510）。コード上の using/型参照はそのまま利用可能 -->
   </ItemGroup>
 
   <ItemGroup>
@@ -17,7 +18,7 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
@@ -31,6 +32,11 @@
     <EmbeddedResource Include="Localization\*.json">
       <LogicalName>BrowserSelector.Infrastructure.Localization.%(Filename).json</LogicalName>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <!-- UnitTestsからSettingsServiceのテスト専用コンストラクタ（設定ディレクトリ注入）へのアクセスを許可 -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="BrowserSelector.UnitTests" />
   </ItemGroup>
 
 </Project>

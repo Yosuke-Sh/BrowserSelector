@@ -1,0 +1,44 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ライトテーマのデザイントークン。役割ベースの命名で統一し、色名（BlueBrush等）は使わない。 -->
+
+    <Color x:Key="Color.Surface">#FFFFFF</Color>
+    <Color x:Key="Color.SurfaceAlt">#FAFAFA</Color>
+    <Color x:Key="Color.SurfaceHover">#E3F2FD</Color>
+    <Color x:Key="Color.SurfaceDisabled">#F0F0F0</Color>
+    <Color x:Key="Color.Accent">#2196F3</Color>
+    <Color x:Key="Color.TextPrimary">#212121</Color>
+    <Color x:Key="Color.TextSecondary">#666666</Color>
+    <Color x:Key="Color.TextDisabled">#9E9E9E</Color>
+    <Color x:Key="Color.TextOnAccent">#FFFFFF</Color>
+    <Color x:Key="Color.Border">#E0E0E0</Color>
+    <Color x:Key="Color.BorderStrong">#D0D0D0</Color>
+    <Color x:Key="Color.FocusRing">#2196F3</Color>
+    <Color x:Key="Color.Scrim">#80000000</Color>
+
+    <!-- エレベーション（奥行き表現）用トークン。Phase C-7。3D変換は使わず、影・半透明の重なりで階層を表す。 -->
+    <Color x:Key="Color.ElevationCard">#CCFFFFFF</Color>
+    <Color x:Key="Color.ElevationCardHover">#E6FFFFFF</Color>
+    <Color x:Key="Color.ElevationShadow">#33000000</Color>
+    <Color x:Key="Color.ElevationShadowHover">#4D000000</Color>
+
+    <SolidColorBrush x:Key="Brush.Surface" Color="{StaticResource Color.Surface}"/>
+    <SolidColorBrush x:Key="Brush.SurfaceAlt" Color="{StaticResource Color.SurfaceAlt}"/>
+    <SolidColorBrush x:Key="Brush.SurfaceHover" Color="{StaticResource Color.SurfaceHover}"/>
+    <SolidColorBrush x:Key="Brush.SurfaceDisabled" Color="{StaticResource Color.SurfaceDisabled}"/>
+    <SolidColorBrush x:Key="Brush.Accent" Color="{StaticResource Color.Accent}"/>
+    <SolidColorBrush x:Key="Brush.TextPrimary" Color="{StaticResource Color.TextPrimary}"/>
+    <SolidColorBrush x:Key="Brush.TextSecondary" Color="{StaticResource Color.TextSecondary}"/>
+    <SolidColorBrush x:Key="Brush.TextDisabled" Color="{StaticResource Color.TextDisabled}"/>
+    <SolidColorBrush x:Key="Brush.TextOnAccent" Color="{StaticResource Color.TextOnAccent}"/>
+    <SolidColorBrush x:Key="Brush.Border" Color="{StaticResource Color.Border}"/>
+    <SolidColorBrush x:Key="Brush.BorderStrong" Color="{StaticResource Color.BorderStrong}"/>
+    <SolidColorBrush x:Key="Brush.FocusRing" Color="{StaticResource Color.FocusRing}"/>
+    <SolidColorBrush x:Key="Brush.Scrim" Color="{StaticResource Color.Scrim}"/>
+    <SolidColorBrush x:Key="Brush.ElevationCard" Color="{StaticResource Color.ElevationCard}"/>
+    <SolidColorBrush x:Key="Brush.ElevationCardHover" Color="{StaticResource Color.ElevationCardHover}"/>
+    <SolidColorBrush x:Key="Brush.ElevationShadow" Color="{StaticResource Color.ElevationShadow}"/>
+    <SolidColorBrush x:Key="Brush.ElevationShadowHover" Color="{StaticResource Color.ElevationShadowHover}"/>
+
+</ResourceDictionary>

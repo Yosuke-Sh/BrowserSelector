@@ -15,12 +15,15 @@ namespace BrowserSelector.Presentation.ViewModels;
 /// </summary>
 public partial class MainViewModel : ObservableObject
 {
+    private const int CloseAfterLaunchSaveDebounceMs = 800;
+
     private readonly IBrowserService _browserService;
     private readonly ISettingsService _settingsService;
     private readonly ILocalizationService _localizationService;
     private readonly ICustomLanguageService _customLanguageService;
     private readonly IUrlRuleService _urlRuleService;
     private readonly ILogService? _logService;
+    private readonly IExternalLinkService? _externalLinkService;
 
     [ObservableProperty]
     private ObservableCollection<Browser> _browsers = [];
@@ -46,6 +49,38 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private VisualSettings _visualSettings = new();
 
+    [ObservableProperty]
+    private bool _closeAfterLaunch;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether カスタムタイトルバーを表示するか（<see cref="AppSettings.ShowTitleBar"/>）.
+    /// falseの場合、タイトルバー内の設定・最小化・閉じるボタンが操作不能になるため、
+    /// 代わりにハンバーガーメニュー（<see cref="HamburgerMenuCommand"/>）を表示する.
+    /// </summary>
+    [ObservableProperty]
+    private bool _showTitleBar = true;
+
+    /// <summary>
+    /// Gets or sets カウントダウン自動起動の残り秒数（Phase D）。0または非表示状態のときは非表示にする.
+    /// </summary>
+    [ObservableProperty]
+    private int _countdownRemainingSeconds;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether カウントダウン自動起動が有効な状態かどうか（Phase D）.
+    /// UIの残り秒数ラベルの表示切替に使用する.
+    /// </summary>
+    [ObservableProperty]
+    private bool _isCountdownActive;
+
+    /// <summary>
+    /// Ctrl+クリックによる「その起動に限り自動クローズを抑制」フラグ（Phase C-4）.
+    /// <see cref="LaunchBrowserCommand"/> 実行前に <see cref="MainWindow"/> 側で一時的に立てる.
+    /// </summary>
+    private bool _suppressAutoCloseOnce;
+
+    private System.Threading.Timer? _closeAfterLaunchSaveTimer;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="MainViewModel"/> class.
     /// </summary>
@@ -55,13 +90,17 @@ public partial class MainViewModel : ObservableObject
     /// <param name="customLanguageService">customLanguageService.</param>
     /// <param name="urlRuleService">urlRuleService.</param>
     /// <param name="logService">logService.</param>
+    /// <param name="externalLinkService">
+    /// 設定画面のAboutセクション（Phase E-2）へ引き継ぐための外部リンクサービス。省略可（テスト互換のため）.
+    /// </param>
     public MainViewModel(
         IBrowserService browserService,
         ISettingsService settingsService,
         ILocalizationService localizationService,
         ICustomLanguageService customLanguageService,
         IUrlRuleService urlRuleService,
-        ILogService logService)
+        ILogService logService,
+        IExternalLinkService? externalLinkService = null)
     {
         // まずログサービスを設定
         _logService = logService;
@@ -88,6 +127,8 @@ public partial class MainViewModel : ObservableObject
         _urlRuleService = urlRuleService;
         _logService?.LogDetailed(LogLevel.Debug, "IUrlRuleService設定完了", "MainViewModel",
                                 "MVVM_INIT", "ViewModel", "System", "MainViewModel", "Constructor", "Service_UrlRule");
+
+        _externalLinkService = externalLinkService;
 
         // 起動ログ
         try
@@ -119,6 +160,8 @@ public partial class MainViewModel : ObservableObject
                 VisualSettings = _settingsService.LoadVisualSettingsAsync().GetAwaiter().GetResult();
                 _logService?.LogDebug($"VisualSettings読み込み完了: Width={VisualSettings.InitialWindowWidth}, Height={VisualSettings.InitialWindowHeight}, UseGradient={VisualSettings.UseBackgroundGradient}, BackgroundColor={VisualSettings.BackgroundColor}, GradientStartColor={VisualSettings.GradientStartColor}, GradientEndColor={VisualSettings.GradientEndColor}", "MainViewModel");
             }
+            // CA1031: RelayCommand/イベントハンドラーの最上位try-catch。サービス呼び出しやUI操作など例外種別が多岐にわたり、UIスレッドをクラッシュさせないための意図的な汎用catch。
+            #pragma warning disable CA1031
             catch (Exception ex)
             {
                 _logService?.LogError($"VisualSettings読み込みエラー: {ex.Message}", "MainViewModel", ex);
@@ -126,8 +169,24 @@ public partial class MainViewModel : ObservableObject
                 VisualSettings = new VisualSettings();
                 _logService?.LogDebug($"デフォルトVisualSettings使用: UseGradient={VisualSettings.UseBackgroundGradient}, BackgroundColor={VisualSettings.BackgroundColor}", "MainViewModel");
             }
+            #pragma warning restore CA1031
             _logService?.LogDetailed(LogLevel.Debug, "VisualSettings読み込み完了", "MainViewModel",
                                     "MVVM_INIT", "ViewModel", "System", "MainViewModel", "Initialize", "LoadVisualSettings_Success");
+
+            // 初期化時に「起動後に閉じる」設定を読み込み（Phase C-5）
+            try
+            {
+                AppSettings initialAppSettings = _settingsService.LoadAppSettingsAsync().GetAwaiter().GetResult();
+                _closeAfterLaunch = initialAppSettings.CloseAfterUrlRuleMatch;
+                ShowTitleBar = initialAppSettings.ShowTitleBar;
+            }
+            // CA1031: RelayCommand/イベントハンドラーの最上位try-catch。サービス呼び出しやUI操作など例外種別が多岐にわたり、UIスレッドをクラッシュさせないための意図的な汎用catch。
+            #pragma warning disable CA1031
+            catch (Exception ex)
+            {
+                _logService?.LogError($"AppSettings読み込みエラー（CloseAfterLaunch既定値を使用）: {ex.Message}", "MainViewModel", ex);
+            }
+            #pragma warning restore CA1031
 
             // 初期化時にブラウザ一覧を読み込み（データが存在しない場合のみ検出）
             _logService?.LogDetailed(LogLevel.Debug, "ブラウザ一覧読み込み開始", "MainViewModel",
@@ -185,6 +244,7 @@ public partial class MainViewModel : ObservableObject
     /// <param name="e">e.</param>
     public void OnSettingsChanged(object? sender, SettingsChangedEventArgs e)
     {
+        ArgumentNullException.ThrowIfNull(e);
         if (e.SettingType == "VisualSettings" && e.NewValue is VisualSettings newVisualSettings)
         {
             // VisualSettingsを更新
@@ -208,6 +268,7 @@ public partial class MainViewModel : ObservableObject
     /// <param name="e">e.</param>
     public void OnBrowserChanged(object? sender, BrowserChangedEventArgs e)
     {
+        ArgumentNullException.ThrowIfNull(e);
         _logService?.LogDebug($"ブラウザ変更通知を受信: {e.Browser.Name}, 変更タイプ: {e.ChangeType}", "MainViewModel");
 
         // ブラウザ一覧を再読み込み
@@ -240,6 +301,65 @@ public partial class MainViewModel : ObservableObject
             // URLルールに基づいてブラウザを自動選択
             await ApplyUrlRulesAsync(url).ConfigureAwait(false);
         }
+    }
+
+    /// <summary>
+    /// 次回1回のブラウザ起動に限り、「起動後に閉じる」設定を無視してアプリを終了しないようにする（Ctrl+クリック、Phase C-4）.
+    /// </summary>
+    public void SuppressAutoCloseOnce()
+    {
+        _suppressAutoCloseOnce = true;
+    }
+
+    /// <summary>
+    /// 既定ブラウザへ起動する（Phase D: カウントダウン自動起動・<c>--silent</c>/<c>--auto-launch</c>CLIオプションから使用）.
+    /// URLが未設定の場合は何もしない。既定ブラウザが見つからない場合は先頭のブラウザへフォールバックする.
+    /// </summary>
+    /// <returns>representing the asynchronous operation.</returns>
+    public async Task LaunchDefaultBrowserAsync()
+    {
+        if (string.IsNullOrWhiteSpace(Url))
+        {
+            return;
+        }
+
+        Browser? target = Browsers.FirstOrDefault(b => b.IsDefault) ?? Browsers.FirstOrDefault();
+        if (target != null)
+        {
+            await LaunchBrowserAsync(target).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// 「起動後に閉じる」設定変更時、800msデバウンスしてAppSettingsへ保存する（Phase C-5）.
+    /// </summary>
+    partial void OnCloseAfterLaunchChanged(bool value)
+    {
+        _closeAfterLaunchSaveTimer?.Dispose();
+        _closeAfterLaunchSaveTimer = new System.Threading.Timer(
+            _ => SaveCloseAfterLaunchSetting(value),
+            null,
+            CloseAfterLaunchSaveDebounceMs,
+            System.Threading.Timeout.Infinite);
+    }
+
+    private void SaveCloseAfterLaunchSetting(bool value)
+    {
+        try
+        {
+            AppSettings appSettings = _settingsService.LoadAppSettingsAsync().GetAwaiter().GetResult();
+            appSettings.CloseAfterUrlRuleMatch = value;
+            _ = _settingsService.SaveAppSettingsAsync(appSettings).GetAwaiter().GetResult();
+            _logService?.LogDebug($"CloseAfterLaunch設定を保存しました: {value}", "MainViewModel");
+        }
+        // CA1031: デバウンスタイマーのコールバック（バックグラウンドスレッド）。UIスレッド外で例外が伝播すると
+        // プロセス終了につながるため、保存失敗をログに残しつつ握り潰す意図的な汎用catch。
+        #pragma warning disable CA1031
+        catch (Exception ex)
+        {
+            _logService?.LogError($"CloseAfterLaunch設定の保存エラー: {ex.Message}", "MainViewModel", ex);
+        }
+        #pragma warning restore CA1031
     }
 
     partial void OnVisualSettingsChanged(VisualSettings value)
@@ -285,10 +405,13 @@ public partial class MainViewModel : ObservableObject
 
             _logService?.LogInformation($"ウィンドウサイズを即座に変更: {width}x{height}", "MainViewModel");
         }
+        // CA1031: RelayCommand/イベントハンドラーの最上位try-catch。サービス呼び出しやUI操作など例外種別が多岐にわたり、UIスレッドをクラッシュさせないための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             _logService?.LogError($"ウィンドウサイズ変更エラー: {ex.Message}", "MainViewModel", ex);
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>
@@ -311,10 +434,13 @@ public partial class MainViewModel : ObservableObject
 
             _logService?.LogDebug("ApplyBackgroundChanges完了", "MainViewModel");
         }
+        // CA1031: RelayCommand/イベントハンドラーの最上位try-catch。サービス呼び出しやUI操作など例外種別が多岐にわたり、UIスレッドをクラッシュさせないための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             _logService?.LogError($"背景設定適用エラー: {ex.Message}", "MainViewModel", ex);
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>
@@ -366,6 +492,8 @@ public partial class MainViewModel : ObservableObject
 
             StatusMessage = LocalizedLogHelper.GetString("MainWindow.BrowsersDetected", Browsers.Count);
         }
+        // CA1031: RelayCommand/イベントハンドラーの最上位try-catch。サービス呼び出しやUI操作など例外種別が多岐にわたり、UIスレッドをクラッシュさせないための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             _logService?.LogError($"ブラウザ読み込みエラー: {ex.Message}", "MainViewModel", ex);
@@ -375,6 +503,7 @@ public partial class MainViewModel : ObservableObject
                 StatusMessage = LocalizedLogHelper.GetString("MainWindow.BrowserLoadError", ex.Message);
             });
         }
+        #pragma warning restore CA1031
         finally
         {
             IsLoading = false;
@@ -410,9 +539,10 @@ public partial class MainViewModel : ObservableObject
                 StatusMessage = $"ブラウザ {browser.Name} を起動しました";
                 _logService?.LogInformation($"ブラウザ起動成功: {browser.Name}", "MainViewModel");
 
-                // ブラウザ起動後のアプリ終了設定が有効な場合
-                AppSettings appSettings = await _settingsService.LoadAppSettingsAsync().ConfigureAwait(false);
-                if (appSettings.CloseAfterUrlRuleMatch)
+                // ブラウザ起動後のアプリ終了設定が有効な場合（Ctrl+クリックによる今回限りの抑制を優先、Phase C-4/C-5）
+                bool suppressThisTime = _suppressAutoCloseOnce;
+                _suppressAutoCloseOnce = false;
+                if (CloseAfterLaunch && !suppressThisTime)
                 {
                     _logService?.LogInformation("ブラウザ起動後のアプリ終了", "MainViewModel");
                     // UIスレッドでアプリケーションを終了
@@ -425,11 +555,14 @@ public partial class MainViewModel : ObservableObject
                 _logService?.LogWarning($"ブラウザ起動失敗: {browser.Name}", "MainViewModel");
             }
         }
+        // CA1031: RelayCommand/イベントハンドラーの最上位try-catch。サービス呼び出しやUI操作など例外種別が多岐にわたり、UIスレッドをクラッシュさせないための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             StatusMessage = $"ブラウザ起動エラー: {ex.Message}";
             _logService?.LogError($"ブラウザ起動例外: {browser?.Name}, エラー: {ex.Message}", "MainViewModel", ex);
         }
+        #pragma warning restore CA1031
         finally
         {
             IsLoading = false;
@@ -452,7 +585,7 @@ public partial class MainViewModel : ObservableObject
         try
         {
             // 設定画面を開く
-            SettingsViewModel settingsViewModel = new(_settingsService, _browserService, _localizationService, _customLanguageService, _urlRuleService, _logService ?? throw new InvalidOperationException("LogService is not available"));
+            SettingsViewModel settingsViewModel = new(_settingsService, _browserService, _localizationService, _customLanguageService, _urlRuleService, _logService ?? throw new InvalidOperationException("LogService is not available"), _externalLinkService);
             Views.SettingsWindow settingsWindow = new(settingsViewModel);
 
             // 設定変更通知のイベントハンドラーを登録
@@ -479,12 +612,15 @@ public partial class MainViewModel : ObservableObject
                 _logService?.LogDebug("設定画面がキャンセルされました。", "MainViewModel");
             }
         }
+        // CA1031: RelayCommand/イベントハンドラーの最上位try-catch。サービス呼び出しやUI操作など例外種別が多岐にわたり、UIスレッドをクラッシュさせないための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             _logService?.LogError($"設定画面を開くエラー: {ex.Message}", "MainViewModel", ex);
             _ = MessageBox.Show($"設定画面を開けませんでした: {ex.Message}", "エラー",
                           MessageBoxButton.OK, MessageBoxImage.Error);
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>
@@ -520,10 +656,13 @@ public partial class MainViewModel : ObservableObject
                 }
             });
         }
+        // CA1031: RelayCommand/イベントハンドラーの最上位try-catch。サービス呼び出しやUI操作など例外種別が多岐にわたり、UIスレッドをクラッシュさせないための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             _logService?.LogError($"視覚設定の再読み込みエラー: {ex.Message}", "MainViewModel", ex);
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>
@@ -569,11 +708,14 @@ public partial class MainViewModel : ObservableObject
                 StatusMessage = "URLルールにマッチするブラウザがありません";
             }
         }
+        // CA1031: RelayCommand/イベントハンドラーの最上位try-catch。サービス呼び出しやUI操作など例外種別が多岐にわたり、UIスレッドをクラッシュさせないための意図的な汎用catch。
+        #pragma warning disable CA1031
         catch (Exception ex)
         {
             _logService?.LogError($"URLルール適用エラー: {ex.Message}", "MainViewModel", ex);
             StatusMessage = "URLルールの適用中にエラーが発生しました";
         }
+        #pragma warning restore CA1031
     }
 
     /// <summary>
