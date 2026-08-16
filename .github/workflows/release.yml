@@ -52,6 +52,16 @@ jobs:
         -p:Version=${{ steps.version.outputs.VERSION }}
         --output src/BrowserSelector.App/bin/Release/net10.0-windows/win-x64/publish
 
+    - name: Publish updater
+      run: >
+        dotnet publish src/BrowserSelector.Updater/BrowserSelector.Updater.csproj
+        --configuration Release
+        --runtime win-x64
+        --self-contained false
+        -p:PublishReadyToRun=true
+        -p:Version=${{ steps.version.outputs.VERSION }}
+        --output src/BrowserSelector.App/bin/Release/net10.0-windows/win-x64/publish
+
     - name: Build installer (Inno Setup)
       shell: pwsh
       run: |
