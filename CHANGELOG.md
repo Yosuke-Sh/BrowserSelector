@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.3] - 2026-08-17
+
+### 🐛 Fixed
+- Fixed dialogs opened from the Settings window (browser add/edit, URL rule add/edit, log viewer, icon picker) appearing behind the main window instead of in front, making them hard to notice and operate. None of these dialogs had `Owner` set; they now use the active window (falling back to the main window).
+- Fixed the "Add Browser" duplicate check rejecting a browser whose executable path already existed even when the launch arguments differed (e.g., adding the same browser again with an incognito/private-browsing flag). The duplicate check now compares executable path *and* launch arguments together, so the same executable can be registered multiple times with different arguments.
+- Fixed missing English localization keys for the Accessibility settings tab (`Settings.Accessibility.Title`, `EnableFocusIndicator`, `FocusThickness`, `EnableShortcuts`, `EnableScreenReaderSupport`, `ProvideDetailedDescriptions`) that were present in ja-JP/zh-CN but absent from en-US, causing "resource key not found" warnings when running under English UI.
+
 ## [0.3.2] - 2026-08-16
 
 ### 🐛 Fixed
