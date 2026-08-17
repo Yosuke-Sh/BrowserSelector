@@ -7,6 +7,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Win32;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 
@@ -250,6 +251,16 @@ public partial class SettingsViewModel : ObservableObject
     public void RefreshLanguages()
     {
         _ = Task.Run(InitializeLanguagesAsync);
+    }
+
+    /// <summary>
+    /// ダイアログのOwnerに設定するアクティブウィンドウを取得する.
+    /// アクティブウィンドウが取得できない場合はメインウィンドウを返す（背面表示防止のため）.
+    /// </summary>
+    private static Window? GetActiveWindow()
+    {
+        return Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive)
+            ?? Application.Current.MainWindow;
     }
 
     partial void OnSelectedLanguageChanged(LanguageInfo? value)
@@ -789,10 +800,23 @@ public partial class SettingsViewModel : ObservableObject
         {
             LogService?.LogInformation("ブラウザ追加開始", "SettingsViewModel");
 
-            Views.BrowserEditDialog dialog = new(null, LogService);
+            Views.BrowserEditDialog dialog = new(null, LogService)
+            {
+                Owner = GetActiveWindow()
+            };
             if (dialog.ShowDialog() == true)
             {
                 Browser newBrowser = dialog.Browser;
+
+                if (DetectedBrowsers.Any(b =>
+                    b.ExecutablePath.Equals(newBrowser.ExecutablePath, StringComparison.OrdinalIgnoreCase) &&
+                    b.Arguments.Equals(newBrowser.Arguments, StringComparison.Ordinal)))
+                {
+                    LogService?.LogWarning($"ブラウザ追加失敗（実行ファイルパスと起動引数が重複）: {newBrowser.ExecutablePath} {newBrowser.Arguments}", "SettingsViewModel");
+                    _ = LocalizedMessageBox.ShowError("同じ実行ファイル・起動引数の組み合わせのブラウザが既に登録されています。");
+                    return;
+                }
+
                 newBrowser.DisplayOrder = DetectedBrowsers.Count + 1;
 
                 bool result = await _browserService.AddBrowserAsync(newBrowser).ConfigureAwait(false);
@@ -807,8 +831,8 @@ public partial class SettingsViewModel : ObservableObject
                 }
                 else
                 {
-                    LogService?.LogWarning("ブラウザ追加失敗", "SettingsViewModel");
-                    _ = LocalizedMessageBox.ShowError("ブラウザの追加に失敗しました。");
+                    LogService?.LogWarning($"ブラウザ追加失敗: Name={newBrowser.Name}, ExecutablePath={newBrowser.ExecutablePath}", "SettingsViewModel");
+                    _ = LocalizedMessageBox.ShowError("ブラウザの追加に失敗しました。実行ファイルのパスが正しいかご確認ください。");
                 }
             }
         }
@@ -841,7 +865,10 @@ public partial class SettingsViewModel : ObservableObject
         {
             LogService?.LogInformation("URLルール追加開始", "SettingsViewModel");
 
-            Views.UrlRuleEditDialog dialog = new(_browserService, LogService!);
+            Views.UrlRuleEditDialog dialog = new(_browserService, LogService!)
+            {
+                Owner = GetActiveWindow()
+            };
             if (dialog.ShowDialog() == true)
             {
                 UrlRule newRule = dialog.UrlRule;
@@ -879,7 +906,10 @@ public partial class SettingsViewModel : ObservableObject
         {
             LogService?.LogInformation($"URLルール編集開始: {rule.Pattern}", "SettingsViewModel");
 
-            Views.UrlRuleEditDialog dialog = new(rule, _browserService, LogService!);
+            Views.UrlRuleEditDialog dialog = new(rule, _browserService, LogService!)
+            {
+                Owner = GetActiveWindow()
+            };
             if (dialog.ShowDialog() == true)
             {
                 UrlRule updatedRule = dialog.UrlRule;
@@ -1347,7 +1377,10 @@ public partial class SettingsViewModel : ObservableObject
         try
         {
             string logContent = LogService.GetLogContent();
-            Views.LogViewerWindow logWindow = new(logContent);
+            Views.LogViewerWindow logWindow = new(logContent)
+            {
+                Owner = GetActiveWindow()
+            };
             _ = logWindow.ShowDialog();
         }
         // CA1031: RelayCommandハンドラーの最上位try-catch。WPFダイアログ表示やサービス呼び出しなど例外種別が多岐にわたり、UIスレッドをクラッシュさせないための最終防御であるため意図的に汎用catchとする。
@@ -1428,7 +1461,10 @@ public partial class SettingsViewModel : ObservableObject
 
             LogService?.LogInformation($"ブラウザ編集開始: {targetBrowser.Name}", "SettingsViewModel");
 
-            Views.BrowserEditDialog dialog = new(targetBrowser, LogService);
+            Views.BrowserEditDialog dialog = new(targetBrowser, LogService)
+            {
+                Owner = GetActiveWindow()
+            };
             if (dialog.ShowDialog() == true)
             {
                 Browser updatedBrowser = dialog.Browser;

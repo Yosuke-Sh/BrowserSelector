@@ -206,8 +206,11 @@ public class BrowserService : IBrowserService
                 return false;
             }
 
-            // 重複チェック
-            if (_browsers.Exists(b => b.ExecutablePath.Equals(browser.ExecutablePath, StringComparison.OrdinalIgnoreCase)))
+            // 重複チェック（実行ファイルパスと起動引数の組み合わせが完全一致する場合のみ重複とみなす。
+            // 同一実行ファイルでも起動引数が異なれば別ブラウザ設定として登録を許可する）
+            if (_browsers.Exists(b =>
+                b.ExecutablePath.Equals(browser.ExecutablePath, StringComparison.OrdinalIgnoreCase) &&
+                b.Arguments.Equals(browser.Arguments, StringComparison.Ordinal)))
             {
                 return false;
             }

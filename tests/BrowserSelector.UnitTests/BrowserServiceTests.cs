@@ -74,6 +74,57 @@ public class BrowserServiceTests
         _ = result.Should().BeFalse();
     }
 
+    [Fact]
+    public async Task AddBrowserAsync_WithSameExecutablePathAndSameArguments_ShouldReturnFalse()
+    {
+        // Arrange
+        Browser first = new()
+        {
+            Name = "Chrome",
+            ExecutablePath = @"C:\Program Files\Chrome\chrome.exe",
+            Arguments = "--incognito"
+        };
+        Browser duplicate = new()
+        {
+            Name = "Chrome (Duplicate)",
+            ExecutablePath = @"C:\Program Files\Chrome\chrome.exe",
+            Arguments = "--incognito"
+        };
+
+        // Act
+        bool firstResult = await _browserService.AddBrowserAsync(first);
+        bool duplicateResult = await _browserService.AddBrowserAsync(duplicate);
+
+        // Assert
+        _ = firstResult.Should().BeTrue();
+        _ = duplicateResult.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task AddBrowserAsync_WithSameExecutablePathButDifferentArguments_ShouldReturnTrue()
+    {
+        // Arrange
+        Browser first = new()
+        {
+            Name = "Chrome",
+            ExecutablePath = @"C:\Program Files\Chrome\chrome.exe",
+            Arguments = "--incognito"
+        };
+        Browser second = new()
+        {
+            Name = "Chrome (Profile2)",
+            ExecutablePath = @"C:\Program Files\Chrome\chrome.exe",
+            Arguments = "--profile-directory=Profile2"
+        };
+
+        // Act
+        bool firstResult = await _browserService.AddBrowserAsync(first);
+        bool secondResult = await _browserService.AddBrowserAsync(second);
+
+        // Assert
+        _ = firstResult.Should().BeTrue();
+        _ = secondResult.Should().BeTrue();
+    }
 
 }
 

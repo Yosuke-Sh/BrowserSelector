@@ -115,7 +115,10 @@ public partial class BrowserEditDialog : Window
 
     private void SelectIcon_Click(object sender, RoutedEventArgs e)
     {
-        IconSelectionDialog dialog = new(_logService);
+        IconSelectionDialog dialog = new(_logService)
+        {
+            Owner = this
+        };
 
         // 実行ファイルが設定されている場合、そのアイコンを優先表示
         if (!string.IsNullOrEmpty(Browser.ExecutablePath) && File.Exists(Browser.ExecutablePath))
