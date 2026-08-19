@@ -126,5 +126,37 @@ public class BrowserServiceTests
         _ = secondResult.Should().BeTrue();
     }
 
+    [Fact]
+    public async Task LaunchBrowserAsync_WhenProcessExitsImmediately_ShouldReturnTrue()
+    {
+        // Arrange
+        // cmd.exe /c exit は起動直後に終了するため、Chrome/Edge等がブートストラップ
+        // プロセスを既存インスタンスへの引き渡し後すぐ終了させる状況を再現する。
+        // 起動確認にProcess.GetProcessByIdを使うと、この即終了によりArgumentExceptionが
+        // 発生して成功判定を握りつぶす不具合があった（該当コードは削除済み）。
+        string systemRoot = Environment.GetEnvironmentVariable("SystemRoot") ?? @"C:\Windows";
+        string cmdPath = System.IO.Path.Combine(systemRoot, "System32", "cmd.exe");
+        Browser browser = new()
+        {
+            Name = "ImmediateExitProcess",
+            ExecutablePath = cmdPath,
+            Arguments = "/c exit"
+        };
+
+        _ = _mockUrlService
+            .Setup(x => x.NormalizeUrlAsync(It.IsAny<Uri>()))
+            .ReturnsAsync("https://example.com/");
+        _ = _mockUrlService
+            .Setup(x => x.ValidateUrlAsync(It.IsAny<Uri>()))
+            .ReturnsAsync(true);
+
+        // Act
+        bool result = await _browserService.LaunchBrowserAsync(browser, "https://example.com/");
+
+        // Assert
+        _ = result.Should().BeTrue();
+        _ = browser.UseCount.Should().Be(1);
+    }
+
 }
 

@@ -144,13 +144,13 @@ public class BrowserService : IBrowserService
             string arguments = GetBrowserArguments(normalizedUrl);
 
             // ブラウザを起動
+            // 注: RedirectStandardOutput/Errorは設定しない。パイプを読み取らないまま起動すると、
+            // ブラウザの出力量がパイプバッファ（既定4KB程度）を超えた際にブラウザ側がブロックする可能性があるため。
             ProcessStartInfo startInfo = new()
             {
                 FileName = browser.ExecutablePath,
                 Arguments = arguments,
                 UseShellExecute = false,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
                 CreateNoWindow = false
             };
 
@@ -159,18 +159,10 @@ public class BrowserService : IBrowserService
             using Process? process = Process.Start(startInfo);
             if (process != null)
             {
+                // 注: Process.GetProcessById等による起動後確認は行わない。Chrome/Edge等は既存インスタンスへ
+                // URLを引き渡してブートストラッププロセスを即座に終了させることがあり、その場合ArgumentExceptionが
+                // 発生して起動成功判定を握りつぶしてしまうため（起動自体は成功しているにもかかわらず失敗扱いになる不具合）。
                 _logService.LogInformation($"プロセス起動成功 - PID: {process.Id}", nameof(BrowserService));
-
-                // プロセス情報を取得して確認
-                try
-                {
-                    Process processInfo = Process.GetProcessById(process.Id);
-                    _logService.LogDebug($"実際に起動されたプロセス - 名前: {processInfo.ProcessName}, ファイル名: {processInfo.MainModule?.FileName}", nameof(BrowserService));
-                }
-                catch (Exception ex) when (ex is InvalidOperationException or NotSupportedException)
-                {
-                    _logService.LogDebug($"プロセス情報取得エラー - {ex.Message}", nameof(BrowserService), ex);
-                }
 
                 // 使用回数を増加
                 browser.IncrementUseCount();
