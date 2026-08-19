@@ -30,7 +30,7 @@ public static class LocalizedMessageBox
         }
 
         string localizedTitle = title ?? _localizationService?.GetString("MessageBox.Confirm") ?? "Confirm";
-        return MessageBox.Show(message, localizedTitle, MessageBoxButton.YesNo, MessageBoxImage.Question);
+        return ShowCore(message, localizedTitle, MessageBoxButton.YesNo, MessageBoxImage.Question);
     }
 
     /// <summary>
@@ -45,7 +45,7 @@ public static class LocalizedMessageBox
         }
 
         string localizedTitle = title ?? _localizationService?.GetString("MessageBox.Information") ?? "Information";
-        return MessageBox.Show(message, localizedTitle, MessageBoxButton.OK, MessageBoxImage.Information);
+        return ShowCore(message, localizedTitle, MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
     /// <summary>
@@ -60,7 +60,7 @@ public static class LocalizedMessageBox
         }
 
         string localizedTitle = title ?? _localizationService?.GetString("MessageBox.Warning") ?? "Warning";
-        return MessageBox.Show(message, localizedTitle, MessageBoxButton.OK, MessageBoxImage.Warning);
+        return ShowCore(message, localizedTitle, MessageBoxButton.OK, MessageBoxImage.Warning);
     }
 
     /// <summary>
@@ -75,7 +75,7 @@ public static class LocalizedMessageBox
         }
 
         string localizedTitle = title ?? _localizationService?.GetString("MessageBox.Error") ?? "Error";
-        return MessageBox.Show(message, localizedTitle, MessageBoxButton.OK, MessageBoxImage.Error);
+        return ShowCore(message, localizedTitle, MessageBoxButton.OK, MessageBoxImage.Error);
     }
 
     /// <summary>
@@ -86,7 +86,7 @@ public static class LocalizedMessageBox
     {
         string message = _localizationService?.GetString("MessageBox.LogClearConfirm") ?? "Do you want to clear the log file?";
         string title = _localizationService?.GetString("MessageBox.Confirm") ?? "Confirm";
-        return MessageBox.Show(message, title, MessageBoxButton.YesNo, MessageBoxImage.Question);
+        return ShowCore(message, title, MessageBoxButton.YesNo, MessageBoxImage.Question);
     }
 
     /// <summary>
@@ -97,7 +97,7 @@ public static class LocalizedMessageBox
     {
         string message = _localizationService?.GetString("MessageBox.LogClearComplete") ?? "Log file has been cleared.";
         string title = _localizationService?.GetString("MessageBox.Information") ?? "Information";
-        return MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Information);
+        return ShowCore(message, title, MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
     /// <summary>
@@ -108,7 +108,7 @@ public static class LocalizedMessageBox
     {
         string message = _localizationService?.GetString("MessageBox.OldLogDeleteConfirm") ?? "Do you want to delete old log files?";
         string title = _localizationService?.GetString("MessageBox.Confirm") ?? "Confirm";
-        return MessageBox.Show(message, title, MessageBoxButton.YesNo, MessageBoxImage.Question);
+        return ShowCore(message, title, MessageBoxButton.YesNo, MessageBoxImage.Question);
     }
 
     /// <summary>
@@ -119,7 +119,7 @@ public static class LocalizedMessageBox
     {
         string message = _localizationService?.GetString("MessageBox.OldLogDeleteComplete") ?? "Old log files have been deleted.";
         string title = _localizationService?.GetString("MessageBox.Information") ?? "Information";
-        return MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Information);
+        return ShowCore(message, title, MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
     /// <summary>
@@ -134,7 +134,20 @@ public static class LocalizedMessageBox
             return button == MessageBoxButton.YesNo ? MessageBoxResult.No : MessageBoxResult.OK;
         }
 
-        return MessageBox.Show(message, caption, button, icon);
+        return ShowCore(message, caption, button, icon);
+    }
+
+    /// <summary>
+    /// アクティブウィンドウ（無ければメインウィンドウ）をOwnerに設定してMessageBoxを表示する。
+    /// MainWindowが既定でTopmost=trueになりうるため、Ownerの無いMessageBoxは背面に隠れることがあった。
+    /// Ownerが取得できない場合（アプリ起動直後・テスト等）はOwnerなしのオーバーロードにフォールバックする.
+    /// </summary>
+    private static MessageBoxResult ShowCore(string message, string caption, MessageBoxButton button, MessageBoxImage icon)
+    {
+        Window? owner = ActiveWindowLocator.GetActiveWindow();
+        return owner != null
+            ? MessageBox.Show(owner, message, caption, button, icon)
+            : MessageBox.Show(message, caption, button, icon);
     }
 
     /// <summary>

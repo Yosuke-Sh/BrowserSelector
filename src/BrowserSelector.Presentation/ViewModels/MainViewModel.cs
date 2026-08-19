@@ -666,8 +666,7 @@ public partial class MainViewModel : ObservableObject
         catch (Exception ex)
         {
             _logService?.LogError($"設定画面を開くエラー: {ex.Message}", "MainViewModel", ex);
-            _ = MessageBox.Show($"設定画面を開けませんでした: {ex.Message}", "エラー",
-                          MessageBoxButton.OK, MessageBoxImage.Error);
+            _ = LocalizedMessageBox.ShowError($"設定画面を開けませんでした: {ex.Message}", "エラー");
         }
         #pragma warning restore CA1031
     }

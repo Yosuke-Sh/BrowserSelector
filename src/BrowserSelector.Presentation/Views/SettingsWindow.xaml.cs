@@ -74,8 +74,7 @@ public partial class SettingsWindow : Window
         #pragma warning disable CA1031
         catch (Exception ex)
         {
-            _ = MessageBox.Show($"言語管理ダイアログの表示に失敗しました: {ex.Message}", "エラー",
-                MessageBoxButton.OK, MessageBoxImage.Error);
+            _ = Helpers.LocalizedMessageBox.ShowError($"言語管理ダイアログの表示に失敗しました: {ex.Message}", "エラー");
         }
         #pragma warning restore CA1031
     }

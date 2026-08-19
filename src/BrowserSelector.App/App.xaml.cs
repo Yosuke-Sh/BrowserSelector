@@ -42,6 +42,9 @@ public partial class App : System.Windows.Application
         try
         {
             // コマンドライン引数のパース（Phase D）: -d/--delay, -b/--browser, --silent, --auto-launch, -h/--help, -v/--version
+            // 以下の3箇所（--help/--version/起動失敗）はDI・ローカライズ初期化前後で実行されるため、
+            // LocalizedMessageBoxのローカライズサービスが未設定かつMainWindowが未生成であり、
+            // ActiveWindowLocatorによるOwner解決の恩恵が無い。意図的に生のMessageBox.Showのまま残す。
             _commandLineOptions = CommandLineParser.Parse(e.Args);
             if (_commandLineOptions.ShowHelp)
             {
@@ -267,7 +270,8 @@ public partial class App : System.Windows.Application
                 throw new InvalidOperationException($"アプリケーションの起動に失敗しました: {ex.Message}", ex);
             }
 
-            // 通常モードではメッセージボックスを表示
+            // 通常モードではメッセージボックスを表示（DI/ローカライズ初期化が失敗した経路のため、
+            // LocalizedMessageBoxではなく生のMessageBox.Showのまま表示する）
             _ = System.Windows.MessageBox.Show($"アプリケーションの起動に失敗しました: {ex.Message}",
                           "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
             Shutdown();
