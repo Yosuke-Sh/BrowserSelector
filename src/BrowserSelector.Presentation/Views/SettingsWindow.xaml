@@ -401,14 +401,29 @@
                                         <ColumnDefinition Width="100"/>
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Text="{extensions:Localization Settings.Display.InitialSize}" VerticalAlignment="Center"/>
-                                    <TextBox Grid.Column="1" Text="{Binding VisualSettings.InitialWindowWidth}" 
+                                    <TextBox Grid.Column="1" Text="{Binding VisualSettings.InitialWindowWidth}"
                                              VerticalAlignment="Center" Margin="0,0,5,0"/>
-                                    <TextBlock Grid.Column="2" Text="{extensions:Localization Common.Multiply}" VerticalAlignment="Center" 
+                                    <TextBlock Grid.Column="2" Text="{extensions:Localization Common.Multiply}" VerticalAlignment="Center"
                                                HorizontalAlignment="Center"/>
-                                    <TextBox Grid.Column="3" Text="{Binding VisualSettings.InitialWindowHeight}" 
+                                    <TextBox Grid.Column="3" Text="{Binding VisualSettings.InitialWindowHeight}"
                                              VerticalAlignment="Center"/>
                                 </Grid>
-                                
+
+                                <!-- 現在のウィンドウサイズを取得 -->
+                                <Grid Style="{StaticResource SettingRowStyle}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{extensions:Localization Settings.Display.CaptureCurrentWindowSizeDescription}"
+                                               VerticalAlignment="Center" TextWrapping="Wrap"/>
+                                    <Button Grid.Column="1"
+                                            Content="{extensions:Localization Settings.Display.CaptureCurrentWindowSize}"
+                                            Command="{Binding CaptureCurrentWindowSizeCommand}"
+                                            Padding="10,5"
+                                            AutomationProperties.Name="CaptureCurrentWindowSizeButton"/>
+                                </Grid>
+
                                 <!-- ロゴ表示 -->
                                 <Grid Style="{StaticResource SettingRowStyle}">
                                     <Grid.ColumnDefinitions>

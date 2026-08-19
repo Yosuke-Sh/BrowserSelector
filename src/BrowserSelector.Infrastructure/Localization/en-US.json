@@ -74,6 +74,8 @@
     "Settings.Display.GradientEndColor": "Gradient End Color",
     "Settings.Display.GradientDirection": "Gradient Direction",
     "Settings.Display.InitialSize": "Initial Size",
+    "Settings.Display.CaptureCurrentWindowSize": "Get Current Size",
+    "Settings.Display.CaptureCurrentWindowSizeDescription": "Applies the size of the currently displayed window to the initial size above",
     "Settings.Display.ShowLogo": "Show Logo",
     "Settings.Display.ShowUrlInput": "Show URL Input",
     "Settings.Display.ButtonSize": "Button Size",

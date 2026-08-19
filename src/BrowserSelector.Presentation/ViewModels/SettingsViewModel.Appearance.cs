@@ -3,6 +3,7 @@
 // </copyright>
 
 using BrowserSelector.Core.Enums;
+using CommunityToolkit.Mvvm.Input;
 
 namespace BrowserSelector.Presentation.ViewModels;
 
@@ -25,4 +26,21 @@ public partial class SettingsViewModel
     /// </summary>
     public IReadOnlyList<ThemeMode> AvailableThemeModes { get; } =
         Enum.GetValues<ThemeMode>();
+
+    /// <summary>
+    /// 現在表示されているメインウィンドウの実サイズを「起動時のウィンドウサイズ」設定へ取り込む.
+    /// <c>Window.Width</c>/<c>Window.Height</c>は測定前は<c>NaN</c>となるため、
+    /// 実測値である<c>ActualWidth</c>/<c>ActualHeight</c>を使用する.
+    /// </summary>
+    [RelayCommand]
+    private void CaptureCurrentWindowSize()
+    {
+        if (System.Windows.Application.Current?.MainWindow is not System.Windows.Window mainWindow)
+        {
+            return;
+        }
+
+        VisualSettings.InitialWindowWidth = Math.Round(mainWindow.ActualWidth);
+        VisualSettings.InitialWindowHeight = Math.Round(mainWindow.ActualHeight);
+    }
 }

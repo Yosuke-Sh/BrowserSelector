@@ -81,6 +81,10 @@ public partial class MainWindow : Window
 
         // Phase C-1: DWMバックドロップ（Mica/Acrylic）をHWND確定後に適用
         ApplyWindowBackdrop();
+
+        // マルチモニター対応: URLリンクをクリックしたモニター（＝現在カーソルがあるモニター）と
+        // 同一モニターに表示する。DPI取得にHWNDが必要なためSourceInitialized後に実行する。
+        MonitorHelper.CenterOnCursorMonitor(this);
     }
 
     private static UniformGrid? FindVisualChildUniformGrid(DependencyObject parent)
@@ -210,21 +214,23 @@ public partial class MainWindow : Window
     }
 
     /// <summary>
-    /// 初期サイズ設定を適用.
+    /// 初期サイズ設定を適用する。
+    /// <c>SizeToContent</c>は使用せず、<see cref="Core.Models.VisualSettings.InitialWindowWidth"/>/
+    /// <see cref="Core.Models.VisualSettings.InitialWindowHeight"/>を唯一の正として常に適用する
+    /// （設定値が反映されない・トレイ自動起動時に横幅が異常になる不具合の対策）.
     /// </summary>
     private void ApplyInitialSizeSettings(MainViewModel viewModel)
     {
         try
         {
-            Core.Models.VisualSettings visualSettings = viewModel.VisualSettings;
-            if (visualSettings != null)
+            Core.Models.VisualSettings? visualSettings = viewModel.VisualSettings;
+            if (visualSettings == null)
             {
-                _logService?.LogDebug($"初期サイズ設定適用: InitialWindowWidth={visualSettings.InitialWindowWidth}, InitialWindowHeight={visualSettings.InitialWindowHeight}", "MainWindow");
+                return;
             }
 
-            // Phase C-2: SizeToContent="WidthAndHeight"をXAMLで指定し、タイル数に応じてウィンドウが自動で
-            // 縮む構成にしたため、手書きのLeft/Top中央寄せ（DPI・マルチモニタ非対応）は撤廃。
-            // WindowStartupLocation="CenterScreen"（XAML）に委ねる。
+            _logService?.LogDebug($"初期サイズ設定適用: InitialWindowWidth={visualSettings.InitialWindowWidth}, InitialWindowHeight={visualSettings.InitialWindowHeight}", "MainWindow");
+            WindowSizeHelper.ApplyConfiguredSize(this, visualSettings.InitialWindowWidth, visualSettings.InitialWindowHeight);
         }
         // CA1031: ウィンドウ初期化/イベントハンドラーの最上位try-catch。UI操作由来の例外種別が多岐にわたり、フォールバック値を設定してUIスレッドを継続させるための意図的な汎用catch。
         #pragma warning disable CA1031

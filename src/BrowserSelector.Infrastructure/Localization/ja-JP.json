@@ -74,6 +74,8 @@
     "Settings.Display.GradientEndColor": "グラデーション終了色",
     "Settings.Display.GradientDirection": "グラデーション方向",
     "Settings.Display.InitialSize": "初期起動サイズ",
+    "Settings.Display.CaptureCurrentWindowSize": "現在のサイズを取得",
+    "Settings.Display.CaptureCurrentWindowSizeDescription": "現在表示中のウィンドウのサイズを上記の初期起動サイズへ反映します",
     "Settings.Display.ShowLogo": "ロゴ表示",
     "Settings.Display.ShowUrlInput": "URL入力表示",
     "Settings.Display.ButtonSize": "ボタンサイズ",

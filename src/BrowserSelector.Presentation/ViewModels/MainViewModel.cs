@@ -413,19 +413,14 @@ public partial class MainViewModel : ObservableObject
     {
         try
         {
-            // 最小・最大サイズの制限
-            double width = Math.Max(400, Math.Min(2000, visualSettings.InitialWindowWidth));
-            double height = Math.Max(300, Math.Min(1500, visualSettings.InitialWindowHeight));
+            Helpers.WindowSizeHelper.ApplyConfiguredSize(mainWindow, visualSettings.InitialWindowWidth, visualSettings.InitialWindowHeight);
 
-            // ウィンドウサイズを変更
-            mainWindow.Width = width;
-            mainWindow.Height = height;
+            // ウィンドウが現在表示されているモニターを基準に中央寄せする（SystemParameters.PrimaryScreenは
+            // プライマリモニター限定・DPI非対応で、セカンダリモニター表示中に設定変更するとプライマリへ
+            // ジャンプしてしまう不具合があった）。
+            Helpers.MonitorHelper.CenterOnWindowMonitor(mainWindow);
 
-            // ウィンドウ位置を中央に調整
-            mainWindow.Left = (SystemParameters.PrimaryScreenWidth - width) / 2;
-            mainWindow.Top = (SystemParameters.PrimaryScreenHeight - height) / 2;
-
-            _logService?.LogInformation($"ウィンドウサイズを即座に変更: {width}x{height}", "MainViewModel");
+            _logService?.LogInformation($"ウィンドウサイズを即座に変更: {mainWindow.Width}x{mainWindow.Height}", "MainViewModel");
         }
         // CA1031: RelayCommand/イベントハンドラーの最上位try-catch。サービス呼び出しやUI操作など例外種別が多岐にわたり、UIスレッドをクラッシュさせないための意図的な汎用catch。
         #pragma warning disable CA1031
