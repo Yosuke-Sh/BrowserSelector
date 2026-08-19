@@ -3,6 +3,7 @@ using BrowserSelector.Core.Models;
 using BrowserSelector.Core.Services;
 using BrowserSelector.Presentation.Helpers;
 using BrowserSelector.Presentation.ViewModels;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
@@ -37,6 +38,12 @@ public partial class MainWindow : Window
         _themeService = themeService;
         _settingsService = settingsService;
         InitializeComponent();
+
+        // ブラウザ一覧は非同期で読み込まれるため（起動時はコンストラクタ完了時点で0件のことが多い）、
+        // SizeChangedのみに頼ると「0件時点で列数1が確定し、以後ウィンドウサイズが変わらない限り
+        // 再計算されない」状態になり、タイルが縦一列に並んでしまう不具合があった（SizeToContent撤去に伴う副作用）。
+        // 読み込み完了時に列数を再計算することでこれを解消する。
+        ((INotifyCollectionChanged)BrowserItemsControl.Items).CollectionChanged += (_, _) => UpdateBrowserGridColumns();
 
         // DataContextの設定を即座に実行
         DataContext = viewModel;
