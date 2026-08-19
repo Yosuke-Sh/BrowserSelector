@@ -525,8 +525,21 @@
                                     <Slider Grid.Column="1" Minimum="0" Maximum="20" 
                                             Value="{Binding VisualSettings.BrowserButtonCornerRadius}"
                                             VerticalAlignment="Center" Margin="0,0,5,0"/>
-                                    <TextBlock Grid.Column="2" Text="{Binding VisualSettings.BrowserButtonCornerRadius, StringFormat={}{0:F0}px}" 
+                                    <TextBlock Grid.Column="2" Text="{Binding VisualSettings.BrowserButtonCornerRadius, StringFormat={}{0:F0}px}"
                                                VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </Grid>
+
+                                <!-- タイルの立体表現 -->
+                                <Grid Style="{StaticResource SettingRowStyle}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="180"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{extensions:Localization Settings.Display.TileElevationStyle}" VerticalAlignment="Center"/>
+                                    <ComboBox Grid.Column="1" Margin="8,5,5,5"
+                                              ItemsSource="{Binding AvailableTileElevationStyles}"
+                                              SelectedItem="{Binding VisualSettings.TileElevationStyle}"
+                                              AutomationProperties.Name="TileElevationStyleComboBox"/>
                                 </Grid>
 
                                 <!-- ブラウザ名表示 -->

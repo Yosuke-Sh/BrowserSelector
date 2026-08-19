@@ -83,6 +83,7 @@
     "Settings.Display.ButtonTextColor": "ボタンテキスト色",
     "Settings.Display.ButtonTransparency": "ボタン背景透明化",
     "Settings.Display.ButtonCornerRadius": "ボタン角丸半径",
+    "Settings.Display.TileElevationStyle": "タイルの立体表現",
     "Settings.Display.ShowBrowserName": "ブラウザ名表示",
     "Settings.Display.IconSize": "アイコンサイズ",
     "Settings.Browser.DetectedBrowsers": "検出されたブラウザ:",

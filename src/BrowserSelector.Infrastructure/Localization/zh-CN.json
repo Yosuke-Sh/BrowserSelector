@@ -83,6 +83,7 @@
     "Settings.Display.ButtonTextColor": "按钮文字色",
     "Settings.Display.ButtonTransparency": "按钮背景透明化",
     "Settings.Display.ButtonCornerRadius": "按钮圆角半径",
+    "Settings.Display.TileElevationStyle": "图块立体效果",
     "Settings.Display.ShowBrowserName": "显示浏览器名称",
     "Settings.Display.IconSize": "图标大小",
     "Settings.Browser.DetectedBrowsers": "检测到的浏览器:",

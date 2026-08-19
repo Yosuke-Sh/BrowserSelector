@@ -28,6 +28,12 @@ public partial class SettingsViewModel
         Enum.GetValues<ThemeMode>();
 
     /// <summary>
+    /// Gets 表示タブの「タイルの立体表現」コンボボックスに表示する選択肢一覧.
+    /// </summary>
+    public IReadOnlyList<TileElevationStyle> AvailableTileElevationStyles { get; } =
+        Enum.GetValues<TileElevationStyle>();
+
+    /// <summary>
     /// 現在表示されているメインウィンドウの実サイズを「起動時のウィンドウサイズ」設定へ取り込む.
     /// <c>Window.Width</c>/<c>Window.Height</c>は測定前は<c>NaN</c>となるため、
     /// 実測値である<c>ActualWidth</c>/<c>ActualHeight</c>を使用する.

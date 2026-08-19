@@ -49,6 +49,7 @@ public class LocalizationResourceCompletenessTests
 
         keys.Should().Contain("Settings.Display.CaptureCurrentWindowSize");
         keys.Should().Contain("Settings.Display.CaptureCurrentWindowSizeDescription");
+        keys.Should().Contain("Settings.Display.TileElevationStyle");
     }
 
     private static HashSet<string> LoadResourceKeys(string cultureCode)

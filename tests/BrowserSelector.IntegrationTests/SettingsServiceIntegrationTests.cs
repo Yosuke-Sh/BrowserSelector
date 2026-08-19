@@ -128,6 +128,37 @@ public class SettingsServiceIntegrationTests : IDisposable
     }
 
     /// <summary>
+    /// v0.3.3形式（TileElevationStyleキーを持たない）のvisualsettings.jsonを読み込んでも、
+    /// 新しい列挙型プロパティの既定値（Shadow）が適用され、例外にならないことを確認する。
+    /// 新しい設定スキーマ追加が既存ユーザーの設定ファイルを壊さないための後方互換性テスト.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+    [Fact]
+    public async Task SettingsService_LoadVisualSettings_WithLegacyJsonMissingTileElevationStyle_AppliesDefault()
+    {
+        // Arrange: v0.3.3当時のvisualsettings.json相当（TileElevationStyleキーを含まない）
+        const string legacyJson = """
+        {
+          "BackgroundColor": "#FFFFFFFF",
+          "UseBackgroundGradient": false,
+          "BrowserButtonWidth": 120.0,
+          "BrowserButtonHeight": 90.0,
+          "BrowserButtonCornerRadius": 8.0
+        }
+        """;
+        string visualSettingsPath = Path.Combine(_settingsService.GetSettingsFilePath(), "visualsettings.json");
+        await File.WriteAllTextAsync(visualSettingsPath, legacyJson);
+
+        // Act
+        Core.Models.VisualSettings visualSettings = await _settingsService.LoadVisualSettingsAsync();
+
+        // Assert
+        _ = visualSettings.Should().NotBeNull();
+        _ = visualSettings.TileElevationStyle.Should().Be(BrowserSelector.Core.Enums.TileElevationStyle.Shadow);
+        _ = visualSettings.BrowserButtonWidth.Should().Be(120.0);
+    }
+
+    /// <summary>
     ///
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>

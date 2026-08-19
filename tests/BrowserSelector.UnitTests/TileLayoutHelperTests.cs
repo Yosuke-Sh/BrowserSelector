@@ -24,6 +24,21 @@ public class TileLayoutHelperTests
         _ = columns.Should().Be(1);
     }
 
+    [Fact]
+    public void CalculateColumns_WithCustomButtonWidthPlusMarginTotal_MatchesExpectedTileCount()
+    {
+        // VisualSettings.BrowserButtonWidthを変更した場合の実効タイル幅
+        // （TileMarginTotal込み）で列数計算が正しく行われることを確認する。
+        // 従来はDefaultTileWidth(120px)固定だったため、ボタン幅を変えると
+        // 列数計算とタイル実サイズが食い違いタイルが重なる不具合があった。
+        double customButtonWidth = 200.0;
+        double effectiveTileWidth = customButtonWidth + TileLayoutHelper.TileMarginTotal; // 216px
+
+        int columns = TileLayoutHelper.CalculateColumns(1000, effectiveTileWidth, 10);
+
+        _ = columns.Should().Be(4); // 1000 / 216 = 4.63 -> 4列
+    }
+
     [Theory]
     [InlineData(0)]
     [InlineData(double.NaN)]

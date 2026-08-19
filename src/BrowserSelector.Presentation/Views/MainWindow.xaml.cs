@@ -251,8 +251,13 @@ public partial class MainWindow : Window
         if (e.PropertyName == nameof(MainViewModel.VisualSettings))
         {
             _logService?.LogDebug("MainWindow: VisualSettingsプロパティ変更を検知しました。UI更新を通知します。", "MainWindow");
-            // UI更新を強制（UIスレッドで実行）
-            Dispatcher.Invoke(() => InvalidateVisual());
+            // UI更新を強制（UIスレッドで実行）。ボタン幅設定が変わった場合に列数計算も
+            // 追従させないと、実際のタイル幅と列数計算の前提がずれてタイルが重なる。
+            Dispatcher.Invoke(() =>
+            {
+                InvalidateVisual();
+                UpdateBrowserGridColumns();
+            });
         }
     }
 
@@ -489,7 +494,7 @@ public partial class MainWindow : Window
         }
 
         double availableWidth = ((FrameworkElement)BrowserItemsControl.Parent).ActualWidth;
-        int columns = TileLayoutHelper.CalculateColumns(availableWidth, TileLayoutHelper.DefaultTileWidth, BrowserItemsControl.Items.Count);
+        int columns = TileLayoutHelper.CalculateColumns(availableWidth, GetEffectiveTileWidth(), BrowserItemsControl.Items.Count);
         uniformGrid.Columns = columns;
     }
 
@@ -501,7 +506,22 @@ public partial class MainWindow : Window
         }
 
         double availableWidth = BrowserItemsControl.ActualWidth > 0 ? BrowserItemsControl.ActualWidth : ActualWidth;
-        return TileLayoutHelper.CalculateColumns(availableWidth, TileLayoutHelper.DefaultTileWidth, BrowserItemsControl.Items.Count);
+        return TileLayoutHelper.CalculateColumns(availableWidth, GetEffectiveTileWidth(), BrowserItemsControl.Items.Count);
+    }
+
+    /// <summary>
+    /// 列数計算に使う実効タイル幅を取得する。<see cref="Core.Models.VisualSettings.BrowserButtonWidth"/>に
+    /// マージン分を加算した値を使う（従来は<see cref="TileLayoutHelper.DefaultTileWidth"/>固定だったため、
+    /// ボタン幅を変更すると列数計算とタイル実サイズが食い違いタイルが重なる不具合があった）.
+    /// </summary>
+    private double GetEffectiveTileWidth()
+    {
+        if (DataContext is MainViewModel { VisualSettings.BrowserButtonWidth: > 0 } viewModel)
+        {
+            return viewModel.VisualSettings.BrowserButtonWidth + TileLayoutHelper.TileMarginTotal;
+        }
+
+        return TileLayoutHelper.DefaultTileWidth;
     }
 
     private int ResolveFocusedBrowserIndex(MainViewModel viewModel)

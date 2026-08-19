@@ -83,6 +83,7 @@
     "Settings.Display.ButtonTextColor": "Button Text Color",
     "Settings.Display.ButtonTransparency": "Button Transparency",
     "Settings.Display.ButtonCornerRadius": "Button Corner Radius",
+    "Settings.Display.TileElevationStyle": "Tile Elevation Style",
     "Settings.Display.ShowBrowserName": "Show Browser Name",
     "Settings.Display.IconSize": "Icon Size",
     "Settings.Browser.DetectedBrowsers": "Detected Browsers:",

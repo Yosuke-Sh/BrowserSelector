@@ -556,7 +556,8 @@ public partial class SettingsViewModel : ObservableObject
             "VisualSettings.UseBackgroundGradient" or
             "VisualSettings.GradientStartColor" or
             "VisualSettings.GradientEndColor" or
-            "VisualSettings.GradientDirection")
+            "VisualSettings.GradientDirection" or
+            "VisualSettings.TileElevationStyle")
         {
             LogService?.LogDebug($"視覚設定プロパティ変更検知: {e.PropertyName}", "SettingsViewModel");
 
