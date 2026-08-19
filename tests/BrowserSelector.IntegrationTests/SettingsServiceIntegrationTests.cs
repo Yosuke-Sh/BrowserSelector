@@ -146,7 +146,13 @@ public class SettingsServiceIntegrationTests : IDisposable
           "BrowserButtonCornerRadius": 8.0
         }
         """;
-        string visualSettingsPath = Path.Combine(_settingsService.GetSettingsFilePath(), "visualsettings.json");
+        // CIランナー環境ではコンストラクタで作成した一時ディレクトリが後続の書き込み時点で
+        // 消えていることがある（OS/ランナー側の一時ディレクトリクリーンアップと推測）。
+        // 他のテストはTestSettingsService経由の保存（例外を握りつぶしfalseを返す設計）のため
+        // 表面化しないが、ここでは直接書き込むため防御的にディレクトリを再作成してから書き込む。
+        string settingsDirectory = _settingsService.GetSettingsFilePath();
+        _ = Directory.CreateDirectory(settingsDirectory);
+        string visualSettingsPath = Path.Combine(settingsDirectory, "visualsettings.json");
         await File.WriteAllTextAsync(visualSettingsPath, legacyJson);
 
         // Act

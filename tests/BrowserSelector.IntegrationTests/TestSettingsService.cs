@@ -25,26 +25,39 @@ internal sealed class TestSettingsService : ISettingsService
         _logService = logService;
         _settingsDirectory = tempDirectory;
 
-        // 設定ディレクトリが存在しない場合は作成
-        if (!Directory.Exists(_settingsDirectory))
+        // 設定ディレクトリが存在しない場合は作成。
+        // CIランナー（Windows）では多数のテストクラスが同時に%TEMP%\BrowserSelectorTest\<guid>配下へ
+        // ディレクトリを作成しており、直後のDirectory.Exists/File操作がDirectoryNotFoundExceptionに
+        // なる一過性の可視性遅延が稀に発生するため、短いリトライで吸収する。
+        const int maxAttempts = 3;
+        for (int attempt = 1; attempt <= maxAttempts; attempt++)
         {
             try
             {
-                // 親ディレクトリが存在することを確認してから作成
-                var parentDir = Path.GetDirectoryName(_settingsDirectory);
-                if (!string.IsNullOrEmpty(parentDir) && !Directory.Exists(parentDir))
-                {
-                    Directory.CreateDirectory(parentDir);
-                }
-                
-                // 設定ディレクトリを作成
-                Directory.CreateDirectory(_settingsDirectory);
-                
-                // ディレクトリ作成の確認
                 if (!Directory.Exists(_settingsDirectory))
                 {
-                    throw new InvalidOperationException($"テスト用設定ディレクトリの作成に失敗しました: {_settingsDirectory}");
+                    // 親ディレクトリが存在することを確認してから作成
+                    string? parentDir = Path.GetDirectoryName(_settingsDirectory);
+                    if (!string.IsNullOrEmpty(parentDir) && !Directory.Exists(parentDir))
+                    {
+                        Directory.CreateDirectory(parentDir);
+                    }
+
+                    // 設定ディレクトリを作成
+                    Directory.CreateDirectory(_settingsDirectory);
+
+                    // ディレクトリ作成の確認
+                    if (!Directory.Exists(_settingsDirectory))
+                    {
+                        throw new InvalidOperationException($"テスト用設定ディレクトリの作成に失敗しました: {_settingsDirectory}");
+                    }
                 }
+
+                break;
+            }
+            catch (Exception ex) when (attempt < maxAttempts && (ex is IOException or UnauthorizedAccessException or InvalidOperationException))
+            {
+                Thread.Sleep(50 * attempt);
             }
             catch (Exception ex)
             {
