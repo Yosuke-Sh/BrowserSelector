@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.4] - 2026-08-20
+
+### 🐛 Fixed
+- Fixed browser-launch success being silently treated as failure whenever the launched process exited immediately after handing the URL to an already-running instance (normal Chrome/Edge behavior). `BrowserService.LaunchBrowserAsync` used a diagnostic `Process.GetProcessById` call after `Process.Start` that threw `ArgumentException` in this case, aborting before usage stats were updated and before the "close after launch" setting could take effect. The diagnostic-only call was removed.
+- Fixed a URL matching a URL rule launching its browser twice. `MainViewModel.SetInitialUrl` set the `Url` property (which itself triggers rule application via `OnUrlChanged`) and then separately awaited the same rule-application method, running it twice concurrently. Added a re-entrancy guard and de-duplication for the same URL.
+- Fixed the "close after launch" setting not closing the app when running tray-resident: the app called `Application.Shutdown()` directly, which ignores the `Closing` event's cancellation used to redirect the close into "minimize to tray," so the resident instance was killed outright instead of being minimized. A new `IShellCloseService` now routes the decision through tray state. A related bug where a second instance's URL, delivered over the single-instance pipe, bypassed `TrayIconManager.Restore()` and left the window's taskbar/tray state inconsistent (breaking the next close-to-tray) was also fixed.
+- Fixed the configured "initial window size" never taking effect, and the window becoming abnormally wide when auto-launched from the tray with a long URL. `MainWindow` used `SizeToContent="WidthAndHeight"`, which silently overrides any `Width`/`Height` assignment and, combined with an unconstrained URL text box, let a long URL's natural width drive the whole window's width. `SizeToContent` was removed; the configured size is now applied on every show, and the URL box has a `MaxWidth`.
+- Fixed the app window not reliably appearing on the same monitor as the one the triggering URL was clicked on in multi-monitor setups. The window now centers on the monitor under the mouse cursor at startup (DPI-aware), instead of relying on `CenterScreen`.
+- Fixed message boxes appearing behind the main window and going unnoticed, extending the fix applied to child dialogs in 0.3.3 to `MessageBox` itself. `LocalizedMessageBox` and the remaining raw `MessageBox.Show` call sites now set `Owner` via a shared `ActiveWindowLocator` helper.
+- Fixed browser tiles' pseudo-3D shadow stretching to fill the whole grid cell instead of tracking the tile as the window is resized, because the shadow `Border` had no explicit size while the tile `Border` did. The template's `Grid` is now sized directly, and both track the configured tile size.
+- Fixed the tile column-count calculation always using a hard-coded 120px tile width, so changing the configured button width made columns overlap. It now uses the configured `BrowserButtonWidth`.
+- Fixed `zh-CN.json`'s top-level keys (`resources`, `cultureCode`, etc.) using different casing than `ja-JP.json`/`en-US.json` (`Resources`, `CultureCode`), which made `System.Text.Json`'s case-sensitive deserializer silently load an empty resource dictionary — Chinese localization was effectively non-functional. Corrected the casing and added a completeness test that checks all three localization files have identical key sets.
+
+### ✨ Added
+- Added a "Get Current Size" button in Settings that captures the main window's current size into the initial-size fields, since the configured size is now always applied on startup (see Fixed).
+- Added a "Tile Elevation Style" setting (None / Shadow / Bevel / Outline) controlling how browser tiles render their pseudo-3D effect; the shadow color is now derived from the configured tile background color instead of a fixed gray (falling back to gray when the background is transparent, the default).
+- Added full Windows 11 default-browser support: the installer now registers `Capabilities` under `Clients\StartMenuInternet\BrowserSelector` (required for BrowserSelector to appear in the Windows 11 "Default apps" browser list) instead of a location Windows 11 does not recognize, removed the ineffective and destructive direct overwrite of `Classes\http\shell\open\command` plus legacy DDE keys, and deep-links post-install to `ms-settings:defaultapps?registeredAppName=BrowserSelector`. A new Settings section shows whether BrowserSelector is currently the OS default browser and offers a button to open the Windows default-apps screen.
+
 ## [0.3.3] - 2026-08-17
 
 ### 🐛 Fixed

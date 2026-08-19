@@ -110,12 +110,21 @@ BrowserSelector/
 - **起動時バックグラウンドチェック**: 起動5秒後に非同期実行、`UpdateCheckInterval`に基づく間隔制御、`--silent`時は対象外
 - **差分アップデート・自動ロールバックUI**: スコープ外（v0.3.0計画時点の決定事項。数MBのため差分更新は費用対効果が無く、ロールバックはUpdater.exe内部の安全機構としてのみ実装）
 
+### 🪟 起動・表示の信頼性向上（v0.3.4）
+- **ウィンドウサイズの常時適用**: `SizeToContent`を撤去し、設定値（`VisualSettings.InitialWindowWidth/Height`）を唯一の正として毎回適用。設定画面の「現在のサイズを取得」ボタンで表示中サイズを反映可能
+- **マルチモニター対応起動位置**: カーソルのあるモニターへDPI考慮で中央配置（`MonitorHelper`、Win32 P/Invoke実装、Presentation層はWinForms非依存）
+- **タイル立体表現の選択制**: なし/影/ベベル/枠線から選択可能（`TileElevationStyle`列挙型）。影色はボタン背景色から自動生成（`ElevationShadowBrushConverter`）
+- **トレイ常駐時の自動終了の正常化**: `IShellCloseService`によりトレイ常駐時は「トレイ格納」、非常駐時は「完全終了」を正しく振り分け
+- **URLルール適用の再入防止**: 二重起動を防ぐ再入ガードと直近URL記録
+- **メッセージボックスのOwner統一**: `ActiveWindowLocator`により全メッセージボックスがアクティブウィンドウをOwnerとして表示され、最背面に隠れなくなった
+- **Windows 11既定ブラウザ対応**: インストーラーが`Clients\StartMenuInternet`配下へCapabilitiesを登録し、Win11の「既定のアプリ」ブラウザ一覧に表示されるようになった。設定画面から現在の既定状態確認とWindows設定画面への導線を提供（`IDefaultBrowserService`）
+
 ## 🧪 テスト実装状況
 
-### ✅ 正常動作中のテスト（2026-08-16実測、v0.3.0時点、`dotnet test`で確認）
-1. **単体テスト（UnitTests）**: 255テスト中255成功
+### ✅ 正常動作中のテスト（2026-08-20実測、v0.3.4時点、`dotnet test`で確認）
+1. **単体テスト（UnitTests）**: 289テスト中289成功
    - フレームワーク: xUnit + Moq + FluentAssertions
-   - 対象: Presentation層中心のビジネスロジック、ViewModels、ユーティリティクラス、変換ロジック（Phase H-9で更新通知バー関連7件追加）
+   - 対象: Presentation層中心のビジネスロジック、ViewModels、ユーティリティクラス、変換ロジック（v0.3.4でURLルール二重起動防止・IShellCloseService・WindowSizeHelper/MonitorHelper・ElevationShadowBrushConverter・既定ブラウザ判定関連のテストを追加）
    - **状況**: 完全動作（並列全体実行時のみ他プロジェクトとの一時ディレクトリ競合で稀に1件フレーキーになることがあるが、単体実行では安定）
 
 2. **単体テスト（CoreTests）**: 49テスト中49成功
@@ -123,14 +132,14 @@ BrowserSelector/
    - 対象: Core層のモデル・サービスインターフェース関連ロジック（Phase H-1で`UpdateInfo`/`AppSettings`更新プロパティのテスト追加）
    - **状況**: 完全動作
 
-3. **単体テスト（InfrastructureTests）**: 160テスト中160成功
+3. **単体テスト（InfrastructureTests）**: 173テスト中173成功
    - フレームワーク: xUnit + Moq + FluentAssertions
-   - 対象: Infrastructure層のサービス実装（Phase H-2〜H-6・H-11でGitHub APIマッピング・ダウンロード・チャネル判定・セキュリティテストを大幅追加）
+   - 対象: Infrastructure層のサービス実装（Phase H-2〜H-6・H-11でGitHub APIマッピング・ダウンロード・チャネル判定・セキュリティテストを大幅追加。v0.3.4でBrowserService起動成功判定・DefaultBrowserService・ローカライズキー網羅性のテストを追加）
    - **状況**: 完全動作
 
-4. **統合テスト（Integration Tests）**: 23テスト中23成功
+4. **統合テスト（Integration Tests）**: 24テスト中24成功
    - フレームワーク: xUnit + Microsoft.Extensions.Testing
-   - 対象: ファイルI/O、レジストリアクセス、システム統合機能
+   - 対象: ファイルI/O、レジストリアクセス、システム統合機能（v0.3.4で旧形式設定ファイルの後方互換性テストを追加）
    - **状況**: 完全動作
 
 5. **E2Eテスト（End-to-End Tests）**: 4テスト中4成功
@@ -138,9 +147,9 @@ BrowserSelector/
    - 対象: コマンドライン引数処理、URL処理フロー全体、設定変更の反映
    - **状況**: 完全動作
 
-6. **App専用テスト（App Tests）**: 88テスト中88成功
+6. **App専用テスト（App Tests）**: 90テスト中90成功
    - フレームワーク: xUnit + FluentAssertions
-   - 対象: WPFアプリケーションのリフレクションベーステスト
+   - 対象: WPFアプリケーションのリフレクションベーステスト（v0.3.4でShellCloseServiceのテストを追加）
    - **状況**: 完全動作
 
 7. **UIテスト（UI Tests）**: 5テスト中5成功
@@ -159,8 +168,8 @@ BrowserSelector/
 10. **パフォーマンステスト（Performance Tests）**: BenchmarkDotNetベースのためxUnitテストランナーからは除外（`dotnet test`の集計対象外）
 
 ### 📊 総合テスト結果
-- **総テスト数**: 858テスト（xUnitランナー対象。PerformanceTestsを除く、v0.2.0の658から+200）
-- **成功**: 858テスト（100%）
+- **総テスト数**: 908テスト（xUnitランナー対象。PerformanceTestsを除く、v0.3.3の866から+42）
+- **成功**: 908テスト（100%）
 - **失敗**: 0テスト
 - **スキップ**: 0テスト
 - **警告**: 0件（クリーンビルドで確認済み）
@@ -567,6 +576,6 @@ v0.2.0時点で「骨格のみ・原理的に動かない」状態だった自�
 
 ---
 
-**最終更新**: 2026年8月17日  
-**バージョン**: 0.3.3（設定画面の子ダイアログ背面表示・ブラウザ重複判定・英語ローカライズ欠落の修正）  
+**最終更新**: 2026年8月20日  
+**バージョン**: 0.3.4（メッセージボックス背面表示・ウィンドウサイズ未反映/トレイ起動時の異常幅・マルチモニター非対応・URL二重起動・トレイ常駐時の自動終了不具合・ブラウザ起動成功判定の握り潰し・タイル3D崩れの修正、タイル立体表現設定・ウィンドウサイズ取得ボタン・Windows 11既定ブラウザ対応の追加）  
 **ステータス**: v0.1.0完了、v0.2.0完了、v0.3.0〜v0.3.3完了（テスト866件成功、警告0件）

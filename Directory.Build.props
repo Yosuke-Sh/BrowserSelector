@@ -2,7 +2,7 @@
   <!-- アセンブリメタデータ（Phase E-2b）: 全プロジェクトで一元管理する単一の情報源。
        deployment/InnoSetup/BrowserSelector.iss の MyAppVersion もビルド時にここから注入する（Phase G-2）。 -->
   <PropertyGroup>
-    <VersionPrefix>0.3.3</VersionPrefix>
+    <VersionPrefix>0.3.4</VersionPrefix>
     <Version>$(VersionPrefix)</Version>
     <Product>BrowserSelector</Product>
     <Company>BrowserSelector</Company>

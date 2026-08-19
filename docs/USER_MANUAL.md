@@ -74,13 +74,13 @@ BrowserSelector is an application for selecting and opening URLs with multiple b
 1. [GitHub Releases](https://github.com/Yosuke-Sh/BrowserSelector/releases)から最新版をダウンロード
 2. インストーラー版をダウンロード
 3. setup.exeを実行してインストール
-4. 必要に応じてデフォルトブラウザとして設定
+4. 必要に応じてデフォルトブラウザとして設定（インストール時に「既定のブラウザに設定する」タスクを選択、または後から設定画面の「既定のブラウザに設定」ボタンから変更可能）
 
 #### English
 1. Download the latest version from [GitHub Releases](https://github.com/Yosuke-Sh/BrowserSelector/releases)
 2. Download the installer version
 3. Run setup.exe to install
-4. Set as default browser if needed
+4. Set as default browser if needed (select the "Set as default browser" task during install, or use the "Set as Default Browser" button in Settings afterward)
 
 ### .NET 10.0 Runtimeのインストール / .NET 10.0 Runtime Installation
 
@@ -197,12 +197,14 @@ BrowserSelector supports full keyboard operation so the app can be used without 
 #### 一般設定 / General Settings
 
 ##### 日本語
-- **URLルールマッチ後に閉じる**: URLルールにマッチしたブラウザを起動後にアプリケーションを閉じる
+- **URLルールマッチ後に閉じる**: URLルールにマッチしたブラウザを起動後にアプリケーションを閉じる（トレイ常駐が有効な場合は完全終了ではなくトレイへ格納されます）
+- **既定のブラウザに設定**: Windowsの既定ブラウザとして設定されているかどうかを表示し、設定画面を開くボタンを提供（詳細は[インストール](#-インストール--installation)章のFAQ参照）
 - **言語設定**: アプリケーションの表示言語を選択（日本語・英語対応）
 - **自動更新チェック / 更新チェック間隔 / プレリリースを含める / 今すぐ確認**: v0.3.0で実装完了。詳細は[アップデート](#-アップデート--updates)章を参照
 
 ##### English
-- **Close After URL Rule Match**: Close application after launching browser that matches URL rule
+- **Close After URL Rule Match**: Close application after launching browser that matches URL rule (when tray residency is enabled, this minimizes to tray instead of fully exiting)
+- **Set as Default Browser**: Shows whether BrowserSelector is currently set as the Windows default browser, with a button to open the relevant settings screen (see the FAQ in the [Installation](#-インストール--installation) section for details)
 - **Language Settings**: Select application display language (Japanese/English support)
 - **Automatic Update Check / Update Check Interval / Include Prereleases / Check Now**: Implemented in v0.3.0. See the [Updates](#-アップデート--updates) section for details
 
@@ -214,7 +216,8 @@ BrowserSelector supports full keyboard operation so the app can be used without 
 - **グラデーション開始色**: グラデーションの開始色
 - **グラデーション終了色**: グラデーションの終了色
 - **グラデーション方向**: グラデーションの方向（縦・横・斜め）
-- **初期ウィンドウサイズ**: 起動時のウィンドウサイズ（幅×高さ）
+- **初期ウィンドウサイズ**: 起動時のウィンドウサイズ（幅×高さ）。この設定値が常に適用されます（ユーザーがドラッグでリサイズしても、次回起動時はこの設定値に戻ります）
+- **現在のサイズを取得**: 表示中のウィンドウの実サイズを上記の初期ウィンドウサイズ欄へ反映するボタン
 - **ロゴ表示**: アプリケーションロゴの表示/非表示
 - **URL入力表示**: URL入力フィールドの表示/非表示
 
@@ -224,7 +227,8 @@ BrowserSelector supports full keyboard operation so the app can be used without 
 - **Gradient Start Color**: Gradient start color
 - **Gradient End Color**: Gradient end color
 - **Gradient Direction**: Gradient direction (vertical/horizontal/diagonal)
-- **Initial Window Size**: Window size at startup (width × height)
+- **Initial Window Size**: Window size at startup (width × height). This configured value is always applied — dragging to resize during a session does not change what's used on the next launch
+- **Get Current Size**: Button that captures the currently displayed window's actual size into the Initial Window Size fields above
 - **Logo Display**: Show/hide application logo
 - **URL Input Display**: Show/hide URL input field
 
@@ -236,6 +240,7 @@ BrowserSelector supports full keyboard operation so the app can be used without 
 - **ボタンテキスト色**: ボタンのテキスト色
 - **ボタン透明度**: ボタンの透明度（0.1-1.0）
 - **ボタン角丸半径**: ボタンの角の丸み（0-20px）
+- **タイルの立体表現**: タイルの3D風エレベーション表現の方式（なし/影/ベベル/枠線から選択）。影の色はボタン背景色から自動生成されます（背景色が透明の場合はグレーにフォールバック）
 - **ブラウザ名表示**: ブラウザ名の表示/非表示
 - **アイコンサイズ**: ブラウザアイコンのサイズ（16-64px）
 
@@ -245,6 +250,7 @@ BrowserSelector supports full keyboard operation so the app can be used without 
 - **Button Text Color**: Button text color
 - **Button Transparency**: Button transparency (0.1-1.0)
 - **Button Corner Radius**: Button corner roundness (0-20px)
+- **Tile Elevation Style**: How tiles render their 3D-style elevation effect (None / Shadow / Bevel / Outline). The shadow color is generated from the button background color (falls back to gray when the background is transparent)
 - **Browser Name Display**: Show/hide browser name
 - **Icon Size**: Browser icon size (16-64px)
 
@@ -625,10 +631,10 @@ A: Automatically detects common browsers (Chrome, Firefox, Edge, Safari, Opera, 
 ### Q: デフォルトブラウザとして設定できますか？ / Q: Can it be set as the default browser?
 
 #### 日本語
-A: はい、インストール時にデフォルトブラウザとして設定するオプションがあります。また、後からWindowsの設定からも変更可能です。
+A: はい。ただしWindows 11ではセキュリティ上の理由からアプリが既定ブラウザを直接書き換えることができず、ユーザー自身がWindowsの「既定のアプリ」画面で選択する方式になっています。インストール時に「既定のブラウザに設定する」タスクを選択するか、後から設定画面の「既定のブラウザに設定」ボタンから該当画面を開いて選択してください。設定画面には現在BrowserSelectorが既定になっているかどうかも表示されます。
 
 #### English
-A: Yes, there is an option to set it as the default browser during installation. It can also be changed later from Windows settings.
+A: Yes. On Windows 11, apps cannot programmatically set themselves as the default browser for security reasons — you choose it yourself from the Windows "Default apps" screen. Select the "Set as default browser" task during installation, or use the "Set as Default Browser" button in Settings afterward to open that screen directly. Settings also shows whether BrowserSelector is currently set as the default.
 
 ### Q: 設定はどこに保存されますか？ / Q: Where are settings saved?
 
