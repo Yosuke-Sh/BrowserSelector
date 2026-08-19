@@ -45,6 +45,8 @@ internal static class ServiceCollectionExtensions
         _ = services.AddSingleton<IRegistryService>(provider =>
             new WindowsRegistryService(provider.GetRequiredService<ILogService>()));
         _ = services.AddSingleton<IProtocolHandler, ProtocolHandler>();
+        _ = services.AddSingleton<IDefaultBrowserService>(provider =>
+            new DefaultBrowserService(provider.GetRequiredService<ILogService>()));
         // アップデート用の名前付きHttpClient（Phase H-3）。
         // Singleton HttpClientではなくIHttpClientFactoryを使うのは、テストで
         // ConfigurePrimaryHttpMessageHandlerにより本番と同じ経路へスタブを差し込めるようにするため。

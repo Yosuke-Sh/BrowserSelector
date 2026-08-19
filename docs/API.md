@@ -61,8 +61,33 @@ public interface IBrowserService
 - `LaunchBrowserAsync(Browser, string|Uri)`: Launches a browser with a URL (string or `Uri` overload)
 - `AddBrowserAsync(Browser)` / `UpdateBrowserAsync(Browser)` / `RemoveBrowserAsync(Guid)`: Custom browser CRUD
 - `GetAllBrowsersAsync()`: Gets all registered browsers
-- `SetDefaultBrowserAsync(Guid)` / `GetDefaultBrowserAsync()`: Default browser management
+- `SetDefaultBrowserAsync(Guid)` / `GetDefaultBrowserAsync()`: Manages the app's own "default tile" — the browser
+  auto-launched by the countdown/`--silent` flow. **This is not the OS-level default browser.** See
+  `IDefaultBrowserService` below for that.
 - `UpdateBrowserUsageAsync(Guid)` / `UpdateUsageAsync(Browser)`: Updates browser usage statistics
+
+### IDefaultBrowserService
+
+Determines whether BrowserSelector is registered as the Windows default browser, and opens the OS settings
+screen to change it. Distinct from `IBrowserService.SetDefaultBrowserAsync`/`GetDefaultBrowserAsync`, which
+manage an in-app preference only.
+
+```csharp
+public interface IDefaultBrowserService
+{
+    bool IsDefaultBrowser();
+    void OpenDefaultAppsSettings();
+}
+```
+
+**Methods:**
+- `IsDefaultBrowser()`: Reads `HKCU\...\UrlAssociations\https\UserChoice` to check whether BrowserSelector's
+  ProgId (`BrowserSelector.https`) is the current default. Read-only — Windows 10/11 protect this key with a
+  hash and do not allow programmatic writes.
+- `OpenDefaultAppsSettings()`: Opens `ms-settings:defaultapps?registeredAppName=BrowserSelector`, deep-linking
+  to BrowserSelector's entry in the Windows 11 default-apps screen. The actual HKLM registration
+  (`Clients\StartMenuInternet`, `RegisteredApplications`, `Capabilities`) is performed by the installer, which
+  runs elevated; the app itself runs `asInvoker` and cannot write HKLM.
 
 ### ISettingsService
 

@@ -53,6 +53,7 @@
         <!-- コンバーター -->
         <converters:ColorToBrushConverter x:Key="ColorToBrushConverter"/>
         <converters:GradientDirectionToIndexConverter x:Key="GradientDirectionToIndexConverter"/>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
     </Window.Resources>
 
     <Grid>
@@ -115,6 +116,36 @@
                                     <TextBlock Grid.Column="0" Text="{extensions:Localization Settings.App.AlwaysResidentInTray}" VerticalAlignment="Center"/>
                                     <CheckBox Grid.Column="1" IsChecked="{Binding AppSettings.AlwaysResidentInTray}" HorizontalAlignment="Left" Margin="8,5,5,5"
                                               AutomationProperties.Name="AlwaysResidentInTrayCheckBox"/>
+                                </Grid>
+                            </StackPanel>
+                        </GroupBox>
+
+                        <!-- 既定ブラウザ設定 -->
+                        <GroupBox Header="{extensions:Localization Settings.App.DefaultBrowserSettings}" Style="{StaticResource GroupBoxStyle}">
+                            <StackPanel>
+                                <Grid Style="{StaticResource SettingRowStyle}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                        <TextBlock Text="{extensions:Localization Settings.App.DefaultBrowserStatus}" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{extensions:Localization Settings.App.DefaultBrowserYes}"
+                                                   FontWeight="Bold"
+                                                   Foreground="{DynamicResource Brush.Accent}"
+                                                   Margin="4,0,0,0"
+                                                   VerticalAlignment="Center"
+                                                   Visibility="{Binding IsDefaultBrowser, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                        <TextBlock Text="{extensions:Localization Settings.App.DefaultBrowserNo}"
+                                                   Margin="4,0,0,0"
+                                                   VerticalAlignment="Center"
+                                                   Visibility="{Binding IsDefaultBrowser, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Invert}"/>
+                                    </StackPanel>
+                                    <Button Grid.Column="1"
+                                            Content="{extensions:Localization Settings.App.SetAsDefaultBrowser}"
+                                            Command="{Binding OpenDefaultAppsSettingsCommand}"
+                                            Padding="10,5"
+                                            AutomationProperties.Name="SetAsDefaultBrowserButton"/>
                                 </Grid>
                             </StackPanel>
                         </GroupBox>

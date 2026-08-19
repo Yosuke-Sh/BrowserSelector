@@ -86,6 +86,7 @@ public partial class SettingsViewModel : ObservableObject
     private readonly IUrlRuleService _urlRuleService;
     private readonly IExternalLinkService? _externalLinkService;
     private readonly IUpdateService? _updateService;
+    private readonly IDefaultBrowserService? _defaultBrowserService;
 
     [ObservableProperty]
     private bool _showFocusIndicator = true;
@@ -186,7 +187,8 @@ public partial class SettingsViewModel : ObservableObject
         IUrlRuleService urlRuleService,
         ILogService logService,
         IExternalLinkService? externalLinkService = null,
-        IUpdateService? updateService = null)
+        IUpdateService? updateService = null,
+        IDefaultBrowserService? defaultBrowserService = null)
     {
         _settingsService = settingsService;
         _browserService = browserService;
@@ -196,6 +198,7 @@ public partial class SettingsViewModel : ObservableObject
         LogService = logService;
         _externalLinkService = externalLinkService;
         _updateService = updateService;
+        _defaultBrowserService = defaultBrowserService;
 
         // 初期化処理（完了をInitializationTaskで外部から待機可能にする。
         // テストがコンストラクタ直後にコマンドを実行すると、この非同期初期化と
@@ -348,6 +351,9 @@ public partial class SettingsViewModel : ObservableObject
             // プロパティ変更イベントを監視
             PropertyChanged += OnPropertyChanged;
             LogService?.LogDebug("プロパティ変更イベント監視開始", "SettingsViewModel");
+
+            // 既定ブラウザ判定（OS側の現在状態）を取得
+            RefreshDefaultBrowserStatus();
 
             LogService?.LogDebug("SettingsViewModel初期化完了", "SettingsViewModel");
         }

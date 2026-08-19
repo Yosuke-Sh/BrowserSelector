@@ -82,7 +82,9 @@ Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Fil
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
-Filename: "{cmd}"; Parameters: "/c start ms-settings:defaultapps"; Tasks: open_default_apps; Flags: postinstall skipifsilent nowait
+; registeredAppNameでBrowserSelectorを指定し、Windows 11の「既定に設定」ボタンへ直接誘導する
+; （クエリなしの ms-settings:defaultapps だと一覧から手動で探す必要がある）
+Filename: "{cmd}"; Parameters: "/c start ms-settings:defaultapps?registeredAppName=BrowserSelector"; Tasks: open_default_apps; Flags: postinstall skipifsilent nowait
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}\logs"
@@ -94,40 +96,36 @@ Type: filesandordirs; Name: "{localappdata}\BrowserSelector\updates"
 Type: filesandordirs; Name: "{localappdata}\BrowserSelector\backup"
 
 [Registry]
-; HTTPプロトコルハンドラーの設定
-Root: HKLM; Subkey: "SOFTWARE\Classes\http\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""; Flags: uninsdeletekey; Tasks: set_default_browser
-Root: HKLM; Subkey: "SOFTWARE\Classes\http\shell\open\ddeexec"; ValueType: string; ValueName: ""; ValueData: ""; Flags: uninsdeletekey; Tasks: set_default_browser
-Root: HKLM; Subkey: "SOFTWARE\Classes\http\shell\open\ddeexec\Application"; ValueType: string; ValueName: ""; ValueData: "BrowserSelector"; Flags: uninsdeletekey; Tasks: set_default_browser
-Root: HKLM; Subkey: "SOFTWARE\Classes\http\shell\open\ddeexec\Topic"; ValueType: string; ValueName: ""; ValueData: "WWW_OpenURL"; Flags: uninsdeletekey; Tasks: set_default_browser
-
-; HTTPSプロトコルハンドラーの設定
-Root: HKLM; Subkey: "SOFTWARE\Classes\https\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""; Flags: uninsdeletekey; Tasks: set_default_browser
-Root: HKLM; Subkey: "SOFTWARE\Classes\https\shell\open\ddeexec"; ValueType: string; ValueName: ""; ValueData: ""; Flags: uninsdeletekey; Tasks: set_default_browser
-Root: HKLM; Subkey: "SOFTWARE\Classes\https\shell\open\ddeexec\Application"; ValueType: string; ValueName: ""; ValueData: "BrowserSelector"; Flags: uninsdeletekey; Tasks: set_default_browser
-Root: HKLM; Subkey: "SOFTWARE\Classes\https\shell\open\ddeexec\Topic"; ValueType: string; ValueName: ""; ValueData: "WWW_OpenURL"; Flags: uninsdeletekey; Tasks: set_default_browser
-
-; ファイル拡張子の関連付け
-Root: HKLM; Subkey: "SOFTWARE\Classes\.htm\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""; Flags: uninsdeletekey; Tasks: set_default_browser
-Root: HKLM; Subkey: "SOFTWARE\Classes\.html\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""; Flags: uninsdeletekey; Tasks: set_default_browser
-
 ; アプリケーションの登録
 Root: HKLM; Subkey: "SOFTWARE\BrowserSelector"; ValueType: string; ValueName: "InstallPath"; ValueData: "{app}"; Flags: uninsdeletekey
 Root: HKLM; Subkey: "SOFTWARE\BrowserSelector"; ValueType: string; ValueName: "Version"; ValueData: "{#MyAppVersion}"; Flags: uninsdeletekey
 
-; Windowsの既定アプリ一覧に表示されるための登録
-Root: HKLM; Subkey: "SOFTWARE\RegisteredApplications"; ValueType: string; ValueName: "BrowserSelector"; ValueData: "SOFTWARE\BrowserSelector\Capabilities"; Flags: uninsdeletekey; Tasks: set_default_browser
-Root: HKLM; Subkey: "SOFTWARE\BrowserSelector\Capabilities"; ValueType: string; ValueName: "ApplicationDescription"; ValueData: "BrowserSelector - 複数のブラウザから選択できるアプリケーション"; Flags: uninsdeletekey; Tasks: set_default_browser
-Root: HKLM; Subkey: "SOFTWARE\BrowserSelector\Capabilities"; ValueType: string; ValueName: "ApplicationName"; ValueData: "BrowserSelector"; Flags: uninsdeletekey; Tasks: set_default_browser
+; --- 既定ブラウザ登録（Windows 10/11対応） ---
+; Windows 11で「既定のアプリ」画面の“ブラウザ”カテゴリに表示されるための必須要件は、
+; Capabilities を SOFTWARE\Clients\StartMenuInternet\<AppName> 配下に登録すること。
+; 従来 SOFTWARE\BrowserSelector\Capabilities 直下に置いていたが、この位置では
+; Windows 11のブラウザ選択導線から認識されない。
+; また、HKLM\SOFTWARE\Classes\http\shell\open\command 等の直接上書きは
+; Win10/11ではHKCUのUserChoice（ハッシュ保護）が優先されるため実効性が無く、
+; かつアンインストール時にマシン共有のキーを破壊するため行わない。DDE(ddeexec)キーも
+; IE時代の遺物のため設定しない。
 
-; プロトコル関連付けの登録
-Root: HKLM; Subkey: "SOFTWARE\BrowserSelector\Capabilities\URLAssociations"; ValueType: string; ValueName: "http"; ValueData: "BrowserSelector.http"; Flags: uninsdeletekey; Tasks: set_default_browser
-Root: HKLM; Subkey: "SOFTWARE\BrowserSelector\Capabilities\URLAssociations"; ValueType: string; ValueName: "https"; ValueData: "BrowserSelector.https"; Flags: uninsdeletekey; Tasks: set_default_browser
+; Clients\StartMenuInternet配下のCapabilities登録（Win11の「既定のブラウザ」一覧に表示される要件）
+Root: HKLM; Subkey: "SOFTWARE\Clients\StartMenuInternet\BrowserSelector"; ValueType: string; ValueName: ""; ValueData: "BrowserSelector"; Flags: uninsdeletekey; Tasks: set_default_browser
+Root: HKLM; Subkey: "SOFTWARE\Clients\StartMenuInternet\BrowserSelector\Capabilities"; ValueType: string; ValueName: "ApplicationName"; ValueData: "BrowserSelector"; Flags: uninsdeletekey; Tasks: set_default_browser
+Root: HKLM; Subkey: "SOFTWARE\Clients\StartMenuInternet\BrowserSelector\Capabilities"; ValueType: string; ValueName: "ApplicationDescription"; ValueData: "BrowserSelector - 複数のブラウザから選択できるアプリケーション"; Flags: uninsdeletekey; Tasks: set_default_browser
+Root: HKLM; Subkey: "SOFTWARE\Clients\StartMenuInternet\BrowserSelector\Capabilities"; ValueType: string; ValueName: "ApplicationIcon"; ValueData: "{app}\{#MyAppExeName},0"; Flags: uninsdeletekey; Tasks: set_default_browser
+Root: HKLM; Subkey: "SOFTWARE\Clients\StartMenuInternet\BrowserSelector\Capabilities\URLAssociations"; ValueType: string; ValueName: "http"; ValueData: "BrowserSelector.http"; Flags: uninsdeletekey; Tasks: set_default_browser
+Root: HKLM; Subkey: "SOFTWARE\Clients\StartMenuInternet\BrowserSelector\Capabilities\URLAssociations"; ValueType: string; ValueName: "https"; ValueData: "BrowserSelector.https"; Flags: uninsdeletekey; Tasks: set_default_browser
+Root: HKLM; Subkey: "SOFTWARE\Clients\StartMenuInternet\BrowserSelector\Capabilities\FileAssociations"; ValueType: string; ValueName: ".htm"; ValueData: "BrowserSelector.htm"; Flags: uninsdeletekey; Tasks: set_default_browser
+Root: HKLM; Subkey: "SOFTWARE\Clients\StartMenuInternet\BrowserSelector\Capabilities\FileAssociations"; ValueType: string; ValueName: ".html"; ValueData: "BrowserSelector.html"; Flags: uninsdeletekey; Tasks: set_default_browser
+Root: HKLM; Subkey: "SOFTWARE\Clients\StartMenuInternet\BrowserSelector\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\{#MyAppExeName},0"; Flags: uninsdeletekey; Tasks: set_default_browser
+Root: HKLM; Subkey: "SOFTWARE\Clients\StartMenuInternet\BrowserSelector\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"""; Flags: uninsdeletekey; Tasks: set_default_browser
 
-; ファイル関連付けの登録
-Root: HKLM; Subkey: "SOFTWARE\BrowserSelector\Capabilities\FileAssociations"; ValueType: string; ValueName: ".htm"; ValueData: "BrowserSelector.htm"; Flags: uninsdeletekey; Tasks: set_default_browser
-Root: HKLM; Subkey: "SOFTWARE\BrowserSelector\Capabilities\FileAssociations"; ValueType: string; ValueName: ".html"; ValueData: "BrowserSelector.html"; Flags: uninsdeletekey; Tasks: set_default_browser
+; Windowsの既定アプリ一覧（RegisteredApplications）へ登録
+Root: HKLM; Subkey: "SOFTWARE\RegisteredApplications"; ValueType: string; ValueName: "BrowserSelector"; ValueData: "SOFTWARE\Clients\StartMenuInternet\BrowserSelector\Capabilities"; Flags: uninsdeletekey; Tasks: set_default_browser
 
-; カスタムプロトコルクラスの登録
+; プロトコル・ファイル関連付け用ProgIdクラスの登録（Capabilities\URLAssociations/FileAssociationsから参照される）
 Root: HKLM; Subkey: "SOFTWARE\Classes\BrowserSelector.http"; ValueType: string; ValueName: ""; ValueData: "BrowserSelector HTTP Protocol"; Flags: uninsdeletekey; Tasks: set_default_browser
 Root: HKLM; Subkey: "SOFTWARE\Classes\BrowserSelector.http\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""; Flags: uninsdeletekey; Tasks: set_default_browser
 

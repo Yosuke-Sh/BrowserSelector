@@ -50,6 +50,8 @@ public class LocalizationResourceCompletenessTests
         keys.Should().Contain("Settings.Display.CaptureCurrentWindowSize");
         keys.Should().Contain("Settings.Display.CaptureCurrentWindowSizeDescription");
         keys.Should().Contain("Settings.Display.TileElevationStyle");
+        keys.Should().Contain("Settings.App.DefaultBrowserSettings");
+        keys.Should().Contain("Settings.App.SetAsDefaultBrowser");
     }
 
     private static HashSet<string> LoadResourceKeys(string cultureCode)
