@@ -70,6 +70,13 @@ internal static class ServiceCollectionExtensions
         _ = services.AddSingleton<IExternalLinkService>(provider =>
             new ExternalLinkService(provider.GetRequiredService<IBrowserService>(), provider.GetRequiredService<ILogService>()));
 
+        // トレイ常駐時の自動終了をトレイ格納に差し替えるための抽象化（SystemIntegration.ShellCloseService）。
+        // 具象型でも解決できるよう単一インスタンスとして両方登録し、App.SetupTrayIcon側で
+        // TrayIconManager確定後にAttachTrayIconを呼び出す。
+        _ = services.AddSingleton<SystemIntegration.ShellCloseService>();
+        _ = services.AddSingleton<IShellCloseService>(provider =>
+            provider.GetRequiredService<SystemIntegration.ShellCloseService>());
+
         // Presentation Services (WPFのApplication.Currentに依存するため型はPresentation層)
         _ = services.AddSingleton<IThemeService>(provider =>
             new ThemeService(provider.GetRequiredService<ILogService>()));

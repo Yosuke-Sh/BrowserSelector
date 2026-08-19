@@ -323,7 +323,14 @@ public partial class App : System.Windows.Application
         {
             _logService?.LogInformation($"後続インスタンスからURLを受信: {e.Url}", "App");
 
-            if (MainWindow != null)
+            if (_trayIconManager is { IsMinimizedToTray: true })
+            {
+                // TrayIconManager.Restore()を経由せずMainWindow.Show()を直接呼ぶと、
+                // IsMinimizedToTray/ShowInTaskbarがトレイ格納状態のまま残り、
+                // ✕ボタンでのトレイ格納が無効化されてアプリが即終了してしまう不具合があった。
+                _trayIconManager.Restore();
+            }
+            else if (MainWindow != null)
             {
                 if (MainWindow.WindowState == WindowState.Minimized)
                 {
@@ -387,6 +394,11 @@ public partial class App : System.Windows.Application
             _trayIconManager = new TrayIconManager(mainWindow, browserService, localizationService);
             _trayIconManager.MinimizedToTray += (_, _) => mainWindow.Countdown.SuspendForTray();
             _trayIconManager.RestoredFromTray += (_, _) => mainWindow.Countdown.ResumeFromTray();
+
+            // IShellCloseService（Presentation層からトレイ格納を要求するための抽象化）へ
+            // TrayIconManagerを後付け注入する。トレイ常駐が無効な場合はこの分岐自体を通らず、
+            // ShellCloseService.CanMinimizeToTrayはfalseのままとなる。
+            _host.Services.GetRequiredService<SystemIntegration.ShellCloseService>().AttachTrayIcon(_trayIconManager);
 
             mainWindow.Closing += (_, closingArgs) =>
             {
