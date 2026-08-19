@@ -7,12 +7,13 @@ using Moq;
 
 namespace BrowserSelector.UnitTests;
 
-public class BrowserServiceTests
+public class BrowserServiceTests : IDisposable
 {
     private readonly Mock<IRegistryService> _mockRegistryService;
     private readonly Mock<IUrlService> _mockUrlService;
     private readonly Mock<ILogService> _mockLogService;
     private readonly BrowserService _browserService;
+    private readonly string _tempSettingsDirectory;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BrowserServiceTests"/> class.
@@ -22,7 +23,33 @@ public class BrowserServiceTests
         _mockRegistryService = new Mock<IRegistryService>();
         _mockUrlService = new Mock<IUrlService>();
         _mockLogService = new Mock<ILogService>();
-        _browserService = new BrowserService(_mockRegistryService.Object, _mockUrlService.Object, _mockLogService.Object);
+
+        // 既定コンストラクタは全インスタンス共通の%AppData%\BrowserSelector\browsers.jsonへ書き込むため、
+        // 他のテストクラス（実BrowserServiceを構築するもの）と並列実行された際にファイル書き込みが競合し、
+        // まれにAddBrowserAsync等がIOExceptionを握りつぶしてfalseを返すCIの間欠的失敗があった。
+        // テストごとに一意な一時ディレクトリを使うことで競合を根本的に回避する。
+        _tempSettingsDirectory = Path.Combine(Path.GetTempPath(), "BrowserSelectorTest", Guid.NewGuid().ToString());
+        _browserService = new BrowserService(_mockRegistryService.Object, _mockUrlService.Object, _mockLogService.Object, _tempSettingsDirectory);
+    }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        try
+        {
+            if (Directory.Exists(_tempSettingsDirectory))
+            {
+                Directory.Delete(_tempSettingsDirectory, recursive: true);
+            }
+        }
+        catch (IOException)
+        {
+            // 削除に失敗しても後続のテストには影響しないため無視する。
+        }
+        catch (UnauthorizedAccessException)
+        {
+            // 削除に失敗しても後続のテストには影響しないため無視する。
+        }
     }
 
 

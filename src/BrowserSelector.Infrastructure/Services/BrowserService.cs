@@ -38,23 +38,38 @@ public class BrowserService : IBrowserService
     /// <param name="urlService">urlService.</param>
     /// <param name="logService">logService.</param>
     public BrowserService(IRegistryService registryService, IUrlService urlService, ILogService logService)
+        : this(registryService, urlService, logService, settingsDirectory: null)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BrowserService"/> class with a custom settings directory.
+    /// テスト専用。既定コンストラクタは全インスタンス共通の<c>%AppData%\BrowserSelector\browsers.json</c>へ書き込むため、
+    /// 複数のテストクラスが並列に実際の<see cref="BrowserService"/>を生成すると同一ファイルへの書き込みが競合し、
+    /// まれに<see cref="IOException"/>を握りつぶして<c>AddBrowserAsync</c>等が意図せず<see langword="false"/>を
+    /// 返すことがあった（CIでの間欠的なテスト失敗の原因）。テストではこのコンストラクタで一意な一時ディレクトリを渡すこと.
+    /// </summary>
+    /// <param name="registryService">registryService.</param>
+    /// <param name="urlService">urlService.</param>
+    /// <param name="logService">logService.</param>
+    /// <param name="settingsDirectory">設定保存先ディレクトリ（省略時は既定の<c>%AppData%\BrowserSelector</c>）.</param>
+    internal BrowserService(IRegistryService registryService, IUrlService urlService, ILogService logService, string? settingsDirectory)
     {
         _registryService = registryService;
         _urlService = urlService;
         _logService = logService;
 
-        // ユーザーのアプリケーションデータフォルダに設定を保存
-        string settingsDirectory = Path.Combine(
+        string resolvedSettingsDirectory = settingsDirectory ?? Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "BrowserSelector");
 
         // 設定ディレクトリが存在しない場合は作成
-        if (!Directory.Exists(settingsDirectory))
+        if (!Directory.Exists(resolvedSettingsDirectory))
         {
-            _ = Directory.CreateDirectory(settingsDirectory);
+            _ = Directory.CreateDirectory(resolvedSettingsDirectory);
         }
 
-        _browsersPath = Path.Combine(settingsDirectory, "browsers.json");
+        _browsersPath = Path.Combine(resolvedSettingsDirectory, "browsers.json");
     }
 
     /// <inheritdoc/>
