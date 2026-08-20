@@ -363,7 +363,7 @@ internal sealed class TestUrlRuleService : IUrlRuleService
         {
             lock (_lockObject)
             {
-                string json = JsonSerializer.Serialize(_rules, new JsonSerializerOptions { WriteIndented = true });
+                string json = JsonSerializer.Serialize(_rules, new JsonSerializerOptions { WriteIndented = true, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
                 File.WriteAllText(_rulesFilePath, json);
             }
         }

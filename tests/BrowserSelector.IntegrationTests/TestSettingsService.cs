@@ -268,7 +268,7 @@ internal sealed class TestSettingsService : ISettingsService
                 ExportDate = DateTime.Now
             };
 
-            string json = JsonSerializer.Serialize(exportData, new JsonSerializerOptions { WriteIndented = true });
+            string json = JsonSerializer.Serialize(exportData, new JsonSerializerOptions { WriteIndented = true, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
             await File.WriteAllTextAsync(filePath, json).ConfigureAwait(false);
 
             _logService?.LogTrace("設定エクスポート完了", "TestSettingsService");
