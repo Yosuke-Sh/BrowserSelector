@@ -10,7 +10,8 @@ namespace BrowserSelector.Presentation.Helpers;
 /// ダイアログのOwnerに設定するアクティブウィンドウを取得するヘルパー。
 /// アクティブウィンドウが取得できない場合はメインウィンドウを返す（背面表示防止のため）。
 /// <see cref="System.Windows.Application.Current"/>にはスレッド親和性があるため、
-/// 必ずUIスレッドから呼び出すこと.
+/// 必ずUIスレッドから呼び出すこと（<see cref="LocalizedMessageBox"/>はDispatcher経由で
+/// 自己マーシャリングした上でこのメソッドを呼び出す）.
 /// </summary>
 public static class ActiveWindowLocator
 {

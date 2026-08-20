@@ -1251,6 +1251,14 @@ public partial class SettingsViewModel : ObservableObject
 
             LogService?.LogDebug($"保存対象VisualSettings: BackgroundColor={VisualSettings.BackgroundColor}", "SettingsViewModel");
 
+            // カウントダウン秒数を有効範囲へクランプ（テキストボックスに数値検証が無いため保存時に補正する）
+            if (!IsValidCountdownDelay(AppSettings.DefaultDelay))
+            {
+                int clamped = Math.Clamp(AppSettings.DefaultDelay, MinCountdownDelaySeconds, MaxCountdownDelaySeconds);
+                LogService?.LogWarning($"カウントダウン秒数が範囲外のため補正: {AppSettings.DefaultDelay} -> {clamped}", "SettingsViewModel");
+                AppSettings.DefaultDelay = clamped;
+            }
+
             // アプリケーション設定を保存
             bool appSettingsResult = await _settingsService.SaveAppSettingsAsync(AppSettings).ConfigureAwait(false);
             LogService?.LogDebug($"AppSettings保存結果: {appSettingsResult}", "SettingsViewModel");
@@ -1281,8 +1289,11 @@ public partial class SettingsViewModel : ObservableObject
                         LogService?.LogDebug("メイン画面への反映完了", "SettingsViewModel");
 
                         // 成功時はウィンドウを閉じる
+                        // IsLoadedを確認するのは、直前の例外等でウィンドウが既に閉じられている場合に
+                        // DialogResultの設定（ShowDialog()で表示されたウィンドウでのみ許可される）が
+                        // InvalidOperationExceptionを起こすのを防ぐため.
                         Window? window = Application.Current?.Windows.OfType<Window>().FirstOrDefault(w => w.DataContext == this);
-                        if (window != null)
+                        if (window != null && window.IsLoaded)
                         {
                             LogService?.LogDebug($"設定ウィンドウを閉じる: {window.GetType().Name}", "SettingsViewModel");
                             window.DialogResult = true;
@@ -1290,7 +1301,7 @@ public partial class SettingsViewModel : ObservableObject
                         }
                         else
                         {
-                            LogService?.LogWarning("設定ウィンドウが見つかりません", "SettingsViewModel");
+                            LogService?.LogWarning("設定ウィンドウが見つからないか、既に閉じられています", "SettingsViewModel");
                         }
                     }
                     // CA1031: RelayCommandハンドラーの最上位try-catch。WPFダイアログ表示やサービス呼び出しなど例外種別が多岐にわたり、UIスレッドをクラッシュさせないための最終防御であるため意図的に汎用catchとする。

@@ -140,9 +140,22 @@ public static class LocalizedMessageBox
     /// <summary>
     /// アクティブウィンドウ（無ければメインウィンドウ）をOwnerに設定してMessageBoxを表示する。
     /// MainWindowが既定でTopmost=trueになりうるため、Ownerの無いMessageBoxは背面に隠れることがあった。
-    /// Ownerが取得できない場合（アプリ起動直後・テスト等）はOwnerなしのオーバーロードにフォールバックする.
+    /// Ownerが取得できない場合（アプリ起動直後・テスト等）はOwnerなしのオーバーロードにフォールバックする。
+    /// 呼び出し元が<c>ConfigureAwait(false)</c>後のスレッドプールスレッド等、UIスレッド以外から
+    /// 呼び出すケースがあるため、Owner取得とMessageBox表示を一体でUIスレッドへマーシャリングする.
     /// </summary>
     private static MessageBoxResult ShowCore(string message, string caption, MessageBoxButton button, MessageBoxImage icon)
+    {
+        System.Windows.Threading.Dispatcher? dispatcher = Application.Current?.Dispatcher;
+        if (dispatcher == null || dispatcher.CheckAccess())
+        {
+            return ShowCoreOnUiThread(message, caption, button, icon);
+        }
+
+        return dispatcher.Invoke(() => ShowCoreOnUiThread(message, caption, button, icon));
+    }
+
+    private static MessageBoxResult ShowCoreOnUiThread(string message, string caption, MessageBoxButton button, MessageBoxImage icon)
     {
         Window? owner = ActiveWindowLocator.GetActiveWindow();
         return owner != null
