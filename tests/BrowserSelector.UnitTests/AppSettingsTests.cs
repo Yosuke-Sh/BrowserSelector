@@ -16,6 +16,7 @@ public class AppSettingsTests
         _ = settings.Language.Should().Be("en-US"); // デフォルト言語を英語に変更
         _ = settings.CustomProtocol.Should().Be("browserselector");
         _ = settings.CloseAfterUrlRuleMatch.Should().BeTrue();
+        _ = settings.DefaultDelay.Should().Be(0); // 既定は自動起動無効（毎回手動選択）
     }
 
     [Fact]

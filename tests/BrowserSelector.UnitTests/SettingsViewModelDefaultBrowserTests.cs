@@ -81,6 +81,46 @@ public class SettingsViewModelDefaultBrowserTests
     }
 
     [Fact]
+    public async Task InitializeAsync_WithDefaultBrowserServiceReturningTrue_LeavesDefaultBrowserNameNull()
+    {
+        _ = _mockDefaultBrowserService.Setup(x => x.IsDefaultBrowser()).Returns(true);
+        SettingsViewModel viewModel = CreateViewModel(_mockDefaultBrowserService.Object);
+
+        await viewModel.InitializeAsync();
+
+        viewModel.DefaultBrowserName.Should().BeNull();
+        viewModel.IsDefaultBrowserUnknown.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task InitializeAsync_WithOtherBrowserAsDefault_SetsDefaultBrowserName()
+    {
+        _ = _mockDefaultBrowserService.Setup(x => x.IsDefaultBrowser()).Returns(false);
+        _ = _mockDefaultBrowserService.Setup(x => x.GetDefaultBrowserDisplayName()).Returns("Microsoft Edge");
+        SettingsViewModel viewModel = CreateViewModel(_mockDefaultBrowserService.Object);
+
+        await viewModel.InitializeAsync();
+
+        viewModel.IsDefaultBrowser.Should().BeFalse();
+        viewModel.DefaultBrowserName.Should().Be("Microsoft Edge");
+        viewModel.IsDefaultBrowserUnknown.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task InitializeAsync_WithUnresolvableDefaultBrowser_SetsIsDefaultBrowserUnknownTrue()
+    {
+        _ = _mockDefaultBrowserService.Setup(x => x.IsDefaultBrowser()).Returns(false);
+        _ = _mockDefaultBrowserService.Setup(x => x.GetDefaultBrowserDisplayName()).Returns((string?)null);
+        SettingsViewModel viewModel = CreateViewModel(_mockDefaultBrowserService.Object);
+
+        await viewModel.InitializeAsync();
+
+        viewModel.IsDefaultBrowser.Should().BeFalse();
+        viewModel.DefaultBrowserName.Should().BeNull();
+        viewModel.IsDefaultBrowserUnknown.Should().BeTrue();
+    }
+
+    [Fact]
     public void OpenDefaultAppsSettingsCommand_InvokesUnderlyingService()
     {
         SettingsViewModel viewModel = CreateViewModel(_mockDefaultBrowserService.Object);

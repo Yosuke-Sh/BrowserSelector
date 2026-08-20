@@ -39,4 +39,30 @@ public class DefaultBrowserServiceTests
 
         act.Should().NotThrow();
     }
+
+    [Fact]
+    public void GetDefaultBrowserDisplayName_DoesNotThrowInTestEnvironment()
+    {
+        DefaultBrowserService service = new();
+
+        Action act = () => service.GetDefaultBrowserDisplayName();
+
+        act.Should().NotThrow();
+    }
+
+    [Theory]
+    [InlineData("\"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe\" -- \"%1\"", "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe")]
+    [InlineData("\"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\" %1", "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe")]
+    [InlineData("C:\\Browsers\\browser.exe %1", "C:\\Browsers\\browser.exe")]
+    [InlineData("C:\\Browsers\\browser.exe", "C:\\Browsers\\browser.exe")]
+    [InlineData(null, null)]
+    [InlineData("", null)]
+    [InlineData("   ", null)]
+    [InlineData("\"unterminated", null)] // 閉じ引用符が無い異常値
+    public void ExtractExecutablePath_ReturnsExpectedResult(string? command, string? expected)
+    {
+        string? result = DefaultBrowserService.ExtractExecutablePath(command);
+
+        result.Should().Be(expected);
+    }
 }

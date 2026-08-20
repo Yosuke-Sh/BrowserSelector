@@ -274,4 +274,31 @@ public class SettingsViewModelTests
         _mockSettingsService.Verify(x => x.SaveAppSettingsAsync(It.IsAny<AppSettings>()), Times.Once);
         _mockSettingsService.Verify(x => x.SaveVisualSettingsAsync(It.IsAny<VisualSettings>()), Times.Once);
     }
+
+    [Theory]
+    [InlineData(-5, 0)] // 範囲外（負値）は最小値へクランプ
+    [InlineData(10000, 3600)] // 範囲外（超過）は最大値へクランプ
+    [InlineData(30, 30)] // 範囲内はそのまま
+    public async Task SaveSettingsCommand_ClampsDefaultDelayToValidRange(int inputDelay, int expectedDelay)
+    {
+        // Arrange
+        _ = _mockSettingsService
+            .Setup(x => x.SaveAppSettingsAsync(It.IsAny<AppSettings>()))
+            .ReturnsAsync(true);
+        _ = _mockSettingsService
+            .Setup(x => x.SaveVisualSettingsAsync(It.IsAny<VisualSettings>()))
+            .ReturnsAsync(true);
+
+        await _viewModel.InitializationTask;
+        _viewModel.AppSettings.DefaultDelay = inputDelay;
+
+        // Act
+        await _viewModel.SaveSettingsCommand.ExecuteAsync(null);
+
+        // Assert
+        _viewModel.AppSettings.DefaultDelay.Should().Be(expectedDelay);
+        _mockSettingsService.Verify(
+            x => x.SaveAppSettingsAsync(It.Is<AppSettings>(s => s.DefaultDelay == expectedDelay)),
+            Times.Once);
+    }
 }
