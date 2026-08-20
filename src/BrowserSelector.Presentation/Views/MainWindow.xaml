@@ -387,9 +387,21 @@
         </Grid>
 
         <!-- ヘッダー（ロゴ + タイトル。Phase C-0b/C-6で再構成: 新ロゴSMALL（比率6.15）を左、タイトルを右） -->
-        <Grid Grid.Row="1" Margin="20,16,20,10"
+        <Grid Grid.Row="1"
               Visibility="{Binding VisualSettings.ShowLogo, Converter={StaticResource BoolToVisibilityConverter}}"
               AutomationProperties.Name="HeaderGrid">
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <!-- ShowTitleBar=falseの場合、右上に常時表示されるハンバーガーメニュー
+                         （Grid.RowSpan="6"）と右寄せのタイトルテキストが重なるため余白を追加する. -->
+                    <Setter Property="Margin" Value="20,16,20,10"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ShowTitleBar}" Value="False">
+                            <Setter Property="Margin" Value="20,16,54,10"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
@@ -432,9 +444,23 @@
                    AutomationProperties.Name="UrlDisplayTextBlock"/>
 
         <!-- URL入力（Phase C-7: エレベーション レベル1 - 背景よりわずかに沈む表現） -->
-        <Grid Grid.Row="2" Margin="20,10"
+        <Grid Grid.Row="2"
               Visibility="{Binding VisualSettings.ShowUrlInput, Converter={StaticResource BoolToVisibilityConverter}}"
               AutomationProperties.Name="UrlInputGrid">
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <!-- 既定（タイトルバー表示時）は行0がハンバーガーメニュー分の高さを持つため通常マージン。
+                         ShowTitleBar=falseの場合、CustomTitleBarRowの高さが0になり、右上に常時表示される
+                         ハンバーガーメニュー（Grid.RowSpan="6"）がこの行の右上と重なるため、
+                         右上コーナー分の余白を追加して衝突を避ける. -->
+                    <Setter Property="Margin" Value="20,10"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ShowTitleBar}" Value="False">
+                            <Setter Property="Margin" Value="20,10,54,10"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
