@@ -96,6 +96,12 @@ public static class MonitorHelper
             return;
         }
 
+        WindowInteropHelper interopHelper = new(window);
+        if (interopHelper.Handle == IntPtr.Zero)
+        {
+            return;
+        }
+
         NativeMethods.MONITORINFO monitorInfo = default;
         monitorInfo.cbSize = Marshal.SizeOf<NativeMethods.MONITORINFO>();
         if (!NativeMethods.GetMonitorInfo(monitor, ref monitorInfo))
@@ -116,8 +122,19 @@ public static class MonitorHelper
         (double leftPx, double topPx) = CalculateCenteredPosition(
             workLeftPx, workTopPx, workWidthPx, workHeightPx, windowWidthPx, windowHeightPx);
 
-        window.Left = leftPx / scale;
-        window.Top = topPx / scale;
+        // WPFのWindow.Left/Topはプライマリモニター基準のDIP座標であり、
+        // Per-Monitor DPI環境（モニターごとに拡大率が異なる、または負座標のモニターがある場合）では
+        // 単一のscale値で物理px座標から正しく変換できない（過去、この除算により
+        // 負座標モニターでウィンドウが画面外へ配置される不具合があった）。
+        // SetWindowPosへ物理px座標をそのまま渡すことで座標系の変換を一切行わずに配置する。
+        _ = NativeMethods.SetWindowPos(
+            interopHelper.Handle,
+            IntPtr.Zero,
+            (int)Math.Round(leftPx),
+            (int)Math.Round(topPx),
+            0,
+            0,
+            NativeMethods.SwpNoSize | NativeMethods.SwpNoZOrder | NativeMethods.SwpNoActivate);
     }
 
     private static double GetMonitorDpiScale(IntPtr monitor, Window window)
@@ -164,6 +181,10 @@ public static class MonitorHelper
 #pragma warning disable SA1307, S101, SA1310, SA1201, S1144
     private static class NativeMethods
     {
+        public const uint SwpNoSize = 0x0001;
+        public const uint SwpNoZOrder = 0x0004;
+        public const uint SwpNoActivate = 0x0010;
+
         [StructLayout(LayoutKind.Sequential)]
         public struct POINT
         {
@@ -208,6 +229,10 @@ public static class MonitorHelper
         [DllImport("shcore.dll")]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern int GetDpiForMonitor(IntPtr hmonitor, uint dpiType, out uint dpiX, out uint dpiY);
+
+        [DllImport("user32.dll")]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+        public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, uint uFlags);
     }
 #pragma warning restore SA1307, S101, SA1310, SA1201, S1144
 }
