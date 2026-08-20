@@ -1,14 +1,14 @@
 ; BrowserSelector Inno Setup Script
-; Version: 0.3.4
+; Version: 0.3.5
 ; Author: Yosuke-Sh
 ; Description: BrowserSelector WPF Application Installer
 
 #define MyAppName "BrowserSelector"
 ; MyAppVersion（Phase E-2b）: Directory.Build.props の <Version> が単一の情報源。
-; ビルド時は `ISCC /DMyAppVersion=0.3.4 BrowserSelector.iss` のように /D で上書きして注入する
+; ビルド時は `ISCC /DMyAppVersion=0.3.5 BrowserSelector.iss` のように /D で上書きして注入する
 ; （release.yml からの自動注入はPhase G-4で実装。ここでの既定値はDirectory.Build.propsと手動で同期させておく）。
 #ifndef MyAppVersion
-  #define MyAppVersion "0.3.4"
+  #define MyAppVersion "0.3.5"
 #endif
 #define MyAppPublisher "Yosuke-Sh"
 #define MyAppURL "https://github.com/Yosuke-Sh/BrowserSelector"
@@ -47,7 +47,7 @@ UninstallDisplayName={#MyAppName}
 VersionInfoVersion={#MyAppVersion}
 VersionInfoCompany={#MyAppPublisher}
 VersionInfoDescription={#MyAppDescription}
-VersionInfoCopyright=Copyright (C) 2025 {#MyAppPublisher}
+VersionInfoCopyright=Copyright (C) 2025-2026 {#MyAppPublisher}
 ; Phase H-12: /SILENT /CLOSEAPPLICATIONSを実効にする。RestartApplications=noは
 ; [Run]のpostinstall起動と二重にならないようにするため。
 CloseApplications=yes
