@@ -62,7 +62,7 @@ public static class AppInfo
         }
 
         Version? coreVersion = Assembly.GetExecutingAssembly().GetName().Version;
-        return coreVersion ?? new Version(0, 2, 0);
+        return coreVersion ?? new Version(0, 3, 4);
     }
 }
 #pragma warning restore CA1056

@@ -42,6 +42,9 @@ public partial class App : System.Windows.Application
         try
         {
             // コマンドライン引数のパース（Phase D）: -d/--delay, -b/--browser, --silent, --auto-launch, -h/--help, -v/--version
+            // 以下の3箇所（--help/--version/起動失敗）はDI・ローカライズ初期化前後で実行されるため、
+            // LocalizedMessageBoxのローカライズサービスが未設定かつMainWindowが未生成であり、
+            // ActiveWindowLocatorによるOwner解決の恩恵が無い。意図的に生のMessageBox.Showのまま残す。
             _commandLineOptions = CommandLineParser.Parse(e.Args);
             if (_commandLineOptions.ShowHelp)
             {
@@ -267,7 +270,8 @@ public partial class App : System.Windows.Application
                 throw new InvalidOperationException($"アプリケーションの起動に失敗しました: {ex.Message}", ex);
             }
 
-            // 通常モードではメッセージボックスを表示
+            // 通常モードではメッセージボックスを表示（DI/ローカライズ初期化が失敗した経路のため、
+            // LocalizedMessageBoxではなく生のMessageBox.Showのまま表示する）
             _ = System.Windows.MessageBox.Show($"アプリケーションの起動に失敗しました: {ex.Message}",
                           "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
             Shutdown();
@@ -323,7 +327,14 @@ public partial class App : System.Windows.Application
         {
             _logService?.LogInformation($"後続インスタンスからURLを受信: {e.Url}", "App");
 
-            if (MainWindow != null)
+            if (_trayIconManager is { IsMinimizedToTray: true })
+            {
+                // TrayIconManager.Restore()を経由せずMainWindow.Show()を直接呼ぶと、
+                // IsMinimizedToTray/ShowInTaskbarがトレイ格納状態のまま残り、
+                // ✕ボタンでのトレイ格納が無効化されてアプリが即終了してしまう不具合があった。
+                _trayIconManager.Restore();
+            }
+            else if (MainWindow != null)
             {
                 if (MainWindow.WindowState == WindowState.Minimized)
                 {
@@ -387,6 +398,11 @@ public partial class App : System.Windows.Application
             _trayIconManager = new TrayIconManager(mainWindow, browserService, localizationService);
             _trayIconManager.MinimizedToTray += (_, _) => mainWindow.Countdown.SuspendForTray();
             _trayIconManager.RestoredFromTray += (_, _) => mainWindow.Countdown.ResumeFromTray();
+
+            // IShellCloseService（Presentation層からトレイ格納を要求するための抽象化）へ
+            // TrayIconManagerを後付け注入する。トレイ常駐が無効な場合はこの分岐自体を通らず、
+            // ShellCloseService.CanMinimizeToTrayはfalseのままとなる。
+            _host.Services.GetRequiredService<SystemIntegration.ShellCloseService>().AttachTrayIcon(_trayIconManager);
 
             mainWindow.Closing += (_, closingArgs) =>
             {

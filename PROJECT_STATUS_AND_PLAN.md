@@ -110,12 +110,31 @@ BrowserSelector/
 - **起動時バックグラウンドチェック**: 起動5秒後に非同期実行、`UpdateCheckInterval`に基づく間隔制御、`--silent`時は対象外
 - **差分アップデート・自動ロールバックUI**: スコープ外（v0.3.0計画時点の決定事項。数MBのため差分更新は費用対効果が無く、ロールバックはUpdater.exe内部の安全機構としてのみ実装）
 
+### 🪟 起動・表示の信頼性向上（v0.3.4）
+- **ウィンドウサイズの常時適用**: `SizeToContent`を撤去し、設定値（`VisualSettings.InitialWindowWidth/Height`）を唯一の正として毎回適用。設定画面の「現在のサイズを取得」ボタンで表示中サイズを反映可能
+- **マルチモニター対応起動位置**: カーソルのあるモニターへDPI考慮で中央配置（`MonitorHelper`、Win32 P/Invoke実装、Presentation層はWinForms非依存）
+- **タイル立体表現の選択制**: なし/影/ベベル/枠線から選択可能（`TileElevationStyle`列挙型）。影色はボタン背景色から自動生成（`ElevationShadowBrushConverter`）
+- **トレイ常駐時の自動終了の正常化**: `IShellCloseService`によりトレイ常駐時は「トレイ格納」、非常駐時は「完全終了」を正しく振り分け
+- **URLルール適用の再入防止**: 二重起動を防ぐ再入ガードと直近URL記録
+- **メッセージボックスのOwner統一**: `ActiveWindowLocator`により全メッセージボックスがアクティブウィンドウをOwnerとして表示され、最背面に隠れなくなった
+- **Windows 11既定ブラウザ対応**: インストーラーが`Clients\StartMenuInternet`配下へCapabilitiesを登録し、Win11の「既定のアプリ」ブラウザ一覧に表示されるようになった。設定画面から現在の既定状態確認とWindows設定画面への導線を提供（`IDefaultBrowserService`）
+
+### 🐛 ユーザーテスト報告分の不具合修正（v0.3.5、2026-08-20報告）
+- **マルチモニター座標変換バグ修正**: `MonitorHelper.PositionOnMonitor`が物理px座標をDIPへ`scale`除算で変換していたため、負座標モニター（プライマリ左側等）や混在DPI環境でウィンドウが画面外へ配置される不具合（タスクバーには出るが画面に表示されずALT+TABでも出せない）を修正。`window.Left/Top`への代入をやめ、`SetWindowPos`へ物理px座標をそのまま渡す方式に変更し、座標系変換自体を排除
+- **クロススレッド例外修正**: `ConfigureAwait(false)`後のスレッドプールスレッドから`LocalizedMessageBox`が`Application.Current.Windows`へアクセスして例外（URLルール追加・編集・削除、設定のインポート・エクスポートで発生）。`LocalizedMessageBox.ShowCore`がDispatcher経由で自己マーシャリングするよう修正し、呼び出し側を個別に直さず一括対応
+- **既定ブラウザ判定のレジストリパス誤り修正**: `DefaultBrowserService`が存在しないレジストリパス（`CurrentVersion\Explorer\UrlAssociations`配下）を参照しており、既定ブラウザをどう設定しても常に「設定されていません」と表示される不具合を修正。実際のパス（`Shell\Associations\UrlAssociations`配下）に修正し、あわせて実際の既定ブラウザ名を検出済みブラウザと突き合わせて表示する機能を追加
+- **urlrules.jsonのUnicodeエスケープ修正**: `UrlRuleService`のみ`JavaScriptEncoder.UnsafeRelaxedJsonEscaping`が未指定で、日本語・矢印記号等が`\uXXXX`形式で書き込まれていた不具合を修正（他3サービスと統一）
+- **自動起動秒数の既定値変更**: `AppSettings.DefaultDelay`の既定値を5秒→0秒（無効）に変更。URLを開くたびに毎回手動選択したいユーザーが大半のため、自動起動を明示的なオプトインへ変更。既存の保存済み設定には影響しない（新規インストールのみ）
+- **タイトルバー非表示時のハンバーガーメニュー重なり修正**: ShowTitleBar=false時に右上へ常時表示されるハンバーガーメニューがヘッダー・URL入力欄と重なっていた不具合を修正
+- **外観設定の即時反映化**: ShowTitleBar・ThemeMode・AlwaysOnTop・BackdropMode・EnableGlassEffect・WindowCornerRadius・WindowOpacityが保存後も再起動まで反映されなかった不具合を修正。`SettingsChanged`通知が`VisualSettings`のみで`AppSettings`変更を一切通知していなかったのが原因。`MainWindow.ApplyAppSettings`を新設し、保存時に即座に再適用する
+- **再起動が必要な設定変更の通知追加**: トレイ常駐（`AlwaysResidentInTray`）はトレイアイコンの生成・破棄を伴うため即時反映は行わず、変更時のみ「一部の設定は、アプリケーションを再起動すると反映されます。」を表示する
+
 ## 🧪 テスト実装状況
 
-### ✅ 正常動作中のテスト（2026-08-16実測、v0.3.0時点、`dotnet test`で確認）
-1. **単体テスト（UnitTests）**: 255テスト中255成功
+### ✅ 正常動作中のテスト（2026-08-20実測、v0.3.4時点、`dotnet test`で確認）
+1. **単体テスト（UnitTests）**: 289テスト中289成功
    - フレームワーク: xUnit + Moq + FluentAssertions
-   - 対象: Presentation層中心のビジネスロジック、ViewModels、ユーティリティクラス、変換ロジック（Phase H-9で更新通知バー関連7件追加）
+   - 対象: Presentation層中心のビジネスロジック、ViewModels、ユーティリティクラス、変換ロジック（v0.3.4でURLルール二重起動防止・IShellCloseService・WindowSizeHelper/MonitorHelper・ElevationShadowBrushConverter・既定ブラウザ判定関連のテストを追加）
    - **状況**: 完全動作（並列全体実行時のみ他プロジェクトとの一時ディレクトリ競合で稀に1件フレーキーになることがあるが、単体実行では安定）
 
 2. **単体テスト（CoreTests）**: 49テスト中49成功
@@ -123,14 +142,14 @@ BrowserSelector/
    - 対象: Core層のモデル・サービスインターフェース関連ロジック（Phase H-1で`UpdateInfo`/`AppSettings`更新プロパティのテスト追加）
    - **状況**: 完全動作
 
-3. **単体テスト（InfrastructureTests）**: 160テスト中160成功
+3. **単体テスト（InfrastructureTests）**: 173テスト中173成功
    - フレームワーク: xUnit + Moq + FluentAssertions
-   - 対象: Infrastructure層のサービス実装（Phase H-2〜H-6・H-11でGitHub APIマッピング・ダウンロード・チャネル判定・セキュリティテストを大幅追加）
+   - 対象: Infrastructure層のサービス実装（Phase H-2〜H-6・H-11でGitHub APIマッピング・ダウンロード・チャネル判定・セキュリティテストを大幅追加。v0.3.4でBrowserService起動成功判定・DefaultBrowserService・ローカライズキー網羅性のテストを追加）
    - **状況**: 完全動作
 
-4. **統合テスト（Integration Tests）**: 23テスト中23成功
+4. **統合テスト（Integration Tests）**: 24テスト中24成功
    - フレームワーク: xUnit + Microsoft.Extensions.Testing
-   - 対象: ファイルI/O、レジストリアクセス、システム統合機能
+   - 対象: ファイルI/O、レジストリアクセス、システム統合機能（v0.3.4で旧形式設定ファイルの後方互換性テストを追加）
    - **状況**: 完全動作
 
 5. **E2Eテスト（End-to-End Tests）**: 4テスト中4成功
@@ -138,9 +157,9 @@ BrowserSelector/
    - 対象: コマンドライン引数処理、URL処理フロー全体、設定変更の反映
    - **状況**: 完全動作
 
-6. **App専用テスト（App Tests）**: 88テスト中88成功
+6. **App専用テスト（App Tests）**: 90テスト中90成功
    - フレームワーク: xUnit + FluentAssertions
-   - 対象: WPFアプリケーションのリフレクションベーステスト
+   - 対象: WPFアプリケーションのリフレクションベーステスト（v0.3.4でShellCloseServiceのテストを追加）
    - **状況**: 完全動作
 
 7. **UIテスト（UI Tests）**: 5テスト中5成功
@@ -159,8 +178,8 @@ BrowserSelector/
 10. **パフォーマンステスト（Performance Tests）**: BenchmarkDotNetベースのためxUnitテストランナーからは除外（`dotnet test`の集計対象外）
 
 ### 📊 総合テスト結果
-- **総テスト数**: 858テスト（xUnitランナー対象。PerformanceTestsを除く、v0.2.0の658から+200）
-- **成功**: 858テスト（100%）
+- **総テスト数**: 908テスト（xUnitランナー対象。PerformanceTestsを除く、v0.3.3の866から+42）
+- **成功**: 908テスト（100%）
 - **失敗**: 0テスト
 - **スキップ**: 0テスト
 - **警告**: 0件（クリーンビルドで確認済み）
@@ -567,6 +586,6 @@ v0.2.0時点で「骨格のみ・原理的に動かない」状態だった自�
 
 ---
 
-**最終更新**: 2026年8月17日  
-**バージョン**: 0.3.3（設定画面の子ダイアログ背面表示・ブラウザ重複判定・英語ローカライズ欠落の修正）  
-**ステータス**: v0.1.0完了、v0.2.0完了、v0.3.0〜v0.3.3完了（テスト866件成功、警告0件）
+**最終更新**: 2026年8月20日  
+**バージョン**: 0.3.5（マルチモニター環境でのウィンドウ画面外配置・クロススレッド例外・既定ブラウザ判定のレジストリパス誤り・urlrules.jsonのUnicodeエスケープの修正、自動起動秒数の既定値変更）  
+**ステータス**: v0.1.0完了、v0.2.0完了、v0.3.0〜v0.3.4完了（テスト908件成功、警告0件）

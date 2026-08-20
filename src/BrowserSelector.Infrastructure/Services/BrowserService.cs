@@ -38,23 +38,38 @@ public class BrowserService : IBrowserService
     /// <param name="urlService">urlService.</param>
     /// <param name="logService">logService.</param>
     public BrowserService(IRegistryService registryService, IUrlService urlService, ILogService logService)
+        : this(registryService, urlService, logService, settingsDirectory: null)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BrowserService"/> class with a custom settings directory.
+    /// テスト専用。既定コンストラクタは全インスタンス共通の<c>%AppData%\BrowserSelector\browsers.json</c>へ書き込むため、
+    /// 複数のテストクラスが並列に実際の<see cref="BrowserService"/>を生成すると同一ファイルへの書き込みが競合し、
+    /// まれに<see cref="IOException"/>を握りつぶして<c>AddBrowserAsync</c>等が意図せず<see langword="false"/>を
+    /// 返すことがあった（CIでの間欠的なテスト失敗の原因）。テストではこのコンストラクタで一意な一時ディレクトリを渡すこと.
+    /// </summary>
+    /// <param name="registryService">registryService.</param>
+    /// <param name="urlService">urlService.</param>
+    /// <param name="logService">logService.</param>
+    /// <param name="settingsDirectory">設定保存先ディレクトリ（省略時は既定の<c>%AppData%\BrowserSelector</c>）.</param>
+    internal BrowserService(IRegistryService registryService, IUrlService urlService, ILogService logService, string? settingsDirectory)
     {
         _registryService = registryService;
         _urlService = urlService;
         _logService = logService;
 
-        // ユーザーのアプリケーションデータフォルダに設定を保存
-        string settingsDirectory = Path.Combine(
+        string resolvedSettingsDirectory = settingsDirectory ?? Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "BrowserSelector");
 
         // 設定ディレクトリが存在しない場合は作成
-        if (!Directory.Exists(settingsDirectory))
+        if (!Directory.Exists(resolvedSettingsDirectory))
         {
-            _ = Directory.CreateDirectory(settingsDirectory);
+            _ = Directory.CreateDirectory(resolvedSettingsDirectory);
         }
 
-        _browsersPath = Path.Combine(settingsDirectory, "browsers.json");
+        _browsersPath = Path.Combine(resolvedSettingsDirectory, "browsers.json");
     }
 
     /// <inheritdoc/>
@@ -144,13 +159,13 @@ public class BrowserService : IBrowserService
             string arguments = GetBrowserArguments(normalizedUrl);
 
             // ブラウザを起動
+            // 注: RedirectStandardOutput/Errorは設定しない。パイプを読み取らないまま起動すると、
+            // ブラウザの出力量がパイプバッファ（既定4KB程度）を超えた際にブラウザ側がブロックする可能性があるため。
             ProcessStartInfo startInfo = new()
             {
                 FileName = browser.ExecutablePath,
                 Arguments = arguments,
                 UseShellExecute = false,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
                 CreateNoWindow = false
             };
 
@@ -159,18 +174,10 @@ public class BrowserService : IBrowserService
             using Process? process = Process.Start(startInfo);
             if (process != null)
             {
+                // 注: Process.GetProcessById等による起動後確認は行わない。Chrome/Edge等は既存インスタンスへ
+                // URLを引き渡してブートストラッププロセスを即座に終了させることがあり、その場合ArgumentExceptionが
+                // 発生して起動成功判定を握りつぶしてしまうため（起動自体は成功しているにもかかわらず失敗扱いになる不具合）。
                 _logService.LogInformation($"プロセス起動成功 - PID: {process.Id}", nameof(BrowserService));
-
-                // プロセス情報を取得して確認
-                try
-                {
-                    Process processInfo = Process.GetProcessById(process.Id);
-                    _logService.LogDebug($"実際に起動されたプロセス - 名前: {processInfo.ProcessName}, ファイル名: {processInfo.MainModule?.FileName}", nameof(BrowserService));
-                }
-                catch (Exception ex) when (ex is InvalidOperationException or NotSupportedException)
-                {
-                    _logService.LogDebug($"プロセス情報取得エラー - {ex.Message}", nameof(BrowserService), ex);
-                }
 
                 // 使用回数を増加
                 browser.IncrementUseCount();

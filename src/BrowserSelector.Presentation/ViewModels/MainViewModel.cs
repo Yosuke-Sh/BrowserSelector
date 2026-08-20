@@ -5,6 +5,7 @@ using BrowserSelector.Presentation.Helpers;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using System.Threading;
 using System.Windows;
 using System.Windows.Media;
 
@@ -25,6 +26,7 @@ public partial class MainViewModel : ObservableObject
     private readonly ILogService? _logService;
     private readonly IExternalLinkService? _externalLinkService;
     private readonly IUpdateService? _updateService;
+    private readonly IShellCloseService? _shellCloseService;
 
     [ObservableProperty]
     private ObservableCollection<Browser> _browsers = [];
@@ -80,6 +82,17 @@ public partial class MainViewModel : ObservableObject
     /// </summary>
     private bool _suppressAutoCloseOnce;
 
+    /// <summary>
+    /// URLルール適用中かどうかを示すフラグ（0=待機中、1=処理中）。
+    /// OnUrlChangedからの多重発火による二重起動を防ぐための再入ガード.
+    /// </summary>
+    private int _urlRuleInFlight;
+
+    /// <summary>
+    /// 直近に自動起動を行ったURL。同一URLに対する連続した自動起動を抑止するために保持する.
+    /// </summary>
+    private string? _lastAutoLaunchedUrl;
+
     private System.Threading.Timer? _closeAfterLaunchSaveTimer;
 
     /// <summary>
@@ -106,7 +119,8 @@ public partial class MainViewModel : ObservableObject
         IUrlRuleService urlRuleService,
         ILogService logService,
         IExternalLinkService? externalLinkService = null,
-        IUpdateService? updateService = null)
+        IUpdateService? updateService = null,
+        IShellCloseService? shellCloseService = null)
     {
         // まずログサービスを設定
         _logService = logService;
@@ -136,6 +150,7 @@ public partial class MainViewModel : ObservableObject
 
         _externalLinkService = externalLinkService;
         _updateService = updateService;
+        _shellCloseService = shellCloseService;
 
         // 起動ログ
         try
@@ -258,12 +273,23 @@ public partial class MainViewModel : ObservableObject
             VisualSettings = newVisualSettings;
 
             // ウィンドウサイズの即座変更
-            if (Application.Current.MainWindow is Views.MainWindow mainWindow)
+            if (Application.Current?.MainWindow is Views.MainWindow mainWindow)
             {
                 ApplyWindowSizeChanges(mainWindow, newVisualSettings);
 
                 // 背景色・グラデーションの即座変更
                 ApplyBackgroundChanges(newVisualSettings);
+            }
+        }
+        else if (e.SettingType == "AppSettings" && e.NewValue is AppSettings newAppSettings)
+        {
+            CloseAfterLaunch = newAppSettings.CloseAfterUrlRuleMatch;
+
+            // 外観タブの設定（ShowTitleBar・ThemeMode・AlwaysOnTop・BackdropMode・
+            // EnableGlassEffect・WindowCornerRadius・WindowOpacity）を再起動なしで即時反映する.
+            if (Application.Current?.MainWindow is Views.MainWindow mainWindow)
+            {
+                mainWindow.ApplyAppSettings(newAppSettings);
             }
         }
     }
@@ -298,15 +324,15 @@ public partial class MainViewModel : ObservableObject
     /// 起動引数で指定されたURLを設定.
     /// </summary>
     /// <param name="url">設定するURL.</param>
-    public async void SetInitialUrl(string url)
+    public void SetInitialUrl(string url)
     {
         if (!string.IsNullOrWhiteSpace(url))
         {
+            // Urlセッター(OnUrlChanged)がURLルール適用を発火するため、ここで重ねて
+            // ApplyUrlRulesAsyncを呼び出さない（かつて二重呼び出しによりブラウザが
+            // 二重起動する不具合があった）。
             Url = url;
             _logService?.LogInformation($"初期URLを設定: {url}", "MainViewModel");
-
-            // URLルールに基づいてブラウザを自動選択
-            await ApplyUrlRulesAsync(url).ConfigureAwait(false);
         }
     }
 
@@ -398,19 +424,14 @@ public partial class MainViewModel : ObservableObject
     {
         try
         {
-            // 最小・最大サイズの制限
-            double width = Math.Max(400, Math.Min(2000, visualSettings.InitialWindowWidth));
-            double height = Math.Max(300, Math.Min(1500, visualSettings.InitialWindowHeight));
+            Helpers.WindowSizeHelper.ApplyConfiguredSize(mainWindow, visualSettings.InitialWindowWidth, visualSettings.InitialWindowHeight);
 
-            // ウィンドウサイズを変更
-            mainWindow.Width = width;
-            mainWindow.Height = height;
+            // ウィンドウが現在表示されているモニターを基準に中央寄せする（SystemParameters.PrimaryScreenは
+            // プライマリモニター限定・DPI非対応で、セカンダリモニター表示中に設定変更するとプライマリへ
+            // ジャンプしてしまう不具合があった）。
+            Helpers.MonitorHelper.CenterOnWindowMonitor(mainWindow);
 
-            // ウィンドウ位置を中央に調整
-            mainWindow.Left = (SystemParameters.PrimaryScreenWidth - width) / 2;
-            mainWindow.Top = (SystemParameters.PrimaryScreenHeight - height) / 2;
-
-            _logService?.LogInformation($"ウィンドウサイズを即座に変更: {width}x{height}", "MainViewModel");
+            _logService?.LogInformation($"ウィンドウサイズを即座に変更: {mainWindow.Width}x{mainWindow.Height}", "MainViewModel");
         }
         // CA1031: RelayCommand/イベントハンドラーの最上位try-catch。サービス呼び出しやUI操作など例外種別が多岐にわたり、UIスレッドをクラッシュさせないための意図的な汎用catch。
         #pragma warning disable CA1031
@@ -552,8 +573,19 @@ public partial class MainViewModel : ObservableObject
                 if (CloseAfterLaunch && !suppressThisTime)
                 {
                     _logService?.LogInformation("ブラウザ起動後のアプリ終了", "MainViewModel");
-                    // UIスレッドでアプリケーションを終了
-                    Application.Current.Dispatcher.Invoke(() => Application.Current.Shutdown());
+
+                    // IShellCloseServiceが注入されていればトレイ常駐設定に応じてトレイ格納/完全終了を
+                    // 振り分ける（Application.Shutdown()はClosingのキャンセルを無視するため、
+                    // トレイ常駐中に直接Shutdown()すると常駐インスタンスが終了してしまう不具合があった）。
+                    // 未注入時（テスト等）は従来どおりの完全終了にフォールバックする。
+                    if (_shellCloseService != null)
+                    {
+                        _shellCloseService.RequestClose();
+                    }
+                    else
+                    {
+                        Application.Current.Dispatcher.Invoke(() => Application.Current.Shutdown());
+                    }
                 }
             }
             else
@@ -645,8 +677,7 @@ public partial class MainViewModel : ObservableObject
         catch (Exception ex)
         {
             _logService?.LogError($"設定画面を開くエラー: {ex.Message}", "MainViewModel", ex);
-            _ = MessageBox.Show($"設定画面を開けませんでした: {ex.Message}", "エラー",
-                          MessageBoxButton.OK, MessageBoxImage.Error);
+            _ = LocalizedMessageBox.ShowError($"設定画面を開けませんでした: {ex.Message}", "エラー");
         }
         #pragma warning restore CA1031
     }
@@ -715,8 +746,21 @@ public partial class MainViewModel : ObservableObject
     /// <param name="url">対象URL.</param>
     private async Task ApplyUrlRulesAsync(string url)
     {
+        // 再入ガード: OnUrlChangedの多重発火（入力中の再代入やトレイ経由の再配信等）により
+        // 同一処理が並行実行され、ブラウザが二重起動する不具合があったため、処理中は後続を無視する。
+        if (Interlocked.CompareExchange(ref _urlRuleInFlight, 1, 0) != 0)
+        {
+            return;
+        }
+
         try
         {
+            // 直近に自動起動済みの同一URLであれば再度の自動起動は行わない。
+            if (string.Equals(url, _lastAutoLaunchedUrl, StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
             _logService?.LogInformation($"URLルール適用開始: {url}", "MainViewModel");
 
             Uri urlUri = new(url);
@@ -726,6 +770,10 @@ public partial class MainViewModel : ObservableObject
                 SelectedBrowser = matchingBrowser;
                 _logService?.LogInformation($"URLルール適用完了: {url} -> {matchingBrowser.Name}", "MainViewModel");
                 StatusMessage = $"URLルールにより {matchingBrowser.Name} が自動選択されました";
+
+                // LaunchBrowserAsync呼び出し前に記録することで、起動処理中に発生しうる
+                // 再入呼び出しでの二重起動を防ぐ。
+                _lastAutoLaunchedUrl = url;
 
                 // 自動起動（LaunchBrowserAsync内でアプリ終了処理も実行される）
                 await LaunchBrowserAsync(matchingBrowser).ConfigureAwait(false);
@@ -744,6 +792,10 @@ public partial class MainViewModel : ObservableObject
             StatusMessage = "URLルールの適用中にエラーが発生しました";
         }
         #pragma warning restore CA1031
+        finally
+        {
+            Volatile.Write(ref _urlRuleInFlight, 0);
+        }
     }
 
     /// <summary>

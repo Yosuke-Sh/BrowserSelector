@@ -55,10 +55,12 @@ namespace BrowserSelector.Core.Models
 
         /// <summary>
         /// Gets or sets 既定ブラウザへ自動起動するまでのカウントダウン秒数（Phase D）.
-        /// 0の場合はカウントダウン自動起動を無効にする. 既定値は5秒.
+        /// 0の場合はカウントダウン自動起動を無効にする. 既定値は0（無効）.
+        /// URLを開くたびに毎回手動で選択したいユーザーが大半であるため、自動起動は
+        /// 明示的に秒数を設定したユーザーのみが有効化するオプトイン機能とする.
         /// </summary>
         [ObservableProperty]
-        private int _defaultDelay = 5;
+        private int _defaultDelay;
 
         /// <summary>
         /// Gets or sets a value indicating whether ウィンドウを閉じた際にアプリを終了せずシステムトレイへ常駐するか（Phase D）.

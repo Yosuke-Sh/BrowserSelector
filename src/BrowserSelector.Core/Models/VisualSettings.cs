@@ -75,6 +75,9 @@ public partial class VisualSettings : ObservableObject
     private double _browserButtonCornerRadius = 8.0;
 
     [ObservableProperty]
+    private TileElevationStyle _tileElevationStyle = TileElevationStyle.Shadow;
+
+    [ObservableProperty]
     private bool _showBrowserName = true;
 
     [ObservableProperty]

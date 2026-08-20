@@ -13,7 +13,8 @@ public class UrlRuleService : IUrlRuleService
 {
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
-        WriteIndented = true
+        WriteIndented = true,
+        Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
     };
 
     private readonly List<UrlRule> _rules = [];

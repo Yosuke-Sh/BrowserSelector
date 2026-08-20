@@ -18,6 +18,12 @@ public static class TileLayoutHelper
     public const double DefaultTileWidth = 120.0;
 
     /// <summary>
+    /// タイル1個あたりのマージン合計（<c>BrowserButtonStyle</c>の<c>Margin="8"</c>により左右で計16px）.
+    /// <see cref="Core.Models.VisualSettings.BrowserButtonWidth"/>から実効タイル幅を算出する際に使用する.
+    /// </summary>
+    public const double TileMarginTotal = 16.0;
+
+    /// <summary>
     /// 利用可能な幅とタイル1個あたりの幅からグリッドの列数を計算する.
     /// BrowserChooser3の <c>CalculateColumnsPerRow()</c> に倣い、最低1列を保証する.
     /// </summary>

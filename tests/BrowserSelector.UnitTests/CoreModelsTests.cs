@@ -203,6 +203,7 @@ public class CoreModelsTests
         _ = settings.BrowserButtonForegroundColor.Should().Be(Colors.Black, "ブラウザボタン前景色は黒");
         _ = settings.BrowserButtonOpacity.Should().Be(1.0, "ブラウザボタン透明度は1.0");
         _ = settings.BrowserButtonCornerRadius.Should().Be(8.0, "ブラウザボタン角丸は8.0");
+        _ = settings.TileElevationStyle.Should().Be(TileElevationStyle.Shadow, "タイル立体表現は既存見た目維持のためShadowが既定");
         _ = settings.ShowBrowserName.Should().BeTrue("ブラウザ名表示は有効");
         _ = settings.BrowserIconSize.Should().Be(32.0, "ブラウザアイコンサイズは32.0");
     }

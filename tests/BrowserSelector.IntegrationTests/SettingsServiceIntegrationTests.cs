@@ -128,6 +128,43 @@ public class SettingsServiceIntegrationTests : IDisposable
     }
 
     /// <summary>
+    /// v0.3.3形式（TileElevationStyleキーを持たない）のvisualsettings.jsonを読み込んでも、
+    /// 新しい列挙型プロパティの既定値（Shadow）が適用され、例外にならないことを確認する。
+    /// 新しい設定スキーマ追加が既存ユーザーの設定ファイルを壊さないための後方互換性テスト.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+    [Fact]
+    public async Task SettingsService_LoadVisualSettings_WithLegacyJsonMissingTileElevationStyle_AppliesDefault()
+    {
+        // Arrange: v0.3.3当時のvisualsettings.json相当（TileElevationStyleキーを含まない）
+        const string legacyJson = """
+        {
+          "BackgroundColor": "#FFFFFFFF",
+          "UseBackgroundGradient": false,
+          "BrowserButtonWidth": 120.0,
+          "BrowserButtonHeight": 90.0,
+          "BrowserButtonCornerRadius": 8.0
+        }
+        """;
+        // CIランナー環境ではコンストラクタで作成した一時ディレクトリが後続の書き込み時点で
+        // 消えていることがある（OS/ランナー側の一時ディレクトリクリーンアップと推測）。
+        // 他のテストはTestSettingsService経由の保存（例外を握りつぶしfalseを返す設計）のため
+        // 表面化しないが、ここでは直接書き込むため防御的にディレクトリを再作成してから書き込む。
+        string settingsDirectory = _settingsService.GetSettingsFilePath();
+        _ = Directory.CreateDirectory(settingsDirectory);
+        string visualSettingsPath = Path.Combine(settingsDirectory, "visualsettings.json");
+        await File.WriteAllTextAsync(visualSettingsPath, legacyJson);
+
+        // Act
+        Core.Models.VisualSettings visualSettings = await _settingsService.LoadVisualSettingsAsync();
+
+        // Assert
+        _ = visualSettings.Should().NotBeNull();
+        _ = visualSettings.TileElevationStyle.Should().Be(BrowserSelector.Core.Enums.TileElevationStyle.Shadow);
+        _ = visualSettings.BrowserButtonWidth.Should().Be(120.0);
+    }
+
+    /// <summary>
     ///
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>

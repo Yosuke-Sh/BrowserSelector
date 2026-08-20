@@ -86,6 +86,7 @@ public partial class SettingsViewModel : ObservableObject
     private readonly IUrlRuleService _urlRuleService;
     private readonly IExternalLinkService? _externalLinkService;
     private readonly IUpdateService? _updateService;
+    private readonly IDefaultBrowserService? _defaultBrowserService;
 
     [ObservableProperty]
     private bool _showFocusIndicator = true;
@@ -113,6 +114,13 @@ public partial class SettingsViewModel : ObservableObject
     /// </summary>
     [ObservableProperty]
     private AppSettings _appSettings = new();
+
+    /// <summary>
+    /// 設定画面を開いた時点のAlwaysResidentInTray値。トレイ常駐の変更はトレイアイコンの
+    /// 生成・破棄を伴うため即時反映せず、保存時にこの値と比較して変更があれば
+    /// 再起動が必要である旨を通知する（<see cref="SaveSettingsInternal"/>参照）.
+    /// </summary>
+    private bool _initialAlwaysResidentInTray;
 
     /// <summary>
     /// 視覚設定.
@@ -186,7 +194,8 @@ public partial class SettingsViewModel : ObservableObject
         IUrlRuleService urlRuleService,
         ILogService logService,
         IExternalLinkService? externalLinkService = null,
-        IUpdateService? updateService = null)
+        IUpdateService? updateService = null,
+        IDefaultBrowserService? defaultBrowserService = null)
     {
         _settingsService = settingsService;
         _browserService = browserService;
@@ -196,6 +205,7 @@ public partial class SettingsViewModel : ObservableObject
         LogService = logService;
         _externalLinkService = externalLinkService;
         _updateService = updateService;
+        _defaultBrowserService = defaultBrowserService;
 
         // 初期化処理（完了をInitializationTaskで外部から待機可能にする。
         // テストがコンストラクタ直後にコマンドを実行すると、この非同期初期化と
@@ -253,16 +263,6 @@ public partial class SettingsViewModel : ObservableObject
         _ = Task.Run(InitializeLanguagesAsync);
     }
 
-    /// <summary>
-    /// ダイアログのOwnerに設定するアクティブウィンドウを取得する.
-    /// アクティブウィンドウが取得できない場合はメインウィンドウを返す（背面表示防止のため）.
-    /// </summary>
-    private static Window? GetActiveWindow()
-    {
-        return Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive)
-            ?? Application.Current.MainWindow;
-    }
-
     partial void OnSelectedLanguageChanged(LanguageInfo? value)
     {
         if (value != null && value.CultureCode != AppSettings.Language)
@@ -293,6 +293,7 @@ public partial class SettingsViewModel : ObservableObject
 
             // 設定を読み込み
             AppSettings = await _settingsService.LoadAppSettingsAsync().ConfigureAwait(false);
+            _initialAlwaysResidentInTray = AppSettings.AlwaysResidentInTray;
             LogService?.LogDebug($"AppSettings読み込み完了: Language={AppSettings.Language}", "SettingsViewModel");
 
             VisualSettings = await _settingsService.LoadVisualSettingsAsync().ConfigureAwait(false);
@@ -358,6 +359,9 @@ public partial class SettingsViewModel : ObservableObject
             // プロパティ変更イベントを監視
             PropertyChanged += OnPropertyChanged;
             LogService?.LogDebug("プロパティ変更イベント監視開始", "SettingsViewModel");
+
+            // 既定ブラウザ判定（OS側の現在状態）を取得
+            RefreshDefaultBrowserStatus();
 
             LogService?.LogDebug("SettingsViewModel初期化完了", "SettingsViewModel");
         }
@@ -566,7 +570,8 @@ public partial class SettingsViewModel : ObservableObject
             "VisualSettings.UseBackgroundGradient" or
             "VisualSettings.GradientStartColor" or
             "VisualSettings.GradientEndColor" or
-            "VisualSettings.GradientDirection")
+            "VisualSettings.GradientDirection" or
+            "VisualSettings.TileElevationStyle")
         {
             LogService?.LogDebug($"視覚設定プロパティ変更検知: {e.PropertyName}", "SettingsViewModel");
 
@@ -802,7 +807,7 @@ public partial class SettingsViewModel : ObservableObject
 
             Views.BrowserEditDialog dialog = new(null, LogService)
             {
-                Owner = GetActiveWindow()
+                Owner = ActiveWindowLocator.GetActiveWindow()
             };
             if (dialog.ShowDialog() == true)
             {
@@ -867,7 +872,7 @@ public partial class SettingsViewModel : ObservableObject
 
             Views.UrlRuleEditDialog dialog = new(_browserService, LogService!)
             {
-                Owner = GetActiveWindow()
+                Owner = ActiveWindowLocator.GetActiveWindow()
             };
             if (dialog.ShowDialog() == true)
             {
@@ -877,12 +882,12 @@ public partial class SettingsViewModel : ObservableObject
                 {
                     await RefreshUrlRulesAsync().ConfigureAwait(false);
                     LogService?.LogInformation("URLルール追加完了", "SettingsViewModel");
-                    _ = MessageBox.Show("URLルールを追加しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
+                    _ = LocalizedMessageBox.Show("URLルールを追加しました。", "完了");
                 }
                 else
                 {
                     LogService?.LogWarning("URLルール追加失敗", "SettingsViewModel");
-                    _ = MessageBox.Show("URLルールの追加に失敗しました。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                    _ = LocalizedMessageBox.ShowError("URLルールの追加に失敗しました。", "エラー");
                 }
             }
         }
@@ -891,7 +896,7 @@ public partial class SettingsViewModel : ObservableObject
         catch (Exception ex)
         {
             LogService?.LogError($"URLルール追加エラー: {ex.Message}", "SettingsViewModel", ex);
-            _ = MessageBox.Show($"URLルールの追加中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+            _ = LocalizedMessageBox.ShowError($"URLルールの追加中にエラーが発生しました: {ex.Message}", "エラー");
         }
         #pragma warning restore CA1031
     }
@@ -908,7 +913,7 @@ public partial class SettingsViewModel : ObservableObject
 
             Views.UrlRuleEditDialog dialog = new(rule, _browserService, LogService!)
             {
-                Owner = GetActiveWindow()
+                Owner = ActiveWindowLocator.GetActiveWindow()
             };
             if (dialog.ShowDialog() == true)
             {
@@ -918,12 +923,12 @@ public partial class SettingsViewModel : ObservableObject
                 {
                     await RefreshUrlRulesAsync().ConfigureAwait(false);
                     LogService?.LogInformation("URLルール編集完了", "SettingsViewModel");
-                    _ = MessageBox.Show("URLルールを更新しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
+                    _ = LocalizedMessageBox.Show("URLルールを更新しました。", "完了");
                 }
                 else
                 {
                     LogService?.LogWarning("URLルール編集失敗", "SettingsViewModel");
-                    _ = MessageBox.Show("URLルールの更新に失敗しました。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                    _ = LocalizedMessageBox.ShowError("URLルールの更新に失敗しました。", "エラー");
                 }
             }
         }
@@ -932,7 +937,7 @@ public partial class SettingsViewModel : ObservableObject
         catch (Exception ex)
         {
             LogService?.LogError($"URLルール編集エラー: {ex.Message}", "SettingsViewModel", ex);
-            _ = MessageBox.Show($"URLルールの編集中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+            _ = LocalizedMessageBox.ShowError($"URLルールの編集中にエラーが発生しました: {ex.Message}", "エラー");
         }
         #pragma warning restore CA1031
     }
@@ -947,11 +952,9 @@ public partial class SettingsViewModel : ObservableObject
         {
             LogService?.LogInformation($"URLルール削除開始: {rule.Pattern}", "SettingsViewModel");
 
-            MessageBoxResult result = MessageBox.Show(
+            MessageBoxResult result = LocalizedMessageBox.ShowConfirm(
                 $"URLルール「{rule.Pattern}」を削除しますか？",
-                "削除確認",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Question);
+                "削除確認");
 
             if (result == MessageBoxResult.Yes)
             {
@@ -960,12 +963,12 @@ public partial class SettingsViewModel : ObservableObject
                 {
                     await RefreshUrlRulesAsync().ConfigureAwait(false);
                     LogService?.LogInformation("URLルール削除完了", "SettingsViewModel");
-                    _ = MessageBox.Show("URLルールを削除しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
+                    _ = LocalizedMessageBox.Show("URLルールを削除しました。", "完了");
                 }
                 else
                 {
                     LogService?.LogWarning("URLルール削除失敗", "SettingsViewModel");
-                    _ = MessageBox.Show("URLルールの削除に失敗しました。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                    _ = LocalizedMessageBox.ShowError("URLルールの削除に失敗しました。", "エラー");
                 }
             }
         }
@@ -974,7 +977,7 @@ public partial class SettingsViewModel : ObservableObject
         catch (Exception ex)
         {
             LogService?.LogError($"URLルール削除エラー: {ex.Message}", "SettingsViewModel", ex);
-            _ = MessageBox.Show($"URLルールの削除中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+            _ = LocalizedMessageBox.ShowError($"URLルールの削除中にエラーが発生しました: {ex.Message}", "エラー");
         }
         #pragma warning restore CA1031
     }
@@ -1256,6 +1259,14 @@ public partial class SettingsViewModel : ObservableObject
 
             LogService?.LogDebug($"保存対象VisualSettings: BackgroundColor={VisualSettings.BackgroundColor}", "SettingsViewModel");
 
+            // カウントダウン秒数を有効範囲へクランプ（テキストボックスに数値検証が無いため保存時に補正する）
+            if (!IsValidCountdownDelay(AppSettings.DefaultDelay))
+            {
+                int clamped = Math.Clamp(AppSettings.DefaultDelay, MinCountdownDelaySeconds, MaxCountdownDelaySeconds);
+                LogService?.LogWarning($"カウントダウン秒数が範囲外のため補正: {AppSettings.DefaultDelay} -> {clamped}", "SettingsViewModel");
+                AppSettings.DefaultDelay = clamped;
+            }
+
             // アプリケーション設定を保存
             bool appSettingsResult = await _settingsService.SaveAppSettingsAsync(AppSettings).ConfigureAwait(false);
             LogService?.LogDebug($"AppSettings保存結果: {appSettingsResult}", "SettingsViewModel");
@@ -1278,6 +1289,7 @@ public partial class SettingsViewModel : ObservableObject
                     try
                     {
                         // 設定変更通知を送信
+                        SettingsChanged?.Invoke(this, new SettingsChangedEventArgs("AppSettings", null, AppSettings));
                         SettingsChanged?.Invoke(this, new SettingsChangedEventArgs("VisualSettings", null, VisualSettings));
 
                         // メイン画面へ反映
@@ -1285,9 +1297,20 @@ public partial class SettingsViewModel : ObservableObject
 
                         LogService?.LogDebug("メイン画面への反映完了", "SettingsViewModel");
 
+                        // トレイ常駐はトレイアイコンの生成・破棄を伴うため即時反映せず、
+                        // 変更があった場合のみ再起動が必要である旨を通知する.
+                        if (AppSettings.AlwaysResidentInTray != _initialAlwaysResidentInTray)
+                        {
+                            string message = _localizationService.GetString("Settings.RestartRequiredMessage");
+                            _ = Helpers.LocalizedMessageBox.ShowInformation(message);
+                        }
+
                         // 成功時はウィンドウを閉じる
+                        // IsLoadedを確認するのは、直前の例外等でウィンドウが既に閉じられている場合に
+                        // DialogResultの設定（ShowDialog()で表示されたウィンドウでのみ許可される）が
+                        // InvalidOperationExceptionを起こすのを防ぐため.
                         Window? window = Application.Current?.Windows.OfType<Window>().FirstOrDefault(w => w.DataContext == this);
-                        if (window != null)
+                        if (window != null && window.IsLoaded)
                         {
                             LogService?.LogDebug($"設定ウィンドウを閉じる: {window.GetType().Name}", "SettingsViewModel");
                             window.DialogResult = true;
@@ -1295,7 +1318,7 @@ public partial class SettingsViewModel : ObservableObject
                         }
                         else
                         {
-                            LogService?.LogWarning("設定ウィンドウが見つかりません", "SettingsViewModel");
+                            LogService?.LogWarning("設定ウィンドウが見つからないか、既に閉じられています", "SettingsViewModel");
                         }
                     }
                     // CA1031: RelayCommandハンドラーの最上位try-catch。WPFダイアログ表示やサービス呼び出しなど例外種別が多岐にわたり、UIスレッドをクラッシュさせないための最終防御であるため意図的に汎用catchとする。
@@ -1379,7 +1402,7 @@ public partial class SettingsViewModel : ObservableObject
             string logContent = LogService.GetLogContent();
             Views.LogViewerWindow logWindow = new(logContent)
             {
-                Owner = GetActiveWindow()
+                Owner = ActiveWindowLocator.GetActiveWindow()
             };
             _ = logWindow.ShowDialog();
         }
@@ -1455,7 +1478,7 @@ public partial class SettingsViewModel : ObservableObject
             Browser? targetBrowser = browser ?? SelectedBrowser;
             if (targetBrowser == null)
             {
-                _ = MessageBox.Show("編集するブラウザを選択してください。", "警告", MessageBoxButton.OK, MessageBoxImage.Warning);
+                _ = LocalizedMessageBox.ShowWarning("編集するブラウザを選択してください。", "警告");
                 return;
             }
 
@@ -1463,7 +1486,7 @@ public partial class SettingsViewModel : ObservableObject
 
             Views.BrowserEditDialog dialog = new(targetBrowser, LogService)
             {
-                Owner = GetActiveWindow()
+                Owner = ActiveWindowLocator.GetActiveWindow()
             };
             if (dialog.ShowDialog() == true)
             {
@@ -1474,7 +1497,7 @@ public partial class SettingsViewModel : ObservableObject
                 {
                     await RefreshBrowsersAsync().ConfigureAwait(false);
                     LogService?.LogInformation($"ブラウザ編集完了: {updatedBrowser.Name}", "SettingsViewModel");
-                    _ = MessageBox.Show("ブラウザを更新しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
+                    _ = LocalizedMessageBox.Show("ブラウザを更新しました。", "完了");
 
                     // ブラウザ変更イベントを発生
                     BrowserChanged?.Invoke(this, new BrowserChangedEventArgs(updatedBrowser, "Updated"));
@@ -1482,7 +1505,7 @@ public partial class SettingsViewModel : ObservableObject
                 else
                 {
                     LogService?.LogWarning("ブラウザ更新失敗", "SettingsViewModel");
-                    _ = MessageBox.Show("ブラウザの更新に失敗しました。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                    _ = LocalizedMessageBox.ShowError("ブラウザの更新に失敗しました。", "エラー");
                 }
             }
         }
@@ -1491,7 +1514,7 @@ public partial class SettingsViewModel : ObservableObject
         catch (Exception ex)
         {
             LogService?.LogError($"ブラウザ編集エラー: {ex.Message}", "SettingsViewModel", ex);
-            _ = MessageBox.Show($"ブラウザの編集中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+            _ = LocalizedMessageBox.ShowError($"ブラウザの編集中にエラーが発生しました: {ex.Message}", "エラー");
         }
         #pragma warning restore CA1031
     }
@@ -1507,7 +1530,7 @@ public partial class SettingsViewModel : ObservableObject
             Browser? targetBrowser = browser ?? SelectedBrowser;
             if (targetBrowser == null)
             {
-                _ = MessageBox.Show("削除するブラウザを選択してください。", "警告", MessageBoxButton.OK, MessageBoxImage.Warning);
+                _ = LocalizedMessageBox.ShowWarning("削除するブラウザを選択してください。", "警告");
                 return;
             }
 
@@ -1516,12 +1539,11 @@ public partial class SettingsViewModel : ObservableObject
             // システム検出ブラウザも削除可能にする
             // if (targetBrowser.Type != BrowserType.Custom)
             // {
-            //     MessageBox.Show("システムで検出されたブラウザは削除できません。", "警告", MessageBoxButton.OK, MessageBoxImage.Warning);
+            //     LocalizedMessageBox.ShowWarning("システムで検出されたブラウザは削除できません。", "警告");
             //     return;
             // }
 
-            MessageBoxResult result = MessageBox.Show($"ブラウザ「{targetBrowser.Name}」を削除しますか？", "確認",
-                                       MessageBoxButton.YesNo, MessageBoxImage.Question);
+            MessageBoxResult result = LocalizedMessageBox.ShowConfirm($"ブラウザ「{targetBrowser.Name}」を削除しますか？", "確認");
 
             if (result == MessageBoxResult.Yes)
             {
@@ -1534,7 +1556,7 @@ public partial class SettingsViewModel : ObservableObject
                         SelectedBrowser = null;
                     }
                     LogService?.LogInformation($"ブラウザ削除完了: {targetBrowser.Name}", "SettingsViewModel");
-                    _ = MessageBox.Show("ブラウザを削除しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
+                    _ = LocalizedMessageBox.Show("ブラウザを削除しました。", "完了");
 
                     // ブラウザ変更イベントを発生
                     BrowserChanged?.Invoke(this, new BrowserChangedEventArgs(targetBrowser, "Removed"));
@@ -1542,7 +1564,7 @@ public partial class SettingsViewModel : ObservableObject
                 else
                 {
                     LogService?.LogWarning("ブラウザ削除失敗", "SettingsViewModel");
-                    _ = MessageBox.Show("ブラウザの削除に失敗しました。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                    _ = LocalizedMessageBox.ShowError("ブラウザの削除に失敗しました。", "エラー");
                 }
             }
         }
@@ -1551,7 +1573,7 @@ public partial class SettingsViewModel : ObservableObject
         catch (Exception ex)
         {
             LogService?.LogError($"ブラウザ削除エラー: {ex.Message}", "SettingsViewModel", ex);
-            _ = MessageBox.Show($"ブラウザの削除中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+            _ = LocalizedMessageBox.ShowError($"ブラウザの削除中にエラーが発生しました: {ex.Message}", "エラー");
         }
         #pragma warning restore CA1031
     }

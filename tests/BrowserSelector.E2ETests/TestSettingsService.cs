@@ -64,7 +64,7 @@ internal sealed class TestSettingsService : ISettingsService
         try
         {
             _ = Directory.CreateDirectory(_settingsDirectory);
-            string json = JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true });
+            string json = JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
             await File.WriteAllTextAsync(_appSettingsPath, json);
 
             _logService?.LogTrace("アプリ設定保存完了", "TestSettingsService");
@@ -111,7 +111,7 @@ internal sealed class TestSettingsService : ISettingsService
         try
         {
             _ = Directory.CreateDirectory(_settingsDirectory);
-            string json = JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true });
+            string json = JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
             await File.WriteAllTextAsync(_visualSettingsPath, json);
 
             _logService?.LogTrace("視覚設定保存完了", "TestSettingsService");
@@ -158,7 +158,7 @@ internal sealed class TestSettingsService : ISettingsService
         try
         {
             _ = Directory.CreateDirectory(_settingsDirectory);
-            string json = JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true });
+            string json = JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
             await File.WriteAllTextAsync(_logSettingsPath, json);
 
             _logService?.LogTrace("ログ設定保存完了", "TestSettingsService");
@@ -207,7 +207,7 @@ internal sealed class TestSettingsService : ISettingsService
                 ExportDate = DateTime.Now
             };
 
-            string json = JsonSerializer.Serialize(exportData, new JsonSerializerOptions { WriteIndented = true });
+            string json = JsonSerializer.Serialize(exportData, new JsonSerializerOptions { WriteIndented = true, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
             await File.WriteAllTextAsync(filePath, json);
 
             _logService?.LogTrace("設定エクスポート完了", "TestSettingsService");

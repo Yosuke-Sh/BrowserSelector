@@ -3,6 +3,7 @@ using BrowserSelector.Core.Models;
 using BrowserSelector.Core.Services;
 using BrowserSelector.Presentation.Helpers;
 using BrowserSelector.Presentation.ViewModels;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
@@ -38,6 +39,12 @@ public partial class MainWindow : Window
         _settingsService = settingsService;
         InitializeComponent();
 
+        // ブラウザ一覧は非同期で読み込まれるため（起動時はコンストラクタ完了時点で0件のことが多い）、
+        // SizeChangedのみに頼ると「0件時点で列数1が確定し、以後ウィンドウサイズが変わらない限り
+        // 再計算されない」状態になり、タイルが縦一列に並んでしまう不具合があった（SizeToContent撤去に伴う副作用）。
+        // 読み込み完了時に列数を再計算することでこれを解消する。
+        ((INotifyCollectionChanged)BrowserItemsControl.Items).CollectionChanged += (_, _) => UpdateBrowserGridColumns();
+
         // DataContextの設定を即座に実行
         DataContext = viewModel;
 
@@ -65,6 +72,18 @@ public partial class MainWindow : Window
     public CountdownController Countdown => _countdownController;
 
     /// <summary>
+    /// 設定画面で外観タブの設定が保存された際に、再起動なしで即時反映する.
+    /// ShowTitleBar・ThemeMode・AlwaysOnTop・BackdropMode・EnableGlassEffect・WindowCornerRadius・
+    /// WindowOpacityが対象.
+    /// </summary>
+    /// <param name="appSettings">保存された最新のAppSettings.</param>
+    public void ApplyAppSettings(AppSettings appSettings)
+    {
+        ArgumentNullException.ThrowIfNull(appSettings);
+        ApplyWindowBackdrop(appSettings);
+    }
+
+    /// <summary>
     /// DataContext変更時の処理.
     /// </summary>
     /// <param name="e">e.</param>
@@ -81,6 +100,10 @@ public partial class MainWindow : Window
 
         // Phase C-1: DWMバックドロップ（Mica/Acrylic）をHWND確定後に適用
         ApplyWindowBackdrop();
+
+        // マルチモニター対応: URLリンクをクリックしたモニター（＝現在カーソルがあるモニター）と
+        // 同一モニターに表示する。DPI取得にHWNDが必要なためSourceInitialized後に実行する。
+        MonitorHelper.CenterOnCursorMonitor(this);
     }
 
     private static UniformGrid? FindVisualChildUniformGrid(DependencyObject parent)
@@ -131,15 +154,30 @@ public partial class MainWindow : Window
     /// </summary>
     private void ApplyWindowBackdrop()
     {
+        AppSettings? appSettings = _settingsService?.LoadAppSettingsAsync().GetAwaiter().GetResult();
+        ApplyWindowBackdrop(appSettings);
+    }
+
+    /// <summary>
+    /// 外観設定をウィンドウへ適用する。<see cref="OnSourceInitialized"/>からの初回適用と、
+    /// 設定画面で外観タブを保存した際の即時再適用（<see cref="ApplyAppSettings"/>）の両方から呼ばれる.
+    /// </summary>
+    /// <param name="appSettings">適用する設定。nullの場合は既定値で適用する.</param>
+    private void ApplyWindowBackdrop(AppSettings? appSettings)
+    {
         try
         {
+            if (appSettings != null)
+            {
+                _themeService?.ApplyTheme(appSettings.ThemeMode);
+            }
+
             bool isDarkMode = _themeService?.IsDarkThemeActive ?? false;
             bool glassEffectEnabled = true;
             BackdropMode backdropMode = BackdropMode.Mica;
             double cornerRadiusPreference = 1;
-            if (_settingsService != null)
+            if (appSettings != null)
             {
-                AppSettings appSettings = _settingsService.LoadAppSettingsAsync().GetAwaiter().GetResult();
                 glassEffectEnabled = appSettings.EnableGlassEffect;
                 backdropMode = appSettings.BackdropMode;
                 cornerRadiusPreference = appSettings.WindowCornerRadius;
@@ -210,21 +248,23 @@ public partial class MainWindow : Window
     }
 
     /// <summary>
-    /// 初期サイズ設定を適用.
+    /// 初期サイズ設定を適用する。
+    /// <c>SizeToContent</c>は使用せず、<see cref="Core.Models.VisualSettings.InitialWindowWidth"/>/
+    /// <see cref="Core.Models.VisualSettings.InitialWindowHeight"/>を唯一の正として常に適用する
+    /// （設定値が反映されない・トレイ自動起動時に横幅が異常になる不具合の対策）.
     /// </summary>
     private void ApplyInitialSizeSettings(MainViewModel viewModel)
     {
         try
         {
-            Core.Models.VisualSettings visualSettings = viewModel.VisualSettings;
-            if (visualSettings != null)
+            Core.Models.VisualSettings? visualSettings = viewModel.VisualSettings;
+            if (visualSettings == null)
             {
-                _logService?.LogDebug($"初期サイズ設定適用: InitialWindowWidth={visualSettings.InitialWindowWidth}, InitialWindowHeight={visualSettings.InitialWindowHeight}", "MainWindow");
+                return;
             }
 
-            // Phase C-2: SizeToContent="WidthAndHeight"をXAMLで指定し、タイル数に応じてウィンドウが自動で
-            // 縮む構成にしたため、手書きのLeft/Top中央寄せ（DPI・マルチモニタ非対応）は撤廃。
-            // WindowStartupLocation="CenterScreen"（XAML）に委ねる。
+            _logService?.LogDebug($"初期サイズ設定適用: InitialWindowWidth={visualSettings.InitialWindowWidth}, InitialWindowHeight={visualSettings.InitialWindowHeight}", "MainWindow");
+            WindowSizeHelper.ApplyConfiguredSize(this, visualSettings.InitialWindowWidth, visualSettings.InitialWindowHeight);
         }
         // CA1031: ウィンドウ初期化/イベントハンドラーの最上位try-catch。UI操作由来の例外種別が多岐にわたり、フォールバック値を設定してUIスレッドを継続させるための意図的な汎用catch。
         #pragma warning disable CA1031
@@ -245,8 +285,13 @@ public partial class MainWindow : Window
         if (e.PropertyName == nameof(MainViewModel.VisualSettings))
         {
             _logService?.LogDebug("MainWindow: VisualSettingsプロパティ変更を検知しました。UI更新を通知します。", "MainWindow");
-            // UI更新を強制（UIスレッドで実行）
-            Dispatcher.Invoke(() => InvalidateVisual());
+            // UI更新を強制（UIスレッドで実行）。ボタン幅設定が変わった場合に列数計算も
+            // 追従させないと、実際のタイル幅と列数計算の前提がずれてタイルが重なる。
+            Dispatcher.Invoke(() =>
+            {
+                InvalidateVisual();
+                UpdateBrowserGridColumns();
+            });
         }
     }
 
@@ -354,6 +399,13 @@ public partial class MainWindow : Window
         if (_countdownController.IsRunning)
         {
             _countdownController.Pause();
+
+            // IsCountdownActiveをfalseにしないと、一時停止後もバッジに残り秒数が
+            // 表示され続けたまま固まって見えるため、一時停止時にバッジを隠す.
+            if (DataContext is MainViewModel viewModel)
+            {
+                viewModel.IsCountdownActive = false;
+            }
         }
     }
 
@@ -483,7 +535,7 @@ public partial class MainWindow : Window
         }
 
         double availableWidth = ((FrameworkElement)BrowserItemsControl.Parent).ActualWidth;
-        int columns = TileLayoutHelper.CalculateColumns(availableWidth, TileLayoutHelper.DefaultTileWidth, BrowserItemsControl.Items.Count);
+        int columns = TileLayoutHelper.CalculateColumns(availableWidth, GetEffectiveTileWidth(), BrowserItemsControl.Items.Count);
         uniformGrid.Columns = columns;
     }
 
@@ -495,7 +547,22 @@ public partial class MainWindow : Window
         }
 
         double availableWidth = BrowserItemsControl.ActualWidth > 0 ? BrowserItemsControl.ActualWidth : ActualWidth;
-        return TileLayoutHelper.CalculateColumns(availableWidth, TileLayoutHelper.DefaultTileWidth, BrowserItemsControl.Items.Count);
+        return TileLayoutHelper.CalculateColumns(availableWidth, GetEffectiveTileWidth(), BrowserItemsControl.Items.Count);
+    }
+
+    /// <summary>
+    /// 列数計算に使う実効タイル幅を取得する。<see cref="Core.Models.VisualSettings.BrowserButtonWidth"/>に
+    /// マージン分を加算した値を使う（従来は<see cref="TileLayoutHelper.DefaultTileWidth"/>固定だったため、
+    /// ボタン幅を変更すると列数計算とタイル実サイズが食い違いタイルが重なる不具合があった）.
+    /// </summary>
+    private double GetEffectiveTileWidth()
+    {
+        if (DataContext is MainViewModel { VisualSettings.BrowserButtonWidth: > 0 } viewModel)
+        {
+            return viewModel.VisualSettings.BrowserButtonWidth + TileLayoutHelper.TileMarginTotal;
+        }
+
+        return TileLayoutHelper.DefaultTileWidth;
     }
 
     private int ResolveFocusedBrowserIndex(MainViewModel viewModel)
