@@ -116,6 +116,13 @@ public partial class SettingsViewModel : ObservableObject
     private AppSettings _appSettings = new();
 
     /// <summary>
+    /// 設定画面を開いた時点のAlwaysResidentInTray値。トレイ常駐の変更はトレイアイコンの
+    /// 生成・破棄を伴うため即時反映せず、保存時にこの値と比較して変更があれば
+    /// 再起動が必要である旨を通知する（<see cref="SaveSettingsInternal"/>参照）.
+    /// </summary>
+    private bool _initialAlwaysResidentInTray;
+
+    /// <summary>
     /// 視覚設定.
     /// </summary>
     [ObservableProperty]
@@ -286,6 +293,7 @@ public partial class SettingsViewModel : ObservableObject
 
             // 設定を読み込み
             AppSettings = await _settingsService.LoadAppSettingsAsync().ConfigureAwait(false);
+            _initialAlwaysResidentInTray = AppSettings.AlwaysResidentInTray;
             LogService?.LogDebug($"AppSettings読み込み完了: Language={AppSettings.Language}", "SettingsViewModel");
 
             VisualSettings = await _settingsService.LoadVisualSettingsAsync().ConfigureAwait(false);
@@ -1281,12 +1289,21 @@ public partial class SettingsViewModel : ObservableObject
                     try
                     {
                         // 設定変更通知を送信
+                        SettingsChanged?.Invoke(this, new SettingsChangedEventArgs("AppSettings", null, AppSettings));
                         SettingsChanged?.Invoke(this, new SettingsChangedEventArgs("VisualSettings", null, VisualSettings));
 
                         // メイン画面へ反映
                         ApplyVisualToActiveWindow(VisualSettings);
 
                         LogService?.LogDebug("メイン画面への反映完了", "SettingsViewModel");
+
+                        // トレイ常駐はトレイアイコンの生成・破棄を伴うため即時反映せず、
+                        // 変更があった場合のみ再起動が必要である旨を通知する.
+                        if (AppSettings.AlwaysResidentInTray != _initialAlwaysResidentInTray)
+                        {
+                            string message = _localizationService.GetString("Settings.RestartRequiredMessage");
+                            _ = Helpers.LocalizedMessageBox.ShowInformation(message);
+                        }
 
                         // 成功時はウィンドウを閉じる
                         // IsLoadedを確認するのは、直前の例外等でウィンドウが既に閉じられている場合に

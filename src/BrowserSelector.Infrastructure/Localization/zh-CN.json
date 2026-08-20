@@ -63,6 +63,7 @@
     "Settings.App.CountdownDelaySeconds": "自动启动倒计时（秒）",
     "Settings.App.CountdownDelaySecondsTooltip": "打开网址后，如果没有任何操作，将在N秒后使用默认磁贴的浏览器自动打开。0为禁用（每次手动选择）。鼠标或键盘操作会中断倒计时。",
     "Settings.App.AlwaysResidentInTray": "常驻系统托盘",
+    "Settings.RestartRequiredMessage": "部分设置需要重启应用程序后才能生效。",
     "Settings.Appearance.GlassSettings": "玻璃效果",
     "Settings.Appearance.EnableGlassEffect": "启用玻璃效果",
     "Settings.Appearance.BackdropMode": "背景方式",

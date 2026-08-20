@@ -72,6 +72,18 @@ public partial class MainWindow : Window
     public CountdownController Countdown => _countdownController;
 
     /// <summary>
+    /// 設定画面で外観タブの設定が保存された際に、再起動なしで即時反映する.
+    /// ShowTitleBar・ThemeMode・AlwaysOnTop・BackdropMode・EnableGlassEffect・WindowCornerRadius・
+    /// WindowOpacityが対象.
+    /// </summary>
+    /// <param name="appSettings">保存された最新のAppSettings.</param>
+    public void ApplyAppSettings(AppSettings appSettings)
+    {
+        ArgumentNullException.ThrowIfNull(appSettings);
+        ApplyWindowBackdrop(appSettings);
+    }
+
+    /// <summary>
     /// DataContext変更時の処理.
     /// </summary>
     /// <param name="e">e.</param>
@@ -142,15 +154,30 @@ public partial class MainWindow : Window
     /// </summary>
     private void ApplyWindowBackdrop()
     {
+        AppSettings? appSettings = _settingsService?.LoadAppSettingsAsync().GetAwaiter().GetResult();
+        ApplyWindowBackdrop(appSettings);
+    }
+
+    /// <summary>
+    /// 外観設定をウィンドウへ適用する。<see cref="OnSourceInitialized"/>からの初回適用と、
+    /// 設定画面で外観タブを保存した際の即時再適用（<see cref="ApplyAppSettings"/>）の両方から呼ばれる.
+    /// </summary>
+    /// <param name="appSettings">適用する設定。nullの場合は既定値で適用する.</param>
+    private void ApplyWindowBackdrop(AppSettings? appSettings)
+    {
         try
         {
+            if (appSettings != null)
+            {
+                _themeService?.ApplyTheme(appSettings.ThemeMode);
+            }
+
             bool isDarkMode = _themeService?.IsDarkThemeActive ?? false;
             bool glassEffectEnabled = true;
             BackdropMode backdropMode = BackdropMode.Mica;
             double cornerRadiusPreference = 1;
-            if (_settingsService != null)
+            if (appSettings != null)
             {
-                AppSettings appSettings = _settingsService.LoadAppSettingsAsync().GetAwaiter().GetResult();
                 glassEffectEnabled = appSettings.EnableGlassEffect;
                 backdropMode = appSettings.BackdropMode;
                 cornerRadiusPreference = appSettings.WindowCornerRadius;

@@ -273,12 +273,23 @@ public partial class MainViewModel : ObservableObject
             VisualSettings = newVisualSettings;
 
             // ウィンドウサイズの即座変更
-            if (Application.Current.MainWindow is Views.MainWindow mainWindow)
+            if (Application.Current?.MainWindow is Views.MainWindow mainWindow)
             {
                 ApplyWindowSizeChanges(mainWindow, newVisualSettings);
 
                 // 背景色・グラデーションの即座変更
                 ApplyBackgroundChanges(newVisualSettings);
+            }
+        }
+        else if (e.SettingType == "AppSettings" && e.NewValue is AppSettings newAppSettings)
+        {
+            CloseAfterLaunch = newAppSettings.CloseAfterUrlRuleMatch;
+
+            // 外観タブの設定（ShowTitleBar・ThemeMode・AlwaysOnTop・BackdropMode・
+            // EnableGlassEffect・WindowCornerRadius・WindowOpacity）を再起動なしで即時反映する.
+            if (Application.Current?.MainWindow is Views.MainWindow mainWindow)
+            {
+                mainWindow.ApplyAppSettings(newAppSettings);
             }
         }
     }

@@ -63,6 +63,7 @@
     "Settings.App.CountdownDelaySeconds": "自動起動までの秒数",
     "Settings.App.CountdownDelaySecondsTooltip": "URLを開いた際、何も操作しなければN秒後に既定タイルのブラウザで自動的に開きます。0で無効（毎回手動で選択）。マウス操作・キー入力で中断されます。",
     "Settings.App.AlwaysResidentInTray": "システムトレイに常駐する",
+    "Settings.RestartRequiredMessage": "一部の設定は、アプリケーションを再起動すると反映されます。",
     "Settings.Appearance.GlassSettings": "ガラス効果",
     "Settings.Appearance.EnableGlassEffect": "ガラス効果を有効にする",
     "Settings.Appearance.BackdropMode": "バックドロップ方式",

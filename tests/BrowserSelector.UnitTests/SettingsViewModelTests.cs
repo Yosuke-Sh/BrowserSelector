@@ -275,6 +275,34 @@ public class SettingsViewModelTests
         _mockSettingsService.Verify(x => x.SaveVisualSettingsAsync(It.IsAny<VisualSettings>()), Times.Once);
     }
 
+    [Fact]
+    public async Task SaveSettingsCommand_WithAlwaysResidentInTrayChanged_SavesUpdatedValue()
+    {
+        // 通知メッセージの表示自体はApplication.Current依存のDispatcherブロック内にあり、
+        // Application.Currentが存在しないユニットテスト環境では実行されない
+        // （SettingsChanged通知・ウィンドウクローズ等、同ブロック内の他の処理と同様）。
+        // ここでは変更後の値が正しく保存されることまでを検証する。
+        // Arrange
+        _ = _mockSettingsService
+            .Setup(x => x.SaveAppSettingsAsync(It.IsAny<AppSettings>()))
+            .ReturnsAsync(true);
+        _ = _mockSettingsService
+            .Setup(x => x.SaveVisualSettingsAsync(It.IsAny<VisualSettings>()))
+            .ReturnsAsync(true);
+
+        await _viewModel.InitializationTask;
+        bool toggledValue = !_viewModel.AppSettings.AlwaysResidentInTray;
+        _viewModel.AppSettings.AlwaysResidentInTray = toggledValue;
+
+        // Act
+        await _viewModel.SaveSettingsCommand.ExecuteAsync(null);
+
+        // Assert
+        _mockSettingsService.Verify(
+            x => x.SaveAppSettingsAsync(It.Is<AppSettings>(s => s.AlwaysResidentInTray == toggledValue)),
+            Times.Once);
+    }
+
     [Theory]
     [InlineData(-5, 0)] // 範囲外（負値）は最小値へクランプ
     [InlineData(10000, 3600)] // 範囲外（超過）は最大値へクランプ

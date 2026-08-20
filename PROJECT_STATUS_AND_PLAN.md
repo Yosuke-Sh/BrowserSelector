@@ -125,6 +125,9 @@ BrowserSelector/
 - **既定ブラウザ判定のレジストリパス誤り修正**: `DefaultBrowserService`が存在しないレジストリパス（`CurrentVersion\Explorer\UrlAssociations`配下）を参照しており、既定ブラウザをどう設定しても常に「設定されていません」と表示される不具合を修正。実際のパス（`Shell\Associations\UrlAssociations`配下）に修正し、あわせて実際の既定ブラウザ名を検出済みブラウザと突き合わせて表示する機能を追加
 - **urlrules.jsonのUnicodeエスケープ修正**: `UrlRuleService`のみ`JavaScriptEncoder.UnsafeRelaxedJsonEscaping`が未指定で、日本語・矢印記号等が`\uXXXX`形式で書き込まれていた不具合を修正（他3サービスと統一）
 - **自動起動秒数の既定値変更**: `AppSettings.DefaultDelay`の既定値を5秒→0秒（無効）に変更。URLを開くたびに毎回手動選択したいユーザーが大半のため、自動起動を明示的なオプトインへ変更。既存の保存済み設定には影響しない（新規インストールのみ）
+- **タイトルバー非表示時のハンバーガーメニュー重なり修正**: ShowTitleBar=false時に右上へ常時表示されるハンバーガーメニューがヘッダー・URL入力欄と重なっていた不具合を修正
+- **外観設定の即時反映化**: ShowTitleBar・ThemeMode・AlwaysOnTop・BackdropMode・EnableGlassEffect・WindowCornerRadius・WindowOpacityが保存後も再起動まで反映されなかった不具合を修正。`SettingsChanged`通知が`VisualSettings`のみで`AppSettings`変更を一切通知していなかったのが原因。`MainWindow.ApplyAppSettings`を新設し、保存時に即座に再適用する
+- **再起動が必要な設定変更の通知追加**: トレイ常駐（`AlwaysResidentInTray`）はトレイアイコンの生成・破棄を伴うため即時反映は行わず、変更時のみ「一部の設定は、アプリケーションを再起動すると反映されます。」を表示する
 
 ## 🧪 テスト実装状況
 

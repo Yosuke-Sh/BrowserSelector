@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### 🔧 Changed
 - Changed the default value of the "Auto-launch countdown (seconds)" setting from 5 to 0 (disabled). Auto-launching after a few seconds of inactivity surprised users who opened the app expecting to pick a browser manually; it is now an explicit opt-in. Existing installations that already have a saved `DefaultDelay` value are unaffected — this only changes the default for new installs. Also clarified the setting's tooltip, fixed the countdown badge staying visibly frozen instead of hiding when paused by mouse/keyboard activity, and wired up the existing (previously unused) `IsValidCountdownDelay` range check to clamp the value on save.
+- Changed several Appearance-tab settings (Show title bar, Theme, Always on top, Backdrop mode, Glass effect, Window corner radius, Window opacity) to apply immediately on Save instead of requiring an app restart. These were only ever read once, at `MainWindow.OnSourceInitialized`, because `SettingsViewModel` only raised its change notification for `VisualSettings`, never for `AppSettings`. The notification now also fires for `AppSettings`, and `MainWindow` exposes a re-appliable `ApplyAppSettings` method reachable from `MainViewModel`.
+- Added a notice ("Some settings will take effect after restarting the application") shown after saving Settings when "Stay resident in system tray" was changed — enabling/disabling tray residency involves constructing or tearing down the tray icon, which still requires a restart even after the change above.
 
 ## [0.3.4] - 2026-08-20
 
