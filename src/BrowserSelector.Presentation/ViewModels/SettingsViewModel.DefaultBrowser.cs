@@ -19,11 +19,27 @@ public partial class SettingsViewModel
     private bool _isDefaultBrowser;
 
     /// <summary>
+    /// Gets or sets 現在Windowsの既定ブラウザとして設定されているブラウザの表示名。
+    /// BrowserSelector自身が既定の場合や判定不能な場合は<see langword="null"/>.
+    /// </summary>
+    [ObservableProperty]
+    private string? _defaultBrowserName;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether 既定ブラウザがBrowserSelector自身でも、
+    /// 表示名を解決できた他ブラウザでもない（判定不能・未設定）状態かどうか.
+    /// </summary>
+    [ObservableProperty]
+    private bool _isDefaultBrowserUnknown;
+
+    /// <summary>
     /// 現在の既定ブラウザ判定状態を再取得する。設定画面を開いた際やボタン操作後に呼び出す.
     /// </summary>
     public void RefreshDefaultBrowserStatus()
     {
         IsDefaultBrowser = _defaultBrowserService?.IsDefaultBrowser() ?? false;
+        DefaultBrowserName = IsDefaultBrowser ? null : _defaultBrowserService?.GetDefaultBrowserDisplayName();
+        IsDefaultBrowserUnknown = !IsDefaultBrowser && string.IsNullOrEmpty(DefaultBrowserName);
     }
 
     /// <summary>

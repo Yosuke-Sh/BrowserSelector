@@ -18,6 +18,14 @@ public interface IDefaultBrowserService
     bool IsDefaultBrowser();
 
     /// <summary>
+    /// Windowsの現在の既定ブラウザの表示名を取得する（https用ハンドラーを基準とする）。
+    /// 検出済みブラウザ一覧と実行ファイルパスを突き合わせて解決し、一致しない場合はProgIdの
+    /// フレンドリ名、それも取得できない場合はProgIdそのものを返す.
+    /// </summary>
+    /// <returns>既定ブラウザの表示名。判定できない場合は<see langword="null"/>.</returns>
+    string? GetDefaultBrowserDisplayName();
+
+    /// <summary>
     /// Windowsの「既定のアプリ」設定画面をBrowserSelectorの項目にフォーカスした状態で開く。
     /// Windows 11ではプロトコル単位で既定アプリを選択する方式のため、OSに直接設定を書き込むことはできない.
     /// </summary>

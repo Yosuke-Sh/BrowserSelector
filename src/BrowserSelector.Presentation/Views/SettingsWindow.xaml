@@ -54,6 +54,7 @@
         <converters:ColorToBrushConverter x:Key="ColorToBrushConverter"/>
         <converters:GradientDirectionToIndexConverter x:Key="GradientDirectionToIndexConverter"/>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
     </Window.Resources>
 
     <Grid>
@@ -130,16 +131,24 @@
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
                                         <TextBlock Text="{extensions:Localization Settings.App.DefaultBrowserStatus}" VerticalAlignment="Center"/>
+                                        <!-- BrowserSelector自身が既定の場合 -->
                                         <TextBlock Text="{extensions:Localization Settings.App.DefaultBrowserYes}"
                                                    FontWeight="Bold"
                                                    Foreground="{DynamicResource Brush.Accent}"
                                                    Margin="4,0,0,0"
                                                    VerticalAlignment="Center"
                                                    Visibility="{Binding IsDefaultBrowser, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                        <!-- 他ブラウザが既定で、名前を解決できた場合 -->
+                                        <TextBlock Text="{Binding DefaultBrowserName}"
+                                                   FontWeight="Bold"
+                                                   Margin="4,0,0,0"
+                                                   VerticalAlignment="Center"
+                                                   Visibility="{Binding DefaultBrowserName, Converter={StaticResource StringToVisibilityConverter}}"/>
+                                        <!-- 既定ブラウザを判定できない場合（未設定・判定不能等） -->
                                         <TextBlock Text="{extensions:Localization Settings.App.DefaultBrowserNo}"
                                                    Margin="4,0,0,0"
                                                    VerticalAlignment="Center"
-                                                   Visibility="{Binding IsDefaultBrowser, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Invert}"/>
+                                                   Visibility="{Binding IsDefaultBrowserUnknown, Converter={StaticResource BoolToVisibilityConverter}}"/>
                                     </StackPanel>
                                     <Button Grid.Column="1"
                                             Content="{extensions:Localization Settings.App.SetAsDefaultBrowser}"
