@@ -61,7 +61,7 @@
     "Settings.App.AutoUpdateCheck": "Auto update check",
     "Settings.App.UpdateCheckInterval": "Check interval (hours)",
     "Settings.App.CountdownDelaySeconds": "Auto-launch countdown (seconds)",
-    "Settings.App.CountdownDelaySecondsTooltip": "Seconds before automatically launching the default browser (0 to disable)",
+    "Settings.App.CountdownDelaySecondsTooltip": "If you open a URL and don't interact with the window, it will auto-launch in the default tile's browser after N seconds. 0 disables this (choose manually every time). Any mouse or key activity cancels the countdown.",
     "Settings.App.AlwaysResidentInTray": "Stay resident in system tray",
     "Settings.Appearance.GlassSettings": "Glass Effect",
     "Settings.Appearance.EnableGlassEffect": "Enable glass effect",

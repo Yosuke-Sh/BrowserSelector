@@ -372,6 +372,13 @@ public partial class MainWindow : Window
         if (_countdownController.IsRunning)
         {
             _countdownController.Pause();
+
+            // IsCountdownActiveをfalseにしないと、一時停止後もバッジに残り秒数が
+            // 表示され続けたまま固まって見えるため、一時停止時にバッジを隠す.
+            if (DataContext is MainViewModel viewModel)
+            {
+                viewModel.IsCountdownActive = false;
+            }
         }
     }
 
