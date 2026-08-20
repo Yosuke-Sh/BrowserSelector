@@ -119,6 +119,13 @@ BrowserSelector/
 - **メッセージボックスのOwner統一**: `ActiveWindowLocator`により全メッセージボックスがアクティブウィンドウをOwnerとして表示され、最背面に隠れなくなった
 - **Windows 11既定ブラウザ対応**: インストーラーが`Clients\StartMenuInternet`配下へCapabilitiesを登録し、Win11の「既定のアプリ」ブラウザ一覧に表示されるようになった。設定画面から現在の既定状態確認とWindows設定画面への導線を提供（`IDefaultBrowserService`）
 
+### 🐛 ユーザーテスト報告分の不具合修正（Unreleased、2026-08-20報告）
+- **マルチモニター座標変換バグ修正**: `MonitorHelper.PositionOnMonitor`が物理px座標をDIPへ`scale`除算で変換していたため、負座標モニター（プライマリ左側等）や混在DPI環境でウィンドウが画面外へ配置される不具合（タスクバーには出るが画面に表示されずALT+TABでも出せない）を修正。`window.Left/Top`への代入をやめ、`SetWindowPos`へ物理px座標をそのまま渡す方式に変更し、座標系変換自体を排除
+- **クロススレッド例外修正**: `ConfigureAwait(false)`後のスレッドプールスレッドから`LocalizedMessageBox`が`Application.Current.Windows`へアクセスして例外（URLルール追加・編集・削除、設定のインポート・エクスポートで発生）。`LocalizedMessageBox.ShowCore`がDispatcher経由で自己マーシャリングするよう修正し、呼び出し側を個別に直さず一括対応
+- **既定ブラウザ判定のレジストリパス誤り修正**: `DefaultBrowserService`が存在しないレジストリパス（`CurrentVersion\Explorer\UrlAssociations`配下）を参照しており、既定ブラウザをどう設定しても常に「設定されていません」と表示される不具合を修正。実際のパス（`Shell\Associations\UrlAssociations`配下）に修正し、あわせて実際の既定ブラウザ名を検出済みブラウザと突き合わせて表示する機能を追加
+- **urlrules.jsonのUnicodeエスケープ修正**: `UrlRuleService`のみ`JavaScriptEncoder.UnsafeRelaxedJsonEscaping`が未指定で、日本語・矢印記号等が`\uXXXX`形式で書き込まれていた不具合を修正（他3サービスと統一）
+- **自動起動秒数の既定値変更**: `AppSettings.DefaultDelay`の既定値を5秒→0秒（無効）に変更。URLを開くたびに毎回手動選択したいユーザーが大半のため、自動起動を明示的なオプトインへ変更。既存の保存済み設定には影響しない（新規インストールのみ）
+
 ## 🧪 テスト実装状況
 
 ### ✅ 正常動作中のテスト（2026-08-20実測、v0.3.4時点、`dotnet test`で確認）

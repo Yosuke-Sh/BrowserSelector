@@ -321,15 +321,15 @@ v0.2.0 introduces a new "Appearance" tab in the settings screen, consolidating a
 v0.2.0で起動制御系の機能が追加されました。
 
 - **トレイ常駐**: アプリケーションをシステムトレイに常駐させ、バックグラウンドで待機できます
-- **カウントダウン自動起動**: 起動後、指定した秒数が経過すると自動的に選択中（またはデフォルト）のブラウザを起動します
+- **カウントダウン自動起動**: URLを開いた際、何も操作しなければ指定した秒数後に既定タイルのブラウザを自動的に起動します。マウス操作・キー入力があると中断されます。設定画面の「自動起動までの秒数」（既定値0＝無効）で設定します。毎回手動でブラウザを選びたい場合は0のままにしてください
 - **CLIオプション**: コマンドラインから起動時の挙動を制御できます
 
 | オプション | 説明 |
 |---|---|
-| `-d`, `--delay <秒>` | カウントダウン自動起動までの秒数を指定 |
-| `-b`, `--browser <名前>` | 起動時に選択状態にする（または自動起動する）ブラウザを指定 |
+| `-d`, `--delay <秒>` | カウントダウン自動起動までの秒数を指定（設定画面の値を上書き） |
+| `-b`, `--browser <名前>` | 起動時に選択状態にするブラウザを指定 |
 | `--silent` | ブラウザ選択画面のUIを表示せず、既定ブラウザへ直接遷移 |
-| `--auto-launch` | 起動後、カウントダウンを経て自動的にブラウザを起動 |
+| `--auto-launch` | 起動後、即座に既定タイルのブラウザを起動（`--delay 0`相当） |
 | `-h`, `--help` | ヘルプを表示 |
 | `-v`, `--version` | バージョン情報を表示 |
 
@@ -338,15 +338,15 @@ v0.2.0で起動制御系の機能が追加されました。
 v0.2.0 adds startup-control features.
 
 - **Tray Residency**: Keep the application resident in the system tray, running in the background
-- **Countdown Auto-launch**: After a configured delay, automatically launches the selected (or default) browser
+- **Countdown Auto-launch**: If you open a URL and don't interact with the window, it auto-launches in the default tile's browser after a configured number of seconds. Any mouse or key activity cancels it. Configure it via "Auto-launch countdown (seconds)" in Settings (default is 0 = disabled). Leave it at 0 if you always want to choose manually
 - **CLI Options**: Control startup behavior from the command line
 
 | Option | Description |
 |---|---|
-| `-d`, `--delay <seconds>` | Sets the countdown delay before auto-launch |
-| `-b`, `--browser <name>` | Specifies which browser to pre-select (or auto-launch) at startup |
+| `-d`, `--delay <seconds>` | Sets the countdown delay before auto-launch (overrides the Settings value) |
+| `-b`, `--browser <name>` | Specifies which browser to pre-select at startup |
 | `--silent` | Skips the browser selection UI and goes directly to the default browser |
-| `--auto-launch` | Automatically launches the browser after the countdown |
+| `--auto-launch` | Immediately launches the default tile's browser on startup (equivalent to `--delay 0`) |
 | `-h`, `--help` | Shows help text |
 | `-v`, `--version` | Shows version information |
 
