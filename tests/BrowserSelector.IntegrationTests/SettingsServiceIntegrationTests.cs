@@ -65,6 +65,29 @@ public class SettingsServiceIntegrationTests : IDisposable
     }
 
     /// <summary>
+    /// <see cref="File.WriteAllTextAsync(string, string, System.Threading.CancellationToken)"/> をリトライ付きで実行する。
+    /// ディレクトリ再作成直後は、CIランナー環境でファイルシステムの可視性遅延により
+    /// <see cref="DirectoryNotFoundException"/> が稀に発生するため吸収する.
+    /// </summary>
+    private static async Task WriteAllTextWithRetryAsync(string path, string contents)
+    {
+        const int maxAttempts = 5;
+        for (int attempt = 1; attempt <= maxAttempts; attempt++)
+        {
+            try
+            {
+                await File.WriteAllTextAsync(path, contents).ConfigureAwait(false);
+                return;
+            }
+            catch (Exception ex) when (attempt < maxAttempts && (ex is IOException or UnauthorizedAccessException))
+            {
+                TestSettingsService.EnsureDirectoryExistsWithRetry(Path.GetDirectoryName(path)!);
+                await Task.Delay(100 * attempt).ConfigureAwait(false);
+            }
+        }
+    }
+
+    /// <summary>
     ///
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
@@ -150,10 +173,12 @@ public class SettingsServiceIntegrationTests : IDisposable
         // 消えていることがある（OS/ランナー側の一時ディレクトリクリーンアップと推測）。
         // 他のテストはTestSettingsService経由の保存（例外を握りつぶしfalseを返す設計）のため
         // 表面化しないが、ここでは直接書き込むため防御的にディレクトリを再作成してから書き込む。
+        // Directory.CreateDirectoryの単発呼び出しでも稀にDirectoryNotFoundExceptionが再発したため、
+        // TestSettingsServiceと同じリトライ付きヘルパーを使う.
         string settingsDirectory = _settingsService.GetSettingsFilePath();
-        _ = Directory.CreateDirectory(settingsDirectory);
+        TestSettingsService.EnsureDirectoryExistsWithRetry(settingsDirectory);
         string visualSettingsPath = Path.Combine(settingsDirectory, "visualsettings.json");
-        await File.WriteAllTextAsync(visualSettingsPath, legacyJson);
+        await WriteAllTextWithRetryAsync(visualSettingsPath, legacyJson);
 
         // Act
         Core.Models.VisualSettings visualSettings = await _settingsService.LoadVisualSettingsAsync();
