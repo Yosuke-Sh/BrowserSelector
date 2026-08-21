@@ -424,6 +424,11 @@ public partial class MainViewModel : ObservableObject
     {
         try
         {
+            if (!Helpers.WindowSizeHelper.NeedsResize(mainWindow.Width, mainWindow.Height, visualSettings.InitialWindowWidth, visualSettings.InitialWindowHeight))
+            {
+                return;
+            }
+
             Helpers.WindowSizeHelper.ApplyConfiguredSize(mainWindow, visualSettings.InitialWindowWidth, visualSettings.InitialWindowHeight);
 
             // ウィンドウが現在表示されているモニターを基準に中央寄せする（SystemParameters.PrimaryScreenは

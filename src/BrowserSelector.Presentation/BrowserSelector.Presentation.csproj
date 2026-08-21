@@ -5,6 +5,10 @@
     <ProjectReference Include="..\BrowserSelector.Infrastructure\BrowserSelector.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="BrowserSelector.UnitTests" />
+  </ItemGroup>
+
   <!-- System.Drawing.Common は net10.0-windows のシェアードフレームワークに含まれるため、
        明示的なPackageReferenceは不要（NU1510）。コード上の using/型参照はそのまま利用可能 -->
 

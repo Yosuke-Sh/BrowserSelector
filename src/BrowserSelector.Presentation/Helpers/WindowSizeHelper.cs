@@ -54,6 +54,22 @@ public static class WindowSizeHelper
         window.Height = height;
     }
 
+    /// <summary>
+    /// 現在のウィンドウサイズと、設定を反映した目標サイズが実質的に異なるかどうかを判定する。
+    /// 設定画面を開くたびに無条件でリサイズ・センタリング・ログ出力が発生していた冗長動作を避けるために使用する.
+    /// </summary>
+    /// <param name="currentWidth">現在のウィンドウ幅（px）.</param>
+    /// <param name="currentHeight">現在のウィンドウ高さ（px）.</param>
+    /// <param name="configuredWidth">設定されたウィンドウ幅（px）.</param>
+    /// <param name="configuredHeight">設定されたウィンドウ高さ（px）.</param>
+    /// <returns>目標サイズが現在のサイズと0.5px以上異なる場合は<c>true</c>.</returns>
+    public static bool NeedsResize(double currentWidth, double currentHeight, double configuredWidth, double configuredHeight)
+    {
+        const double tolerance = 0.5;
+        (double targetWidth, double targetHeight) = ResolveSize(configuredWidth, configuredHeight);
+        return Math.Abs(currentWidth - targetWidth) > tolerance || Math.Abs(currentHeight - targetHeight) > tolerance;
+    }
+
     private static double ResolveDimension(double value, double min, double max)
     {
         if (double.IsNaN(value) || double.IsInfinity(value) || value <= 0)
