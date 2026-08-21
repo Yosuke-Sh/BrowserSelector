@@ -94,6 +94,18 @@
             </Setter>
         </Style>
 
+        <!-- タイトルバー非表示時、右上に常時表示されるハンバーガーメニュー（Grid.RowSpan="6"）と
+             コンテンツ行の右上が重ならないよう、右マージンを追加する共通スタイル。
+             URL入力行・ブラウザ一覧行の両方で共有する。 -->
+        <Style x:Key="TitleBarAwareContentMargin" TargetType="Grid">
+            <Setter Property="Margin" Value="20,10"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ShowTitleBar}" Value="False">
+                    <Setter Property="Margin" Value="20,10,54,10"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
         <!-- ブラウザタイル（Phase C-3: ホバー・フォーカス・スケールアニメーション対応、Phase C-7: エレベーション表現） -->
         <Style x:Key="BrowserButtonStyle" TargetType="Button">
             <Setter Property="Margin" Value="8"/>
@@ -204,6 +216,22 @@
                                            FontSize="9"
                                            FontWeight="Bold"
                                            Foreground="{DynamicResource Brush.TextOnAccent}"/>
+                            </Border>
+
+                            <!-- ホットキーバッジ（右上、既定バッジと重ならないよう反対側に配置。
+                                 タイル本体と同じ固定サイズGrid内に置くことで、ボタンがUniformGridの
+                                 セル全体に伸びてもバッジがタイルの外にずれないようにする。 -->
+                            <Border HorizontalAlignment="Right" VerticalAlignment="Top"
+                                    Margin="4"
+                                    Background="{DynamicResource Brush.SurfaceAlt}"
+                                    BorderBrush="{DynamicResource Brush.Border}"
+                                    BorderThickness="1"
+                                    CornerRadius="8"
+                                    Padding="5,1"
+                                    IsHitTestVisible="False"
+                                    Visibility="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource IndexToHotkeyBadgeConverter}, ConverterParameter=Visibility}">
+                                <TextBlock FontSize="9" FontWeight="Bold" Foreground="{DynamicResource Brush.TextSecondary}"
+                                           Text="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource IndexToHotkeyBadgeConverter}}"/>
                             </Border>
 
                             <!-- フォーカスリング（VisualSettings.FocusColor/FocusThicknessを流用） -->
@@ -431,12 +459,17 @@
         </Grid>
 
         <!-- URLが指定されている場合の表示 -->
-        <TextBlock Grid.Row="1"
-                   Text="{Binding Url, StringFormat='URL: {0}'}"
-                   FontSize="14"
+        <!-- 選択・コピー可能なURL表示。プレーンTextBlockでは選択操作ができないためTextBoxで代替する。 -->
+        <TextBox Grid.Row="1"
+                   Text="{Binding Url, Mode=OneWay}"
+                   IsReadOnly="True"
+                   IsReadOnlyCaretVisible="True"
+                   BorderThickness="0"
+                   Background="Transparent"
+                   FontSize="12"
                    HorizontalAlignment="Stretch"
+                   HorizontalContentAlignment="Center"
                    TextAlignment="Center"
-                   TextTrimming="CharacterEllipsis"
                    VerticalAlignment="Bottom"
                    Margin="20,0,20,0"
                    Foreground="{DynamicResource Brush.TextSecondary}"
@@ -445,28 +478,30 @@
 
         <!-- URL入力（Phase C-7: エレベーション レベル1 - 背景よりわずかに沈む表現） -->
         <Grid Grid.Row="2"
+              Style="{StaticResource TitleBarAwareContentMargin}"
               Visibility="{Binding VisualSettings.ShowUrlInput, Converter={StaticResource BoolToVisibilityConverter}}"
               AutomationProperties.Name="UrlInputGrid">
-            <Grid.Style>
-                <Style TargetType="Grid">
-                    <!-- 既定（タイトルバー表示時）は行0がハンバーガーメニュー分の高さを持つため通常マージン。
-                         ShowTitleBar=falseの場合、CustomTitleBarRowの高さが0になり、右上に常時表示される
-                         ハンバーガーメニュー（Grid.RowSpan="6"）がこの行の右上と重なるため、
-                         右上コーナー分の余白を追加して衝突を避ける. -->
-                    <Setter Property="Margin" Value="20,10"/>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding ShowTitleBar}" Value="False">
-                            <Setter Property="Margin" Value="20,10,54,10"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Grid.Style>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
             <Grid Grid.Column="0" AutomationProperties.Name="UrlTextBoxContainer">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- 地球アイコン（テキストボックスの左外に配置） -->
+                <Image Grid.Column="0"
+                        Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Globe.png"
+                        Width="16" Height="16"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Margin="0,0,8,0"
+                        Opacity="0.6"
+                        IsHitTestVisible="False"/>
+
                 <!--
                     プレースホルダーはBackground上のVisualBrushではなく、TextBoxに重ねたTextBlockで表現する。
                     以前はTextBox.Backgroundにローカル値(#FAFAFA)を設定しつつ、同じプロパティに
@@ -474,59 +509,50 @@
                     WPFの依存関係プロパティ優先順位（ローカル値 > スタイルトリガー）により
                     トリガーが常に無視され、プレースホルダーが表示されない不具合があった（Phase C-0b）。
                 -->
-                <TextBox x:Name="UrlTextBox"
-                         Text="{Binding Url, UpdateSourceTrigger=PropertyChanged}"
-                         FontSize="16"
-                         Padding="40,8,10,8"
-                         Margin="0,0,10,0"
-                         MaxWidth="600"
-                         TextWrapping="NoWrap"
-                         HorizontalAlignment="Stretch"
-                         VerticalAlignment="Center"
-                         Background="{DynamicResource Brush.SurfaceAlt}"
-                         Foreground="{DynamicResource Brush.TextPrimary}"
-                         BorderBrush="{DynamicResource Brush.Border}"
-                         BorderThickness="1"
-                         AutomationProperties.Name="UrlInputTextBox"/>
+                <Grid Grid.Column="1">
+                    <TextBox x:Name="UrlTextBox"
+                             Text="{Binding Url, UpdateSourceTrigger=PropertyChanged}"
+                             FontSize="13"
+                             Padding="8,6,10,6"
+                             TextWrapping="NoWrap"
+                             HorizontalAlignment="Stretch"
+                             VerticalAlignment="Center"
+                             Background="{DynamicResource Brush.SurfaceAlt}"
+                             Foreground="{DynamicResource Brush.TextPrimary}"
+                             BorderBrush="{DynamicResource Brush.Border}"
+                             BorderThickness="1"
+                             AutomationProperties.Name="UrlInputTextBox"/>
 
-                <!-- 地球アイコン（常時表示） -->
-                <Image Source="/BrowserSelector.Presentation;component/Resources/Images/Icon_Globe.png"
-                        Width="16" Height="16"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Margin="12,0,0,0"
-                        Opacity="0.6"
-                        IsHitTestVisible="False"/>
-
-                <!-- プレースホルダー文言（URL未入力かつ未フォーカス時のみ表示） -->
-                <TextBlock Text="{extensions:Localization MainWindow.UrlPrompt}"
-                           Foreground="{DynamicResource Brush.TextSecondary}"
-                           FontSize="16"
-                           HorizontalAlignment="Left"
-                           VerticalAlignment="Center"
-                           Margin="40,0,0,0"
-                           IsHitTestVisible="False">
-                    <TextBlock.Style>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                            <Style.Triggers>
-                                <MultiDataTrigger>
-                                    <MultiDataTrigger.Conditions>
-                                        <Condition Binding="{Binding Text, ElementName=UrlTextBox}" Value=""/>
-                                        <Condition Binding="{Binding IsKeyboardFocused, ElementName=UrlTextBox}" Value="False"/>
-                                    </MultiDataTrigger.Conditions>
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                </MultiDataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
+                    <!-- プレースホルダー文言（URL未入力かつ未フォーカス時のみ表示） -->
+                    <TextBlock Text="{extensions:Localization MainWindow.UrlPrompt}"
+                               Foreground="{DynamicResource Brush.TextSecondary}"
+                               FontSize="13"
+                               HorizontalAlignment="Left"
+                               VerticalAlignment="Center"
+                               Margin="8,0,0,0"
+                               IsHitTestVisible="False">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding Text, ElementName=UrlTextBox}" Value=""/>
+                                            <Condition Binding="{Binding IsKeyboardFocused, ElementName=UrlTextBox}" Value="False"/>
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </MultiDataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
             </Grid>
 
         </Grid>
 
         <!-- ブラウザ一覧（Phase C-3: UniformGrid + 計算列数） -->
-        <Grid Grid.Row="3" Margin="20,10">
+        <Grid Grid.Row="3" Style="{StaticResource TitleBarAwareContentMargin}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
@@ -552,44 +578,29 @@
                     </ItemsControl.ItemContainerStyle>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Grid>
-                                <Button Style="{StaticResource BrowserButtonStyle}"
-                                        Command="{Binding DataContext.LaunchBrowserCommand,
-                                                  RelativeSource={RelativeSource AncestorType=Window}}"
-                                        CommandParameter="{Binding}"
-                                        Content="{Binding DisplayName}"
-                                        PreviewMouseLeftButtonDown="BrowserButton_PreviewMouseLeftButtonDown"
-                                        IsEnabled="{Binding DataContext.Url, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource StringToBoolConverter}}"
-                                        AutomationProperties.Name="{Binding DisplayName, StringFormat={}{0}BrowserButton}">
-                                    <Button.ToolTip>
-                                        <ToolTip>
-                                            <TextBlock>
-                                                <TextBlock.Text>
-                                                    <MultiBinding Converter="{StaticResource BrowserTooltipConverter}">
-                                                        <Binding Path="Name"/>
-                                                        <Binding Path="ExecutablePath"/>
-                                                        <Binding Path="Arguments"/>
-                                                    </MultiBinding>
-                                                </TextBlock.Text>
-                                            </TextBlock>
-                                        </ToolTip>
-                                    </Button.ToolTip>
-                                </Button>
-
-                                <!-- ホットキーバッジ（左上、既定バッジと重ならないよう右寄せ） -->
-                                <Border HorizontalAlignment="Right" VerticalAlignment="Top"
-                                        Margin="4"
-                                        Background="{DynamicResource Brush.SurfaceAlt}"
-                                        BorderBrush="{DynamicResource Brush.Border}"
-                                        BorderThickness="1"
-                                        CornerRadius="8"
-                                        Padding="5,1"
-                                        IsHitTestVisible="False"
-                                        Visibility="{Binding Path=Tag, RelativeSource={RelativeSource AncestorType=ContentPresenter}, Converter={StaticResource IndexToHotkeyBadgeConverter}, ConverterParameter=Visibility}">
-                                    <TextBlock FontSize="9" FontWeight="Bold" Foreground="{DynamicResource Brush.TextSecondary}"
-                                               Text="{Binding Path=Tag, RelativeSource={RelativeSource AncestorType=ContentPresenter}, Converter={StaticResource IndexToHotkeyBadgeConverter}}"/>
-                                </Border>
-                            </Grid>
+                            <Button Style="{StaticResource BrowserButtonStyle}"
+                                    Command="{Binding DataContext.LaunchBrowserCommand,
+                                              RelativeSource={RelativeSource AncestorType=Window}}"
+                                    CommandParameter="{Binding}"
+                                    Content="{Binding DisplayName}"
+                                    Tag="{Binding Path=Tag, RelativeSource={RelativeSource AncestorType=ContentPresenter}}"
+                                    PreviewMouseLeftButtonDown="BrowserButton_PreviewMouseLeftButtonDown"
+                                    IsEnabled="{Binding DataContext.Url, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource StringToBoolConverter}}"
+                                    AutomationProperties.Name="{Binding DisplayName, StringFormat={}{0}BrowserButton}">
+                                <Button.ToolTip>
+                                    <ToolTip>
+                                        <TextBlock>
+                                            <TextBlock.Text>
+                                                <MultiBinding Converter="{StaticResource BrowserTooltipConverter}">
+                                                    <Binding Path="Name"/>
+                                                    <Binding Path="ExecutablePath"/>
+                                                    <Binding Path="Arguments"/>
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                    </ToolTip>
+                                </Button.ToolTip>
+                            </Button>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
