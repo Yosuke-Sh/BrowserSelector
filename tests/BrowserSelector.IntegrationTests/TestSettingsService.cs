@@ -25,45 +25,7 @@ internal sealed class TestSettingsService : ISettingsService
         _logService = logService;
         _settingsDirectory = tempDirectory;
 
-        // 設定ディレクトリが存在しない場合は作成。
-        // CIランナー（Windows）では多数のテストクラスが同時に%TEMP%\BrowserSelectorTest\<guid>配下へ
-        // ディレクトリを作成しており、直後のDirectory.Exists/File操作がDirectoryNotFoundExceptionに
-        // なる一過性の可視性遅延が稀に発生するため、短いリトライで吸収する。
-        const int maxAttempts = 3;
-        for (int attempt = 1; attempt <= maxAttempts; attempt++)
-        {
-            try
-            {
-                if (!Directory.Exists(_settingsDirectory))
-                {
-                    // 親ディレクトリが存在することを確認してから作成
-                    string? parentDir = Path.GetDirectoryName(_settingsDirectory);
-                    if (!string.IsNullOrEmpty(parentDir) && !Directory.Exists(parentDir))
-                    {
-                        Directory.CreateDirectory(parentDir);
-                    }
-
-                    // 設定ディレクトリを作成
-                    Directory.CreateDirectory(_settingsDirectory);
-
-                    // ディレクトリ作成の確認
-                    if (!Directory.Exists(_settingsDirectory))
-                    {
-                        throw new InvalidOperationException($"テスト用設定ディレクトリの作成に失敗しました: {_settingsDirectory}");
-                    }
-                }
-
-                break;
-            }
-            catch (Exception ex) when (attempt < maxAttempts && (ex is IOException or UnauthorizedAccessException or InvalidOperationException))
-            {
-                Thread.Sleep(50 * attempt);
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"テスト用設定ディレクトリの作成中にエラーが発生しました: {_settingsDirectory}", ex);
-            }
-        }
+        EnsureDirectoryExistsWithRetry(_settingsDirectory);
 
         _appSettingsPath = Path.Combine(_settingsDirectory, "appsettings.json");
         _visualSettingsPath = Path.Combine(_settingsDirectory, "visualsettings.json");
@@ -331,6 +293,52 @@ internal sealed class TestSettingsService : ISettingsService
         {
             _logService?.LogError($"設定インポートエラー: {ex.Message}", "TestSettingsService", ex);
             return false;
+        }
+    }
+
+    /// <summary>
+    /// 指定ディレクトリの存在を保証する。CIランナー（Windows）では多数のテストクラスが同時に
+    /// %TEMP%\BrowserSelectorTest\&lt;guid&gt;配下へディレクトリを作成しており、作成直後、あるいは
+    /// コンストラクタでの作成からテスト本体実行までの間にディレクトリが消えている（一過性の
+    /// 可視性遅延、またはOS/ランナー側の一時ディレクトリクリーンアップと推測）ことが稀にある。
+    /// コンストラクタでの初回作成・各テストでの書き込み直前の両方から呼び出せるよう
+    /// internal staticとして公開し、短いリトライで吸収する.
+    /// </summary>
+    /// <param name="directory">作成対象のディレクトリパス.</param>
+    internal static void EnsureDirectoryExistsWithRetry(string directory)
+    {
+        const int maxAttempts = 5;
+        for (int attempt = 1; attempt <= maxAttempts; attempt++)
+        {
+            try
+            {
+                if (!Directory.Exists(directory))
+                {
+                    // 親ディレクトリが存在することを確認してから作成
+                    string? parentDir = Path.GetDirectoryName(directory);
+                    if (!string.IsNullOrEmpty(parentDir) && !Directory.Exists(parentDir))
+                    {
+                        Directory.CreateDirectory(parentDir);
+                    }
+
+                    Directory.CreateDirectory(directory);
+
+                    if (!Directory.Exists(directory))
+                    {
+                        throw new InvalidOperationException($"テスト用ディレクトリの作成に失敗しました: {directory}");
+                    }
+                }
+
+                return;
+            }
+            catch (Exception ex) when (attempt < maxAttempts && (ex is IOException or UnauthorizedAccessException or InvalidOperationException))
+            {
+                Thread.Sleep(100 * attempt);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"テスト用ディレクトリの作成中にエラーが発生しました: {directory}", ex);
+            }
         }
     }
 }
