@@ -11,7 +11,10 @@ using Moq;
 namespace BrowserSelector.UnitTests;
 
 /// <summary>
-/// <see cref="SettingsViewModel"/> のOS既定ブラウザ判定・設定導線を検証する.
+/// <see cref="SettingsViewModel"/> のOS既定ブラウザ設定導線を検証する。
+/// 以前は既定ブラウザかどうかの判定結果もSettingsViewModelが保持していたが、
+/// 判定処理自体が「ボタンを押しても何も表示されない」不具合報告につながり撤去したため、
+/// ここでは「既定のアプリ」設定画面を開くボタンの動作のみを検証する.
 /// </summary>
 public class SettingsViewModelDefaultBrowserTests
 {
@@ -34,6 +37,8 @@ public class SettingsViewModelDefaultBrowserTests
         _ = _mockBrowserService.Setup(x => x.GetAllBrowsersAsync()).ReturnsAsync([]);
 
         _mockLocalizationService = new Mock<ILocalizationService>();
+        _ = _mockLocalizationService.Setup(x => x.GetString(It.IsAny<string>())).Returns(string.Empty);
+
         _mockCustomLanguageService = new Mock<ICustomLanguageService>();
         _ = _mockCustomLanguageService.Setup(x => x.GetAvailableLanguagesAsync()).ReturnsAsync([]);
 
@@ -59,75 +64,25 @@ public class SettingsViewModelDefaultBrowserTests
     }
 
     [Fact]
-    public async Task InitializeAsync_WithDefaultBrowserServiceReturningTrue_SetsIsDefaultBrowserTrue()
+    public void OpenDefaultAppsSettingsCommand_WhenServiceSucceeds_InvokesUnderlyingServiceOnce()
     {
-        _ = _mockDefaultBrowserService.Setup(x => x.IsDefaultBrowser()).Returns(true);
-        SettingsViewModel viewModel = CreateViewModel(_mockDefaultBrowserService.Object);
-
-        await viewModel.InitializeAsync();
-
-        viewModel.IsDefaultBrowser.Should().BeTrue();
-    }
-
-    [Fact]
-    public async Task InitializeAsync_WithNoDefaultBrowserService_SetsIsDefaultBrowserFalseWithoutThrowing()
-    {
-        SettingsViewModel viewModel = CreateViewModel(defaultBrowserService: null);
-
-        Func<Task> act = () => viewModel.InitializeAsync();
-
-        await act.Should().NotThrowAsync();
-        viewModel.IsDefaultBrowser.Should().BeFalse();
-    }
-
-    [Fact]
-    public async Task InitializeAsync_WithDefaultBrowserServiceReturningTrue_LeavesDefaultBrowserNameNull()
-    {
-        _ = _mockDefaultBrowserService.Setup(x => x.IsDefaultBrowser()).Returns(true);
-        SettingsViewModel viewModel = CreateViewModel(_mockDefaultBrowserService.Object);
-
-        await viewModel.InitializeAsync();
-
-        viewModel.DefaultBrowserName.Should().BeNull();
-        viewModel.IsDefaultBrowserUnknown.Should().BeFalse();
-    }
-
-    [Fact]
-    public async Task InitializeAsync_WithOtherBrowserAsDefault_SetsDefaultBrowserName()
-    {
-        _ = _mockDefaultBrowserService.Setup(x => x.IsDefaultBrowser()).Returns(false);
-        _ = _mockDefaultBrowserService.Setup(x => x.GetDefaultBrowserDisplayName()).Returns("Microsoft Edge");
-        SettingsViewModel viewModel = CreateViewModel(_mockDefaultBrowserService.Object);
-
-        await viewModel.InitializeAsync();
-
-        viewModel.IsDefaultBrowser.Should().BeFalse();
-        viewModel.DefaultBrowserName.Should().Be("Microsoft Edge");
-        viewModel.IsDefaultBrowserUnknown.Should().BeFalse();
-    }
-
-    [Fact]
-    public async Task InitializeAsync_WithUnresolvableDefaultBrowser_SetsIsDefaultBrowserUnknownTrue()
-    {
-        _ = _mockDefaultBrowserService.Setup(x => x.IsDefaultBrowser()).Returns(false);
-        _ = _mockDefaultBrowserService.Setup(x => x.GetDefaultBrowserDisplayName()).Returns((string?)null);
-        SettingsViewModel viewModel = CreateViewModel(_mockDefaultBrowserService.Object);
-
-        await viewModel.InitializeAsync();
-
-        viewModel.IsDefaultBrowser.Should().BeFalse();
-        viewModel.DefaultBrowserName.Should().BeNull();
-        viewModel.IsDefaultBrowserUnknown.Should().BeTrue();
-    }
-
-    [Fact]
-    public void OpenDefaultAppsSettingsCommand_InvokesUnderlyingService()
-    {
+        _ = _mockDefaultBrowserService.Setup(x => x.OpenDefaultAppsSettings()).Returns(true);
         SettingsViewModel viewModel = CreateViewModel(_mockDefaultBrowserService.Object);
 
         viewModel.OpenDefaultAppsSettingsCommand.Execute(null);
 
         _mockDefaultBrowserService.Verify(x => x.OpenDefaultAppsSettings(), Times.Once);
+    }
+
+    [Fact]
+    public void OpenDefaultAppsSettingsCommand_WhenServiceFails_DoesNotThrow()
+    {
+        _ = _mockDefaultBrowserService.Setup(x => x.OpenDefaultAppsSettings()).Returns(false);
+        SettingsViewModel viewModel = CreateViewModel(_mockDefaultBrowserService.Object);
+
+        Action act = () => viewModel.OpenDefaultAppsSettingsCommand.Execute(null);
+
+        act.Should().NotThrow();
     }
 
     [Fact]

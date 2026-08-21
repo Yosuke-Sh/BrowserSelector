@@ -373,9 +373,6 @@ public partial class SettingsViewModel : ObservableObject
             PropertyChanged += OnPropertyChanged;
             LogService?.LogDebug("プロパティ変更イベント監視開始", "SettingsViewModel");
 
-            // 既定ブラウザ判定（OS側の現在状態）を取得
-            RefreshDefaultBrowserStatus();
-
             LogService?.LogDebug("SettingsViewModel初期化完了", "SettingsViewModel");
         }
         // CA1031: RelayCommandハンドラーの最上位try-catch。WPFダイアログ表示やサービス呼び出しなど例外種別が多岐にわたり、UIスレッドをクラッシュさせないための最終防御であるため意図的に汎用catchとする。
