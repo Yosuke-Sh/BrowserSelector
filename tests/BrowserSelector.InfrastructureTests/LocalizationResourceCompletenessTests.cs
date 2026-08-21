@@ -54,6 +54,20 @@ public class LocalizationResourceCompletenessTests
         keys.Should().Contain("Settings.App.SetAsDefaultBrowser");
     }
 
+    [Theory]
+    [InlineData("ja-JP")]
+    [InlineData("en-US")]
+    [InlineData("zh-CN")]
+    public void LocalizationFile_ContainsTrayMenuKeys(string cultureCode)
+    {
+        HashSet<string> keys = LoadResourceKeys(cultureCode);
+
+        keys.Should().Contain("TrayMenu.Show");
+        keys.Should().Contain("TrayMenu.OpenWithDefaultBrowser");
+        keys.Should().Contain("TrayMenu.Settings");
+        keys.Should().Contain("TrayMenu.Exit");
+    }
+
     private static HashSet<string> LoadResourceKeys(string cultureCode)
     {
         Assembly assembly = typeof(LocalizationService).Assembly;
