@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.6] - 2026-08-21
+
+### 🐛 Fixed
+- Fixed the app not launching automatically after a silent update completes, leaving users unable to tell whether the update succeeded. The installer's `[Run]` postinstall launch entry — the only path left to start the app after `RestartApplications=no` disabled Inno's built-in restart — had `skipifsilent`, so it was skipped precisely during `/SILENT` runs (the case used for in-app updates). Removed `skipifsilent` and added `runascurrentuser` (required because the installer itself runs elevated; without it, BrowserSelector would launch with admin privileges, which breaks launching browsers normally and drag-and-drop via UIPI).
+- Fixed the hotkey number badge on browser tiles rendering far outside the visible tile (up and to the right) once the window was wide enough that grid cells grew larger than the configured tile size. The badge lived in the `DataTemplate`'s outer `Grid`, which stretches to fill the whole `UniformGrid` cell, while the visible tile is a fixed-size, centered `Grid` inside the button's `ControlTemplate`. Moved the badge into that same fixed-size template grid (alongside the existing "default browser" badge), so it now always sits at the tile's actual top-right corner regardless of window size.
+- Fixed the URL display text being un-selectable (plain `TextBlock`), so users could not copy it. Replaced it with a read-only `TextBox`.
+- Fixed "Set as Default Browser" appearing to do nothing when Windows failed to resolve the `registeredAppName` deep-link query, silently swallowing the failure into a log line. Simplified to open the plain `ms-settings:defaultapps` page and show an error message box on failure instead of doing nothing visibly.
+- Fixed `LogService.UpdateSettings` and `MainViewModel`'s window-size-apply logic logging unconditionally every time the Settings window was opened/saved, even when nothing had actually changed, producing repetitive log noise. Both now compare against the current value first and skip the no-op case.
+- Fixed `TrayMenu.Show`/`OpenWithDefaultBrowser`/`Settings`/`Exit` localization keys being referenced by the tray context menu but missing from all three locale files, producing a "resource key not found" warning every time the tray menu was built (harmless — a fallback string was shown — but noisy).
+
+### 🔧 Changed
+- Merged the Settings window's "Display" and "Appearance" tabs into a single "Display" tab, regrouped into Window / Background / Browser Buttons / Theme, since it wasn't obvious which tab held a given setting. Indented "Backdrop mode" under "Enable glass effect" and grayed it out when the checkbox is off, clarifying which controls the checkbox actually affects.
+- Removed the "Enable animations" setting — it saved/loaded a value but was never read anywhere else in the code, so it did nothing.
+- Extended the window corner-radius slider (0–20px) from effectively two states to three: Windows' `DWMWA_WINDOW_CORNER_PREFERENCE` only supports "no rounding," "small rounding," and "normal rounding," not an arbitrary radius, which made most of the slider's range look identical. Added a note near the slider explaining the three-level rounding.
+- Removed the "current default browser" status display (self/other-browser detection) from Settings' default-browser section in favor of a short description, since the underlying "Set as Default Browser" button was simplified (see Fixed) and no longer needs the status readout it sat next to.
+- Reduced the main window's URL display font size and moved the globe icon outside the URL input box (to its left) instead of overlapping it, so long URLs have more room to display before being truncated.
+- Added an "Import Current URL" button to the URL rule add/edit dialog that fills the pattern field with the URL currently shown on the main window.
+
 ## [0.3.5] - 2026-08-20
 
 ### 🐛 Fixed

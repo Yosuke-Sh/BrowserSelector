@@ -8,7 +8,7 @@
 - [基本的な使用方法](#基本的な使用方法)
 - [キーボードショートカット](#-キーボードショートカット--keyboard-shortcuts)
 - [設定](#設定)
-- [外観設定](#-外観設定--appearance-settings)
+- [ガラス効果・テーマ設定](#-ガラス効果テーマ設定--glass-effect--theme-settings)
 - [起動制御（トレイ常駐・自動起動・CLIオプション）](#-起動制御トレイ常駐自動起動cliオプション--startup-control-tray-residency-auto-launch-cli-options)
 - [機能詳細](#機能詳細)
 - [アップデート](#-アップデート--updates)
@@ -21,7 +21,7 @@
 - [Basic Usage](#basic-usage)
 - [Keyboard Shortcuts](#-キーボードショートカット--keyboard-shortcuts)
 - [Configuration](#configuration)
-- [Appearance Settings](#-外観設定--appearance-settings)
+- [Glass Effect & Theme Settings](#-ガラス効果テーマ設定--glass-effect--theme-settings)
 - [Startup Control (Tray, Auto-launch, CLI Options)](#-起動制御トレイ常駐自動起動cliオプション--startup-control-tray-residency-auto-launch-cli-options)
 - [Feature Details](#feature-details)
 - [Updates](#-アップデート--updates)
@@ -198,13 +198,13 @@ BrowserSelector supports full keyboard operation so the app can be used without 
 
 ##### 日本語
 - **URLルールマッチ後に閉じる**: URLルールにマッチしたブラウザを起動後にアプリケーションを閉じる（トレイ常駐が有効な場合は完全終了ではなくトレイへ格納されます）
-- **既定のブラウザに設定**: Windowsの既定ブラウザとして設定されているかどうかを表示し、設定画面を開くボタンを提供（詳細は[インストール](#-インストール--installation)章のFAQ参照）
+- **既定のブラウザに設定**: 押すとWindowsの「既定のアプリ」設定画面を開きます。一覧からBrowserSelectorを選択してください（詳細は[インストール](#-インストール--installation)章のFAQ参照）
 - **言語設定**: アプリケーションの表示言語を選択（日本語・英語対応）
 - **自動更新チェック / 更新チェック間隔 / プレリリースを含める / 今すぐ確認**: v0.3.0で実装完了。詳細は[アップデート](#-アップデート--updates)章を参照
 
 ##### English
 - **Close After URL Rule Match**: Close application after launching browser that matches URL rule (when tray residency is enabled, this minimizes to tray instead of fully exiting)
-- **Set as Default Browser**: Shows whether BrowserSelector is currently set as the Windows default browser, with a button to open the relevant settings screen (see the FAQ in the [Installation](#-インストール--installation) section for details)
+- **Set as Default Browser**: Opens Windows' "Default apps" settings page. Select BrowserSelector from the list (see the FAQ in the [Installation](#-インストール--installation) section for details)
 - **Language Settings**: Select application display language (Japanese/English support)
 - **Automatic Update Check / Update Check Interval / Include Prereleases / Check Now**: Implemented in v0.3.0. See the [Updates](#-アップデート--updates) section for details
 
@@ -280,39 +280,37 @@ To reset settings to default values:
 2. Select "Yes" in the confirmation dialog
 3. Settings are reset to default values
 
-## 🎨 外観設定 / Appearance Settings
+## 🎨 ガラス効果・テーマ設定 / Glass Effect & Theme Settings
 
 ### 日本語
 
-v0.2.0で設定画面に「外観」タブが新設され、ガラスUIに関する各種設定をまとめて調整できるようになりました。
+v0.3.6で「表示」「外観」の2タブが1つの「表示」タブへ統合され、ウィンドウ・背景・ブラウザボタン・テーマの4グループに再編されました。ここではガラスUI・テーマに関する設定を説明します（バックドロップ方式は「背景」グループ内でガラス効果チェックボックス配下にインデント表示され、ガラス効果が無効な間は操作できません）。
 
-- **バックドロップ方式**: ウィンドウ背景の描画方式を選択
+- **ガラス効果を有効にする**: DWMによるガラス効果（Mica/Acrylic）の有効/無効。無効時はバックドロップ方式の選択欄も無効化され、半透明の単色背景にフォールバックします
+- **バックドロップ方式**: ウィンドウ背景の描画方式を選択（ガラス効果が有効な場合のみ操作可能）
   - `Mica`: 既定の不透明多層ブラー
   - `Acrylic`: 半透明・強めのブラー
   - `MicaAlt`: タブ付きウィンドウ向けの濃いMica
-  - 半透明単色: DWM非対応環境向けのフォールバック
-  - 不透明: ハイコントラスト・低スペック環境向けの完全不透明表示
-- **不透明度**: バックドロップの不透明度を調整
-- **角丸半径**: ウィンドウ・タイルの角の丸みを調整（実際のDWM描画に反映）
-- **タイトルバー表示切替**: タイトルバーの表示/非表示
-- **常に最前面**: ウィンドウを常に最前面に表示するかどうか
-- **テーマ**: ライト/ダーク/システム追従（OSのテーマ設定に自動追従）から選択
+- **不透明度**: ウィンドウの不透明度を調整（「ウィンドウ」グループ内）
+- **角丸半径**: ウィンドウの角の丸みを調整（「ウィンドウ」グループ内）。Windowsの`DWMWA_WINDOW_CORNER_PREFERENCE`の仕様上、実際に選べるのは「角丸なし（0px）」「小さめ（1〜7px）」「通常（8px以上）」の3段階のみで、スライダーの細かい数値自体には見た目の違いがありません
+- **タイトルバー表示切替**: タイトルバーの表示/非表示（「ウィンドウ」グループ内）
+- **常に最前面**: ウィンドウを常に最前面に表示するかどうか（「ウィンドウ」グループ内）
+- **テーマ**: ライト/ダーク/システム追従（OSのテーマ設定に自動追従）から選択（「テーマ」グループ内）
 
 ### English
 
-v0.2.0 introduces a new "Appearance" tab in the settings screen, consolidating all glass-UI-related options in one place.
+v0.3.6 merged the "Display" and "Appearance" tabs into a single "Display" tab, regrouped into Window / Background / Browser Buttons / Theme. This section covers glass-UI and theme settings (Backdrop Mode is indented under the glass-effect checkbox in the Background group and is disabled while glass effect is off).
 
-- **Backdrop Mode**: Choose how the window background is rendered
+- **Enable Glass Effect**: Toggles DWM-based glass effect (Mica/Acrylic). When disabled, the backdrop mode selector is also disabled and the window falls back to a solid translucent color
+- **Backdrop Mode**: Choose how the window background is rendered (only usable while glass effect is enabled)
   - `Mica`: The default opaque multi-layer blur
   - `Acrylic`: Semi-transparent, stronger blur
   - `MicaAlt`: A denser Mica variant for tabbed windows
-  - Solid Translucent: Fallback for environments without DWM support
-  - Opaque: Fully opaque rendering for high-contrast or low-spec environments
-- **Opacity**: Adjust the backdrop's opacity
-- **Corner Radius**: Adjust the roundness of window/tile corners (reflected in actual DWM rendering)
-- **Title Bar Toggle**: Show/hide the title bar
-- **Always on Top**: Whether the window always stays on top of other windows
-- **Theme**: Choose Light, Dark, or System (automatically follows the OS theme setting)
+- **Opacity**: Adjust the window's opacity (in the Window group)
+- **Corner Radius**: Adjust the roundness of window corners (in the Window group). Due to Windows' `DWMWA_WINDOW_CORNER_PREFERENCE` API, only three levels are actually available — none (0px), small (1–7px), and normal (8px+) — so fine-grained slider values within a level look identical
+- **Title Bar Toggle**: Show/hide the title bar (in the Window group)
+- **Always on Top**: Whether the window always stays on top of other windows (in the Window group)
+- **Theme**: Choose Light, Dark, or System (automatically follows the OS theme setting) (in the Theme group)
 
 ## 🚀 起動制御（トレイ常駐・自動起動・CLIオプション） / Startup Control (Tray Residency, Auto-launch, CLI Options)
 
@@ -399,7 +397,7 @@ URLルールを使用して特定のURLパターンに対して自動的にブ�
 2. 「URLルール設定」タブを選択
 3. 「ルール追加」ボタンをクリック
 4. ルール情報を入力：
-   - パターン：URLパターン（正規表現）
+   - パターン：URLパターン（正規表現）。メイン画面に表示中のURLがある場合、「現在のURLを取り込む」ボタンでそのURLをそのままパターン欄へ入力できます
    - ブラウザ：使用するブラウザ
    - 優先度：ルールの優先度
    - 有効/無効：ルールの状態
@@ -411,7 +409,7 @@ Use URL rules to automatically select browsers for specific URL patterns:
 2. Select "URL Rule Settings" tab
 3. Click "Add Rule" button
 4. Enter rule information:
-   - Pattern: URL pattern (regular expression)
+   - Pattern: URL pattern (regular expression). If a URL is currently shown on the main window, the "Import Current URL" button fills the pattern field with it as-is
    - Browser: Browser to use
    - Priority: Rule priority
    - Enable/Disable: Rule status

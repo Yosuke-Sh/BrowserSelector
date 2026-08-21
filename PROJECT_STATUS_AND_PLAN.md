@@ -129,12 +129,25 @@ BrowserSelector/
 - **外観設定の即時反映化**: ShowTitleBar・ThemeMode・AlwaysOnTop・BackdropMode・EnableGlassEffect・WindowCornerRadius・WindowOpacityが保存後も再起動まで反映されなかった不具合を修正。`SettingsChanged`通知が`VisualSettings`のみで`AppSettings`変更を一切通知していなかったのが原因。`MainWindow.ApplyAppSettings`を新設し、保存時に即座に再適用する
 - **再起動が必要な設定変更の通知追加**: トレイ常駐（`AlwaysResidentInTray`）はトレイアイコンの生成・破棄を伴うため即時反映は行わず、変更時のみ「一部の設定は、アプリケーションを再起動すると反映されます。」を表示する
 
+### 🐛 ユーザーテスト報告分の不具合修正（v0.3.6、2026-08-21報告）
+- **サイレント更新後にアプリが起動しない不具合修正**: `.iss`の`[Run]`が`skipifsilent`により`/SILENT`実行（アプリからの自動更新時）時にスキップされ、`RestartApplications=no`で無効化した代替の再起動経路が失われていた。`skipifsilent`を外し`runascurrentuser`を追加（インストーラが昇格実行のため必須）。`UpdateService.InstallerArguments`から`/RESTARTAPPLICATIONS`も削除し意図を明確化
+- **ホットキーバッジ位置ずれ修正**: `BrowserButtonStyle`のControlTemplate内は固定サイズ・中央寄せのGridでタイルを描画する一方、DataTemplate側のホットキーバッジはUniformGridのセル全体に伸びるButtonの右上に配置されていたため、ウィンドウが広い時にバッジがタイルから大きく外れて表示されていた。バッジをControlTemplate内の固定サイズGridへ移動し解消
+- **URL表示欄のコピー不可修正**: `UrlDisplayTextBlock`がプレーンTextBlockで選択操作ができなかったため、読み取り専用TextBoxへ置換
+- **既定ブラウザボタン無反応の修正**: `ms-settings:defaultapps?registeredAppName=BrowserSelector`のクエリが環境によって名前解決に失敗し、失敗時は例外がログに残るのみでユーザーには何も表示されなかった。クエリを外し単純な`ms-settings:defaultapps`を開く方式に変更。あわせて既定ブラウザの自己/他ブラウザ判定・状態表示機能自体を撤去し、説明文+ボタンのみのシンプルなUIにした
+- **冗長ログの解消**: `LogService.UpdateSettings`・`MainViewModel`のウィンドウサイズ適用処理が、値に変化がなくても設定画面を開くたび無条件でログ出力していた不具合を修正。差分検知を追加
+- **TrayMenuリソースキー欠落修正**: タスクトレイメニューが参照する`TrayMenu.Show/OpenWithDefaultBrowser/Settings/Exit`が3言語リソースいずれにも存在せず、メニュー構築のたびに警告ログが出ていた不具合を修正
+- **「表示」「外観」タブ統合**: どちらにどの設定があるか分かりにくいという指摘に対応し、1つの「表示」タブへ統合（ウィンドウ／背景／ブラウザボタン／テーマの4グループに再編）。ガラス効果チェックボックス配下にバックドロップ方式をインデント・グレーアウト連動させ、依存関係を視覚化
+- **未実装のアニメーション設定を削除**: `AppSettings.EnableAnimations`はUIのみに存在しどこからも参照されない完全なダミー設定だったため撤去
+- **ウィンドウ角丸のDWM3段階化**: DWMの`DWMWA_WINDOW_CORNER_PREFERENCE`が「丸めない/丸める」の2値しか受け付けず、角丸半径スライダー(0-20px)の1-20の範囲で見た目が変化しなかった不具合を修正。`DWMWCP_ROUNDSMALL`を加えた3段階（0=丸めない、1-7px=小さめ、8px以上=通常）に拡張
+- **URLルール取り込み機能追加**: URLルール編集ダイアログに「現在のURLを取り込む」ボタンを追加し、メイン画面表示中のURLをそのままパターン欄へ入力できるようにした
+- **URL表示のフォント縮小・アイコン外出し**: URL入力欄のフォントサイズを縮小し表示可能な文字数を増やした。地球アイコンをテキストボックスの左外へ移動
+
 ## 🧪 テスト実装状況
 
-### ✅ 正常動作中のテスト（2026-08-20実測、v0.3.4時点、`dotnet test`で確認）
-1. **単体テスト（UnitTests）**: 289テスト中289成功
+### ✅ 正常動作中のテスト（2026-08-21実測、v0.3.6時点、`dotnet test`で確認）
+1. **単体テスト（UnitTests）**: 311テスト中311成功
    - フレームワーク: xUnit + Moq + FluentAssertions
-   - 対象: Presentation層中心のビジネスロジック、ViewModels、ユーティリティクラス、変換ロジック（v0.3.4でURLルール二重起動防止・IShellCloseService・WindowSizeHelper/MonitorHelper・ElevationShadowBrushConverter・既定ブラウザ判定関連のテストを追加）
+   - 対象: Presentation層中心のビジネスロジック、ViewModels、ユーティリティクラス、変換ロジック（v0.3.6でWindowSizeHelper.NeedsResize・URLルール取り込み・既定ブラウザボタン単純化・WindowBackdropHelper.ResolveCornerPreference関連のテストを追加）
    - **状況**: 完全動作（並列全体実行時のみ他プロジェクトとの一時ディレクトリ競合で稀に1件フレーキーになることがあるが、単体実行では安定）
 
 2. **単体テスト（CoreTests）**: 49テスト中49成功
@@ -142,9 +155,9 @@ BrowserSelector/
    - 対象: Core層のモデル・サービスインターフェース関連ロジック（Phase H-1で`UpdateInfo`/`AppSettings`更新プロパティのテスト追加）
    - **状況**: 完全動作
 
-3. **単体テスト（InfrastructureTests）**: 173テスト中173成功
+3. **単体テスト（InfrastructureTests）**: 191テスト中191成功
    - フレームワーク: xUnit + Moq + FluentAssertions
-   - 対象: Infrastructure層のサービス実装（Phase H-2〜H-6・H-11でGitHub APIマッピング・ダウンロード・チャネル判定・セキュリティテストを大幅追加。v0.3.4でBrowserService起動成功判定・DefaultBrowserService・ローカライズキー網羅性のテストを追加）
+   - 対象: Infrastructure層のサービス実装（Phase H-2〜H-6・H-11でGitHub APIマッピング・ダウンロード・チャネル判定・セキュリティテストを大幅追加。v0.3.6でLogService差分検知・TrayMenuリソースキー網羅性・DefaultBrowserService URI検証・UpdateService再起動引数関連のテストを追加）
    - **状況**: 完全動作
 
 4. **統合テスト（Integration Tests）**: 24テスト中24成功
@@ -178,8 +191,8 @@ BrowserSelector/
 10. **パフォーマンステスト（Performance Tests）**: BenchmarkDotNetベースのためxUnitテストランナーからは除外（`dotnet test`の集計対象外）
 
 ### 📊 総合テスト結果
-- **総テスト数**: 908テスト（xUnitランナー対象。PerformanceTestsを除く、v0.3.3の866から+42）
-- **成功**: 908テスト（100%）
+- **総テスト数**: 948テスト（xUnitランナー対象。PerformanceTestsを除く、v0.3.5の908から+40）
+- **成功**: 948テスト（100%）
 - **失敗**: 0テスト
 - **スキップ**: 0テスト
 - **警告**: 0件（クリーンビルドで確認済み）
@@ -586,6 +599,6 @@ v0.2.0時点で「骨格のみ・原理的に動かない」状態だった自�
 
 ---
 
-**最終更新**: 2026年8月20日  
-**バージョン**: 0.3.5（マルチモニター環境でのウィンドウ画面外配置・クロススレッド例外・既定ブラウザ判定のレジストリパス誤り・urlrules.jsonのUnicodeエスケープの修正、自動起動秒数の既定値変更）  
-**ステータス**: v0.1.0完了、v0.2.0完了、v0.3.0〜v0.3.4完了（テスト908件成功、警告0件）
+**最終更新**: 2026年8月21日  
+**バージョン**: 0.3.6（サイレント更新後のアプリ未起動・ホットキーバッジ位置ずれ・URLコピー不可・既定ブラウザボタン無反応・冗長ログ・表示外観タブ分かりにくさ・ガラス効果セクション構造の各修正）  
+**ステータス**: v0.1.0完了、v0.2.0完了、v0.3.0〜v0.3.5完了（テスト948件成功、警告0件）
