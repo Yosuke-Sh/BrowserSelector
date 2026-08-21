@@ -81,10 +81,17 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilen
 Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\BrowserSelector_Icon_256.ico"; Tasks: quicklaunchicon
 
 [Run]
-Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
-; registeredAppNameでBrowserSelectorを指定し、Windows 11の「既定に設定」ボタンへ直接誘導する
-; （クエリなしの ms-settings:defaultapps だと一覧から手動で探す必要がある）
-Filename: "{cmd}"; Parameters: "/c start ms-settings:defaultapps?registeredAppName=BrowserSelector"; Tasks: open_default_apps; Flags: postinstall skipifsilent nowait
+; skipifsilentを外し、/SILENT実行（サイレント更新時）でもアプリを起動する。
+; 従来はskipifsilentによりサイレント更新後にアプリが起動しないままとなり、
+; 更新されたかどうかユーザーが分からない不具合の原因になっていた。
+; runascurrentuserは必須: このインストーラはPrivilegesRequired=adminで昇格実行されるため、
+; 指定しないとBrowserSelectorが管理者権限のまま起動してしまう
+; （ブラウザ起動が管理者権限になる、UIPIでドラッグ&ドロップが効かなくなる等の実害がある）。
+; RestartApplications=noは維持しているため、Inno標準の再起動機能と二重起動することはない。
+Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall runascurrentuser
+; registeredAppNameクエリはWindows環境によって名前解決に失敗し「既定のブラウザに設定」ボタンを
+; 押しても何も起きない不具合の原因だったため、クエリなしの単純なURIに変更した。
+Filename: "{cmd}"; Parameters: "/c start ms-settings:defaultapps"; Tasks: open_default_apps; Flags: postinstall skipifsilent nowait
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}\logs"
