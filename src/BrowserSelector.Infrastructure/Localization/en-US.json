@@ -167,6 +167,7 @@
     "Dialog.UrlRuleEdit.SelectBrowser": "Please select browser.",
     "Dialog.UrlRuleEdit.SaveError": "Error occurred while saving: {0}",
     "Dialog.UrlRuleEdit.Pattern": "Pattern",
+    "Dialog.UrlRuleEdit.ImportCurrentUrl": "Import Current URL",
     "Dialog.UrlRuleEdit.Browser": "Browser",
     "Dialog.UrlRuleEdit.Priority": "Priority",
     "Dialog.UrlRuleEdit.Enabled": "Enabled",

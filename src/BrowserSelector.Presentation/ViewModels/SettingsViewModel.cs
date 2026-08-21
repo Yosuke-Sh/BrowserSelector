@@ -186,6 +186,11 @@ public partial class SettingsViewModel : ObservableObject
     /// 「今すぐ確認」ボタン（Phase H-8）用のアップデートサービス。省略可（テスト互換のため）.
     /// 未指定の場合、「今すぐ確認」は失敗表示になる.
     /// </param>
+    /// <param name="defaultBrowserService">既定ブラウザ操作用のサービス。省略可（テスト互換のため）.</param>
+    /// <param name="currentUrl">
+    /// 設定画面を開いた時点でメイン画面に表示されていたURL。省略可。
+    /// URLルール編集ダイアログの「現在のURLを取り込む」機能で使用する.
+    /// </param>
     public SettingsViewModel(
         ISettingsService settingsService,
         IBrowserService browserService,
@@ -195,7 +200,8 @@ public partial class SettingsViewModel : ObservableObject
         ILogService logService,
         IExternalLinkService? externalLinkService = null,
         IUpdateService? updateService = null,
-        IDefaultBrowserService? defaultBrowserService = null)
+        IDefaultBrowserService? defaultBrowserService = null,
+        string? currentUrl = null)
     {
         _settingsService = settingsService;
         _browserService = browserService;
@@ -206,6 +212,7 @@ public partial class SettingsViewModel : ObservableObject
         _externalLinkService = externalLinkService;
         _updateService = updateService;
         _defaultBrowserService = defaultBrowserService;
+        CurrentUrl = currentUrl;
 
         // 初期化処理（完了をInitializationTaskで外部から待機可能にする。
         // テストがコンストラクタ直後にコマンドを実行すると、この非同期初期化と
@@ -237,6 +244,12 @@ public partial class SettingsViewModel : ObservableObject
     /// Gets the log service.
     /// </summary>
     public ILogService LogService { get; }
+
+    /// <summary>
+    /// Gets 設定画面を開いた時点でメイン画面に表示されていたURL。
+    /// URLルール編集ダイアログの「現在のURLを取り込む」機能で使用する.
+    /// </summary>
+    public string? CurrentUrl { get; }
 
     /// <summary>
     /// 初期化処理（テスト用）.
@@ -870,7 +883,7 @@ public partial class SettingsViewModel : ObservableObject
         {
             LogService?.LogInformation("URLルール追加開始", "SettingsViewModel");
 
-            Views.UrlRuleEditDialog dialog = new(_browserService, LogService!)
+            Views.UrlRuleEditDialog dialog = new(_browserService, LogService!, CurrentUrl)
             {
                 Owner = ActiveWindowLocator.GetActiveWindow()
             };
@@ -911,7 +924,7 @@ public partial class SettingsViewModel : ObservableObject
         {
             LogService?.LogInformation($"URLルール編集開始: {rule.Pattern}", "SettingsViewModel");
 
-            Views.UrlRuleEditDialog dialog = new(rule, _browserService, LogService!)
+            Views.UrlRuleEditDialog dialog = new(rule, _browserService, LogService!, CurrentUrl)
             {
                 Owner = ActiveWindowLocator.GetActiveWindow()
             };

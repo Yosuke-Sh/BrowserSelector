@@ -167,6 +167,7 @@
     "Dialog.UrlRuleEdit.SelectBrowser": "ブラウザを選択してください。",
     "Dialog.UrlRuleEdit.SaveError": "保存中にエラーが発生しました: {0}",
     "Dialog.UrlRuleEdit.Pattern": "パターン",
+    "Dialog.UrlRuleEdit.ImportCurrentUrl": "現在のURLを取り込む",
     "Dialog.UrlRuleEdit.Browser": "ブラウザ",
     "Dialog.UrlRuleEdit.Priority": "優先度",
     "Dialog.UrlRuleEdit.Enabled": "有効",

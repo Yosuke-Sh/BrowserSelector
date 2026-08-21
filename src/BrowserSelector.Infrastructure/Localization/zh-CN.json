@@ -167,6 +167,7 @@
     "Dialog.UrlRuleEdit.SelectBrowser": "请选择浏览器。",
     "Dialog.UrlRuleEdit.SaveError": "保存时发生错误: {0}",
     "Dialog.UrlRuleEdit.Pattern": "模式",
+    "Dialog.UrlRuleEdit.ImportCurrentUrl": "导入当前URL",
     "Dialog.UrlRuleEdit.Browser": "浏览器",
     "Dialog.UrlRuleEdit.Priority": "优先级",
     "Dialog.UrlRuleEdit.Enabled": "启用",
