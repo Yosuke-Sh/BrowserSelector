@@ -54,4 +54,22 @@ public class WindowBackdropHelperTests
 
         _ = act.Should().Throw<ArgumentNullException>();
     }
+
+    // DWMWA_WINDOW_CORNER_PREFERENCEの値（WindowBackdropHelper内はprivate定数のためテスト側で直接値を持つ）。
+    // DoNotRound=1, Round=2, RoundSmall=3.
+    [Theory]
+    [InlineData(0, 1)] // 角丸なし
+    [InlineData(-5, 1)] // 負値も角丸なし側にフォールバック
+    [InlineData(0.5, 3)] // 0<x<8 は小さめの角丸
+    [InlineData(1, 3)]
+    [InlineData(7, 3)]
+    [InlineData(7.9, 3)]
+    [InlineData(8, 2)] // 8px以上は通常の角丸
+    [InlineData(20, 2)]
+    public void ResolveCornerPreference_ReturnsExpectedDwmValue(double cornerRadiusPreference, int expected)
+    {
+        int result = WindowBackdropHelper.ResolveCornerPreference(cornerRadiusPreference);
+
+        result.Should().Be(expected);
+    }
 }

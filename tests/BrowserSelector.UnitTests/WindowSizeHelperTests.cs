@@ -53,4 +53,27 @@ public class WindowSizeHelperTests
 
         act.Should().Throw<ArgumentNullException>();
     }
+
+    [Theory]
+    [InlineData(800, 600, 800, 600, false)]
+    [InlineData(800.2, 600.2, 800, 600, false)]
+    [InlineData(800.6, 600, 800, 600, true)]
+    [InlineData(900, 600, 800, 600, true)]
+    [InlineData(800, 700, 800, 600, true)]
+    public void NeedsResize_ComparesCurrentAgainstConfiguredSizeWithTolerance(
+        double currentWidth, double currentHeight, double configuredWidth, double configuredHeight, bool expected)
+    {
+        bool actual = WindowSizeHelper.NeedsResize(currentWidth, currentHeight, configuredWidth, configuredHeight);
+
+        actual.Should().Be(expected);
+    }
+
+    [Fact]
+    public void NeedsResize_WhenConfiguredValueIsInvalid_ComparesAgainstResolvedFallback()
+    {
+        bool actual = WindowSizeHelper.NeedsResize(
+            WindowSizeHelper.MinWindowWidth, WindowSizeHelper.MinWindowHeight, 0, 0);
+
+        actual.Should().BeFalse();
+    }
 }

@@ -19,13 +19,18 @@ public partial class UrlRuleEditDialog : Window
     /// </summary>
     /// <param name="browserService">browserService.</param>
     /// <param name="logService">logService.</param>
-    public UrlRuleEditDialog(IBrowserService browserService, ILogService logService)
+    /// <param name="currentUrl">
+    /// 設定画面を開いた時点でメイン画面に表示されていたURL。省略可。
+    /// 「現在のURLを取り込む」ボタンの有効化・取り込み内容として使用する.
+    /// </param>
+    public UrlRuleEditDialog(IBrowserService browserService, ILogService logService, string? currentUrl = null)
     {
         InitializeComponent();
         DataContext = this;
 
         _browserService = browserService;
         _logService = logService;
+        CurrentUrl = currentUrl;
 
         LoadBrowsers();
     }
@@ -36,8 +41,9 @@ public partial class UrlRuleEditDialog : Window
     /// <param name="urlRule">urlRule.</param>
     /// <param name="browserService">browserService.</param>
     /// <param name="logService">logService.</param>
-    public UrlRuleEditDialog(UrlRule urlRule, IBrowserService browserService, ILogService logService)
-        : this(browserService, logService)
+    /// <param name="currentUrl">設定画面を開いた時点でメイン画面に表示されていたURL。省略可.</param>
+    public UrlRuleEditDialog(UrlRule urlRule, IBrowserService browserService, ILogService logService, string? currentUrl = null)
+        : this(browserService, logService, currentUrl)
     {
         UrlRule = urlRule;
         SelectedBrowser = AvailableBrowsers.FirstOrDefault(b => b.Name == urlRule.BrowserName);
@@ -57,6 +63,26 @@ public partial class UrlRuleEditDialog : Window
     /// Gets or sets selectedBrowser.
     /// </summary>
     public Browser? SelectedBrowser { get; set; }
+
+    /// <summary>
+    /// Gets 設定画面を開いた時点でメイン画面に表示されていたURL.
+    /// </summary>
+    public string? CurrentUrl { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether 「現在のURLを取り込む」ボタンを有効化できるかどうか.
+    /// </summary>
+    public bool CanImportCurrentUrl => !string.IsNullOrWhiteSpace(CurrentUrl);
+
+    private void ImportCurrentUrlButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (!string.IsNullOrWhiteSpace(CurrentUrl))
+        {
+            // UrlRuleはINotifyPropertyChangedを実装していないため、UrlRule.Patternへの代入だけでは
+            // バインディング先のTextBoxへ反映されない。TextBox.Textへ直接設定することで画面に反映する。
+            PatternTextBox.Text = CurrentUrl;
+        }
+    }
 
     private async void LoadBrowsers()
     {

@@ -65,4 +65,24 @@ public class DefaultBrowserServiceTests
 
         result.Should().Be(expected);
     }
+
+    [Fact]
+    public void DefaultAppsSettingsUri_DoesNotContainRegisteredAppNameQuery()
+    {
+        // registeredAppNameクエリはWindows環境によって名前解決に失敗し、
+        // 「既定のアプリに設定」ボタンを押しても何も起きない不具合の原因だったため、
+        // クエリなしの単純なURIへ変更した。この構成が再度混入しないことを検証する.
+        DefaultBrowserService.DefaultAppsSettingsUri.Should().Be("ms-settings:defaultapps");
+        DefaultBrowserService.DefaultAppsSettingsUri.Should().NotContain("registeredAppName");
+    }
+
+    [Fact]
+    public void OpenDefaultAppsSettings_DoesNotThrowInTestEnvironment()
+    {
+        DefaultBrowserService service = new();
+
+        Action act = () => service.OpenDefaultAppsSettings();
+
+        act.Should().NotThrow();
+    }
 }

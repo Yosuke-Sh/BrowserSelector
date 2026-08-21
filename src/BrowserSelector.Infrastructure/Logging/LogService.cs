@@ -223,8 +223,15 @@ public sealed class LogService : ILogService, IDisposable
     /// <param name="settings">設定.</param>
     public void UpdateSettings(LogSettings settings)
     {
+        ArgumentNullException.ThrowIfNull(settings);
+
         lock (_lockObject)
         {
+            if (AreEquivalent(_settings, settings))
+            {
+                return;
+            }
+
             _settings = settings;
 
             // ログフォルダが存在しない場合は作成
@@ -348,6 +355,25 @@ public sealed class LogService : ILogService, IDisposable
     public string GetLogFilePath()
     {
         return _settings.GetLogFilePath();
+    }
+
+    /// <summary>
+    /// 2つのログ設定が同一の値を持つかどうかを判定する.
+    /// 設定画面を開くたびに無条件で発生していた冗長なログ出力を避けるために使用する.
+    /// </summary>
+    internal static bool AreEquivalent(LogSettings a, LogSettings b)
+    {
+        return a.EnableLogging == b.EnableLogging
+            && a.LogLevel == b.LogLevel
+            && a.LogOutputFolder == b.LogOutputFolder
+            && a.MaxLogFileSize == b.MaxLogFileSize
+            && a.LogRetentionDays == b.LogRetentionDays
+            && a.EnableConsoleLogging == b.EnableConsoleLogging
+            && a.EnableFileLogging == b.EnableFileLogging
+            && a.LogFilePrefix == b.LogFilePrefix
+            && a.LogFileSuffix == b.LogFileSuffix
+            && a.TimestampFormat == b.TimestampFormat
+            && a.LogMessageTemplate == b.LogMessageTemplate;
     }
 
     /// <summary>

@@ -52,12 +52,19 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="0" Text="{extensions:Localization Dialog.UrlRuleEdit.Pattern}" Style="{StaticResource LabelStyle}"/>
-                            <TextBox Grid.Column="1" Text="{Binding UrlRule.Pattern}" Style="{StaticResource InputStyle}"
+                            <TextBox x:Name="PatternTextBox" Grid.Column="1" Text="{Binding UrlRule.Pattern}" Style="{StaticResource InputStyle}"
                                      ToolTip="{extensions:Localization Dialog.UrlRuleEdit.PatternTooltip}"/>
+                            <Button Grid.Column="2" Content="{extensions:Localization Dialog.UrlRuleEdit.ImportCurrentUrl}"
+                                    Margin="10,0,0,10" Padding="8,5"
+                                    IsEnabled="{Binding CanImportCurrentUrl}"
+                                    ToolTip="{Binding CurrentUrl}"
+                                    Click="ImportCurrentUrlButton_Click"
+                                    AutomationProperties.Name="ImportCurrentUrlButton"/>
                         </Grid>
-                        <TextBlock Text="{extensions:Localization Dialog.UrlRuleEdit.PatternExample}" 
+                        <TextBlock Text="{extensions:Localization Dialog.UrlRuleEdit.PatternExample}"
                                    FontSize="11" Foreground="Gray" Margin="110,0,0,0"/>
                     </StackPanel>
                 </GroupBox>

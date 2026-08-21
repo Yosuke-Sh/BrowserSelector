@@ -19,12 +19,20 @@ namespace BrowserSelector.Infrastructure.SystemIntegration;
 /// </summary>
 public class DefaultBrowserService : IDefaultBrowserService
 {
+    /// <summary>
+    /// Windowsの「既定のアプリ」設定画面を開くためのURI（単体テスト用にinternal公開）。
+    /// 以前はregisteredAppNameクエリでBrowserSelectorの項目にフォーカスしていたが、
+    /// 名前解決に失敗する環境があり、その場合ボタンを押しても何も起きなかったため単純化した.
+    /// </summary>
+    internal const string DefaultAppsSettingsUri = "ms-settings:defaultapps";
+
     // 実際のUserChoiceキーパス（Shell\Associations配下）。
     // 過去バージョンでは存在しない`CurrentVersion\Explorer\UrlAssociations`配下を参照しており、
     // OpenSubKeyが常にnullを返すため既定ブラウザ判定が常にfalseになる不具合があった.
     private const string UserChoiceKeyPathPrefix = @"Software\Microsoft\Windows\Shell\Associations\UrlAssociations\";
     private const string UserChoiceKeyPathSuffix = @"\UserChoice";
     private const string ExpectedProgId = "BrowserSelector.https";
+
     private readonly ILogService? _logService;
     private readonly IBrowserService? _browserService;
 
@@ -76,19 +84,23 @@ public class DefaultBrowserService : IDefaultBrowserService
     }
 
     /// <inheritdoc/>
-    public void OpenDefaultAppsSettings()
+    public bool OpenDefaultAppsSettings()
     {
         try
         {
-            using Process? process = Process.Start(new ProcessStartInfo("ms-settings:defaultapps?registeredAppName=BrowserSelector")
+            // registeredAppNameクエリによる項目フォーカスは名前解決に失敗する環境があり、
+            // その場合ボタン押下時に何も起きなかった（不具合報告）。単純に一覧トップを開く方式に変更する。
+            using Process? process = Process.Start(new ProcessStartInfo(DefaultAppsSettingsUri)
             {
                 UseShellExecute = true
             });
+            return process != null;
         }
 #pragma warning disable CA1031 // ms-settings:起動失敗（環境依存のシェル関連付け異常等）はアプリ動作を継続させるための意図的な汎用catch
         catch (Exception ex)
         {
             _logService?.LogError($"既定のアプリ設定画面を開けませんでした: {ex.Message}", nameof(DefaultBrowserService), ex);
+            return false;
         }
 #pragma warning restore CA1031
     }

@@ -424,6 +424,11 @@ public partial class MainViewModel : ObservableObject
     {
         try
         {
+            if (!Helpers.WindowSizeHelper.NeedsResize(mainWindow.Width, mainWindow.Height, visualSettings.InitialWindowWidth, visualSettings.InitialWindowHeight))
+            {
+                return;
+            }
+
             Helpers.WindowSizeHelper.ApplyConfiguredSize(mainWindow, visualSettings.InitialWindowWidth, visualSettings.InitialWindowHeight);
 
             // ウィンドウが現在表示されているモニターを基準に中央寄せする（SystemParameters.PrimaryScreenは
@@ -624,7 +629,7 @@ public partial class MainViewModel : ObservableObject
         try
         {
             // 設定画面を開く
-            SettingsViewModel settingsViewModel = new(_settingsService, _browserService, _localizationService, _customLanguageService, _urlRuleService, _logService ?? throw new InvalidOperationException("LogService is not available"), _externalLinkService, _updateService);
+            SettingsViewModel settingsViewModel = new(_settingsService, _browserService, _localizationService, _customLanguageService, _urlRuleService, _logService ?? throw new InvalidOperationException("LogService is not available"), _externalLinkService, _updateService, currentUrl: Url);
             Views.SettingsWindow settingsWindow = new(settingsViewModel);
 
             // 設定変更通知のイベントハンドラーを登録

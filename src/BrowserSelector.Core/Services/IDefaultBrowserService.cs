@@ -26,8 +26,9 @@ public interface IDefaultBrowserService
     string? GetDefaultBrowserDisplayName();
 
     /// <summary>
-    /// Windowsの「既定のアプリ」設定画面をBrowserSelectorの項目にフォーカスした状態で開く。
+    /// Windowsの「既定のアプリ」設定画面を開く。
     /// Windows 11ではプロトコル単位で既定アプリを選択する方式のため、OSに直接設定を書き込むことはできない.
     /// </summary>
-    void OpenDefaultAppsSettings();
+    /// <returns>設定画面を開始できた場合は<see langword="true"/>.</returns>
+    bool OpenDefaultAppsSettings();
 }

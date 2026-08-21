@@ -159,6 +159,11 @@ public sealed class UpdateServiceApplyTests : IDisposable
         // /VERYSILENTではなく/SILENT（進捗を見せた方が不安が小さい）。
         startInfo.Arguments.Should().Be(UpdateService.InstallerArguments);
         startInfo.Arguments.Should().NotContain("/VERYSILENT");
+
+        // /RESTARTAPPLICATIONSは含めない。アプリ本体の再起動は.issの[Run]セクション
+        // （RestartApplications=no + postinstall runascurrentuser）が担う構成のため、
+        // 二重に再起動経路を持たせないための意図的な省略.
+        startInfo.Arguments.Should().NotContain("/RESTARTAPPLICATIONS");
     }
 
     [Fact]

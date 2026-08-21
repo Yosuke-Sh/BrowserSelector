@@ -274,4 +274,78 @@ public class InfrastructureServicesTests
         // 設定が更新されることを確認（実際の設定更新は確認できないため、例外が発生しないことを確認）
         logService.Should().NotBeNull();
     }
+
+    /// <summary>
+    /// UpdateSettingsにnullを渡すとArgumentNullExceptionが発生することを確認するテスト.
+    /// </summary>
+    [Fact]
+    public void LogService_UpdateSettings_WithNull_ShouldThrow()
+    {
+        using var logService = new LogService();
+
+        Action act = () => logService.UpdateSettings(null!);
+
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    /// <summary>
+    /// 実質的に同一の内容を持つ設定を繰り返し適用しても、ログファイルへの追記が1回だけであることを確認する。
+    /// 設定画面を開くたびに冗長な「ログ設定を更新しました」ログが出力されていた不具合の回帰テスト.
+    /// </summary>
+    [Fact]
+    public void LogService_UpdateSettings_WithEquivalentSettingsRepeatedly_ShouldLogOnlyOnce()
+    {
+        string tempFolder = Path.Combine(Path.GetTempPath(), $"BrowserSelectorLogTest_{Guid.NewGuid():N}");
+        try
+        {
+            using var logService = new LogService();
+            var settings = new LogSettings
+            {
+                LogLevel = LogLevel.Information,
+                EnableFileLogging = true,
+                LogOutputFolder = tempFolder,
+            };
+
+            logService.UpdateSettings(settings);
+            logService.UpdateSettings(new LogSettings
+            {
+                LogLevel = LogLevel.Information,
+                EnableFileLogging = true,
+                LogOutputFolder = tempFolder,
+            });
+
+            string content = logService.GetLogContent();
+            int occurrences = content.Split("ログ設定を更新しました").Length - 1;
+            occurrences.Should().Be(1);
+        }
+        finally
+        {
+            if (Directory.Exists(tempFolder))
+            {
+                Directory.Delete(tempFolder, recursive: true);
+            }
+        }
+    }
+
+    /// <summary>
+    /// <see cref="LogService.AreEquivalent"/> が全プロパティ一致時にtrue、
+    /// いずれか1つでも異なればfalseを返すことを確認するテスト.
+    /// </summary>
+    [Fact]
+    public void LogService_AreEquivalent_WithIdenticalSettings_ReturnsTrue()
+    {
+        var a = new LogSettings { LogLevel = LogLevel.Warning, LogOutputFolder = "C:\\logs" };
+        var b = new LogSettings { LogLevel = LogLevel.Warning, LogOutputFolder = "C:\\logs" };
+
+        LogService.AreEquivalent(a, b).Should().BeTrue();
+    }
+
+    [Fact]
+    public void LogService_AreEquivalent_WithDifferentLogLevel_ReturnsFalse()
+    {
+        var a = new LogSettings { LogLevel = LogLevel.Information };
+        var b = new LogSettings { LogLevel = LogLevel.Warning };
+
+        LogService.AreEquivalent(a, b).Should().BeFalse();
+    }
 }

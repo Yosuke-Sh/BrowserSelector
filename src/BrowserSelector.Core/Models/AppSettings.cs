@@ -47,13 +47,6 @@ namespace BrowserSelector.Core.Models
         private bool _enableGlassEffect = true;
 
         /// <summary>
-        /// Gets or sets a value indicating whether ホバー・フォーカス等のUIアニメーション（拡大・影の遷移）を有効にするか.
-        /// Windowsの「アニメーションを表示する」設定と併用し、falseの場合は影・スケール変化を全て無効化する.
-        /// </summary>
-        [ObservableProperty]
-        private bool _enableAnimations = true;
-
-        /// <summary>
         /// Gets or sets 既定ブラウザへ自動起動するまでのカウントダウン秒数（Phase D）.
         /// 0の場合はカウントダウン自動起動を無効にする. 既定値は0（無効）.
         /// URLを開くたびに毎回手動で選択したいユーザーが大半であるため、自動起動は

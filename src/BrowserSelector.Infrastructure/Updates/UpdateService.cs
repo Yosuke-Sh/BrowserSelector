@@ -44,8 +44,11 @@ public class UpdateService : IUpdateService
     /// </summary>
     /// <remarks>
     /// /VERYSILENTではなく/SILENTを選ぶ — 進捗を見せた方が「勝手に何か動いた」という不安が小さい.
+    /// /RESTARTAPPLICATIONSは含めない — .issの[Setup]でRestartApplications=noを指定しており、
+    /// アプリ本体の再起動は[Run]セクションのpostinstall起動（runascurrentuser付き）が担う。
+    /// 二重に再起動経路を持たせないための意図的な構成.
     /// </remarks>
-    internal const string InstallerArguments = "/SILENT /CLOSEAPPLICATIONS /RESTARTAPPLICATIONS /NORESTART";
+    internal const string InstallerArguments = "/SILENT /CLOSEAPPLICATIONS /NORESTART";
 
     /// <summary>
     /// UACダイアログをユーザーがキャンセルしたときのWin32エラーコード（ERROR_CANCELLED）.

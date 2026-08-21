@@ -34,6 +34,13 @@ public static class WindowBackdropHelper
 
     private const int DwmwcpDoNotRound = 1;
     private const int DwmwcpRound = 2;
+    private const int DwmwcpRoundSmall = 3;
+
+    /// <summary>
+    /// 角丸半径スライダー（0〜20px）のうち、<c>DWMWCP_ROUNDSMALL</c>（小さめの角丸）を
+    /// 適用する上限値。これ未満は小さめ、これ以上は通常の丸みを適用する.
+    /// </summary>
+    private const double SmallCornerRadiusThreshold = 8;
 
     // Windows 11 22H2 (build 22621) 以降で有効な DWMSBT 値
     private const int DwmsbtMainWindow = 2; // Mica
@@ -108,6 +115,24 @@ public static class WindowBackdropHelper
     }
 
     /// <summary>
+    /// 角丸半径設定値（px, 0〜20を想定）から、DWMの<c>DWMWA_WINDOW_CORNER_PREFERENCE</c>へ渡す値を決定する
+    /// （テスト容易性のため <see cref="Apply"/> から分離）。
+    /// DWMは数値半径を直接指定できず「丸めない／小さめに丸める／通常に丸める」の3段階のみ制御可能なため、
+    /// 0は丸めない、1〜7pxは小さめ、8px以上は通常の丸みへ丸め込む.
+    /// </summary>
+    /// <param name="cornerRadiusPreference">設定された角丸半径（px）.</param>
+    /// <returns><c>DWMWA_WINDOW_CORNER_PREFERENCE</c>に渡す値.</returns>
+    public static int ResolveCornerPreference(double cornerRadiusPreference)
+    {
+        if (cornerRadiusPreference <= 0)
+        {
+            return DwmwcpDoNotRound;
+        }
+
+        return cornerRadiusPreference < SmallCornerRadiusThreshold ? DwmwcpRoundSmall : DwmwcpRound;
+    }
+
+    /// <summary>
     /// ウィンドウにDWMバックドロップを適用する。<see cref="Window.SourceInitialized"/> 以降（HWND確定後）に呼び出すこと.
     /// ハイコントラストモード・透明効果オフ設定・Windows 10以下では不透明な単色ブラシへフォールバックする.
     /// </summary>
@@ -116,8 +141,7 @@ public static class WindowBackdropHelper
     /// <param name="isDarkMode">ダークテーマとして描画するか（ウィンドウ枠の <c>DWMWA_USE_IMMERSIVE_DARK_MODE</c> と中身のテーマを一致させる）.</param>
     /// <param name="glassEffectEnabled">ユーザー設定でガラス効果が有効か（<see cref="Core.Models.AppSettings.EnableGlassEffect"/>）.</param>
     /// <param name="cornerRadiusPreference">
-    /// 外観タブ（Phase E-1）の角丸半径設定（px）。DWMは数値半径ではなく丸め有無のみ制御可能なため、
-    /// 0以下の場合のみ角を丸めない（<c>DWMWCP_DONOTROUND</c>）。それ以外は常に丸める（既定動作を維持）.
+    /// 外観タブ（Phase E-1）の角丸半径設定（px）。<see cref="ResolveCornerPreference(double)"/> を参照.
     /// </param>
     /// <returns>実際にDWMバックドロップが適用された場合は <see langword="true"/>。フォールバック（半透明単色ブラシ）を行った場合は <see langword="false"/>.</returns>
     public static bool Apply(Window window, BackdropKind kind, bool isDarkMode, bool glassEffectEnabled, double cornerRadiusPreference = 1)
@@ -135,7 +159,7 @@ public static class WindowBackdropHelper
         int darkModeValue = isDarkMode ? 1 : 0;
         _ = TryDwmSetWindowAttribute(hwnd, DwmwaUseImmersiveDarkMode, ref darkModeValue, sizeof(int));
 
-        int cornerPreference = cornerRadiusPreference <= 0 ? DwmwcpDoNotRound : DwmwcpRound;
+        int cornerPreference = ResolveCornerPreference(cornerRadiusPreference);
         _ = TryDwmSetWindowAttribute(hwnd, DwmwaWindowCornerPreference, ref cornerPreference, sizeof(int));
 
         if (ShouldUseOpaqueFallback(SystemParameters.HighContrast, glassEffectEnabled))
