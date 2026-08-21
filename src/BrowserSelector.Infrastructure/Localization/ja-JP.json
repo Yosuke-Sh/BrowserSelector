@@ -70,7 +70,7 @@
     "Settings.Appearance.BackdropMode": "バックドロップ方式",
     "Settings.Appearance.WindowOpacity": "ウィンドウの不透明度",
     "Settings.Appearance.WindowCornerRadius": "ウィンドウの角丸半径",
-    "Settings.Appearance.EnableAnimations": "アニメーションを有効にする",
+    "Settings.Appearance.WindowCornerRadiusNote": "Windowsの仕様により、角丸は「なし」「小さめ」「通常」の3段階に丸められます。",
     "Settings.Appearance.ShowTitleBar": "タイトルバーを表示",
     "Settings.Appearance.AlwaysOnTop": "常に最前面に表示",
     "Settings.Appearance.ThemeSettings": "テーマ",

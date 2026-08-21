@@ -70,7 +70,7 @@
     "Settings.Appearance.BackdropMode": "背景方式",
     "Settings.Appearance.WindowOpacity": "窗口不透明度",
     "Settings.Appearance.WindowCornerRadius": "窗口圆角半径",
-    "Settings.Appearance.EnableAnimations": "启用动画",
+    "Settings.Appearance.WindowCornerRadiusNote": "由于Windows的限制，圆角将被归为“无”“小”“正常”三个等级之一。",
     "Settings.Appearance.ShowTitleBar": "显示标题栏",
     "Settings.Appearance.AlwaysOnTop": "始终置顶",
     "Settings.Appearance.ThemeSettings": "主题",

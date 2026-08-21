@@ -70,7 +70,7 @@
     "Settings.Appearance.BackdropMode": "Backdrop mode",
     "Settings.Appearance.WindowOpacity": "Window opacity",
     "Settings.Appearance.WindowCornerRadius": "Window corner radius",
-    "Settings.Appearance.EnableAnimations": "Enable animations",
+    "Settings.Appearance.WindowCornerRadiusNote": "Due to Windows limitations, corners are rounded to one of three levels: none, small, or normal.",
     "Settings.Appearance.ShowTitleBar": "Show title bar",
     "Settings.Appearance.AlwaysOnTop": "Always on top",
     "Settings.Appearance.ThemeSettings": "Theme",

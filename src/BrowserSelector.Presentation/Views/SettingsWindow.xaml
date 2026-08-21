@@ -417,6 +417,8 @@
                                     <TextBlock Grid.Column="2" Text="{Binding AppSettings.WindowCornerRadius, StringFormat={}{0:F0}px}"
                                                VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                 </Grid>
+                                <TextBlock Text="{extensions:Localization Settings.Appearance.WindowCornerRadiusNote}"
+                                           FontSize="11" Foreground="Gray" Margin="0,0,0,10" TextWrapping="Wrap"/>
                             </StackPanel>
                         </GroupBox>
 
@@ -682,17 +684,6 @@
                                               ItemsSource="{Binding AvailableThemeModes}"
                                               SelectedItem="{Binding AppSettings.ThemeMode}"
                                               AutomationProperties.Name="ThemeModeComboBox"/>
-                                </Grid>
-
-                                <!-- アニメーション -->
-                                <Grid Style="{StaticResource SettingRowStyle}">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="{extensions:Localization Settings.Appearance.EnableAnimations}" VerticalAlignment="Center"/>
-                                    <CheckBox Grid.Column="1" IsChecked="{Binding AppSettings.EnableAnimations}" HorizontalAlignment="Left" Margin="8,5,5,5"
-                                              AutomationProperties.Name="EnableAnimationsCheckBox"/>
                                 </Grid>
                             </StackPanel>
                         </GroupBox>
