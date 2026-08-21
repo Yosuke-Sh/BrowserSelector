@@ -9,7 +9,6 @@
   "Resources": {
     "Settings.Display.Transparency": "透明度",
     "Settings.Display.CornerRadius": "圆角半径",
-    "Settings.Display.ShowTitleBar": "显示标题栏",
     "Settings.Display.BackgroundColor": "背景色",
     "Settings.Display.FocusColor": "焦点色",
     "Settings.Display.FocusWidth": "焦点宽度",
@@ -59,7 +58,6 @@
     "SettingsWindow.UrlRules": "URL规则",
     "SettingsWindow.Accessibility": "辅助功能",
     "SettingsWindow.Logging": "日志",
-    "SettingsWindow.Appearance": "外观",
     "Settings.App.CloseAfterLaunch": "启动浏览器后关闭应用",
     "Settings.App.AutoUpdateCheck": "自动更新检查",
     "Settings.App.UpdateCheckInterval": "检查间隔（小时）",
@@ -73,7 +71,6 @@
     "Settings.Appearance.WindowOpacity": "窗口不透明度",
     "Settings.Appearance.WindowCornerRadius": "窗口圆角半径",
     "Settings.Appearance.EnableAnimations": "启用动画",
-    "Settings.Appearance.WindowSettings": "窗口",
     "Settings.Appearance.ShowTitleBar": "显示标题栏",
     "Settings.Appearance.AlwaysOnTop": "始终置顶",
     "Settings.Appearance.ThemeSettings": "主题",

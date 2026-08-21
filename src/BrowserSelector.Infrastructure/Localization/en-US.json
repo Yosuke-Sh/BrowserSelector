@@ -9,7 +9,6 @@
   "Resources": {
     "Settings.Display.Transparency": "Transparency",
     "Settings.Display.CornerRadius": "Corner Radius",
-    "Settings.Display.ShowTitleBar": "Show Title Bar",
     "Settings.Display.BackgroundColor": "Background Color",
     "Settings.Display.FocusColor": "Focus Color",
     "Settings.Display.FocusWidth": "Focus Width",
@@ -59,7 +58,6 @@
     "SettingsWindow.UrlRules": "URL Rules",
     "SettingsWindow.Accessibility": "Accessibility",
     "SettingsWindow.Logging": "Logging",
-    "SettingsWindow.Appearance": "Appearance",
     "Settings.App.CloseAfterLaunch": "Close app after browser launch",
     "Settings.App.AutoUpdateCheck": "Auto update check",
     "Settings.App.UpdateCheckInterval": "Check interval (hours)",
@@ -73,7 +71,6 @@
     "Settings.Appearance.WindowOpacity": "Window opacity",
     "Settings.Appearance.WindowCornerRadius": "Window corner radius",
     "Settings.Appearance.EnableAnimations": "Enable animations",
-    "Settings.Appearance.WindowSettings": "Window",
     "Settings.Appearance.ShowTitleBar": "Show title bar",
     "Settings.Appearance.AlwaysOnTop": "Always on top",
     "Settings.Appearance.ThemeSettings": "Theme",

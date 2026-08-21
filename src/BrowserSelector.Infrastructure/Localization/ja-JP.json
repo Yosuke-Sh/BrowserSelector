@@ -9,7 +9,6 @@
   "Resources": {
     "Settings.Display.Transparency": "透明度",
     "Settings.Display.CornerRadius": "角の丸み",
-    "Settings.Display.ShowTitleBar": "タイトルバーを表示",
     "Settings.Display.BackgroundColor": "背景色",
     "Settings.Display.FocusColor": "フォーカス色",
     "Settings.Display.FocusWidth": "フォーカス幅",
@@ -59,7 +58,6 @@
     "SettingsWindow.UrlRules": "URLルール",
     "SettingsWindow.Accessibility": "アクセシビリティ",
     "SettingsWindow.Logging": "ログ",
-    "SettingsWindow.Appearance": "外観",
     "Settings.App.CloseAfterLaunch": "ブラウザ起動後にアプリを終了",
     "Settings.App.AutoUpdateCheck": "自動更新チェック",
     "Settings.App.UpdateCheckInterval": "チェック間隔（時間）",
@@ -73,7 +71,6 @@
     "Settings.Appearance.WindowOpacity": "ウィンドウの不透明度",
     "Settings.Appearance.WindowCornerRadius": "ウィンドウの角丸半径",
     "Settings.Appearance.EnableAnimations": "アニメーションを有効にする",
-    "Settings.Appearance.WindowSettings": "ウィンドウ",
     "Settings.Appearance.ShowTitleBar": "タイトルバーを表示",
     "Settings.Appearance.AlwaysOnTop": "常に最前面に表示",
     "Settings.Appearance.ThemeSettings": "テーマ",
