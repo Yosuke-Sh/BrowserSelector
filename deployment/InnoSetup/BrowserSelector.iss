@@ -1,14 +1,14 @@
 ; BrowserSelector Inno Setup Script
-; Version: 0.3.6
+; Version: 0.3.7
 ; Author: Yosuke-Sh
 ; Description: BrowserSelector WPF Application Installer
 
 #define MyAppName "BrowserSelector"
 ; MyAppVersion（Phase E-2b）: Directory.Build.props の <Version> が単一の情報源。
-; ビルド時は `ISCC /DMyAppVersion=0.3.6 BrowserSelector.iss` のように /D で上書きして注入する
+; ビルド時は `ISCC /DMyAppVersion=0.3.7 BrowserSelector.iss` のように /D で上書きして注入する
 ; （release.yml からの自動注入はPhase G-4で実装。ここでの既定値はDirectory.Build.propsと手動で同期させておく）。
 #ifndef MyAppVersion
-  #define MyAppVersion "0.3.6"
+  #define MyAppVersion "0.3.7"
 #endif
 #define MyAppPublisher "Yosuke-Sh"
 #define MyAppURL "https://github.com/Yosuke-Sh/BrowserSelector"
@@ -18,7 +18,10 @@
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
-AppId={{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}
+; Once decided, never change it again: it identifies the installed app (uninstall registration, upgrade-in-place).
+; 0.3.6 and earlier used the placeholder A1B2C3D4-E5F6-7890-ABCD-EF1234567890 (shared with MicaPDF);
+; see CleanupLegacyUninstallEntry in [Code].
+AppId={{383B49EE-CA06-44A8-B641-99E0E22F51E4}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppVerName={#MyAppName} {#MyAppVersion}
@@ -282,10 +285,38 @@ begin
     Result := '.NET 10 Desktop Runtime が導入されなかったため、セットアップを中断しました。';
 end;
 
+// 0.3.6以前の旧AppId（MicaPDFと衝突していた仮の値）のアンインストール登録だけを片付ける。
+// 旧unins000.exeは実行しない（[UninstallDelete]がユーザー設定を消すため）。ファイル本体は今回の上書きで入れ替わっている。
+// DisplayNameとInstallLocationが自分のものと一致するときだけ削除し、同じキー名の他社アプリを壊さない。
+procedure CleanupLegacyUninstallEntry();
+var
+  KeyPath, DisplayName, InstallLocation, UninstallString, OldExe, NewExe: string;
+begin
+  KeyPath := 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}_is1';
+  if not RegQueryStringValue(HKLM64, KeyPath, 'DisplayName', DisplayName) then Exit;
+  if not RegQueryStringValue(HKLM64, KeyPath, 'InstallLocation', InstallLocation) then Exit;
+  if (DisplayName <> '{#MyAppName}') or
+     (CompareText(RemoveBackslash(InstallLocation), RemoveBackslash(ExpandConstant('{app}'))) <> 0) then Exit;
+
+  if RegQueryStringValue(HKLM64, KeyPath, 'UninstallString', UninstallString) then
+  begin
+    OldExe := RemoveQuotes(UninstallString);
+    NewExe := ExpandConstant('{uninstallexe}');
+    if CompareText(OldExe, NewExe) <> 0 then
+    begin
+      DeleteFile(OldExe);
+      DeleteFile(ChangeFileExt(OldExe, '.dat'));
+      DeleteFile(ChangeFileExt(OldExe, '.msg'));
+    end;
+  end;
+  RegDeleteKeyIncludingSubkeys(HKLM64, KeyPath);
+end;
+
 procedure CurStepChanged(CurStep: TSetupStep);
 begin
   if CurStep = ssPostInstall then
   begin
+    CleanupLegacyUninstallEntry();
     // Create application data directory
     ForceDirectories(ExpandConstant('{userappdata}\BrowserSelector'));
     ForceDirectories(ExpandConstant('{userappdata}\BrowserSelector\logs'));
