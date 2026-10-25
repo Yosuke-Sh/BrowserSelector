@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.7] - 2026-10-25
+
+### 🐛 Fixed
+- Fixed `winget upgrade` listing the installed BrowserSelector as an outdated copy of another app, MicaPDF (`TCDev.MicaPDF`), so `winget upgrade --all` could run MicaPDF's installer over BrowserSelector. The installer's `AppId` was still a placeholder value (`A1B2C3D4-E5F6-7890-ABCD-EF1234567890`) that MicaPDF also registers as its ProductCode, and winget matches installed apps by that code. `AppId` is now a unique GUID (never to be changed again). Because the install folder is unchanged, installing over 0.3.6 or earlier (including the in-app silent update) replaces the files in place and removes only the old uninstall registration (and its `unins000.*` files) when its `DisplayName` and `InstallLocation` match BrowserSelector; the old uninstaller is never run, so settings are kept.
+
 ## [0.3.6] - 2026-08-21
 
 ### 🐛 Fixed
